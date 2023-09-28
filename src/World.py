@@ -64,6 +64,7 @@ class World:
     #   Rendering
     #   
     def render(self, window, cameraX, cameraY):
+        #world.spriteLibrary.displaySprite("house1_house_corner_tl", window, 0, 0)
         # Render the world
         for y in range(self.sizeY):
             for x in range(self.sizeX):

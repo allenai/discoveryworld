@@ -29,6 +29,10 @@ class BuildingMaker:
     def mkHouse(self, world, x, y, width, height):
         # Walls
         # Sprite names: ['house1_house_corner_b', 'house1_house_corner_bl', 'house1_house_corner_br', 'house1_house_corner_l', 'house1_house_corner_r', 'house1_house_corner_t', 'house1_house_corner_tl', 'house1_house_corner_tr']
+        # Check that it has a minimum size (e.g. at least 4x4)
+        if width < 4 or height < 4:
+            print("Error: House is too small: " + str(width) + ", " + str(height))
+            return
 
         # Top-left corner
         world.addObject(x, y, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_corner_tl"))
@@ -60,3 +64,19 @@ class BuildingMaker:
 
         # Door
         # TODO
+
+    # Make table and chairs
+    def mkTableAndChairs(self, world, x, y, chairsPresent = ["u", "d", "l", "r"]):
+        # Table
+        world.addObject(x, y, Layer.FURNITURE, BuildingMaker.mkObject("table", "table", "house1_table"))
+        # Chairs
+        if "u" in chairsPresent:
+            world.addObject(x, y - 1, Layer.FURNITURE, BuildingMaker.mkObject("chair", "chair", "house1_chair_d"))
+        if "d" in chairsPresent:            
+            world.addObject(x, y + 1, Layer.FURNITURE, BuildingMaker.mkObject("chair", "chair", "house1_chair_u"))
+        if "l" in chairsPresent:
+            world.addObject(x - 1, y, Layer.FURNITURE, BuildingMaker.mkObject("chair", "chair", "house1_chair_r"))
+        if "r" in chairsPresent:
+            world.addObject(x + 1, y, Layer.FURNITURE, BuildingMaker.mkObject("chair", "chair", "house1_chair_l"))
+
+    

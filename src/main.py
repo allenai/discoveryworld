@@ -6,6 +6,7 @@ import json
 # Sprite library
 import SpriteLibrary
 from World import World
+from Layer import Layer
 from BuildingMaker import BuildingMaker
 
 
@@ -33,7 +34,11 @@ def main():
 
     # Create a building
     buildingMaker = BuildingMaker(world)
-    buildingMaker.mkHouse(world, x=4, y=4, width=5, height=5)
+    buildingMaker.mkHouse(world, x=4, y=4, width=8, height=8)
+    buildingMaker.mkTableAndChairs(world, x=6, y=9, chairsPresent=["u", "d", "l", "r"])
+
+    world.addObject(6, 6, Layer.FURNITURE, BuildingMaker.mkObject("stove", "stove", "house1_stove_on"))
+    world.addObject(7, 6, Layer.FURNITURE, BuildingMaker.mkObject("sink", "sink", "house1_sink_filled"))
 
     # Main rendering loop
     running = True
@@ -48,10 +53,6 @@ def main():
 
         # Fill the window with black
         window.fill((0, 0, 0))
-
-        # Insert drawing code here
-        # This is just a test that puts a red square in the middle of the screen
-        pygame.draw.rect(window, (255, 0, 0), (gameParams["width"] / 2 - 25, gameParams["height"] / 2 - 25, 50, 50))        
 
         # Display the sprite
         #world.spriteLibrary.displaySprite("house1_house_corner_tl", window, 0, 0)
