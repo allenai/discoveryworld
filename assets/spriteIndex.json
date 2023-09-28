@@ -1,0 +1,13 @@
+[
+    {
+        "sheetName": "house1", 
+        "filename": "pixymoon/CuteRPG_Village/32x32/CuteRPG_Village_House.png",
+        "tileSize": [32, 32],
+        "transparentColor": [0, 0, 0],
+        "sprites":
+            {
+                "house_corner_ul": [4, 4],  
+                "test1": [5, 5]
+            }
+    }
+]
