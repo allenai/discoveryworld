@@ -41,6 +41,9 @@ class BuildingMaker:
         # Top wall
         for i in range(1, width - 1):
             world.addObject(x + i, y, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_corner_t"))
+            # Also needs the 'house1_house_backwall' sprite along the back
+            world.addObject(x + i, y+1, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_backwall"))
+
         # Bottom wall
         for i in range(1, width - 1):
             world.addObject(x + i, y + height - 1, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_corner_b"))
@@ -52,7 +55,7 @@ class BuildingMaker:
             world.addObject(x + width - 1, y + i, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_corner_r"))
         # Floor
         for i in range(1, width - 1):
-            for j in range(1, height - 1):
+            for j in range(2, height - 1):
                 world.addObject(x + i, y + j, Layer.BUILDING, BuildingMaker.mkObject("floor", "floor", "house1_house_floor"))
 
         # Door
