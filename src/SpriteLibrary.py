@@ -10,13 +10,14 @@ import json
 
 class SpriteLibrary:
     # Constructor
-    def __init__(self, filenameIndex):
+    def __init__(self, assetPath, filenameIndex):
+        self.assetPath = assetPath
         self.filenameIndex = filenameIndex
         self.sprites = {}
         self.warnings = []
 
         # Load sprites from index
-        self.loadIndex(filenameIndex)
+        self.loadIndex(assetPath + "/" + filenameIndex)
 
         # Print warnings
         if len(self.warnings) > 0:
@@ -28,16 +29,18 @@ class SpriteLibrary:
     # Load sprite sheet index
     # The index is a JSON file that contains a list of spritesheet filenames and the sprites contained in each spritesheet
     def loadIndex(self, filenameIndex):
+        print ("Loading sprites from index file: " + filenameIndex)
+
         # Load the JSON index file
         with open(filenameIndex) as f:
             data = json.load(f)
 
         # For each spritesheet in the index, load the spritesheet and add the sprites to the library
         count = 0
-        for spritesheet in data["spritesheets"]:
+        for spritesheet in data:
             count += self.loadSpritesheet(spritesheet)
         
-        print("Loaded " + str(count) + " sprites from " + filenameIndex + ".")
+        print("Loaded " + str(count) + " total sprites from " + filenameIndex + ".")
         
 
     # Add the sprites from a single spritesheet to the library
@@ -49,7 +52,7 @@ class SpriteLibrary:
         sprites = spritesheetData["sprites"]
 
         # Load the spritesheet
-        spritesheet = pygame.image.load(filename).convert()
+        spritesheet = pygame.image.load(self.assetPath + "/" + filename).convert()
         spritesheet.set_colorkey(transparentColor)
 
         # For each sprite in the spritesheet, add it to the library
@@ -66,12 +69,12 @@ class SpriteLibrary:
             # Add the sprite to the library
             # First, check for duplicate names
             if sheetName + "_" + spriteName in self.sprites:
-                self.warnings.append("Duplicate sprite name: " + sheetName + "_" + spriteName + ". Sprite will be overwritten.")
+                self.warnings.append("WARNING: Duplicate sprite name: " + sheetName + "_" + spriteName + ". Sprite will be overwritten.")
             self.sprites[sheetName + "_" + spriteName] = spriteImage
 
             count += 1
         
-        print("Loaded " + str(count) + " sprites from " + filename + ".")
+        print("\tLoaded " + str(count) + " sprites from " + filename + ".")
         return count
         
 

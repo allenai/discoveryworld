@@ -1,4 +1,22 @@
+
 import pygame
+import os
+import json
+
+# Sprite library
+import SpriteLibrary
+
+
+
+class World:
+    # Constructor
+    def __init__(self, assetPath, filenameSpriteIndex):
+        # Load sprites
+        self.spriteLibrary = SpriteLibrary.SpriteLibrary(assetPath, filenameSpriteIndex)
+
+        # Load world data
+        # TODO
+
 
 
 
@@ -18,6 +36,10 @@ def main():
     pygame.display.set_caption(gameParams["name"])
 
     clock = pygame.time.Clock()
+
+    # Intialize world
+    world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json")
+
 
     # Main rendering loop
     running = True
