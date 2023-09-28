@@ -76,9 +76,22 @@ class SpriteLibrary:
         
         print("\tLoaded " + str(count) + " sprites from " + filename + ".")
         return count
+
+    # Get a list of all sprite names in the library (sorted)
+    def getSpriteNames(self):
+        return sorted(self.sprites.keys())
+
+    # Display a sprite
+    # spriteName: The name of the sprite to display
+    # window: The window to display the sprite in
+    # x: The x coordinate of the top left corner of the sprite
+    # y: The y coordinate of the top left corner of the sprite
+    def displaySprite(self, spriteName, window, x, y):
+        sprite = self.sprites[spriteName]
+        window.blit(sprite, (x, y))
+        
         
 
-        
 
 
         

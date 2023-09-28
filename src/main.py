@@ -39,7 +39,8 @@ def main():
 
     # Intialize world
     world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json")
-
+    print ("All sprite names: ")
+    print (world.spriteLibrary.getSpriteNames())
 
     # Main rendering loop
     running = True
@@ -58,6 +59,9 @@ def main():
         # Insert drawing code here
         # This is just a test that puts a red square in the middle of the screen
         pygame.draw.rect(window, (255, 0, 0), (gameParams["width"] / 2 - 25, gameParams["height"] / 2 - 25, 50, 50))        
+
+        # Display the sprite
+        world.spriteLibrary.displaySprite("house1_house_corner_ul", window, 0, 0)
 
         # Flip the backbuffer
         pygame.display.flip()
