@@ -24,7 +24,7 @@ def displayGrid(filename, tileSize, offset, transparentColor, window):
         pygame.draw.line(window, (255, 255, 255), (x + offset[0], 0 + offset[1]), (x + offset[0], spritesheet.get_height()))
 
     # Display the grid coordinates
-    font = pygame.font.SysFont("Arial", 12)
+    font = pygame.font.SysFont("Arial", 8)
     for y in range(0, spritesheet.get_height(), tileSize[1]):
         for x in range(0, spritesheet.get_width(), tileSize[0]):
             text = font.render(str(x // tileSize[0]) + "," + str(y // tileSize[1]), True, (255, 255, 255))
@@ -32,12 +32,13 @@ def displayGrid(filename, tileSize, offset, transparentColor, window):
 
 
 def main():
-    filename = "assets/pixymoon/CuteRPG_Village/32x32/CuteRPG_Village_House.png"
+    filename = "assets/pixymoon/CuteRPG_Interior/32x32/CuteRPG_Interior_custom.png"
     tileSize = (32, 32)
-    offset = (16, 16)
+    #offset = (16, 16)
+    offset = (0, 0)
     transparentColor = (0, 0, 0)
 
-    windowSize = (800, 600)
+    windowSize = (1800, 600)
     
     window = pygame.display.set_mode(windowSize)
     pygame.display.set_caption("Sprite Sheet Grid")

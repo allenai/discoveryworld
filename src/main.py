@@ -5,19 +5,8 @@ import json
 
 # Sprite library
 import SpriteLibrary
-
-
-
-class World:
-    # Constructor
-    def __init__(self, assetPath, filenameSpriteIndex):
-        # Load sprites
-        self.spriteLibrary = SpriteLibrary.SpriteLibrary(assetPath, filenameSpriteIndex)
-
-        # Load world data
-        # TODO
-
-
+from World import World
+from BuildingMaker import BuildingMaker
 
 
 def main():
@@ -42,6 +31,10 @@ def main():
     print ("All sprite names: ")
     print (world.spriteLibrary.getSpriteNames())
 
+    # Create a building
+    buildingMaker = BuildingMaker(world)
+    buildingMaker.mkHouse(world, x=4, y=4, width=5, height=5)
+
     # Main rendering loop
     running = True
 
@@ -61,7 +54,10 @@ def main():
         pygame.draw.rect(window, (255, 0, 0), (gameParams["width"] / 2 - 25, gameParams["height"] / 2 - 25, 50, 50))        
 
         # Display the sprite
-        world.spriteLibrary.displaySprite("house1_house_corner_ul", window, 0, 0)
+        #world.spriteLibrary.displaySprite("house1_house_corner_tl", window, 0, 0)
+
+        # Render the world
+        world.render(window, cameraX=0, cameraY=0)
 
         # Flip the backbuffer
         pygame.display.flip()
