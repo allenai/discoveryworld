@@ -54,6 +54,7 @@ def main():
     ## world.addObject(6, 6, Layer.FURNITURE, BuildingMaker.mkObject("stove", "stove", "house1_stove_on"))
     ## world.addObject(7, 6, Layer.FURNITURE, BuildingMaker.mkObject("sink", "sink", "house1_sink_filled"))
     world.addObject(6, 6, Layer.FURNITURE, Stove(world))
+    world.addObject(7, 6, Layer.FURNITURE, Sink(world))
 
     # Main rendering loop
     running = True
