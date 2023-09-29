@@ -35,6 +35,11 @@
                 "sink_on":      { "baseTile": [1, 15],  "size": [1, 1], "transp": [0, 0, 0] },
 
                 "test1": { "baseTile": [4, 4],  "size": [1, 1], "transp": [0, 0, 0] }
+            },
+        "composites": 
+            {
+                "wall1": {"wall_horiz": [0, 1], "wall_t": [0, 0]},
+                "wall2": {"wall_horiz": [0, 1], "wall_b": [0, 0]}
             }
     },
     {
@@ -49,6 +54,9 @@
                 "plant1":   { "baseTile": [7, 2],  "size": [1, 1], "transp": [0, 0, 0] },
                 "plant2":   { "baseTile": [7, 5],  "size": [1, 1], "transp": [0, 0, 0] },
                 "plant3":   { "baseTile": [7, 9],  "size": [1, 1], "transp": [0, 0, 0] }
+            },
+        "composites": 
+            {
             }
     }
 

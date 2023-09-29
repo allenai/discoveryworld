@@ -63,6 +63,7 @@ class SpriteLibrary:
         tileSize = spritesheetData["tileSize"]
         transparentColor = spritesheetData["transparentColor"]
         sprites = spritesheetData["sprites"]
+        composites = spritesheetData["composites"]
 
         # Load the spritesheet
         spritesheet = pygame.image.load(self.assetPath + "/" + filename).convert()
@@ -92,9 +93,6 @@ class SpriteLibrary:
                 print("Using general key: " + str(transparentColor))
                 spritesheet.set_colorkey(transparentColor)
 
-            
-            
-
             # Get the sprite from the spritesheet
             #spriteRect = pygame.Rect(spriteX * tileSize[0], spriteY * tileSize[1], tileSize[0], tileSize[1])
             spriteRect = pygame.Rect(spriteX * tileSize[0], spriteY * tileSize[1], spriteWidthInTiles * tileSize[0], spriteHeightInTiles * tileSize[1])
@@ -111,6 +109,48 @@ class SpriteLibrary:
 
             count += 1
         
+        # For each composite in the spritesheet, add it to the library
+        # Composite format:
+        # "composites": {
+        #     "wall1": {"wall_horiz": [0, 0], "wall_t": [0, 1]}
+        # }
+        for compositeName in composites:
+            composite = composites[compositeName]
+            # Create a new surface for the composite
+            compositeWidth = 0
+            compositeHeight = 0
+            for spriteName in composite:
+                sprite = composite[spriteName]
+                spriteX = sprite[0] * tileSize[0]
+                spriteY = sprite[1] * tileSize[1]
+                spriteImage = self.sprites[sheetName + "_" + spriteName]
+                spriteWidth = spriteImage.get_width()
+                spriteHeight = spriteImage.get_height()
+                if spriteX + spriteWidth > compositeWidth:
+                    compositeWidth = spriteX + spriteWidth
+                if spriteY + spriteHeight > compositeHeight:
+                    compositeHeight = spriteY + spriteHeight
+
+            compositeSurface = pygame.Surface((compositeWidth, compositeHeight))
+            compositeSurface.set_colorkey(transparentColor)
+
+            # Add the sprites to the composite
+            for spriteName in composite:
+                sprite = composite[spriteName]
+                spriteX = sprite[0] * tileSize[0]
+                spriteY = sprite[1] * tileSize[1]
+                spriteImage = self.sprites[sheetName + "_" + spriteName]
+                compositeSurface.blit(spriteImage, (spriteX, spriteY))
+
+            # Add the composite to the library
+            # First, check for duplicate names
+            if sheetName + "_" + compositeName in self.sprites:
+                self.warnings.append("WARNING: Duplicate sprite name: " + sheetName + "_" + compositeName + ". Sprite will be overwritten.")
+            self.sprites[sheetName + "_" + compositeName] = compositeSurface
+
+            count += 1
+
+
         print("\tLoaded " + str(count) + " sprites from " + filename + ".")
         return count
 
@@ -124,6 +164,10 @@ class SpriteLibrary:
     # x: The x coordinate of the top left corner of the sprite
     # y: The y coordinate of the top left corner of the sprite
     def renderSprite(self, window, spriteName, x, y):
+        if (spriteName not in self.sprites):
+            print("WARNING: Sprite not found: " + str(spriteName))
+            exit(1)
+            return
         sprite = self.sprites[spriteName]
         window.blit(sprite, (x, y))
         
