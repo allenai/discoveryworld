@@ -26,9 +26,12 @@ def main():
     }
 
     # Open window
+    #window = pygame.display.set_mode((gameParams["width"], gameParams["height"]))
+    # Open window (should open in top left corner)
+    os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (50,50)
     window = pygame.display.set_mode((gameParams["width"], gameParams["height"]))
     pygame.display.set_caption(gameParams["name"])
-
+    
     clock = pygame.time.Clock()
 
     # Intialize world

@@ -58,7 +58,13 @@ class BuildingMaker:
             world.addObject(x + i, y, Layer.BUILDING, Wall(world))
         # Bottom wall
         for i in range(1, width - 1):
-            world.addObject(x + i, y + height - 1, Layer.BUILDING, Wall(world))
+            # The middle of the bottom wall should be a door
+            if i == int(width / 2):
+                #world.addObject(x + i, y + height - 1, Layer.BUILDING, Door(world))
+                #world.addObject(x + i, y + height - 1, Layer.BUILDING, Floor(world))
+                world.addObject(x + i, y + height - 1, Layer.BUILDING, Floor(world))
+            else:
+                world.addObject(x + i, y + height - 1, Layer.BUILDING, Wall(world))
         # Left wall
         for i in range(1, height - 1):
             world.addObject(x, y + i, Layer.BUILDING, Wall(world))
