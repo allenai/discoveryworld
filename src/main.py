@@ -82,7 +82,7 @@ def main():
         pygame.display.flip()
         frames += 1
         
-        time.sleep(1)
+        #time.sleep(1)
 
 
 

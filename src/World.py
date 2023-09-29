@@ -100,11 +100,11 @@ class World:
         for y in range(self.sizeY):
             for x in range(self.sizeX):
 
-                print("Rendering: " + str(x) + ", " + str(y))
-                for layer in self.grid[x][y]["layers"].values():
-                    for object in layer:
-                        # print object and sprite names
-                        print("\t" + object.name + " (" + str(object.getSpriteName()) + ")")
+                # print("Rendering: " + str(x) + ", " + str(y))
+                # for layer in self.grid[x][y]["layers"].values():
+                #     for object in layer:
+                #         # print object and sprite names
+                #         print("\t" + object.name + " (" + str(object.getSpriteName()) + ")")
 
                 # Render the world layer
                 for object in self.grid[x][y]["layers"][Layer.WORLD]:
