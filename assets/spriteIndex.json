@@ -15,7 +15,10 @@
                 "wall_l":   { "baseTile": [0, 3],  "size": [1, 1], "transp": [51, 33, 10] },
                 "wall_r":   { "baseTile": [2, 3],  "size": [1, 1], "transp": [51, 33, 10] },
 
-                "wall_backwall":    { "baseTile": [1, 2],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_horiz":           { "baseTile": [1, 2],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_horiz_door_l":    { "baseTile": [4, 2],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_horiz_door_r":    { "baseTile": [3, 2],  "size": [1, 1], "transp": [51, 33, 10] },
+
                 "floor":      { "baseTile": [3, 3],  "size": [1, 1], "transp": [51, 33, 10] },
 
                 "table":      { "baseTile": [0, 5],  "size": [1, 1], "transp": [0, 0, 0] },

@@ -248,6 +248,52 @@ class Wall(Object):
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
 
+#
+#   Object: Floor
+#
+class Floor(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "floor", "floor", defaultSpriteName = "house1_floor")
+
+        # Default attributes
+        # Material type?
+
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # Static -- just use the default sprite name
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+#
+#   Object: BackWall
+#
+class WallHorizontal(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "back wall", "back wall", defaultSpriteName = "house1_wall_horiz")
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
         
 #
 #   Object: Stove
