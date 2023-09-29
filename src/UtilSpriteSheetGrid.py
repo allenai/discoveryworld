@@ -32,13 +32,14 @@ def displayGrid(filename, tileSize, offset, transparentColor, window):
 
 
 def main():
-    filename = "assets/pixymoon/CuteRPG_Interior/32x32/CuteRPG_Interior_custom.png"
+    #filename = "assets/pixymoon/CuteRPG_Interior/32x32/CuteRPG_Interior_custom.png"
+    filename = "assets/pixymoon/CuteRPG_Forest/32x32/CuteRPG_Forest.png"
     tileSize = (32, 32)
     #offset = (16, 16)
     offset = (0, 0)
     transparentColor = (0, 0, 0)
 
-    windowSize = (1800, 600)
+    windowSize = (1800, 1200)
     
     window = pygame.display.set_mode(windowSize)
     pygame.display.set_caption("Sprite Sheet Grid")

@@ -6,17 +6,17 @@
         "transparentColor": [0, 0, 0],
         "sprites":
             {    
-                "house_corner_tl":  { "baseTile": [0, 1],  "size": [1, 1], "transp": [51, 33, 10] },
-                "house_corner_tr":  { "baseTile": [2, 1],  "size": [1, 1], "transp": [51, 33, 10] },
-                "house_corner_bl":  { "baseTile": [0, 4],  "size": [1, 1], "transp": [51, 33, 10] },
-                "house_corner_br":  { "baseTile": [2, 4],  "size": [1, 1], "transp": [51, 33, 10] },
-                "house_corner_t":   { "baseTile": [1, 1],  "size": [1, 1], "transp": [51, 33, 10] },
-                "house_corner_b":   { "baseTile": [1, 4],  "size": [1, 1], "transp": [51, 33, 10] },
-                "house_corner_l":   { "baseTile": [0, 3],  "size": [1, 1], "transp": [51, 33, 10] },
-                "house_corner_r":   { "baseTile": [2, 3],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_tl":  { "baseTile": [0, 1],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_tr":  { "baseTile": [2, 1],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_bl":  { "baseTile": [0, 4],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_br":  { "baseTile": [2, 4],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_t":   { "baseTile": [1, 1],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_b":   { "baseTile": [1, 4],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_l":   { "baseTile": [0, 3],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_r":   { "baseTile": [2, 3],  "size": [1, 1], "transp": [51, 33, 10] },
 
-                "house_backwall":   { "baseTile": [1, 2],  "size": [1, 1], "transp": [51, 33, 10] },
-                "house_floor":      { "baseTile": [3, 3],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_backwall":    { "baseTile": [1, 2],  "size": [1, 1], "transp": [51, 33, 10] },
+                "floor":      { "baseTile": [3, 3],  "size": [1, 1], "transp": [51, 33, 10] },
 
                 "table":      { "baseTile": [0, 5],  "size": [1, 1], "transp": [0, 0, 0] },
                 "chair_l":    { "baseTile": [5, 5],  "size": [1, 1], "transp": [0, 0, 0] },
@@ -33,5 +33,20 @@
 
                 "test1": { "baseTile": [4, 4],  "size": [1, 1], "transp": [0, 0, 0] }
             }
+    },
+    {
+        "sheetName": "forest1", 
+        "filename": "pixymoon/CuteRPG_Forest/32x32/CuteRPG_Forest.png",
+        "tileSize": [32, 32],
+        "transparentColor": [0, 0, 0],
+        "sprites":
+            {    
+                "grass":    { "baseTile": [1, 2],  "size": [1, 1], "transp": [0, 0, 0] },
+
+                "plant1":   { "baseTile": [7, 2],  "size": [1, 1], "transp": [0, 0, 0] },
+                "plant2":   { "baseTile": [7, 5],  "size": [1, 1], "transp": [0, 0, 0] },
+                "plant3":   { "baseTile": [7, 9],  "size": [1, 1], "transp": [0, 0, 0] }
+            }
     }
+
 ]

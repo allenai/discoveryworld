@@ -2,12 +2,15 @@
 import pygame
 import os
 import json
+import random
+import time
 
 # Sprite library
 import SpriteLibrary
 from World import World
 from Layer import Layer
 from BuildingMaker import BuildingMaker
+
 
 
 def main():
@@ -32,18 +35,30 @@ def main():
     print ("All sprite names: ")
     print (world.spriteLibrary.getSpriteNames())
 
-    # Create a building
+    # Populate with structures/objects
     buildingMaker = BuildingMaker(world)
-    buildingMaker.mkHouse(world, x=4, y=4, width=8, height=8)
-    buildingMaker.mkTableAndChairs(world, x=6, y=9, chairsPresent=["u", "d", "l", "r"])
 
-    world.addObject(6, 6, Layer.FURNITURE, BuildingMaker.mkObject("stove", "stove", "house1_stove_on"))
-    world.addObject(7, 6, Layer.FURNITURE, BuildingMaker.mkObject("sink", "sink", "house1_sink_filled"))
+    # Fill with grass
+    buildingMaker.mkGrassFill(world)
+    # Randomly place a few plants (plant1, plant2, plant3)
+    for i in range(0, 10):
+        randX = random.randint(0, world.sizeX - 1)
+        randY = random.randint(0, world.sizeY - 1)
+        ## world.addObject(randX, randY, Layer.OBJECTS, BuildingMaker.mkObject("plant", "plant", "forest1_plant" + str(i % 3 + 1)))
+
+    # Create a building
+    buildingMaker.mkHouse(world, x=4, y=4, width=8, height=8)
+    ## buildingMaker.mkTableAndChairs(world, x=6, y=9, chairsPresent=["u", "d", "l", "r"])
+
+    ## world.addObject(6, 6, Layer.FURNITURE, BuildingMaker.mkObject("stove", "stove", "house1_stove_on"))
+    ## world.addObject(7, 6, Layer.FURNITURE, BuildingMaker.mkObject("sink", "sink", "house1_sink_filled"))
 
     # Main rendering loop
     running = True
-
+    frames = 0
     while running:
+        print("Frame: " + str(frames))
+
         clock.tick(gameParams["fps"])
 
         # Check for a quit event
@@ -57,12 +72,17 @@ def main():
         # Display the sprite
         #world.spriteLibrary.displaySprite("house1_house_corner_tl", window, 0, 0)
 
+        # Update the world
+        world.tick()
+
         # Render the world
         world.render(window, cameraX=0, cameraY=0)
 
         # Flip the backbuffer
         pygame.display.flip()
-
+        frames += 1
+        
+        time.sleep(1)
 
 
 

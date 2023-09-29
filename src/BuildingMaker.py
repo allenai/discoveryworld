@@ -3,6 +3,7 @@
 import SpriteLibrary
 from World import World
 from Layer import Layer
+from ObjectModel import *
 
 class BuildingMaker:
     # Constructor
@@ -21,6 +22,16 @@ class BuildingMaker:
 
         return object
 
+    #
+    #   Grass
+    #
+    
+    # Fill the world with a base layer of grass
+    def mkGrassFill(self, world):
+        # Fill the world with grass
+        for y in range(world.sizeY):
+            for x in range(world.sizeX):
+                world.addObject(x, y, Layer.WORLD, Grass(world))
 
 
     #
@@ -35,32 +46,32 @@ class BuildingMaker:
             return
 
         # Top-left corner
-        world.addObject(x, y, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_corner_tl"))
+        world.addObject(x, y, Layer.BUILDING, Wall(world))
         # Top-right corner
-        world.addObject(x + width - 1, y, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_corner_tr"))
+        world.addObject(x + width - 1, y, Layer.BUILDING, Wall(world))
         # Bottom-left corner
-        world.addObject(x, y + height - 1, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_corner_bl"))
+        world.addObject(x, y + height - 1, Layer.BUILDING, Wall(world))
         # Bottom-right corner
-        world.addObject(x + width - 1, y + height - 1, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_corner_br"))
+        world.addObject(x + width - 1, y + height - 1, Layer.BUILDING, Wall(world))
         # Top wall
         for i in range(1, width - 1):
-            world.addObject(x + i, y, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_corner_t"))
+            world.addObject(x + i, y, Layer.BUILDING, Wall(world))
             # Also needs the 'house1_house_backwall' sprite along the back
-            world.addObject(x + i, y+1, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_backwall"))
+            #world.addObject(x + i, y+1, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_backwall"))
 
         # Bottom wall
         for i in range(1, width - 1):
-            world.addObject(x + i, y + height - 1, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_corner_b"))
+            world.addObject(x + i, y + height - 1, Layer.BUILDING, Wall(world))
         # Left wall
         for i in range(1, height - 1):
-            world.addObject(x, y + i, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_corner_l"))
+            world.addObject(x, y + i, Layer.BUILDING, Wall(world))
         # Right wall
         for i in range(1, height - 1):
-            world.addObject(x + width - 1, y + i, Layer.BUILDING, BuildingMaker.mkObject("wall", "wall", "house1_house_corner_r"))
+            world.addObject(x + width - 1, y + i, Layer.BUILDING, Wall(world))
         # Floor
-        for i in range(1, width - 1):
-            for j in range(2, height - 1):
-                world.addObject(x + i, y + j, Layer.BUILDING, BuildingMaker.mkObject("floor", "floor", "house1_house_floor"))
+        #for i in range(1, width - 1):
+        #    for j in range(2, height - 1):
+        #        world.addObject(x + i, y + j, Layer.BUILDING, BuildingMaker.mkObject("floor", "floor", "house1_house_floor"))
 
         # Door
         # TODO
