@@ -80,7 +80,7 @@ def main():
 
 
         # Display the sprite
-        world.spriteLibrary.renderSprite(window, "house1_wall1", 100, 100)
+        #world.spriteLibrary.renderSprite(window, "house1_wall1", 100, 100)
         world.spriteLibrary.renderSprite(window, "house1_wall2", 50, 100)
 
         # Flip the backbuffer

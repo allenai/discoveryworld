@@ -150,25 +150,25 @@ class Wall(Object):
 
         # Corners
         if (hasWallSouth and hasWallEast):
-            self.curSpriteName = "house1_wall_tl"
+            self.curSpriteName = "house2_wall_tl"
             self.wallShape = "tl"
         elif (hasWallSouth and hasWallWest):
-            self.curSpriteName = "house1_wall_tr"
+            self.curSpriteName = "house2_wall_tr"
             self.wallShape = "tr"
         elif (hasWallNorth and hasWallEast):
-            self.curSpriteName = "house1_wall_bl"
+            self.curSpriteName = "house2_wall_bl"
             self.wallShape = "bl"
         elif (hasWallNorth and hasWallWest):
-            self.curSpriteName = "house1_wall_br"
+            self.curSpriteName = "house2_wall_br"
             self.wallShape = "br"
         # Edges
         elif (hasWallNorth or hasWallSouth):
             # Check to see what kind of wall the immediate north wall is
             if (wallShapeNorth == "tl" or wallShapeNorth == "l"):
-                self.curSpriteName = "house1_wall_l"
+                self.curSpriteName = "house2_wall_l"
                 self.wallShape = "l"
             elif (wallShapeNorth == "tr" or wallShapeNorth == "r"):
-                self.curSpriteName = "house1_wall_r"
+                self.curSpriteName = "house2_wall_r"
                 self.wallShape = "r"
             else:
                 # Unknown?
@@ -179,10 +179,10 @@ class Wall(Object):
         elif (hasWallEast or hasWallWest):
             # Check to see what kind of wall the immediate east wall is
             if (wallShapeEast == "tr" or wallShapeEast == "t"):
-                self.curSpriteName = "house1_wall_t"
+                self.curSpriteName = "house2_wall_t"
                 self.wallShape = "t"
             elif (wallShapeEast == "br" or wallShapeEast == "b"):
-                self.curSpriteName = "house1_wall_b"
+                self.curSpriteName = "house2_wall_b"
                 self.wallShape = "b"
             else:
                 #print("Can't find at location (" + str(self.attributes["gridX"]) + ", " + str(self.attributes["gridY"]) + ")")
@@ -196,10 +196,10 @@ class Wall(Object):
                         if (hasWallWest and wallShapeWest != ""):
                             # Found a wall that has self.wallShape populated
                             if (wallShapeWest == "tl" or wallShapeWest == "t"):
-                                self.curSpriteName = "house1_wall_t"
+                                self.curSpriteName = "house2_wall_t"
                                 self.wallShape = "t"
                             elif (wallShapeWest == "bl" or wallShapeWest == "b"):
-                                self.curSpriteName = "house1_wall_b"
+                                self.curSpriteName = "house2_wall_b"
                                 self.wallShape = "b"
                             break
                         elif (not hasWallWest):
@@ -217,10 +217,10 @@ class Wall(Object):
                         if (hasWallEast and wallShapeEast != ""):
                             # Found a wall that has self.wallShape populated
                             if (wallShapeEast == "tr" or wallShapeEast == "t"):
-                                self.curSpriteName = "house1_wall_t"
+                                self.curSpriteName = "house2_wall_t"
                                 self.wallShape = "t"
                             elif (wallShapeEast == "br" or wallShapeEast == "b"):
-                                self.curSpriteName = "house1_wall_b"
+                                self.curSpriteName = "house2_wall_b"
                                 self.wallShape = "b"
                             break
                         elif (not hasWallEast):
@@ -254,7 +254,7 @@ class Wall(Object):
 class Floor(Object):
     # Constructor
     def __init__(self, world):
-        Object.__init__(self, world, "floor", "floor", defaultSpriteName = "house1_floor")
+        Object.__init__(self, world, "floor", "floor", defaultSpriteName = "house2_floor")
 
         # Default attributes
         # Material type?
@@ -289,7 +289,7 @@ class WallHorizontal(Object):
     # Constructor
     def __init__(self, world):
         # Default sprite name
-        Object.__init__(self, world, "back wall", "back wall", defaultSpriteName = "house1_wall_horiz")
+        Object.__init__(self, world, "back wall", "back wall", defaultSpriteName = "house2_wall_horiz")
 
     def tick(self):
         # Call superclass

@@ -61,6 +61,9 @@ class SpriteLibrary:
         sheetName = spritesheetData["sheetName"]
         filename = spritesheetData["filename"]
         tileSize = spritesheetData["tileSize"]
+        offset = [0, 0]
+        if "offset" in spritesheetData:
+            offset = spritesheetData["offset"]
         transparentColor = spritesheetData["transparentColor"]
         sprites = spritesheetData["sprites"]
         composites = spritesheetData["composites"]
@@ -95,7 +98,7 @@ class SpriteLibrary:
 
             # Get the sprite from the spritesheet
             #spriteRect = pygame.Rect(spriteX * tileSize[0], spriteY * tileSize[1], tileSize[0], tileSize[1])
-            spriteRect = pygame.Rect(spriteX * tileSize[0], spriteY * tileSize[1], spriteWidthInTiles * tileSize[0], spriteHeightInTiles * tileSize[1])
+            spriteRect = pygame.Rect((spriteX * tileSize[0]) + offset[0], (spriteY * tileSize[1]) + offset[1], spriteWidthInTiles * tileSize[0], spriteHeightInTiles * tileSize[1])
             spriteImage = spritesheet.subsurface(spriteRect)
 
             # Debug: Print the color at pixel 0,0 within the sprite
