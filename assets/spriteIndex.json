@@ -49,7 +49,7 @@
         "sheetName": "house2",
         "filename": "pixymoon/CuteRPG_Houses/32x32/CuteRPG_Houses_A-modified.png",
         "tileSize": [32, 32],
-        "offset": [8, 0],
+        "offset": [9, 0],
         "transparentColor": [0, 0, 0],
         "sprites":
             {
@@ -62,7 +62,10 @@
                 "wall_l":   { "baseTile": [0, 3],  "size": [1, 1], "transp": [51, 33, 10] },
                 "wall_r":   { "baseTile": [4, 3],  "size": [1, 1], "transp": [51, 33, 10] },
 
-                "floor":    { "baseTile": [2, 3],  "size": [1, 1], "transp": [51, 33, 10] }
+                "floor":    { "baseTile": [2, 3],  "size": [1, 1], "transp": [51, 33, 10] },
+
+                "door_closed":     { "baseTile": [0, 1],  "size": [1, 1], "transp": [51, 33, 10] },
+                "door_open":       { "baseTile": [1, 1],  "size": [1, 1], "transp": [51, 33, 10] }
             },
         "composites":
             {

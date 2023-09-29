@@ -294,16 +294,58 @@ class Floor(Object):
 #
 #   Object: BackWall
 #
-class WallHorizontal(Object):
+# class WallHorizontal(Object):
+#     # Constructor
+#     def __init__(self, world):
+#         # Default sprite name
+#         Object.__init__(self, world, "back wall", "back wall", defaultSpriteName = "house2_wall_horiz")
+#
+#     def tick(self):
+#         # Call superclass
+#         Object.tick(self)
+
+#
+#   Object: Stove
+#
+class Door(Object):
     # Constructor
     def __init__(self, world):
-        # Default sprite name
-        Object.__init__(self, world, "back wall", "back wall", defaultSpriteName = "house2_wall_horiz")
+        Object.__init__(self, world, "door", "door", defaultSpriteName = "house2_door_closed")
+
+        # Default attributes
+        self.attributes["open"] = False
 
     def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+        # Randomly open/close the door
+        if (random.randint(0, 100) < 5):
+            self.attributes["open"] = not self.attributes["open"]
+            self.needsSpriteNameUpdate = True
+
         # Call superclass
         Object.tick(self)
-        
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # If the stove is open, then we need to use the open sprite
+        if (self.attributes["open"]):
+            self.curSpriteName = "house2_door_open"
+        else:
+            self.curSpriteName = "house2_door_closed"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
 #
 #   Object: Stove
 #
