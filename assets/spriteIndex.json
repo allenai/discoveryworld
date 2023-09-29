@@ -28,8 +28,8 @@
                 "stove_on":     { "baseTile": [0, 12],  "size": [1, 1], "transp": [0, 0, 0] },
                 "stove_open":   { "baseTile": [1, 12],  "size": [1, 1], "transp": [0, 0, 0] },
 
-                "sink_empty":       { "baseTile": [1, 14],  "size": [1, 1], "transp": [0, 0, 0] },
-                "sink_filled":      { "baseTile": [1, 15],  "size": [1, 1], "transp": [0, 0, 0] },
+                "sink_off":     { "baseTile": [1, 14],  "size": [1, 1], "transp": [0, 0, 0] },
+                "sink_on":      { "baseTile": [1, 15],  "size": [1, 1], "transp": [0, 0, 0] },
 
                 "test1": { "baseTile": [4, 4],  "size": [1, 1], "transp": [0, 0, 0] }
             }

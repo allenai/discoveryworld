@@ -255,14 +255,11 @@ class Wall(Object):
 class Stove(Object):
     # Constructor
     def __init__(self, world):
-        defaultSpriteName = "stove_off"
         Object.__init__(self, world, "stove", "stove", defaultSpriteName = "house1_stove_off")
 
         # Default attributes
         self.attributes["activated"] = False
         self.attributes["open"] = False
-
-        
 
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
@@ -270,18 +267,6 @@ class Stove(Object):
             self.needsSpriteNameUpdate = True
 
         # TODO
-
-        # Randomly turn on/off
-        if (random.randint(0, 100) < 5):
-            self.attributes["activated"] = not self.attributes["activated"]
-            self.needsSpriteNameUpdate = True
-        
-        # Randomly open/close
-        if (random.randint(0, 100) < 5):
-            self.attributes["open"] = not self.attributes["open"]
-            self.needsSpriteNameUpdate = True
-        
-
 
         # Call superclass
         Object.tick(self)
@@ -301,6 +286,48 @@ class Stove(Object):
                 self.curSpriteName = "house1_stove_on"
             else:
                 self.curSpriteName = "house1_stove_off"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: Sink
+#
+class Sink(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "stove", "stove", defaultSpriteName = "house1_sink_off")
+
+        # Default attributes
+        self.attributes["activated"] = False
+
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+        # Randomly turn on/off
+        if (random.randint(0, 100) < 5):
+            self.attributes["activated"] = not self.attributes["activated"]
+            self.needsSpriteNameUpdate = True
+
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # If the stove is open, then we need to use the open sprite
+        if (self.attributes["activated"]):
+            self.curSpriteName = "house1_sink_on"
+        else:
+            self.curSpriteName = "house1_sink_off"
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
