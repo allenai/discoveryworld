@@ -377,3 +377,85 @@ class Sink(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+
+#
+#   Object: Table
+#
+class Table(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "table", "table", defaultSpriteName = "house1_table")
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
+
+#
+#   Object: Chair
+#
+class Chair(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "chair", "chair", defaultSpriteName = "house1_chair_l")
+
+        # Rendering attributes
+        self.curDirection = "west"
+
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # Call superclass
+        Object.tick(self)
+
+
+    # Sprite helper: Look to see if there's a table nearby
+    def _hasTable(self, x, y):
+        # Check to see if there is a wall at the given location
+        # First, get objects at a given location
+        objects = self.world.getObjectsAt(x, y)
+        # Then, check to see if any of them are walls
+        for object in objects:
+            if object.type == "table":
+                return True
+        # If we get here, there are no walls
+        return False
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # Check to see if there is a table north, east, south, or west of us
+        hasTableNorth = self._hasTable(self.attributes["gridX"], self.attributes["gridY"] - 1)
+        hasTableSouth = self._hasTable(self.attributes["gridX"], self.attributes["gridY"] + 1)
+        hasTableEast = self._hasTable(self.attributes["gridX"] + 1, self.attributes["gridY"])
+        hasTableWest = self._hasTable(self.attributes["gridX"] - 1, self.attributes["gridY"])
+
+        # If we have a table to the north, then we need to use the north sprite
+        if (hasTableNorth):
+            self.curSpriteName = "house1_chair_u"
+            self.curDirection = "north"
+        elif (hasTableSouth):
+            self.curSpriteName = "house1_chair_d"
+            self.curDirection = "south"
+        elif (hasTableEast):
+            self.curSpriteName = "house1_chair_r"
+            self.curDirection = "east"
+        elif (hasTableWest):
+            self.curSpriteName = "house1_chair_l"
+            self.curDirection = "west"
+        else:
+            # If we get here, then we have no table nearby
+            self.curSpriteName = "house1_chair_l"
+            self.curDirection = "west"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName

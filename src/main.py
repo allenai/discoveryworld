@@ -49,7 +49,7 @@ def main():
 
     # Create a building
     buildingMaker.mkHouse(world, x=4, y=4, width=8, height=8)
-    ## buildingMaker.mkTableAndChairs(world, x=6, y=9, chairsPresent=["u", "d", "l", "r"])
+    buildingMaker.mkTableAndChairs(world, x=6, y=9, chairsPresent=["n", "s", "e", "w"])
 
     ## world.addObject(6, 6, Layer.FURNITURE, BuildingMaker.mkObject("stove", "stove", "house1_stove_on"))
     ## world.addObject(7, 6, Layer.FURNITURE, BuildingMaker.mkObject("sink", "sink", "house1_sink_filled"))

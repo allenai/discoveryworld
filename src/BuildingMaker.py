@@ -74,17 +74,17 @@ class BuildingMaker:
         # TODO
 
     # Make table and chairs
-    def mkTableAndChairs(self, world, x, y, chairsPresent = ["u", "d", "l", "r"]):
+    def mkTableAndChairs(self, world, x, y, chairsPresent = ["n", "s", "e", "w"]):
         # Table
-        world.addObject(x, y, Layer.FURNITURE, BuildingMaker.mkObject("table", "table", "house1_table"))
+        world.addObject(x, y, Layer.FURNITURE, Table(world))
         # Chairs
-        if "u" in chairsPresent:
-            world.addObject(x, y - 1, Layer.FURNITURE, BuildingMaker.mkObject("chair", "chair", "house1_chair_d"))
-        if "d" in chairsPresent:            
-            world.addObject(x, y + 1, Layer.FURNITURE, BuildingMaker.mkObject("chair", "chair", "house1_chair_u"))
-        if "l" in chairsPresent:
-            world.addObject(x - 1, y, Layer.FURNITURE, BuildingMaker.mkObject("chair", "chair", "house1_chair_r"))
-        if "r" in chairsPresent:
-            world.addObject(x + 1, y, Layer.FURNITURE, BuildingMaker.mkObject("chair", "chair", "house1_chair_l"))
+        if "n" in chairsPresent:
+            world.addObject(x, y - 1, Layer.FURNITURE, Chair(world))
+        if "s" in chairsPresent:            
+            world.addObject(x, y + 1, Layer.FURNITURE, Chair(world))
+        if "w" in chairsPresent:
+            world.addObject(x - 1, y, Layer.FURNITURE, Chair(world))
+        if "e" in chairsPresent:
+            world.addObject(x + 1, y, Layer.FURNITURE, Chair(world))
 
     
