@@ -305,7 +305,7 @@ class Floor(Object):
 #         Object.tick(self)
 
 #
-#   Object: Stove
+#   Object: Door
 #
 class Door(Object):
     # Constructor
@@ -344,6 +344,48 @@ class Door(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+#
+#   Object: Sign
+#
+class Sign(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "sign", "sign", defaultSpriteName = "village1_sign_nowriting")
+
+        # Default attributes
+        self.attributes["document"] = "This is a sign."
+
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # Call superclass
+        Object.tick(self)
+
+    def setText(self, text:str):
+        self.attributes["document"] = text.strip()
+        self.needsSpriteNameUpdate = True
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # If the stove is open, then we need to use the open sprite
+        if (len(self.attributes["document"]) > 0):
+            self.curSpriteName = "village1_sign_writing"
+        else:
+            self.curSpriteName = "village1_sign_nowriting"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+        # After one run, we don't need to update the sprite name again unless something changes
+        self.needsSpriteNameUpdate = False
 
 
 #

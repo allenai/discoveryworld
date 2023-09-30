@@ -37,7 +37,7 @@ class BuildingMaker:
     #
     #   Houses
     #
-    def mkHouse(self, world, x, y, width, height):
+    def mkHouse(self, world, x, y, width, height, signText = "Default Sign Text"):
         # Walls
         # Sprite names: ['house1_house_corner_b', 'house1_house_corner_bl', 'house1_house_corner_br', 'house1_house_corner_l', 'house1_house_corner_r', 'house1_house_corner_t', 'house1_house_corner_tl', 'house1_house_corner_tr']
         # Check that it has a minimum size (e.g. at least 4x4)
@@ -75,9 +75,11 @@ class BuildingMaker:
         for i in range(1, width - 1):
             for j in range(1, height - 1):
                 world.addObject(x + i, y + j, Layer.BUILDING, Floor(world))
-
-        # Door
-        # TODO
+        # Sign infront of the door
+        sign = Sign(world)
+        sign.setText(signText)
+        world.addObject(x + int(width / 2)-1, y + height, Layer.FURNITURE, sign)
+    
 
     # Make table and chairs
     def mkTableAndChairs(self, world, x, y, chairsPresent = ["n", "s", "e", "w"]):
