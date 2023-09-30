@@ -56,6 +56,7 @@ def main():
 
     world.addObject(6, 6, Layer.FURNITURE, Stove(world))
     world.addObject(7, 6, Layer.FURNITURE, Sink(world))
+    world.addObject(8, 6, Layer.FURNITURE, Fridge(world))
 
     # Main rendering loop
     running = True

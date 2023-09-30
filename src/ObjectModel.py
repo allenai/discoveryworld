@@ -472,6 +472,40 @@ class Sink(Object):
         self.tempLastSpriteName = self.curSpriteName
 
 
+#
+#   Object: Fridge
+#
+class Fridge(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "fridge", "fridge", defaultSpriteName = "house1_fridge")
+
+        # Default attributes
+        self.attributes["activated"] = True
+        self.attributes["open"] = False
+
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
 
 #
 #   Object: Table
