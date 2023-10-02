@@ -58,6 +58,8 @@ def main():
     world.addObject(7, 6, Layer.FURNITURE, Sink(world))
     world.addObject(8, 6, Layer.FURNITURE, Fridge(world))
 
+    world.addObject(9, 6, Layer.OBJECTS, Microscope(world))
+
     # Main rendering loop
     running = True
     frames = 0
