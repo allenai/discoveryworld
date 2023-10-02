@@ -104,29 +104,40 @@ class World:
                 # for layer in self.grid[x][y]["layers"].values():
                 #     for object in layer:
                 #         # print object and sprite names
-                #         print("\t" + object.name + " (" + str(object.getSpriteName()) + ")")
+                #         print("\t" + object.name + " (" + str(object.getSpriteNamesWithContents()) + ")")
 
                 # Render the world layer
                 for object in self.grid[x][y]["layers"][Layer.WORLD]:
                     #print("Rendering: " + object.name)
-                    self.spriteLibrary.renderSprite(window, object.getSpriteName(), x * 32 - cameraX, y * 32 - cameraY)
+                    #self.spriteLibrary.renderSprite(window, object.getSpriteName(), x * 32 - cameraX, y * 32 - cameraY)
+                    for spriteName in object.getSpriteNamesWithContents():
+                        self.spriteLibrary.renderSprite(window, spriteName, x * 32 - cameraX, y * 32 - cameraY)
 
                 # Render the building layer
                 for object in self.grid[x][y]["layers"][Layer.BUILDING]:
                     #print("Rendering: " + object.name)
-                    self.spriteLibrary.renderSprite(window, object.getSpriteName(), x * 32 - cameraX, y * 32 - cameraY)
+                    #self.spriteLibrary.renderSprite(window, object.getSpriteName(), x * 32 - cameraX, y * 32 - cameraY)
+                    for spriteName in object.getSpriteNamesWithContents():
+                        self.spriteLibrary.renderSprite(window, spriteName, x * 32 - cameraX, y * 32 - cameraY)
 
                 # Render the furniture layer
                 for object in self.grid[x][y]["layers"][Layer.FURNITURE]:
                     #print("Rendering: " + object.name)
-                    self.spriteLibrary.renderSprite(window, object.getSpriteName(), x * 32 - cameraX, y * 32 - cameraY)
+                    #self.spriteLibrary.renderSprite(window, object.getSpriteName(), x * 32 - cameraX, y * 32 - cameraY)
+                    for spriteName in object.getSpriteNamesWithContents():
+                        self.spriteLibrary.renderSprite(window, spriteName, x * 32 - cameraX, y * 32 - cameraY)
 
                 # Render the objects layer
                 for object in self.grid[x][y]["layers"][Layer.OBJECTS]:
                     #print("Rendering: " + object.name)
-                    self.spriteLibrary.renderSprite(window, object.getSpriteName(), x * 32 - cameraX, y * 32 - cameraY)
+                    #self.spriteLibrary.renderSprite(window, object.getSpriteName(), x * 32 - cameraX, y * 32 - cameraY)
+                    for spriteName in object.getSpriteNamesWithContents():
+                        self.spriteLibrary.renderSprite(window, spriteName, x * 32 - cameraX, y * 32 - cameraY)
 
                 # Render the player layer
                 for object in self.grid[x][y]["layers"][Layer.PLAYER]:
                     #print("Rendering: " + object.name)
-                    self.spriteLibrary.renderSprite(window, object.getSpriteName(), x * 32 - cameraX, y * 32 - cameraY)
+                    #self.spriteLibrary.renderSprite(window, object.getSpriteName(), x * 32 - cameraX, y * 32 - cameraY)
+                    for spriteName in object.getSpriteNamesWithContents():
+                        self.spriteLibrary.renderSprite(window, spriteName, x * 32 - cameraX, y * 32 - cameraY)
+

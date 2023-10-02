@@ -29,8 +29,9 @@ def mkHouse(x, y, world, buildingMaker):
 def mkScienceLab(x, y, world, buildingMaker):
     # Create a building (science lab)
     buildingMaker.mkHouse(world, x=x, y=y, width=5, height=5)
-    world.addObject(x+1, y+1, Layer.FURNITURE, Table(world))
-    world.addObject(x+2, y+2, Layer.OBJECTS, Microscope(world))
+    bench1 = Table(world)
+    world.addObject(x+1, y+1, Layer.FURNITURE, bench1)
+    bench1.addObject( Microscope(world) )
 
 def main():
     print("Initializing...")

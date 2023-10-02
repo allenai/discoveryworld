@@ -111,6 +111,11 @@ class Object:
         else:
             self.inferSpriteName()
 
+
+        # Also call tick on all contained objects
+        for obj in self.contents:
+            obj.tick()
+
         
 
     #
@@ -141,6 +146,27 @@ class Object:
         self.lastSpriteName = self.tempLastSpriteName
 
     # TODO: Rendering for objects with contents (e.g. containers with things on/in them)
+    def getSpriteNamesWithContents(self):
+        # Get the sprite name, including the contents of the object
+        # This is used for rendering objects that contain other objects (e.g. containers)
+
+        # First, get the name of the current object itself
+        spriteList = [self.getSpriteName()]
+
+        # Then, add the name of any visible contents
+        # First, check if this is a container (and it's open)
+        if (self.attributes['isContainer'] and self.attributes['isOpenContainer']):
+            # If so, then add the contents
+            for obj in self.contents:
+                # Add the sprite name of the object
+                spriteNameObj = obj.getSpriteName()
+                #print("Object name: " + obj.name + "  sprite name: " + str(spriteNameObj))
+                if (spriteNameObj != None):
+                    spriteList.append(spriteNameObj)                
+
+        # Return the sprite list
+        return spriteList
+
 
 #
 #   Object: Grass
@@ -569,6 +595,10 @@ class Table(Object):
     def __init__(self, world):
         # Default sprite name
         Object.__init__(self, world, "table", "table", defaultSpriteName = "house1_table")
+
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")            
 
     def tick(self):
         # Call superclass
