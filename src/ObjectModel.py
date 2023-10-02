@@ -29,6 +29,12 @@ class Object:
         # Properties/attributes
         self.attributes = {}
 
+        # Contents (for containers)
+        self.attributes['isContainer'] = False                      # Is it a container?
+        self.attributes['isOpenContainer'] = False                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = ""                     # Container prefix (e.g. "in" or "on")            
+        self.contents = []                                          # Contents of the container (other objects)
+
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
         self.firstInit = True
@@ -87,6 +93,8 @@ class Object:
     def updateLastSpriteName(self):
         # Update the last sprite name
         self.lastSpriteName = self.tempLastSpriteName
+
+    # TODO: Rendering for objects with contents (e.g. containers with things on/in them)
 
 #
 #   Object: Grass
