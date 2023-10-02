@@ -64,15 +64,9 @@ class Object:
 
     # Add an object (obj) to this container
     def addObject(self, obj, force=False):
-        # Add an object to this container
-        # Check if this object is an open container
-        if ((self.attributes["isContainer"] and (self.attributes["isOpenContainer"]) or force)):
-            # Add the object to the container
-            self.contents.append(obj)
-            obj.parentContainer = self
-            return True
-        else:
-            return False
+        # Add an object to this container        
+        self.contents.append(obj)
+        obj.parentContainer = self
 
     # Remove an object from this container
     def removeObject(self, obj):
@@ -89,7 +83,6 @@ class Object:
         # Remove this object from its container
         if (self.parentContainer != None):
             return self.parentContainer.removeObject(self)
-
 
     # Get all contained objects
     def getAllContainedObjectsRecursive(self):
