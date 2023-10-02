@@ -14,13 +14,34 @@ from ObjectModel import *
 
 
 
+
+def mkHouse(x, y, world, buildingMaker):
+    # Create a building (house)
+    buildingMaker.mkHouse(world, x=x+0, y=x+0, width=7, height=7)
+    #buildingMaker.mkTableAndChairs(world, x=6, y=9, chairsPresent=["n", "s", "e", "w"])
+    buildingMaker.mkTableAndChairs(world, x=x+1, y=y+4, chairsPresent=["n", "s", "", ""])
+
+    world.addObject(x+1, y+1, Layer.FURNITURE, Fridge(world))    
+    world.addObject(x+2, y+1, Layer.FURNITURE, Sink(world))
+    world.addObject(x+3, y+1, Layer.FURNITURE, Stove(world))
+
+
+def mkScienceLab(x, y, world, buildingMaker):
+    # Create a building (science lab)
+    buildingMaker.mkHouse(world, x=x, y=y, width=5, height=5)
+    world.addObject(x+1, y+1, Layer.FURNITURE, Table(world))
+    world.addObject(x+2, y+2, Layer.OBJECTS, Microscope(world))
+
 def main():
     print("Initializing...")
 
+
+    # 32 pixels/tile * 32 tiles = 1024 pixels
+
     # Game parameters
     gameParams = {
-        "height": 600,
-        "width": 800,
+        "height": 1024,
+        "width": 1024,
         "fps": 60,
         "name": "DiscoveryWorld"
     }
@@ -50,15 +71,16 @@ def main():
         randY = random.randint(0, world.sizeY - 1)
         ## world.addObject(randX, randY, Layer.OBJECTS, BuildingMaker.mkObject("plant", "plant", "forest1_plant" + str(i % 3 + 1)))
 
-    # Create a building
-    buildingMaker.mkHouse(world, x=4, y=4, width=8, height=8)
-    buildingMaker.mkTableAndChairs(world, x=6, y=9, chairsPresent=["n", "s", "e", "w"])
 
-    world.addObject(6, 6, Layer.FURNITURE, Stove(world))
-    world.addObject(7, 6, Layer.FURNITURE, Sink(world))
-    world.addObject(8, 6, Layer.FURNITURE, Fridge(world))
+    # Buildings
+    mkHouse(4, 4, world, buildingMaker)
 
-    world.addObject(9, 6, Layer.OBJECTS, Microscope(world))
+    mkScienceLab(5, 20, world, buildingMaker)
+    
+
+
+
+
 
     # Main rendering loop
     running = True
@@ -85,7 +107,7 @@ def main():
 
         # Display the sprite
         #world.spriteLibrary.renderSprite(window, "house1_wall1", 100, 100)
-        world.spriteLibrary.renderSprite(window, "house1_wall2", 50, 100)
+        #world.spriteLibrary.renderSprite(window, "house1_wall2", 50, 100)
 
         # Flip the backbuffer
         pygame.display.flip()
