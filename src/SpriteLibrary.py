@@ -52,8 +52,8 @@ class SpriteLibrary:
     #     "transparentColor": [0, 0, 0],
     #     "sprites":
     #         {
-    #             "house_corner_ul": { "baseTile": [4, 4],  "size": [1, 1], "transp": [0, 0, 0] },
-    #             "test1": { "baseTile": [4, 4],  "size": [1, 1], "transp": [0, 0, 0] }
+    #             "house_corner_ul": { "baseTile": [4, 4],  "size": [1, 1] },
+    #             "test1": { "baseTile": [4, 4],  "size": [1, 1] }
     #         }
     # }
 
@@ -63,14 +63,12 @@ class SpriteLibrary:
         tileSize = spritesheetData["tileSize"]
         offset = [0, 0]
         if "offset" in spritesheetData:
-            offset = spritesheetData["offset"]
-        transparentColor = spritesheetData["transparentColor"]
+            offset = spritesheetData["offset"]        
         sprites = spritesheetData["sprites"]
         composites = spritesheetData["composites"]
 
-        # Load the spritesheet
-        spritesheet = pygame.image.load(self.assetPath + "/" + filename).convert()
-        spritesheet.set_colorkey(transparentColor)
+        # Load the spritesheet.  (convert_alpha() is used to load the alpha channel for each pixel, to handle transparency)        
+        spritesheet = pygame.image.load(self.assetPath + "/" + filename).convert_alpha()        
 
         # For each sprite in the spritesheet, add it to the library
         count = 0
@@ -82,19 +80,6 @@ class SpriteLibrary:
             # Sprite size
             spriteWidthInTiles = sprite["size"][0]
             spriteHeightInTiles = sprite["size"][1]
-            # Sprite transparent color (if applicable)
-            spriteTransparentColor = None
-            if ("transp" in sprite):
-                spriteTransparentColor = sprite["transp"]
-
-
-            # Set transparent color if applicable
-            if spriteTransparentColor != None:
-                print ("Using specific key: " + str(spriteTransparentColor))
-                spritesheet.set_colorkey(spriteTransparentColor)
-            else:
-                print("Using general key: " + str(transparentColor))
-                spritesheet.set_colorkey(transparentColor)
 
             # Get the sprite from the spritesheet
             #spriteRect = pygame.Rect(spriteX * tileSize[0], spriteY * tileSize[1], tileSize[0], tileSize[1])
@@ -134,8 +119,7 @@ class SpriteLibrary:
                 if spriteY + spriteHeight > compositeHeight:
                     compositeHeight = spriteY + spriteHeight
 
-            compositeSurface = pygame.Surface((compositeWidth, compositeHeight))
-            compositeSurface.set_colorkey(transparentColor)
+            compositeSurface = pygame.Surface((compositeWidth, compositeHeight))            
 
             # Add the sprites to the composite
             for spriteName in composite:

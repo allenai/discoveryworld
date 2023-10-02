@@ -2,41 +2,40 @@
     {
         "sheetName": "house1", 
         "filename": "pixymoon/CuteRPG_Interior/32x32/CuteRPG_Interior_custom.png",
-        "tileSize": [32, 32],
-        "transparentColor": [0, 0, 0],
+        "tileSize": [32, 32],        
         "sprites":
             {    
-                "wall_tl":  { "baseTile": [3, 0],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_tr":  { "baseTile": [4, 0],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_bl":  { "baseTile": [3, 1],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_br":  { "baseTile": [4, 1],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_t":   { "baseTile": [1, 4],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_b":   { "baseTile": [1, 1],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_l":   { "baseTile": [2, 3],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_r":   { "baseTile": [0, 3],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_tl":  { "baseTile": [3, 0],  "size": [1, 1] },
+                "wall_tr":  { "baseTile": [4, 0],  "size": [1, 1] },
+                "wall_bl":  { "baseTile": [3, 1],  "size": [1, 1] },
+                "wall_br":  { "baseTile": [4, 1],  "size": [1, 1] },
+                "wall_t":   { "baseTile": [1, 4],  "size": [1, 1] },
+                "wall_b":   { "baseTile": [1, 1],  "size": [1, 1] },
+                "wall_l":   { "baseTile": [2, 3],  "size": [1, 1] },
+                "wall_r":   { "baseTile": [0, 3],  "size": [1, 1] },
 
-                "wall_horiz":           { "baseTile": [1, 2],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_horiz_door_l":    { "baseTile": [4, 2],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_horiz_door_r":    { "baseTile": [3, 2],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_horiz":           { "baseTile": [1, 2],  "size": [1, 1] },
+                "wall_horiz_door_l":    { "baseTile": [4, 2],  "size": [1, 1] },
+                "wall_horiz_door_r":    { "baseTile": [3, 2],  "size": [1, 1] },
 
-                "floor":      { "baseTile": [3, 3],  "size": [1, 1], "transp": [51, 33, 10] },
+                "floor":      { "baseTile": [3, 3],  "size": [1, 1] },
 
-                "table":      { "baseTile": [0, 5],  "size": [1, 1], "transp": [0, 0, 0] },
-                "chair_l":    { "baseTile": [5, 5],  "size": [1, 1], "transp": [0, 0, 0] },
-                "chair_r":    { "baseTile": [4, 5],  "size": [1, 1], "transp": [0, 0, 0] },
-                "chair_u":    { "baseTile": [5, 6],  "size": [1, 1], "transp": [0, 0, 0] },
-                "chair_d":    { "baseTile": [4, 6],  "size": [1, 1], "transp": [0, 0, 0] },
+                "table":      { "baseTile": [0, 5],  "size": [1, 1] },
+                "chair_l":    { "baseTile": [5, 5],  "size": [1, 1] },
+                "chair_r":    { "baseTile": [4, 5],  "size": [1, 1] },
+                "chair_u":    { "baseTile": [5, 6],  "size": [1, 1] },
+                "chair_d":    { "baseTile": [4, 6],  "size": [1, 1] },
 
-                "stove_off":    { "baseTile": [3, 12],  "size": [1, 1], "transp": [0, 0, 0] },
-                "stove_on":     { "baseTile": [0, 12],  "size": [1, 1], "transp": [0, 0, 0] },
-                "stove_open":   { "baseTile": [1, 12],  "size": [1, 1], "transp": [0, 0, 0] },
+                "stove_off":    { "baseTile": [3, 12],  "size": [1, 1] },
+                "stove_on":     { "baseTile": [0, 12],  "size": [1, 1] },
+                "stove_open":   { "baseTile": [1, 12],  "size": [1, 1] },
 
-                "sink_off":     { "baseTile": [1, 14],  "size": [1, 1], "transp": [0, 0, 0] },
-                "sink_on":      { "baseTile": [1, 15],  "size": [1, 1], "transp": [0, 0, 0] },
+                "sink_off":     { "baseTile": [1, 14],  "size": [1, 1] },
+                "sink_on":      { "baseTile": [1, 15],  "size": [1, 1] },
 
-                "fridge":       { "baseTile": [16, 8],  "size": [1, 1], "transp": [0, 0, 0] },
+                "fridge":       { "baseTile": [16, 8],  "size": [1, 1] },
 
-                "test1": { "baseTile": [4, 4],  "size": [1, 1], "transp": [0, 0, 0] }
+                "test1": { "baseTile": [4, 4],  "size": [1, 1] }
             },
         "composites": 
             {
@@ -55,19 +54,19 @@
         "transparentColor": [0, 0, 0],
         "sprites":
             {
-                "wall_tl":  { "baseTile": [0, 2],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_tr":  { "baseTile": [4, 2],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_bl":  { "baseTile": [0, 5],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_br":  { "baseTile": [4, 5],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_t":   { "baseTile": [1, 2],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_b":   { "baseTile": [1, 2],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_l":   { "baseTile": [0, 3],  "size": [1, 1], "transp": [51, 33, 10] },
-                "wall_r":   { "baseTile": [4, 3],  "size": [1, 1], "transp": [51, 33, 10] },
+                "wall_tl":  { "baseTile": [0, 2],  "size": [1, 1] },
+                "wall_tr":  { "baseTile": [4, 2],  "size": [1, 1] },
+                "wall_bl":  { "baseTile": [0, 5],  "size": [1, 1] },
+                "wall_br":  { "baseTile": [4, 5],  "size": [1, 1] },
+                "wall_t":   { "baseTile": [1, 2],  "size": [1, 1] },
+                "wall_b":   { "baseTile": [1, 2],  "size": [1, 1] },
+                "wall_l":   { "baseTile": [0, 3],  "size": [1, 1] },
+                "wall_r":   { "baseTile": [4, 3],  "size": [1, 1] },
 
-                "floor":    { "baseTile": [2, 3],  "size": [1, 1], "transp": [51, 33, 10] },
+                "floor":    { "baseTile": [2, 3],  "size": [1, 1] },
 
-                "door_closed":     { "baseTile": [0, 1],  "size": [1, 1], "transp": [51, 33, 10] },
-                "door_open":       { "baseTile": [1, 1],  "size": [1, 1], "transp": [51, 33, 10] }
+                "door_closed":     { "baseTile": [0, 1],  "size": [1, 1] },
+                "door_open":       { "baseTile": [1, 1],  "size": [1, 1] }
             },
         "composites":
             {
@@ -81,11 +80,11 @@
         "transparentColor": [0, 0, 0],
         "sprites":
             {    
-                "grass":    { "baseTile": [1, 2],  "size": [1, 1], "transp": [0, 0, 0] },
+                "grass":    { "baseTile": [1, 2],  "size": [1, 1] },
 
-                "plant1":   { "baseTile": [7, 2],  "size": [1, 1], "transp": [0, 0, 0] },
-                "plant2":   { "baseTile": [7, 5],  "size": [1, 1], "transp": [0, 0, 0] },
-                "plant3":   { "baseTile": [7, 9],  "size": [1, 1], "transp": [0, 0, 0] }
+                "plant1":   { "baseTile": [7, 2],  "size": [1, 1] },
+                "plant2":   { "baseTile": [7, 5],  "size": [1, 1] },
+                "plant3":   { "baseTile": [7, 9],  "size": [1, 1] }
             },
         "composites": 
             {
@@ -98,8 +97,8 @@
         "transparentColor": [0, 0, 0],
         "sprites":
             {    
-                "sign_nowriting":    { "baseTile": [10, 4],  "size": [1, 1], "transp": [0, 0, 0] },
-                "sign_writing":      { "baseTile": [11, 4],  "size": [1, 1], "transp": [0, 0, 0] }
+                "sign_nowriting":    { "baseTile": [10, 4],  "size": [1, 1] },
+                "sign_writing":      { "baseTile": [11, 4],  "size": [1, 1] }
             },
         "composites": 
             {
