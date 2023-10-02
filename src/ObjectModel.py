@@ -29,7 +29,12 @@ class Object:
         # Properties/attributes
         self.attributes = {}
 
+        # Default attributes
+        self.attributes["isMovable"] = False                        # Can it be moved?
+
+
         # Contents (for containers)
+        self.parentContainer = None                                 # Back-reference for the container that this object is in
         self.attributes['isContainer'] = False                      # Is it a container?
         self.attributes['isOpenContainer'] = False                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = ""                     # Container prefix (e.g. "in" or "on")            
@@ -51,6 +56,54 @@ class Object:
     def getWorldLocation(self):
         # Get the world location of the object
         return (self.attributes["gridX"], self.attributes["gridY"])
+
+
+    #
+    #   Container Semantics
+    #
+
+    # Add an object (obj) to this container
+    def addObject(self, obj, force=False):
+        # Add an object to this container
+        # Check if this object is an open container
+        if ((self.attributes["isContainer"] and (self.attributes["isOpenContainer"]) or force)):
+            # Add the object to the container
+            self.contents.append(obj)
+            obj.parentContainer = self
+            return True
+        else:
+            return False
+
+    # Remove an object from this container
+    def removeObject(self, obj):
+        # Remove an object from this container
+        if (obj in self.contents):
+            self.contents.remove(obj)
+            obj.parentContainer = None
+            return True
+        else:
+            return False
+
+    # Remove the current object from whatever container it's currently in
+    def removeSelfFromContainer(self):
+        # Remove this object from its container
+        if (self.parentContainer != None):
+            return self.parentContainer.removeObject(self)
+
+
+    # Get all contained objects
+    def getAllContainedObjectsRecursive(self):
+        # Get all contained objects, recursively
+        out = []
+        for obj in self.contents:
+            # Add self
+            out.append(obj)
+            # Add children
+            out.extend(obj.getAllContainedObjectsRecursive())
+        # Return
+        return out
+
+
 
     #
     #   Update/Tick
