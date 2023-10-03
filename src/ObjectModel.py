@@ -801,3 +801,72 @@ class Path(Object):
     def tick(self):
         # Call superclass
         Object.tick(self)
+
+    # Check if a tile already contains a "path"
+    def _hasObj(self, x, y, type):
+        objects = self.world.getObjectsAt(x, y)
+        # Then, check to see if any of them are walls
+        for object in objects:
+            if (object.type == type):
+                return True
+        return False        
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # Check to see if the neighbouring tiles have paths
+        hasPathNorth = self._hasObj(self.attributes["gridX"], self.attributes["gridY"] - 1, "path")
+        hasPathSouth = self._hasObj(self.attributes["gridX"], self.attributes["gridY"] + 1, "path")
+        hasPathWest = self._hasObj(self.attributes["gridX"] - 1, self.attributes["gridY"], "path")
+        hasPathEast = self._hasObj(self.attributes["gridX"] + 1, self.attributes["gridY"], "path")
+        
+        # 4 positives
+        if (hasPathNorth and hasPathSouth and hasPathEast and hasPathWest):
+            self.curSpriteName = "forest1_path_c"
+
+        # 3 positives
+        elif (hasPathNorth and hasPathSouth and hasPathEast):
+            self.curSpriteName = "forest1_path_l"
+        elif (hasPathNorth and hasPathSouth and hasPathWest):
+            self.curSpriteName = "forest1_path_r"
+        elif (hasPathEast and hasPathWest and hasPathNorth):
+            self.curSpriteName = "forest1_path_b"
+        elif (hasPathEast and hasPathWest and hasPathSouth):
+            self.curSpriteName = "forest1_path_t"
+
+        # 2 positives (up/down or left/right)
+        elif (hasPathNorth and hasPathSouth):
+            self.curSpriteName = "forest1_path_lr"
+        elif (hasPathEast and hasPathWest):
+            self.curSpriteName = "forest1_path_tb"
+
+        # 2 positives (top/left or top/right or bottom/left or bottom/right)
+        elif (hasPathNorth and hasPathWest):
+            self.curSpriteName = "forest1_path_br"
+        elif (hasPathNorth and hasPathEast):
+            self.curSpriteName = "forest1_path_bl"
+        elif (hasPathSouth and hasPathWest):
+            self.curSpriteName = "forest1_path_tr"
+        elif (hasPathSouth and hasPathEast):
+            self.curSpriteName = "forest1_path_tl"
+
+        # 1 positive (north/east/south/west)
+        elif (hasPathNorth):
+            self.curSpriteName = "forest1_path_1way_t"
+        elif (hasPathEast):
+            self.curSpriteName = "forest1_path_1way_r"
+        elif (hasPathSouth):
+            self.curSpriteName = "forest1_path_1way_b"
+        elif (hasPathWest):
+            self.curSpriteName = "forest1_path_1way_l"
+
+        else:
+            # If we get here, then we have no path nearby (north/east/south/west)
+            self.curSpriteName = "forest1_path_single"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName

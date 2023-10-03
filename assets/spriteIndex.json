@@ -101,19 +101,26 @@
                 "plant2":   { "baseTile": [7, 5],  "size": [1, 1] },
                 "plant3":   { "baseTile": [7, 9],  "size": [1, 1] },
 
-                "path_c":     { "baseTile": [1, 6],  "size": [1, 1] },
-                "path_l":     { "baseTile": [0, 6],  "size": [1, 1] },
-                "path_r":     { "baseTile": [2, 6],  "size": [1, 1] },
-                "path_t":     { "baseTile": [1, 5],  "size": [1, 1] },
-                "path_b":     { "baseTile": [1, 7],  "size": [1, 1] },
+                "path_c":       { "baseTile": [1, 10],  "size": [1, 1] },
+                "path_l":       { "baseTile": [0, 10],  "size": [1, 1] },
+                "path_r":       { "baseTile": [2, 10],  "size": [1, 1] },
+                "path_t":       { "baseTile": [1, 9],  "size": [1, 1] },
+                "path_b":       { "baseTile": [1, 11],  "size": [1, 1] },
 
-                "path_tl":     { "baseTile": [0, 13],  "size": [1, 1] },
-                "path_tr":     { "baseTile": [2, 13],  "size": [1, 1] },
-                "path_bl":     { "baseTile": [0, 15],  "size": [1, 1] },
-                "path_br":     { "baseTile": [2, 15],  "size": [1, 1] },
+                "path_tl":      { "baseTile": [0, 13],  "size": [1, 1] },
+                "path_tr":      { "baseTile": [2, 13],  "size": [1, 1] },
+                "path_bl":      { "baseTile": [0, 15],  "size": [1, 1] },
+                "path_br":      { "baseTile": [2, 15],  "size": [1, 1] },
 
-                "path_lr":    { "baseTile": [0, 17],  "size": [1, 1] },
-                "path_tb":    { "baseTile": [1, 17],  "size": [1, 1] }
+                "path_lr":      { "baseTile": [0, 17],  "size": [1, 1] },
+                "path_tb":      { "baseTile": [1, 17],  "size": [1, 1] },
+
+                "path_1way_r":  { "baseTile": [0, 18],  "size": [1, 1] },
+                "path_1way_b":  { "baseTile": [1, 18],  "size": [1, 1] },
+                "path_1way_l":  { "baseTile": [2, 18],  "size": [1, 1] },
+                "path_1way_t":  { "baseTile": [3, 18],  "size": [1, 1] },
+
+                "path_single":  { "baseTile": [2, 12],  "size": [1, 1] }
 
             },
         "composites": 

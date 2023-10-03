@@ -32,7 +32,7 @@ def mkBarracks(x, y, world, buildingMaker):
     # Create a building (barracks)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=12, height=5)
-    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=12, height=7, dividerX=0, apertureX=0, dividerY=3, apertureY=1, doorX=3, signText="Barracks")
+    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=7, dividerX=0, apertureX=0, dividerY=3, apertureY=1, doorX=3, signText="Barracks")
 
 
     # Add 3 beds and bedside tables (back wall)
@@ -40,16 +40,16 @@ def mkBarracks(x, y, world, buildingMaker):
     world.addObject(x+3, y+1, Layer.FURNITURE, TableBedside(world))
     world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
     world.addObject(x+6, y+1, Layer.FURNITURE, TableBedside(world))
-    world.addObject(x+8, y+1, Layer.FURNITURE, Bed(world))
-    world.addObject(x+9, y+1, Layer.FURNITURE, TableBedside(world))
+    #world.addObject(x+8, y+1, Layer.FURNITURE, Bed(world))
+    #world.addObject(x+9, y+1, Layer.FURNITURE, TableBedside(world))
 
     # Add 3 beds and bedside tables (middle wall)
     world.addObject(x+2, y+4, Layer.FURNITURE, Bed(world))
     world.addObject(x+3, y+4, Layer.FURNITURE, TableBedside(world))
     world.addObject(x+5, y+4, Layer.FURNITURE, Bed(world))
     world.addObject(x+6, y+4, Layer.FURNITURE, TableBedside(world))
-    world.addObject(x+8, y+4, Layer.FURNITURE, Bed(world))
-    world.addObject(x+9, y+4, Layer.FURNITURE, TableBedside(world))
+    #world.addObject(x+8, y+4, Layer.FURNITURE, Bed(world))
+    #world.addObject(x+9, y+4, Layer.FURNITURE, TableBedside(world))
 
 
     # Add a bed
@@ -60,39 +60,39 @@ def mkBarracks(x, y, world, buildingMaker):
 
 def mkInfirmary(x, y, world, buildingMaker):
     # Create a building (barracks)
-    buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=12, height=5)
+    buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=8, height=5)
 
     # Add 4 beds
     world.addObject(x+1, y+1, Layer.FURNITURE, Bed(world))
     world.addObject(x+3, y+1, Layer.FURNITURE, Bed(world))
-    world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
-    world.addObject(x+7, y+1, Layer.FURNITURE, Bed(world))
+    #world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
+    #world.addObject(x+7, y+1, Layer.FURNITURE, Bed(world))
 
     # Table
-    world.addObject(x+9, y+1, Layer.FURNITURE, Table(world))    
+    world.addObject(x+5, y+1, Layer.FURNITURE, Table(world))    
     # Fridge
-    world.addObject(x+10, y+1, Layer.FURNITURE, Fridge(world))    
+    world.addObject(x+6, y+1, Layer.FURNITURE, Fridge(world))    
     
 def mkCafeteria(x, y, world, buildingMaker):
     # Create an L-shaped building (cafeteria)
     #buildingMaker.mkBuildingLDivided(world, x=x, y=y, width=10, height=8, dividerX=5)
     # Create a divided building (cafeteria)
-    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=10, height=10, dividerX=0, apertureX=0, dividerY=3, apertureY=1, doorX=3, signText="Cafeteria")
+    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=7, dividerX=0, apertureX=0, dividerY=3, apertureY=1, doorX=3, signText="Cafeteria")
 
     # Front (eating area)
     # Table and chairs
-    buildingMaker.mkTableAndChairs(world, x=x+7, y=y+5, chairsPresent=["n", "s", "e", "w"])
-    buildingMaker.mkTableAndChairs(world, x=x+7, y=y+8, chairsPresent=["", "", "e", "w"])
+    #buildingMaker.mkTableAndChairs(world, x=x+7, y=y+5, chairsPresent=["n", "s", "e", "w"])
+    buildingMaker.mkTableAndChairs(world, x=x+5, y=y+4, chairsPresent=["", "", "e", "w"])
 
     # Counter
     world.addObject(x+2, y+4, Layer.FURNITURE, Table(world))
-    world.addObject(x+2, y+5, Layer.FURNITURE, Table(world))
+    #world.addObject(x+2, y+5, Layer.FURNITURE, Table(world))
 
     # Back (kitchen)
     world.addObject(x+3, y+1, Layer.FURNITURE, Table(world))
-    world.addObject(x+5, y+1, Layer.FURNITURE, Fridge(world))    
-    world.addObject(x+6, y+1, Layer.FURNITURE, Sink(world))
-    world.addObject(x+7, y+1, Layer.FURNITURE, Stove(world))
+    world.addObject(x+4, y+1, Layer.FURNITURE, Fridge(world))    
+    world.addObject(x+5, y+1, Layer.FURNITURE, Sink(world))
+    world.addObject(x+6, y+1, Layer.FURNITURE, Stove(world))
 
 
 
