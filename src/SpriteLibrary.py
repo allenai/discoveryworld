@@ -151,12 +151,19 @@ class SpriteLibrary:
     # x: The x coordinate of the top left corner of the sprite
     # y: The y coordinate of the top left corner of the sprite
     def renderSprite(self, window, spriteName, x, y):
+        # Tile size
+        tileSize = 32
+
         if (spriteName not in self.sprites):
             print("WARNING: Sprite not found: " + str(spriteName))
             exit(1)
             return
         sprite = self.sprites[spriteName]
-        window.blit(sprite, (x, y))
+
+        # Adjust the y-coordinate based on the sprite's height
+        adjusted_y = y - sprite.get_height() + tileSize
+
+        window.blit(sprite, (x, adjusted_y))
         
         
 

@@ -25,6 +25,8 @@ def mkHouse(x, y, world, buildingMaker):
     world.addObject(x+2, y+1, Layer.FURNITURE, Sink(world))
     world.addObject(x+3, y+1, Layer.FURNITURE, Stove(world))
 
+    world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
+
 
 def mkScienceLab(x, y, world, buildingMaker):
     # Create a building (science lab)
@@ -108,7 +110,7 @@ def main():
 
         # Display the sprite
         #world.spriteLibrary.renderSprite(window, "house1_wall1", 100, 100)
-        #world.spriteLibrary.renderSprite(window, "house1_wall2", 50, 100)
+        world.spriteLibrary.renderSprite(window, "house1_bed", 50, 100)
 
         # Flip the backbuffer
         pygame.display.flip()

@@ -672,6 +672,24 @@ class Chair(Object):
         self.tempLastSpriteName = self.curSpriteName
 
 
+#   Object: Table
+#
+class Bed(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "bed", "bed", defaultSpriteName = "house1_bed")
+
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")            
+        
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
+
 
 #
 #   Object: Microscope

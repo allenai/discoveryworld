@@ -35,6 +35,8 @@
 
                 "fridge":       { "baseTile": [16, 8],  "size": [1, 1] },
 
+                "bed":          { "baseTile": [0, 9],  "size": [1, 2] },
+
                 "test1": { "baseTile": [4, 4],  "size": [1, 1] }
             },
         "composites": 
