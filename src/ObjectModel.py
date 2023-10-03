@@ -773,3 +773,17 @@ class Microscope(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: Statue
+#
+class Statue(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "statue", "statue", defaultSpriteName = "statue_statue1")
+    
+    def tick(self):
+        # Call superclass
+        Object.tick(self)

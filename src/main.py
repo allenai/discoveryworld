@@ -105,6 +105,14 @@ def mkScienceLab(x, y, world, buildingMaker):
     world.addObject(x+1, y+1, Layer.FURNITURE, bench1)
     bench1.addObject( Microscope(world) )
 
+
+def mkTownSquare(x, y, world, buildingMaker):
+    # Add statue
+
+    world.addObject(x+1, y+1, Layer.OBJECTS, Statue(world))
+
+
+
 def main():
     print("Initializing...")
 
@@ -157,7 +165,7 @@ def main():
     
     mkCafeteria(20, 20, world, buildingMaker)
 
-
+    mkTownSquare(10, 10, world, buildingMaker)
 
 
 

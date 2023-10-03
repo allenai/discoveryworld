@@ -141,6 +141,18 @@
         "composites": 
             {
             }
+    },
+    {
+        "sheetName": "statue", 
+        "filename": "placeholder/statue1.png",
+        "tileSize": [32, 32],        
+        "sprites":
+            {    
+                "statue1":    { "baseTile": [0, 1],  "size": [1, 1] }                
+            },
+        "composites": 
+            {
+            }
     }
 
 
