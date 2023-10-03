@@ -110,6 +110,12 @@ def mkTownSquare(x, y, world, buildingMaker):
     # Add statue
 
     world.addObject(x+1, y+1, Layer.OBJECTS, Statue(world))
+    
+    # Create a square that's made out of "Path" tiles
+    for i in range(0, 5):
+        for j in range(0, 5):
+            world.addObject(x+i, y+j, Layer.WORLD, Path(world))
+
 
 
 
@@ -165,7 +171,7 @@ def main():
     
     mkCafeteria(20, 20, world, buildingMaker)
 
-    mkTownSquare(10, 10, world, buildingMaker)
+    mkTownSquare(14, 14, world, buildingMaker)
 
 
 

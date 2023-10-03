@@ -787,3 +787,17 @@ class Statue(Object):
     def tick(self):
         # Call superclass
         Object.tick(self)
+
+
+#
+#   Object: Path
+#
+class Path(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "path", "path", defaultSpriteName = "forest1_path_c")
+    
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
