@@ -30,13 +30,33 @@ def mkHouse(x, y, world, buildingMaker):
 
 def mkBarracks(x, y, world, buildingMaker):
     # Create a building (barracks)
-    buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
+    #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
+    #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=12, height=5)
+    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=12, height=7, dividerX=0, apertureX=0, dividerY=3, apertureY=1, doorX=3, signText="Barracks")
+
+
+    # Add 3 beds and bedside tables (back wall)
+    world.addObject(x+2, y+1, Layer.FURNITURE, Bed(world))
+    world.addObject(x+3, y+1, Layer.FURNITURE, TableBedside(world))
+    world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
+    world.addObject(x+6, y+1, Layer.FURNITURE, TableBedside(world))
+    world.addObject(x+8, y+1, Layer.FURNITURE, Bed(world))
+    world.addObject(x+9, y+1, Layer.FURNITURE, TableBedside(world))
+
+    # Add 3 beds and bedside tables (middle wall)
+    world.addObject(x+2, y+4, Layer.FURNITURE, Bed(world))
+    world.addObject(x+3, y+4, Layer.FURNITURE, TableBedside(world))
+    world.addObject(x+5, y+4, Layer.FURNITURE, Bed(world))
+    world.addObject(x+6, y+4, Layer.FURNITURE, TableBedside(world))
+    world.addObject(x+8, y+4, Layer.FURNITURE, Bed(world))
+    world.addObject(x+9, y+4, Layer.FURNITURE, TableBedside(world))
+
 
     # Add a bed
-    world.addObject(x+1, y+1, Layer.FURNITURE, Bed(world))
+    #world.addObject(x+1, y+1, Layer.FURNITURE, Bed(world))
 
     # Add a bedside table
-    world.addObject(x+2, y+1, Layer.FURNITURE, TableBedside(world))
+    #world.addObject(x+2, y+1, Layer.FURNITURE, TableBedside(world))
 
 def mkInfirmary(x, y, world, buildingMaker):
     # Create a building (barracks)
@@ -131,11 +151,11 @@ def main():
     mkScienceLab(5, 20, world, buildingMaker)
 
 
-    #mkInfirmary(12, 10, world, buildingMaker)
+    mkInfirmary(20, 2, world, buildingMaker)
 
-    #mkBarracks(15, 20, world, buildingMaker)
+    mkBarracks(20, 10, world, buildingMaker)
     
-    mkCafeteria(20, 5, world, buildingMaker)
+    mkCafeteria(20, 20, world, buildingMaker)
 
 
 
