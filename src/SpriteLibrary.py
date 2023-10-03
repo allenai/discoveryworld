@@ -87,7 +87,7 @@ class SpriteLibrary:
             spriteImage = spritesheet.subsurface(spriteRect)
 
             # Debug: Print the color at pixel 0,0 within the sprite
-            print("Color at 1,1: " + str(spriteImage.get_at((1,1))))
+            #print("Color at 1,1: " + str(spriteImage.get_at((1,1))))
 
             # Add the sprite to the library
             # First, check for duplicate names

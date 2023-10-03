@@ -36,6 +36,7 @@ class Object:
         # Contents (for containers)
         self.parentContainer = None                                 # Back-reference for the container that this object is in
         self.attributes['isContainer'] = False                      # Is it a container?
+        self.attributes['isOpenable'] = False                       # If it's a container, can you open/close it?
         self.attributes['isOpenContainer'] = False                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = ""                     # Container prefix (e.g. "in" or "on")            
         self.contents = []                                          # Contents of the container (other objects)
@@ -480,6 +481,13 @@ class Stove(Object):
         self.attributes["activated"] = False
         self.attributes["open"] = False
 
+        # Container attributes
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = True                       # Can be opened
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+
+
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
         if (False):
@@ -564,6 +572,13 @@ class Fridge(Object):
         self.attributes["activated"] = True
         self.attributes["open"] = False
 
+        # Container attributes
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = True                       # Can be opened
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+
+
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
         if (False):
@@ -597,6 +612,7 @@ class Table(Object):
         Object.__init__(self, world, "table", "table", defaultSpriteName = "house1_table")
 
         self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can not be opened (things are stored on the table surface)
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")            
 
@@ -604,6 +620,23 @@ class Table(Object):
         # Call superclass
         Object.tick(self)    
 
+#
+#   Object: Table (Bedside)
+#
+class TableBedside(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "table", "table", defaultSpriteName = "house1_table_bedside")
+
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = True                       # Can be opened
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
 
 #
 #   Object: Chair
@@ -672,18 +705,20 @@ class Chair(Object):
         self.tempLastSpriteName = self.curSpriteName
 
 
-#   Object: Table
+#
+#   Object: Bed
 #
 class Bed(Object):
     # Constructor
     def __init__(self, world):
         # Default sprite name
-        Object.__init__(self, world, "bed", "bed", defaultSpriteName = "house1_bed")
+        Object.__init__(self, world, "bed", "bed", defaultSpriteName = "house1_bed_ud")
+        #Object.__init__(self, world, "bed", "bed", defaultSpriteName = "house1_bed_lr")
 
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")            
-        
+
 
     def tick(self):
         # Call superclass

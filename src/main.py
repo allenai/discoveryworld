@@ -28,6 +28,32 @@ def mkHouse(x, y, world, buildingMaker):
     world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
 
 
+def mkBarracks(x, y, world, buildingMaker):
+    # Create a building (barracks)
+    buildingMaker.mkHouse(world, x=x, y=y, width=5, height=5)
+
+    # Add a bed
+    world.addObject(x+1, y+1, Layer.FURNITURE, Bed(world))
+
+    # Add a bedside table
+    world.addObject(x+2, y+1, Layer.FURNITURE, TableBedside(world))
+
+def mkInfirmary(x, y, world, buildingMaker):
+    # Create a building (barracks)
+    buildingMaker.mkHouse(world, x=x, y=y, width=12, height=5)
+
+    # Add 4 beds
+    world.addObject(x+1, y+1, Layer.FURNITURE, Bed(world))
+    world.addObject(x+3, y+1, Layer.FURNITURE, Bed(world))
+    world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
+    world.addObject(x+7, y+1, Layer.FURNITURE, Bed(world))
+
+    # Table
+    world.addObject(x+9, y+1, Layer.FURNITURE, Table(world))    
+    # Fridge
+    world.addObject(x+10, y+1, Layer.FURNITURE, Fridge(world))    
+    
+
 def mkScienceLab(x, y, world, buildingMaker):
     # Create a building (science lab)
     buildingMaker.mkHouse(world, x=x, y=y, width=5, height=5)
@@ -77,8 +103,15 @@ def main():
 
     # Buildings
     mkHouse(4, 4, world, buildingMaker)
-
+    
     mkScienceLab(5, 20, world, buildingMaker)
+
+
+    mkInfirmary(12, 10, world, buildingMaker)
+
+    mkBarracks(12, 20, world, buildingMaker)
+
+    
     
 
 
@@ -110,7 +143,8 @@ def main():
 
         # Display the sprite
         #world.spriteLibrary.renderSprite(window, "house1_wall1", 100, 100)
-        world.spriteLibrary.renderSprite(window, "house1_bed", 50, 100)
+        #world.spriteLibrary.renderSprite(window, "house1_bed", 50, 100)
+        world.spriteLibrary.renderSprite(window, "house1_bed_lr", 50, 100)
 
         # Flip the backbuffer
         pygame.display.flip()
