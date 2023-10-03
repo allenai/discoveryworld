@@ -100,7 +100,7 @@ def mkCafeteria(x, y, world, buildingMaker):
 def mkScienceLab(x, y, world, buildingMaker):
     # Create a building (science lab)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
-    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=8, dividerX=5, apertureX=5, dividerY=0, apertureY=0, doorX=3, signText="Science Lab")
+    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=5, dividerX=5, apertureX=3, dividerY=0, apertureY=0, doorX=3, signText="Science Lab")
     bench1 = Table(world)
     world.addObject(x+1, y+1, Layer.FURNITURE, bench1)
     bench1.addObject( Microscope(world) )
@@ -119,11 +119,11 @@ def _hasPath(x, y, world):
 def mkTownSquare(x, y, world, buildingMaker):
     # Add statue
 
-    world.addObject(x+2, y+2, Layer.OBJECTS, Statue(world))
+    world.addObject(x+1, y+1, Layer.OBJECTS, Statue(world))
     
     # Create a square that's made out of "Path" tiles
-    for i in range(0, 5):
-        for j in range(0, 5):
+    for i in range(0, 3):
+        for j in range(0, 3):
             if (not _hasPath(x+i, y+j, world)):                
                 world.addObject(x+i, y+j, Layer.WORLD, Path(world))
 
@@ -181,23 +181,23 @@ def main():
     # Buildings
     mkHouse(4, 4, world, buildingMaker)
     
-    mkScienceLab(5, 20, world, buildingMaker)
+    mkScienceLab(8, 19, world, buildingMaker)
 
 
-    mkInfirmary(20, 1, world, buildingMaker)
+    mkInfirmary(19, 1, world, buildingMaker)
 
-    mkBarracks(20, 8, world, buildingMaker)
+    mkBarracks(19, 8, world, buildingMaker)
     
-    mkCafeteria(20, 19, world, buildingMaker)
+    mkCafeteria(19, 17, world, buildingMaker)
 
-    mkTownSquare(14, 14, world, buildingMaker)
+    mkTownSquare(16, 15, world, buildingMaker)
 
 
-    mkPathY(16, 1, 30, world)       # Top/bottom, through town square
+    mkPathY(17, 1, 30, world)       # Top/bottom, through town square
 
-    mkPathX(1, 30, 30, world)       # Bottom, along cafeteria/science lab
+    mkPathX(1, 25, 30, world)       # Bottom, along cafeteria/science lab
 
-    mkPathX(15, 16, 9, world)       # Town square to barracks
+    mkPathX(17, 16, 9, world)       # Town square to barracks
 
     mkPathX(17, 7, 10, world)       # Town square to barracks
 
