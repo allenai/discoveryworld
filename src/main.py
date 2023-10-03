@@ -53,11 +53,34 @@ def mkInfirmary(x, y, world, buildingMaker):
     # Fridge
     world.addObject(x+10, y+1, Layer.FURNITURE, Fridge(world))    
     
+def mkCafeteria(x, y, world, buildingMaker):
+    # Create an L-shaped building (cafeteria)
+    #buildingMaker.mkBuildingLDivided(world, x=x, y=y, width=10, height=8, dividerX=5)
+    # Create a divided building (cafeteria)
+    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=10, height=10, dividerX=0, apertureX=0, dividerY=3, apertureY=1, doorX=3, signText="Cafeteria")
+
+    # Front (eating area)
+    # Table and chairs
+    buildingMaker.mkTableAndChairs(world, x=x+7, y=y+5, chairsPresent=["n", "s", "e", "w"])
+    buildingMaker.mkTableAndChairs(world, x=x+7, y=y+8, chairsPresent=["", "", "e", "w"])
+
+    # Counter
+    world.addObject(x+2, y+4, Layer.FURNITURE, Table(world))
+    world.addObject(x+2, y+5, Layer.FURNITURE, Table(world))
+
+    # Back (kitchen)
+    world.addObject(x+3, y+1, Layer.FURNITURE, Table(world))
+    world.addObject(x+5, y+1, Layer.FURNITURE, Fridge(world))    
+    world.addObject(x+6, y+1, Layer.FURNITURE, Sink(world))
+    world.addObject(x+7, y+1, Layer.FURNITURE, Stove(world))
+
+
+
 
 def mkScienceLab(x, y, world, buildingMaker):
     # Create a building (science lab)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
-    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=8, dividerX=5, dividerY=5)
+    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=8, dividerX=5, apertureX=5, dividerY=0, apertureY=0, doorX=3, signText="Science Lab")
     bench1 = Table(world)
     world.addObject(x+1, y+1, Layer.FURNITURE, bench1)
     bench1.addObject( Microscope(world) )
@@ -108,12 +131,11 @@ def main():
     mkScienceLab(5, 20, world, buildingMaker)
 
 
-    mkInfirmary(12, 10, world, buildingMaker)
+    #mkInfirmary(12, 10, world, buildingMaker)
 
-    mkBarracks(15, 20, world, buildingMaker)
-
+    #mkBarracks(15, 20, world, buildingMaker)
     
-    
+    mkCafeteria(20, 5, world, buildingMaker)
 
 
 
