@@ -17,7 +17,7 @@ from ObjectModel import *
 
 def mkHouse(x, y, world, buildingMaker):
     # Create a building (house)
-    buildingMaker.mkHouse(world, x=x+0, y=x+0, width=7, height=7)
+    buildingMaker.mkBuildingOneRoom(world, x=x+0, y=x+0, width=7, height=7)
     #buildingMaker.mkTableAndChairs(world, x=6, y=9, chairsPresent=["n", "s", "e", "w"])
     buildingMaker.mkTableAndChairs(world, x=x+1, y=y+4, chairsPresent=["n", "s", "", ""])
 
@@ -30,7 +30,7 @@ def mkHouse(x, y, world, buildingMaker):
 
 def mkBarracks(x, y, world, buildingMaker):
     # Create a building (barracks)
-    buildingMaker.mkHouse(world, x=x, y=y, width=5, height=5)
+    buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
 
     # Add a bed
     world.addObject(x+1, y+1, Layer.FURNITURE, Bed(world))
@@ -40,7 +40,7 @@ def mkBarracks(x, y, world, buildingMaker):
 
 def mkInfirmary(x, y, world, buildingMaker):
     # Create a building (barracks)
-    buildingMaker.mkHouse(world, x=x, y=y, width=12, height=5)
+    buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=12, height=5)
 
     # Add 4 beds
     world.addObject(x+1, y+1, Layer.FURNITURE, Bed(world))
@@ -56,7 +56,8 @@ def mkInfirmary(x, y, world, buildingMaker):
 
 def mkScienceLab(x, y, world, buildingMaker):
     # Create a building (science lab)
-    buildingMaker.mkHouse(world, x=x, y=y, width=5, height=5)
+    #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
+    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=5, dividerX=5)
     bench1 = Table(world)
     world.addObject(x+1, y+1, Layer.FURNITURE, bench1)
     bench1.addObject( Microscope(world) )
@@ -109,7 +110,7 @@ def main():
 
     mkInfirmary(12, 10, world, buildingMaker)
 
-    mkBarracks(12, 20, world, buildingMaker)
+    mkBarracks(15, 20, world, buildingMaker)
 
     
     

@@ -53,9 +53,9 @@
     },
     {  
         "sheetName": "house2",
-        "filename": "pixymoon/CuteRPG_Houses/32x32/CuteRPG_Houses_A-modified.png",
+        "filename": "pixymoon/CuteRPG_Houses/32x32/CuteRPG_Houses_A-modified1.png",
         "tileSize": [32, 32],
-        "offset": [9, 0],        
+        "offset": [0, 0],        
         "sprites":
             {
                 "wall_tl":  { "baseTile": [0, 2],  "size": [1, 1] },
@@ -66,6 +66,12 @@
                 "wall_b":   { "baseTile": [1, 2],  "size": [1, 1] },
                 "wall_l":   { "baseTile": [0, 3],  "size": [1, 1] },
                 "wall_r":   { "baseTile": [4, 3],  "size": [1, 1] },
+
+                "wall_int_lrd":   { "baseTile": [9, 2],  "size": [1, 1] },
+                "wall_int_lru":   { "baseTile": [9, 10],  "size": [1, 1] },
+                "wall_int_udr":   { "baseTile": [5, 8],  "size": [1, 1] },
+                "wall_int_udl":   { "baseTile": [11, 8],  "size": [1, 1] },
+                "wall_int_4way":  { "baseTile": [9, 8],  "size": [1, 1] },
 
                 "floor":    { "baseTile": [2, 3],  "size": [1, 1] },
 
