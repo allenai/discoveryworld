@@ -106,6 +106,16 @@ def mkScienceLab(x, y, world, buildingMaker):
     bench1.addObject( Microscope(world) )
 
 
+# Check if a tile already contains a "path"
+def _hasPath(x, y, world):
+    objects = world.getObjectsAt(x, y)
+    # Then, check to see if any of them are walls
+    for object in objects:
+        if (object.type == "path"):
+            return True
+    return False
+
+
 def mkTownSquare(x, y, world, buildingMaker):
     # Add statue
 
@@ -114,15 +124,18 @@ def mkTownSquare(x, y, world, buildingMaker):
     # Create a square that's made out of "Path" tiles
     for i in range(0, 5):
         for j in range(0, 5):
-            world.addObject(x+i, y+j, Layer.WORLD, Path(world))
+            if (not _hasPath(x+i, y+j, world)):                
+                world.addObject(x+i, y+j, Layer.WORLD, Path(world))
 
 def mkPathX(x, y, lengthX, world):
     for i in range(0, lengthX):
-        world.addObject(x+i, y, Layer.WORLD, Path(world))
+        if (not _hasPath(x+i, y, world)):
+            world.addObject(x+i, y, Layer.WORLD, Path(world))
 
 def mkPathY(x, y, lengthY, world):
     for i in range(0, lengthY):
-        world.addObject(x, y+i, Layer.WORLD, Path(world))
+        if (not _hasPath(x, y+i, world)):
+            world.addObject(x, y+i, Layer.WORLD, Path(world))
 
 
 def main():
