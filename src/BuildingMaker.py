@@ -81,7 +81,7 @@ class BuildingMaker:
         world.addObject(x + int(width / 2)-1, y + height, Layer.FURNITURE, sign)
     
 
-    def mkBuildingDivided(self, world, x, y, width, height, dividerX, signText = "Default Sign Text"):
+    def mkBuildingDivided(self, world, x, y, width, height, dividerX, dividerY, signText = "Default Sign Text"):
         # Walls
         # Sprite names: ['house1_house_corner_b', 'house1_house_corner_bl', 'house1_house_corner_br', 'house1_house_corner_l', 'house1_house_corner_r', 'house1_house_corner_t', 'house1_house_corner_tl', 'house1_house_corner_tr']
         # Check that it has a minimum size (e.g. at least 4x4)
@@ -122,7 +122,22 @@ class BuildingMaker:
 
         # Add an interior wall to divide the room
         for i in range(1, height - 1):
-            world.addObject(x + dividerX, y + i, Layer.BUILDING, Wall(world))
+            # Add a hole in the middle
+            if i == 2:
+                #world.addObject(x + dividerX, y + i, Layer.BUILDING, Floor(world))
+                pass
+            else:                
+                world.addObject(x + dividerX, y + i, Layer.BUILDING, Wall(world))
+
+        # Add an interior wall to divide the room
+        for i in range(1, width - 1):
+            # Add a hole in the middle
+            if i == 2:
+                #world.addObject(x + i, y + dividerY, Layer.BUILDING, Floor(world))
+                pass
+            else:
+                world.addObject(x + i, y + dividerY, Layer.BUILDING, Wall(world))
+
             
         # Sign infront of the door
         sign = Sign(world)

@@ -57,7 +57,7 @@ def mkInfirmary(x, y, world, buildingMaker):
 def mkScienceLab(x, y, world, buildingMaker):
     # Create a building (science lab)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
-    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=5, dividerX=5)
+    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=8, dividerX=5, dividerY=5)
     bench1 = Table(world)
     world.addObject(x+1, y+1, Layer.FURNITURE, bench1)
     bench1.addObject( Microscope(world) )

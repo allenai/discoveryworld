@@ -67,11 +67,17 @@
                 "wall_l":   { "baseTile": [0, 3],  "size": [1, 1] },
                 "wall_r":   { "baseTile": [4, 3],  "size": [1, 1] },
 
-                "wall_int_lrd":   { "baseTile": [9, 2],  "size": [1, 1] },
-                "wall_int_lru":   { "baseTile": [9, 10],  "size": [1, 1] },
-                "wall_int_udr":   { "baseTile": [5, 8],  "size": [1, 1] },
-                "wall_int_udl":   { "baseTile": [11, 8],  "size": [1, 1] },
+                "wall_int_lrb":   { "baseTile": [9, 2],  "size": [1, 1] },
+                "wall_int_lrt":   { "baseTile": [9, 10],  "size": [1, 1] },
+                "wall_int_tbr":   { "baseTile": [5, 8],  "size": [1, 1] },
+                "wall_int_tbl":   { "baseTile": [11, 8],  "size": [1, 1] },
                 "wall_int_4way":  { "baseTile": [9, 8],  "size": [1, 1] },
+                "wall_int_tb":  { "baseTile": [9, 7],  "size": [1, 1] },
+                "wall_int_lr":  { "baseTile": [10, 8],  "size": [1, 1] },                
+                "wall_int_tb_opening_t":  { "baseTile": [9, 4],  "size": [1, 1] },
+                "wall_int_tb_opening_b":  { "baseTile": [9, 6],  "size": [1, 1] },
+                "wall_int_lr_opening_l":  { "baseTile": [8, 8],  "size": [1, 1] },                
+                "wall_int_lr_opening_r":  { "baseTile": [6, 8],  "size": [1, 1] },                
 
                 "floor":    { "baseTile": [2, 3],  "size": [1, 1] },
 

@@ -212,10 +212,24 @@ class Wall(Object):
         objects = self.world.getObjectsAt(x, y)
         # Then, check to see if any of them are walls
         for object in objects:
-            if object.type == "wall":
+            if (object.type == "wall"):
                 return (True, object.wallShape)
+            elif (object.type == "door"):
+                return (True, "")
         # If we get here, there are no walls
         return (False, "")
+    
+    # Helper function to get the neighbouring walls
+    def _hasFloor(self, x, y):
+        # Check to see if there is a wall at the given location
+        # First, get objects at a given location
+        objects = self.world.getObjectsAt(x, y)
+        # Then, check to see if any of them are walls
+        for object in objects:
+            if object.type == "floor":
+                return True
+        # If we get here, there are no walls
+        return False
 
     # Sprite
     # Updates the current sprite name based on the current state of the object
@@ -230,8 +244,41 @@ class Wall(Object):
         hasWallWest, wallShapeWest = self._hasWall(self.attributes["gridX"] - 1, self.attributes["gridY"])
         hasWallEast, wallShapeEast = self._hasWall(self.attributes["gridX"] + 1, self.attributes["gridY"])
 
+        # Check to see if there is neighbouring floor
+        hasFloorNorth = self._hasFloor(self.attributes["gridX"], self.attributes["gridY"] - 1)
+        hasFloorSouth = self._hasFloor(self.attributes["gridX"], self.attributes["gridY"] + 1)
+        hasFloorWest = self._hasFloor(self.attributes["gridX"] - 1, self.attributes["gridY"])
+        hasFloorEast = self._hasFloor(self.attributes["gridX"] + 1, self.attributes["gridY"])        
+
+        isInterior = (hasFloorNorth and hasFloorSouth) or (hasFloorWest and hasFloorEast)
+
         # Corners
-        if (hasWallSouth and hasWallEast):
+        # First, 4 corners
+        if (hasWallNorth and hasWallEast and hasWallSouth and hasWallWest):
+            # 4-way
+            self.curSpriteName = "house2_wall_int_4way"
+            self.wallShape = "4way"
+
+        # Next, 3 corners
+        elif (hasWallNorth and hasWallSouth and hasWallEast):
+            # 3-way, up/down/right
+            self.curSpriteName = "house2_wall_int_tbr"
+            self.wallShape = "tbr"
+        elif (hasWallNorth and hasWallSouth and hasWallWest):
+            # 3-way, up/down/left
+            self.curSpriteName = "house2_wall_int_tbl"
+            self.wallShape = "tbl"
+        elif (hasWallEast and hasWallWest and hasWallNorth):
+            # 3-way, left/right/up
+            self.curSpriteName = "house2_wall_int_lrt"
+            self.wallShape = "lrt"
+        elif (hasWallEast and hasWallWest and hasWallSouth):
+            # 3-way, left/right/down
+            self.curSpriteName = "house2_wall_int_lrb"
+            self.wallShape = "lrb"
+
+        # Next, Corners (NE, NW, SE, SW)
+        elif (hasWallSouth and hasWallEast):
             self.curSpriteName = "house2_wall_tl"
             self.wallShape = "tl"
         elif (hasWallSouth and hasWallWest):
@@ -243,93 +290,60 @@ class Wall(Object):
         elif (hasWallNorth and hasWallWest):
             self.curSpriteName = "house2_wall_br"
             self.wallShape = "br"
-        # Edges
+        
+        # Next, edges (interior)
+        elif (isInterior):
+            # If a wall north or south, then it's a vertical wall            
+            if (hasWallNorth or hasWallSouth):
+                if (hasWallNorth and hasWallSouth):
+                    self.curSpriteName = "house2_wall_int_tb"
+                    self.wallShape = "v"
+                elif (hasWallNorth):
+                    self.curSpriteName = "house2_wall_int_tb_opening_t"
+                    self.wallShape = "v"
+                elif (hasWallSouth):
+                    self.curSpriteName = "house2_wall_int_tb_opening_b"
+                    self.wallShape = "v"
+            # If a wall east or west, then it's a horizontal wall
+            elif (hasWallEast or hasWallWest):
+                if (hasWallEast and hasWallWest):
+                    self.curSpriteName = "house2_wall_int_lr"
+                    self.wallShape = "h"
+                elif (hasWallEast):
+                    self.curSpriteName = "house2_wall_int_lr_opening_l"
+                    self.wallShape = "h"
+                elif (hasWallWest):
+                    self.curSpriteName = "house2_wall_int_lr_opening_r"
+                    self.wallShape = "h"
+                
+        # Next, edges (exterior)
+        # First, check to see if there is a wall to the north or south
         elif (hasWallNorth or hasWallSouth):
-            # Check to see what kind of wall the immediate north wall is
-            if (wallShapeNorth == "tl" or wallShapeNorth == "l"):
+            # Check to see if there is a floor to the east or west
+            if (hasFloorEast):
                 self.curSpriteName = "house2_wall_l"
                 self.wallShape = "l"
-            elif (wallShapeNorth == "tr" or wallShapeNorth == "r"):
+            elif (hasFloorWest):
                 self.curSpriteName = "house2_wall_r"
                 self.wallShape = "r"
-            else:
-                # Unknown?
-                print("Unknown!")
-                self.curSpriteName = self.defaultSpriteName
-                #pass
-
+        
+        # Next, check to see if there is a wall to the east or west
         elif (hasWallEast or hasWallWest):
-            # Check to see what kind of wall the immediate east wall is
-            if (wallShapeEast == "tr" or wallShapeEast == "t"):
+            # Check to see if there is a floor to the north or south
+            if (hasFloorNorth):
                 self.curSpriteName = "house2_wall_t"
                 self.wallShape = "t"
-            elif (wallShapeEast == "br" or wallShapeEast == "b"):
+            elif (hasFloorSouth):
                 self.curSpriteName = "house2_wall_b"
-                self.wallShape = "b"
-            else:
-                #print("Can't find at location (" + str(self.attributes["gridX"]) + ", " + str(self.attributes["gridY"]) + ")")
-                # Have to traverse further -- keep going east until we (a) stop finding walls, or (b) find a wall that has self.wallShape populated
-                # Does west first, since that's the scanning order of the tick() updates. 
-                if (hasWallWest):
-                    print("Can't find at location (" + str(self.attributes["gridX"]) + ", " + str(self.attributes["gridY"]) + ")")
-                    # Keep going west until we find a wall that has self.wallShape populated (or, hit the edge of the grid)
-                    for i in range(self.attributes["gridX"] - 1, -1, -1):
-                        hasWallWest, wallShapeWest = self._hasWall(i, self.attributes["gridY"])
-                        print("WEST: Checking (" + str(i) + ", " + str(self.attributes["gridY"]) + ")" + " hasWallWest: " + str(hasWallWest) + " wallShapeWest: " + str(wallShapeWest))
-                        if (hasWallWest and wallShapeWest != ""):
-                            # Found a wall that has self.wallShape populated
-                            if (wallShapeWest == "tl" or wallShapeWest == "t"):
-                                self.curSpriteName = "house2_wall_t"
-                                self.wallShape = "t"
-                            elif (wallShapeWest == "bl" or wallShapeWest == "b"):
-                                self.curSpriteName = "house2_wall_b"
-                                self.wallShape = "b"
-                            break
-                        elif (not hasWallWest):
-                            # No longer within the building -- this should not happen. Default to "t"
-                            print ("No longer within building!")
-                            self.curSpriteName = self.defaultSpriteName
-                            self.wallShape = ""
-                            break
-
-                elif (hasWallEast):
-                    # Keep going east until we find a wall that has self.wallShape populated (or, hit the edge of the grid)
-                    for i in range(self.attributes["gridX"] + 1, self.world.sizeX):
-                        hasWallEast, wallShapeEast = self._hasWall(i, self.attributes["gridY"])
-                        print("EAST: Checking (" + str(i) + ", " + str(self.attributes["gridY"]) + ")" + " hasWallEast: " + str(hasWallEast) + " wallShapeEast: " + str(wallShapeEast))
-                        if (hasWallEast and wallShapeEast != ""):
-                            # Found a wall that has self.wallShape populated
-                            if (wallShapeEast == "tr" or wallShapeEast == "t"):
-                                self.curSpriteName = "house2_wall_t"
-                                self.wallShape = "t"
-                            elif (wallShapeEast == "br" or wallShapeEast == "b"):
-                                self.curSpriteName = "house2_wall_b"
-                                self.wallShape = "b"
-                            break
-                        elif (not hasWallEast):
-                            # No longer within the building -- this should not happen. Default to "t"
-                            print ("No longer within building!")
-                            self.curSpriteName = self.defaultSpriteName
-                            self.wallShape = ""
-                            break
-
-
-                else:
-                    # Unknown?  Lone wall?
-                    print("Unknown! (EW) " + wallShapeEast + " " + wallShapeWest)
-                    self.curSpriteName = self.defaultSpriteName
-                #pass
-
-                # Show result:
-                #print("Result at location (" + str(self.attributes["gridX"]) + ", " + str(self.attributes["gridY"]) + ") is: " + str(self.curSpriteName) + " " + str(self.wallShape))
-
-            
-        # Else:
+                self.wallShape = "b"                
+                
         else:
-            # If we reach here, then this is a lone wall. Default to "t"
-            #self.curSpriteName = self.defaultSpriteName
+            # Catch-all -- possibly a wall with no neighbours?
+            print("Unknown wall shape!")
+            self.curSpriteName = self.defaultSpriteName
             self.curSpriteName = "house2_wall_t"
             self.wallShape = "single"
+
 
         # If we reach here and still don't know the wall shape, then we'll note that it should be checked again the next tick
         if (self.wallShape == ""):
