@@ -91,7 +91,7 @@
     },
     {
         "sheetName": "forest1", 
-        "filename": "pixymoon/CuteRPG_Forest/32x32/CuteRPG_Forest.png",
+        "filename": "pixymoon/CuteRPG_Forest/32x32/CuteRPG_Forest_modified.png",
         "tileSize": [32, 32],        
         "sprites":
             {    
@@ -105,7 +105,15 @@
                 "path_l":     { "baseTile": [0, 6],  "size": [1, 1] },
                 "path_r":     { "baseTile": [2, 6],  "size": [1, 1] },
                 "path_t":     { "baseTile": [1, 5],  "size": [1, 1] },
-                "path_b":     { "baseTile": [1, 7],  "size": [1, 1] }
+                "path_b":     { "baseTile": [1, 7],  "size": [1, 1] },
+
+                "path_tl":     { "baseTile": [0, 13],  "size": [1, 1] },
+                "path_tr":     { "baseTile": [2, 13],  "size": [1, 1] },
+                "path_bl":     { "baseTile": [0, 15],  "size": [1, 1] },
+                "path_br":     { "baseTile": [2, 15],  "size": [1, 1] },
+
+                "path_lr":    { "baseTile": [0, 17],  "size": [1, 1] },
+                "path_tb":    { "baseTile": [1, 17],  "size": [1, 1] }
 
             },
         "composites": 

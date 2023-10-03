@@ -109,14 +109,20 @@ def mkScienceLab(x, y, world, buildingMaker):
 def mkTownSquare(x, y, world, buildingMaker):
     # Add statue
 
-    world.addObject(x+1, y+1, Layer.OBJECTS, Statue(world))
+    world.addObject(x+2, y+2, Layer.OBJECTS, Statue(world))
     
     # Create a square that's made out of "Path" tiles
     for i in range(0, 5):
         for j in range(0, 5):
             world.addObject(x+i, y+j, Layer.WORLD, Path(world))
 
+def mkPathX(x, y, lengthX, world):
+    for i in range(0, lengthX):
+        world.addObject(x+i, y, Layer.WORLD, Path(world))
 
+def mkPathY(x, y, lengthY, world):
+    for i in range(0, lengthY):
+        world.addObject(x, y+i, Layer.WORLD, Path(world))
 
 
 def main():
@@ -165,14 +171,22 @@ def main():
     mkScienceLab(5, 20, world, buildingMaker)
 
 
-    mkInfirmary(20, 2, world, buildingMaker)
+    mkInfirmary(20, 1, world, buildingMaker)
 
-    mkBarracks(20, 10, world, buildingMaker)
+    mkBarracks(20, 8, world, buildingMaker)
     
-    mkCafeteria(20, 20, world, buildingMaker)
+    mkCafeteria(20, 19, world, buildingMaker)
 
     mkTownSquare(14, 14, world, buildingMaker)
 
+
+    mkPathY(16, 1, 30, world)       # Top/bottom, through town square
+
+    mkPathX(1, 30, 30, world)       # Bottom, along cafeteria/science lab
+
+    mkPathX(15, 16, 9, world)       # Town square to barracks
+
+    mkPathX(17, 7, 10, world)       # Town square to barracks
 
 
     # Main rendering loop
@@ -201,7 +215,7 @@ def main():
         # Display the sprite
         #world.spriteLibrary.renderSprite(window, "house1_wall1", 100, 100)
         #world.spriteLibrary.renderSprite(window, "house1_bed", 50, 100)
-        world.spriteLibrary.renderSprite(window, "house1_bed_lr", 50, 100)
+        #world.spriteLibrary.renderSprite(window, "house1_bed_lr", 50, 100)
 
         # Flip the backbuffer
         pygame.display.flip()
