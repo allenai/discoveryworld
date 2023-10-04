@@ -130,13 +130,38 @@ def mkTownSquare(x, y, world, buildingMaker):
 
 def mkFarm(x, y, world, buildingMaker):
     # Create a small building
-    buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=4, height=4, signText="Farm")
+    houseSizeX = 4
+    houseSizeY = 4
+    buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Farm")
+
 
     # Create a soil plot
-    for i in range(0, 6):
-        for j in range(0, 5):
-            if (not _hasObj(x+i, y+j + 5, world, "soil")):
-                world.addObject(x+i, y+j + 5, Layer.WORLD, SoilTile(world))
+    soilPlotSizeX = 6
+    soilPlotSizeY = 5
+    for i in range(0, soilPlotSizeX):
+        for j in range(0, soilPlotSizeY):
+            if (not _hasObj(x+i, y+j + houseSizeX + 1, world, "soil")):
+                world.addObject(x+i, y+j + houseSizeX + 1, Layer.WORLD, SoilTile(world))
+
+    # Randomly add a number of Mushrooms to the soil
+    numMushroomsToAdd = 5
+    numMushroomsAdded = 0
+    attempts = 0
+    while (numMushroomsAdded < numMushroomsToAdd):    
+        # Pick a random location
+        randX = random.randint(x, x+soilPlotSizeX-1)
+        randY = random.randint(y+houseSizeY+1, y+houseSizeY+soilPlotSizeY-1)
+
+        # If there isn't already a mushroom there, add one
+        if (not _hasObj(randX, randY, world, "mushroom")):
+            world.addObject(randX, randY, Layer.OBJECTS, Mushroom(world))
+            numMushroomsAdded += 1
+
+        attempts += 1
+        if (attempts > 100):
+            print("ERROR: Couldn't add all mushrooms to farm.  Exiting to prevent infinite loop.")
+            break
+
 
 
 # Path making

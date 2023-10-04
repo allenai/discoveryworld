@@ -101,6 +101,11 @@
                 "plant2":   { "baseTile": [7, 5],  "size": [1, 1] },
                 "plant3":   { "baseTile": [7, 9],  "size": [1, 1] },
 
+                "mushroom_yellow":  { "baseTile": [5, 8],  "size": [1, 1] },
+                "mushroom_pink":    { "baseTile": [7, 8],  "size": [1, 1] },
+                "mushroom_red":     { "baseTile": [9, 8],  "size": [1, 1] },
+                "mushroom_green":   { "baseTile": [11, 8],  "size": [1, 1] },
+
                 "path_c":       { "baseTile": [1, 14],  "size": [1, 1] },
                 "path_l":       { "baseTile": [0, 14],  "size": [1, 1] },
                 "path_r":       { "baseTile": [2, 14],  "size": [1, 1] },

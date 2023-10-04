@@ -33,16 +33,16 @@ def displayGrid(filename, tileSize, offset, transparentColor, window):
 
 def main():
     #filename = "assets/pixymoon/CuteRPG_Interior/32x32/CuteRPG_Interior_custom.png"
-    #filename = "assets/pixymoon/CuteRPG_Forest/32x32/CuteRPG_Forest.png"
+    filename = "assets/pixymoon/CuteRPG_Forest/32x32/CuteRPG_Forest.png"
     #filename = "assets/pixymoon/CuteRPG_Forest/32x32/CuteRPG_Forest_modified2.png"
     #filename = "assets/pixymoon/CuteRPG_Houses/32x32/CuteRPG_Houses_A-modified.png"
     #filename = "assets/pixymoon/CuteRPG_Houses/32x32/CuteRPG_Houses_A-modified1.png"
     #filename = "assets/pixymoon/CuteRPG_Village/32x32/CuteRPG_Village.png"
 
-    filename = "assets/pixymoon/CuteRPG_Sprites/Characters/Character_018.png"
+    #filename = "assets/pixymoon/CuteRPG_Sprites/Characters/Character_018.png"
 
-    #tileSize = (32, 32)
-    tileSize = (24, 24)
+    tileSize = (32, 32)
+    #tileSize = (24, 24)
     #offset = (8, 0)
     offset = (0, 0)
     transparentColor = (0, 0, 0)

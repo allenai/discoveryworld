@@ -1020,7 +1020,7 @@ class Fence(Object):
         Object.__init__(self, world, "fence", "fence", defaultSpriteName = "village1_fence_single")
     
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
-        
+
 
     def tick(self):
         # Call superclass
@@ -1109,3 +1109,46 @@ class PlantGeneric(Object):
     def tick(self):
         # Call superclass
         Object.tick(self)
+
+
+#
+#   Object: Mushroom
+#
+class Mushroom(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "mushroom", "mushroom", defaultSpriteName = "forest1_mushroom_pink")
+
+        #self.attributes["color"] = "pink"                           # Color of the mushroom (valid: "yellow", "pink", "red", "green")
+        # Randomly choose a color
+        self.attributes["color"] = random.choice(["yellow", "pink", "red", "green"])
+
+    
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+        
+        # Infer sprite based on color
+        if (self.attributes["color"] == "yellow"):
+            self.curSpriteName = "forest1_mushroom_yellow"
+        elif (self.attributes["color"] == "pink"):
+            self.curSpriteName = "forest1_mushroom_pink"
+        elif (self.attributes["color"] == "red"):
+            self.curSpriteName = "forest1_mushroom_red"
+        elif (self.attributes["color"] == "green"):
+            self.curSpriteName = "forest1_mushroom_green"
+        else:
+            # Throw warning, default to pink
+            print("WARNING: Mushroom color not recognized (" + str(self.attributes["color"]) + "). Defaulting to pink.")
+            self.curSpriteName = "forest1_mushroom_pink"            
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
