@@ -148,6 +148,8 @@
             {    
                 "sign_nowriting":    { "baseTile": [10, 4],  "size": [1, 1] },
                 "sign_writing":      { "baseTile": [11, 4],  "size": [1, 1] },
+
+                "sign_village":      { "baseTile": [5, 4],  "size": [3, 2] },
                 
                 "fence_l":      { "baseTile": [5, 14],  "size": [1, 1] },
                 "fence_r":       { "baseTile": [7, 14],  "size": [1, 1] },
@@ -164,7 +166,7 @@
                 "fence_1way_l":  { "baseTile": [8, 14],  "size": [1, 1] },
                 "fence_1way_t":  { "baseTile": [9, 15],  "size": [1, 1] },
 
-                "fence_single":  { "baseTile": [7, 12],  "size": [1, 1] }                
+                "fence_single":  { "baseTile": [7, 12],  "size": [1, 1] }
             },
         "composites": 
             {

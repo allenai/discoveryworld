@@ -248,6 +248,12 @@ def main():
     mkFenceX(19, 2, 10, world)
     mkFenceY(28, 2, 16, world)
 
+
+    # Add big village sign
+    world.addObject(16, 2, Layer.BUILDING, SignVillage(world))
+    world.addObject(16, 29, Layer.BUILDING, SignVillage(world))
+
+
     # Main rendering loop
     running = True
     frames = 0

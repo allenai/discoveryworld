@@ -484,6 +484,47 @@ class Sign(Object):
 
 
 #
+#   Object: Sign (Village, large)
+#
+class SignVillage(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "sign (village)", "sign (village)", defaultSpriteName = "village1_sign_village")
+
+        # Default attributes
+        self.attributes["document"] = "This is a sign."
+
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # Call superclass
+        Object.tick(self)
+
+    def setText(self, text:str):
+        self.attributes["document"] = text.strip()
+        self.needsSpriteNameUpdate = True
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # Static sprite -- always the same (currently)
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+        # After one run, we don't need to update the sprite name again unless something changes
+        self.needsSpriteNameUpdate = False
+
+
+
+#
 #   Object: Stove
 #
 class Stove(Object):
