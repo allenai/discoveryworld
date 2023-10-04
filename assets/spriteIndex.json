@@ -91,7 +91,7 @@
     },
     {
         "sheetName": "forest1", 
-        "filename": "pixymoon/CuteRPG_Forest/32x32/CuteRPG_Forest_modified.png",
+        "filename": "pixymoon/CuteRPG_Forest/32x32/CuteRPG_Forest_modified2.png",
         "tileSize": [32, 32],        
         "sprites":
             {    
@@ -101,11 +101,11 @@
                 "plant2":   { "baseTile": [7, 5],  "size": [1, 1] },
                 "plant3":   { "baseTile": [7, 9],  "size": [1, 1] },
 
-                "path_c":       { "baseTile": [1, 10],  "size": [1, 1] },
-                "path_l":       { "baseTile": [0, 10],  "size": [1, 1] },
-                "path_r":       { "baseTile": [2, 10],  "size": [1, 1] },
-                "path_t":       { "baseTile": [1, 9],  "size": [1, 1] },
-                "path_b":       { "baseTile": [1, 11],  "size": [1, 1] },
+                "path_c":       { "baseTile": [1, 14],  "size": [1, 1] },
+                "path_l":       { "baseTile": [0, 14],  "size": [1, 1] },
+                "path_r":       { "baseTile": [2, 14],  "size": [1, 1] },
+                "path_t":       { "baseTile": [1, 13],  "size": [1, 1] },
+                "path_b":       { "baseTile": [1, 15],  "size": [1, 1] },
 
                 "path_tl":      { "baseTile": [0, 13],  "size": [1, 1] },
                 "path_tr":      { "baseTile": [2, 13],  "size": [1, 1] },
@@ -120,7 +120,20 @@
                 "path_1way_l":  { "baseTile": [2, 18],  "size": [1, 1] },
                 "path_1way_t":  { "baseTile": [3, 18],  "size": [1, 1] },
 
-                "path_single":  { "baseTile": [2, 12],  "size": [1, 1] }
+                "path_single":  { "baseTile": [2, 12],  "size": [1, 1] },
+
+                "soil_c":       { "baseTile": [1, 22],  "size": [1, 1] },
+                "soil_l":       { "baseTile": [0, 22],  "size": [1, 1] },
+                "soil_r":       { "baseTile": [2, 22],  "size": [1, 1] },
+                "soil_t":       { "baseTile": [1, 21],  "size": [1, 1] },
+                "soil_b":       { "baseTile": [1, 23],  "size": [1, 1] },
+
+                "soil_tl":      { "baseTile": [0, 21],  "size": [1, 1] },
+                "soil_tr":      { "baseTile": [2, 21],  "size": [1, 1] },
+                "soil_bl":      { "baseTile": [0, 23],  "size": [1, 1] },
+                "soil_br":      { "baseTile": [2, 23],  "size": [1, 1] },
+
+                "soil_single":  { "baseTile": [2, 20],  "size": [1, 1] }
 
             },
         "composites": 

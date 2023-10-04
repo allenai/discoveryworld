@@ -107,34 +107,46 @@ def mkScienceLab(x, y, world, buildingMaker):
 
 
 # Check if a tile already contains a "path"
-def _hasPath(x, y, world):
+def _hasObj(x, y, world, objType):
     objects = world.getObjectsAt(x, y)
     # Then, check to see if any of them are walls
     for object in objects:
-        if (object.type == "path"):
+        if (object.type == objType):
             return True
     return False
 
 
 def mkTownSquare(x, y, world, buildingMaker):
     # Add statue
-
     world.addObject(x+1, y+1, Layer.OBJECTS, Statue(world))
     
     # Create a square that's made out of "Path" tiles
     for i in range(0, 3):
         for j in range(0, 3):
-            if (not _hasPath(x+i, y+j, world)):                
+            if (not _hasObj(x+i, y+j, world, "path")):                
                 world.addObject(x+i, y+j, Layer.WORLD, Path(world))
+
+
+def mkFarm(x, y, world, buildingMaker):
+    # Create a small building
+    buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=4, height=4, signText="Farm")
+
+    # Create a soil plot
+    for i in range(0, 4):
+        for j in range(0, 5):
+            if (not _hasObj(x+i, y+j + 5, world, "soil")):
+                world.addObject(x+i, y+j + 5, Layer.WORLD, SoilTile(world))
+
+
 
 def mkPathX(x, y, lengthX, world):
     for i in range(0, lengthX):
-        if (not _hasPath(x+i, y, world)):
+        if (not _hasObj(x+i, y, world, "path")):
             world.addObject(x+i, y, Layer.WORLD, Path(world))
 
 def mkPathY(x, y, lengthY, world):
     for i in range(0, lengthY):
-        if (not _hasPath(x, y+i, world)):
+        if (not _hasObj(x, y+i, world, "path")):
             world.addObject(x, y+i, Layer.WORLD, Path(world))
 
 
@@ -179,7 +191,7 @@ def main():
 
 
     # Buildings
-    mkHouse(4, 4, world, buildingMaker)
+    #mkHouse(4, 4, world, buildingMaker)
     
     mkScienceLab(8, 19, world, buildingMaker)
 
@@ -193,15 +205,18 @@ def main():
     mkTownSquare(16, 15, world, buildingMaker)
 
     ## TODO: Add Farm?
+    mkFarm(10, 5, world, buildingMaker)
 
 
     mkPathY(17, 1, 30, world)       # Top/bottom, through town square
 
-    mkPathX(1, 25, 30, world)       # Bottom, along cafeteria/science lab
+    mkPathX(10, 25, 15, world)       # Bottom, along cafeteria/science lab
 
     mkPathX(17, 16, 9, world)       # Town square to barracks
 
-    mkPathX(17, 7, 10, world)       # Town square to barracks
+    mkPathX(17, 7, 10, world)       # Town square to infirmary
+
+    mkPathX(1, 16, 16, world)       # Town square to farm
 
 
 
