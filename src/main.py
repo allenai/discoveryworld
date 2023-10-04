@@ -278,15 +278,18 @@ def main():
 
 
     # Add an agent
-    world.addObject(10, 10, Layer.AGENT, Agent(world))
+    currentAgent = Agent(world)
+    world.addObject(10, 10, Layer.AGENT, currentAgent)
 
 
 
     # Main rendering loop
     running = True
     frames = 0
-    while running:
+    lastMove = time.time()        # Time of last move (in seconds since start of game)
+    while running:        
         print("Frame: " + str(frames))
+        curTime = time.time()
 
         clock.tick(gameParams["fps"])
 
@@ -294,6 +297,29 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+        # Check for keyboard input
+        keys = pygame.key.get_pressed()
+
+        # Escape -- quits the game
+        if (keys[pygame.K_ESCAPE]):
+            running = False        
+        # Arrow keys -- move agent
+        if (curTime - lastMove > 0.25):      # Only allow a movement every 0.5 seconds using the arrow keys
+            if (keys[pygame.K_UP]):
+                currentAgent.moveAgent(0, -1)            
+                lastMove = curTime
+            elif (keys[pygame.K_DOWN]):
+                currentAgent.moveAgent(0, 1)
+                lastMove = curTime
+            elif (keys[pygame.K_LEFT]):
+                currentAgent.moveAgent(-1, 0)
+                lastMove = curTime
+            elif (keys[pygame.K_RIGHT]):
+                currentAgent.moveAgent(1, 0)
+                lastMove = curTime
+
+
 
         # Fill the window with black
         window.fill((0, 0, 0))
@@ -307,8 +333,6 @@ def main():
 
         # Display the sprite
         #world.spriteLibrary.renderSprite(window, "house1_wall1", 100, 100)
-        #world.spriteLibrary.renderSprite(window, "house1_bed", 50, 100)
-        #world.spriteLibrary.renderSprite(window, "house1_bed_lr", 50, 100)
 
         # Flip the backbuffer
         pygame.display.flip()
