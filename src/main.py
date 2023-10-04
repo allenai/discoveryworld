@@ -100,7 +100,7 @@ def mkCafeteria(x, y, world, buildingMaker):
 def mkScienceLab(x, y, world, buildingMaker):
     # Create a building (science lab)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
-    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=5, dividerX=5, apertureX=3, dividerY=0, apertureY=0, doorX=3, signText="Science Lab")
+    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=6, dividerX=5, apertureX=3, dividerY=0, apertureY=0, doorX=3, signText="Science Lab")
     bench1 = Table(world)
     world.addObject(x+1, y+1, Layer.FURNITURE, bench1)
     bench1.addObject( Microscope(world) )
@@ -129,16 +129,16 @@ def mkTownSquare(x, y, world, buildingMaker):
 
 def mkFarm(x, y, world, buildingMaker):
     # Create a small building
-    buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=4, height=4, signText="Farm")
+    buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=4, height=4, signText="Farm")
 
     # Create a soil plot
-    for i in range(0, 4):
+    for i in range(0, 6):
         for j in range(0, 5):
             if (not _hasObj(x+i, y+j + 5, world, "soil")):
                 world.addObject(x+i, y+j + 5, Layer.WORLD, SoilTile(world))
 
 
-
+# Path making
 def mkPathX(x, y, lengthX, world):
     for i in range(0, lengthX):
         if (not _hasObj(x+i, y, world, "path")):
@@ -148,6 +148,19 @@ def mkPathY(x, y, lengthY, world):
     for i in range(0, lengthY):
         if (not _hasObj(x, y+i, world, "path")):
             world.addObject(x, y+i, Layer.WORLD, Path(world))
+
+# Fence making
+def mkFenceX(x, y, lengthX, world):
+    for i in range(0, lengthX):
+        if (not _hasObj(x+i, y, world, "fence")):
+            world.addObject(x+i, y, Layer.BUILDING, Fence(world))
+
+def mkFenceY(x, y, lengthY, world):
+    for i in range(0, lengthY):
+        if (not _hasObj(x, y+i, world, "fence")):
+            world.addObject(x, y+i, Layer.BUILDING, Fence(world))
+
+
 
 
 def main():
@@ -193,33 +206,47 @@ def main():
     # Buildings
     #mkHouse(4, 4, world, buildingMaker)
     
-    mkScienceLab(8, 19, world, buildingMaker)
+    mkScienceLab(8, 21, world, buildingMaker)
 
 
-    mkInfirmary(19, 1, world, buildingMaker)
+    mkInfirmary(19, 4, world, buildingMaker)
 
-    mkBarracks(19, 8, world, buildingMaker)
+    mkBarracks(19, 11, world, buildingMaker)
     
-    mkCafeteria(19, 17, world, buildingMaker)
+    mkCafeteria(19, 20, world, buildingMaker)
 
-    mkTownSquare(16, 15, world, buildingMaker)
+    mkTownSquare(16, 18, world, buildingMaker)
 
     ## TODO: Add Farm?
-    mkFarm(10, 5, world, buildingMaker)
+    mkFarm(10, 8, world, buildingMaker)
 
-
+    # Paths
     mkPathY(17, 1, 30, world)       # Top/bottom, through town square
 
-    mkPathX(10, 25, 15, world)       # Bottom, along cafeteria/science lab
+    mkPathX(10, 28, 15, world)       # Bottom, along cafeteria/science lab
 
-    mkPathX(17, 16, 9, world)       # Town square to barracks
+    mkPathX(17, 19, 15, world)       # Town square to barracks
 
-    mkPathX(17, 7, 10, world)       # Town square to infirmary
+    mkPathX(17, 10, 10, world)       # Town square to infirmary
 
-    mkPathX(1, 16, 16, world)       # Town square to farm
+    mkPathX(1, 19, 16, world)       # Town square to farm
 
+    # Fences
+    # Top-left corner
+    mkFenceY(6, 2, 16, world)        
+    mkFenceX(6, 2, 10, world)        
 
+    # Bottom-left corner
+    mkFenceY(6, 21, 8, world)        
+    mkFenceX(6, 29, 10, world)        
 
+    # Bottom-right corner
+    mkFenceX(19, 29, 10, world)
+    mkFenceY(28, 21, 8, world)
+
+    # Top-right corner
+    mkFenceX(19, 2, 10, world)
+    mkFenceY(28, 2, 16, world)
 
     # Main rendering loop
     running = True

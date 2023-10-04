@@ -147,7 +147,24 @@
         "sprites":
             {    
                 "sign_nowriting":    { "baseTile": [10, 4],  "size": [1, 1] },
-                "sign_writing":      { "baseTile": [11, 4],  "size": [1, 1] }
+                "sign_writing":      { "baseTile": [11, 4],  "size": [1, 1] },
+                
+                "fence_l":      { "baseTile": [5, 14],  "size": [1, 1] },
+                "fence_r":       { "baseTile": [7, 14],  "size": [1, 1] },
+                "fence_t":       { "baseTile": [6, 13],  "size": [1, 1] },
+                "fence_b":       { "baseTile": [6, 15],  "size": [1, 1] },
+
+                "fence_tl":      { "baseTile": [5, 13],  "size": [1, 1] },
+                "fence_tr":      { "baseTile": [7, 13],  "size": [1, 1] },
+                "fence_bl":      { "baseTile": [5, 15],  "size": [1, 1] },
+                "fence_br":      { "baseTile": [7, 15],  "size": [1, 1] },
+
+                "fence_1way_r":  { "baseTile": [9, 14],  "size": [1, 1] },
+                "fence_1way_b":  { "baseTile": [8, 15],  "size": [1, 1] },
+                "fence_1way_l":  { "baseTile": [8, 14],  "size": [1, 1] },
+                "fence_1way_t":  { "baseTile": [9, 15],  "size": [1, 1] },
+
+                "fence_single":  { "baseTile": [7, 12],  "size": [1, 1] }                
             },
         "composites": 
             {

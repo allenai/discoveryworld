@@ -936,3 +936,86 @@ class SoilTile(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: Fence
+#
+class Fence(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "fence", "fence", defaultSpriteName = "village1_fence_single")
+    
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+    # Check if a tile already contains a "path"
+    def _hasObj(self, x, y, type):
+        objects = self.world.getObjectsAt(x, y)
+        # Then, check to see if any of them are walls
+        for object in objects:
+            if (object.type == type):
+                return True
+        return False        
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # Check to see if the neighbouring tiles have paths        
+        hasFenceNorth = self._hasObj(self.attributes["gridX"], self.attributes["gridY"] - 1, "fence")
+        hasFenceSouth = self._hasObj(self.attributes["gridX"], self.attributes["gridY"] + 1, "fence")
+        hasFenceWest = self._hasObj(self.attributes["gridX"] - 1, self.attributes["gridY"], "fence")
+        hasFenceEast = self._hasObj(self.attributes["gridX"] + 1, self.attributes["gridY"], "fence")
+        
+        # 4 positives (should never happen unless something is wonky -- just in case, place a single fence)
+        if (hasFenceNorth and hasFenceSouth and hasFenceEast and hasFenceWest):
+            self.curSpriteName = "village1_fence_single"
+
+        # 3 positives
+        # elif (hasFenceNorth and hasFenceSouth and hasFenceEast):
+        #     self.curSpriteName = "village1_fence_l"
+        # elif (hasFenceNorth and hasFenceSouth and hasFenceWest):
+        #     self.curSpriteName = "village1_fence_r"
+        # elif (hasFenceEast and hasFenceWest and hasFenceNorth):
+        #     self.curSpriteName = "village1_fence_b"
+        # elif (hasFenceEast and hasFenceWest and hasFenceSouth):
+        #     self.curSpriteName = "village1_fence_t"
+
+        # 2 positives (up/down or left/right)
+        elif (hasFenceNorth and hasFenceSouth):
+            self.curSpriteName = "village1_fence_l"
+        elif (hasFenceEast and hasFenceWest):
+            self.curSpriteName = "village1_fence_t"
+
+        # 2 positives (top/left or top/right or bottom/left or bottom/right)
+        elif (hasFenceNorth and hasFenceWest):
+            self.curSpriteName = "village1_fence_br"
+        elif (hasFenceNorth and hasFenceEast):
+            self.curSpriteName = "village1_fence_bl"
+        elif (hasFenceSouth and hasFenceWest):
+            self.curSpriteName = "village1_fence_tr"
+        elif (hasFenceSouth and hasFenceEast):
+            self.curSpriteName = "village1_fence_tl"
+
+        # 1 positive (north/east/south/west)
+        elif (hasFenceNorth):
+            self.curSpriteName = "village1_fence_1way_t"
+        elif (hasFenceEast):
+            self.curSpriteName = "village1_fence_1way_r"
+        elif (hasFenceSouth):
+            self.curSpriteName = "village1_fence_1way_b"
+        elif (hasFenceWest):
+            self.curSpriteName = "village1_fence_1way_l"
+
+        else:
+            # If we get here, then we have no path nearby (north/east/south/west)
+            self.curSpriteName = "village1_fence_single"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
