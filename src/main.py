@@ -192,6 +192,8 @@ def main():
 
     mkTownSquare(16, 15, world, buildingMaker)
 
+    ## TODO: Add Farm?
+
 
     mkPathY(17, 1, 30, world)       # Top/bottom, through town square
 
@@ -200,6 +202,8 @@ def main():
     mkPathX(17, 16, 9, world)       # Town square to barracks
 
     mkPathX(17, 7, 10, world)       # Town square to barracks
+
+
 
 
     # Main rendering loop
