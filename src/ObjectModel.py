@@ -58,6 +58,10 @@ class Object:
         # Get the world location of the object
         return (self.attributes["gridX"], self.attributes["gridY"])
 
+    # Remove from world location -- this is analagous to the removeObject() method for containers, but removes the object from the world tile.
+    def removeFromWorldLocation(self):
+        # Remove this object from its world location
+        self.world.removeObjectFromTile(self)
 
     #
     #   Container Semantics
@@ -486,6 +490,7 @@ class Sign(Object):
 #
 #   Object: Sign (Village, large)
 #
+### TODO: CURRENTLY DOES NOT HANDLE THAT ITS A MULTI-TILE OBJECT
 class SignVillage(Object):
     # Constructor
     def __init__(self, world):
@@ -1060,3 +1065,18 @@ class Fence(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: PlantGeneric
+#
+### A placeholder for a plant
+class PlantGeneric(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "plant (generic)", "plant (generic)", defaultSpriteName = "forest1_plant1")
+    
+    def tick(self):
+        # Call superclass
+        Object.tick(self)

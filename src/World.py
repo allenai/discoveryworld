@@ -57,7 +57,7 @@ class World:
         elif layer == Layer.OBJECTS:
             self.grid[x][y]["layers"][layer].append(object)
         # Player layer is a special layer that can only hold a single object
-        elif layer == Layer.PLAYER:
+        elif layer == Layer.AGENT:
             self.grid[x][y]["layers"][layer] = []
             self.grid[x][y]["layers"][layer].append(object)
         else:
@@ -78,6 +78,23 @@ class World:
 
         return objects
 
+    # Remove an object from the world
+    def removeObject(self, object:Object):
+        # First, get the object's position (stored internally in that object)
+        objX, objY = object.getWorldLocation()
+        # Then, set the object's position to -1 (i.e. not in the world)
+        object.setWorldLocation(-1, -1)
+
+        # Remove the object from the world
+        if (objX >= 0) and (objY >= 0):
+            for layer in Layer:
+                if object in self.grid[objX][objY]["layers"][layer]:
+                    self.grid[objX][objY]["layers"][layer].remove(object)
+                    return True
+        
+        # If we reach here, something went wrong -- the object could not be removed from the world.
+        print("WARNING: Object could not be removed from the world (" + object.name + ") at (" + str(objX) + ", " + str(objY) + ")")
+        return False
 
     #
     #   World update
@@ -135,7 +152,7 @@ class World:
                         self.spriteLibrary.renderSprite(window, spriteName, x * 32 - cameraX, y * 32 - cameraY)
 
                 # Render the player layer
-                for object in self.grid[x][y]["layers"][Layer.PLAYER]:
+                for object in self.grid[x][y]["layers"][Layer.AGENT]:
                     #print("Rendering: " + object.name)
                     #self.spriteLibrary.renderSprite(window, object.getSpriteName(), x * 32 - cameraX, y * 32 - cameraY)
                     for spriteName in object.getSpriteNamesWithContents():

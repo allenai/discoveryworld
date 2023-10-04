@@ -11,6 +11,7 @@ from World import World
 from Layer import Layer
 from BuildingMaker import BuildingMaker
 from ObjectModel import *
+from Agent import *
 
 
 
@@ -252,6 +253,33 @@ def main():
     # Add big village sign
     world.addObject(16, 2, Layer.BUILDING, SignVillage(world))
     world.addObject(16, 29, Layer.BUILDING, SignVillage(world))
+
+    # Add some plants
+    world.addObject(15, 1, Layer.OBJECTS, PlantGeneric(world))
+
+    plantCount = 0
+    minPlants = 15
+    while (plantCount < minPlants):
+        # Pick a random location
+        randX = random.randint(0, world.sizeX - 1)
+        randY = random.randint(0, world.sizeY - 1)
+
+        # Check to see if there are any objects other than grass there
+        objs = world.getObjectsAt(randX, randY)
+        # Get types of objects
+        objTypes = [obj.type for obj in objs]
+        # Check to see that there is grass here
+        if ("grass" in objTypes):
+            # Check that there is not other things here
+            if (len(objTypes) == 1):
+                # Add a plant
+                world.addObject(randX, randY, Layer.OBJECTS, PlantGeneric(world))
+                plantCount += 1                
+
+
+    # Add an agent
+    world.addObject(10, 10, Layer.AGENT, Agent(world))
+
 
 
     # Main rendering loop

@@ -6,4 +6,4 @@ class Layer(Enum):
     BUILDING = 1
     FURNITURE = 2
     OBJECTS = 3
-    PLAYER = 4
+    AGENT = 4
