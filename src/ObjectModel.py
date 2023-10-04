@@ -31,7 +31,7 @@ class Object:
 
         # Default attributes
         self.attributes["isMovable"] = False                        # Can it be moved?
-
+        self.attributes["isPassable"] = True                        # Can an agent walk over this?
 
         # Contents (for containers)
         self.parentContainer = None                                 # Back-reference for the container that this object is in
@@ -195,6 +195,8 @@ class Wall(Object):
     def __init__(self, world):
         # Note: Change the default sprite name to something obviously incorrect so it is obvious when it's not inferring properly. 
         Object.__init__(self, world, "wall", "wall", defaultSpriteName = "house2_wall_t")
+
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
         # Rendering attribute (wall direction, "tl", "tr", "bl", "br", "l", "r", "t", "b")     
         self.wallShape = ""
@@ -425,6 +427,12 @@ class Door(Object):
             self.attributes["open"] = not self.attributes["open"]
             self.needsSpriteNameUpdate = True
 
+        # If the door is open, the object is passable.  If closed, impassable.
+        if (self.attributes["open"]):
+            self.attributes["isPassable"] = True
+        else:
+            self.attributes["isPassable"] = False
+
         # Call superclass
         Object.tick(self)
 
@@ -453,6 +461,7 @@ class Sign(Object):
         Object.__init__(self, world, "sign", "sign", defaultSpriteName = "village1_sign_nowriting")
 
         # Default attributes
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this object     
         self.attributes["document"] = "This is a sign."
 
     def tick(self):
@@ -497,6 +506,7 @@ class SignVillage(Object):
         Object.__init__(self, world, "sign (village)", "sign (village)", defaultSpriteName = "village1_sign_village")
 
         # Default attributes
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
         self.attributes["document"] = "This is a sign."
 
     def tick(self):
@@ -538,6 +548,7 @@ class Stove(Object):
         Object.__init__(self, world, "stove", "stove", defaultSpriteName = "house1_stove_off")
 
         # Default attributes
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
         self.attributes["activated"] = False
         self.attributes["open"] = False
 
@@ -587,6 +598,7 @@ class Sink(Object):
         Object.__init__(self, world, "stove", "stove", defaultSpriteName = "house1_sink_off")
 
         # Default attributes
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
         self.attributes["activated"] = False
 
     def tick(self):
@@ -629,6 +641,7 @@ class Fridge(Object):
         Object.__init__(self, world, "fridge", "fridge", defaultSpriteName = "house1_fridge")
 
         # Default attributes
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
         self.attributes["activated"] = True
         self.attributes["open"] = False
 
@@ -671,6 +684,9 @@ class Table(Object):
         # Default sprite name
         Object.__init__(self, world, "table", "table", defaultSpriteName = "house1_table")
 
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+        # Container
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = False                      # Can not be opened (things are stored on the table surface)
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
@@ -689,6 +705,9 @@ class TableBedside(Object):
         # Default sprite name
         Object.__init__(self, world, "table", "table", defaultSpriteName = "house1_table_bedside")
 
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+        # Container
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = True                       # Can be opened
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
@@ -705,6 +724,8 @@ class Chair(Object):
     # Constructor
     def __init__(self, world):
         Object.__init__(self, world, "chair", "chair", defaultSpriteName = "house1_chair_l")
+
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
         # Rendering attributes
         self.curDirection = "west"
@@ -775,6 +796,9 @@ class Bed(Object):
         Object.__init__(self, world, "bed", "bed", defaultSpriteName = "house1_bed_ud")
         #Object.__init__(self, world, "bed", "bed", defaultSpriteName = "house1_bed_lr")
 
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+        # Container
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")            
@@ -830,6 +854,8 @@ class Statue(Object):
         # Default sprite name
         Object.__init__(self, world, "statue", "statue", defaultSpriteName = "statue_statue1")
     
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
     def tick(self):
         # Call superclass
         Object.tick(self)
@@ -993,6 +1019,9 @@ class Fence(Object):
         # Default sprite name
         Object.__init__(self, world, "fence", "fence", defaultSpriteName = "village1_fence_single")
     
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+        
+
     def tick(self):
         # Call superclass
         Object.tick(self)

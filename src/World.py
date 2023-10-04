@@ -96,6 +96,30 @@ class World:
         print("WARNING: Object could not be removed from the world (" + object.name + ") at (" + str(objX) + ", " + str(objY) + ")")
         return False
 
+
+    #
+    #   Traversability
+    #
+    
+    # Check if a tile is passable
+    def isPassable(self, x, y):
+        # Bound checking: Make sure the object is within the world bounds
+        if x < 0 or x >= self.sizeX or y < 0 or y >= self.sizeY:
+            #print("Error: Object out of bounds: " + str(x) + ", " + str(y))
+            return False
+
+        # Check if the tile is passable
+        # Collect all the objects across all layers
+        allObjs = self.getObjectsAt(x, y)
+        # Check if any of the objects are impassable
+        for object in allObjs:
+            if (not object.attributes["isPassable"]):
+                return False
+
+        # If we reach here, the tile is passable
+        return True
+        
+
     #
     #   World update
     #
