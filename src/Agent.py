@@ -26,9 +26,30 @@ class Agent(Object):
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
 
 
+    #
+    #   Tick
+    #
+        
+    # Tick
+    def tick(self):
+        # # Randomly move agent
+        # if (random.random() < 0.1):
+        #     # Randomly move the agent
+        #     deltaX = random.randint(-1, 1)
+        #     deltaY = random.randint(-1, 1)
+        #     self.actionMoveAgent(deltaX, deltaY)
+
+        # Call superclass
+        Object.tick(self)
+
+
+
+    #
+    #   Actions
+    #
 
     # Attempt to move the agent in a particular direction.  deltaX and deltaY are in world coordinates, and should nominally be (-1, 0, 1)
-    def moveAgent(self, deltaX:int, deltaY:int):
+    def actionMoveAgent(self, deltaX:int, deltaY:int):
         # Get the current location
         newX = self.attributes["gridX"] + deltaX
         newY = self.attributes["gridY"] + deltaY
@@ -63,25 +84,13 @@ class Agent(Object):
         self.world.removeObject(self)                           # First, remove the object from it's current location in the world grid
         self.world.addObject(newX, newY, Layer.AGENT, self)     # Then, add the object to the new location in the world grid
 
-
         return True
-        
-        
-
-    def tick(self):
-        # # Randomly move agent
-        # if (random.random() < 0.1):
-        #     # Randomly move the agent
-        #     deltaX = random.randint(-1, 1)
-        #     deltaY = random.randint(-1, 1)
-        #     self.moveAgent(deltaX, deltaY)
-
-        # Call superclass
-        Object.tick(self)
 
 
-
+    #
     # Sprite
+    #
+
     # Updates the current sprite name based on the current state of the object
     def inferSpriteName(self, force:bool=False):
         if (not self.needsSpriteNameUpdate and not force):

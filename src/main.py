@@ -332,16 +332,16 @@ def main():
         # Arrow keys -- move agent
         if (curTime - lastMove > 0.25):      # Only allow a movement every 0.5 seconds using the arrow keys
             if (keys[pygame.K_UP]):
-                currentAgent.moveAgent(0, -1)            
+                currentAgent.actionMoveAgent(0, -1)            
                 lastMove = curTime
             elif (keys[pygame.K_DOWN]):
-                currentAgent.moveAgent(0, 1)
+                currentAgent.actionMoveAgent(0, 1)
                 lastMove = curTime
             elif (keys[pygame.K_LEFT]):
-                currentAgent.moveAgent(-1, 0)
+                currentAgent.actionMoveAgent(-1, 0)
                 lastMove = curTime
             elif (keys[pygame.K_RIGHT]):
-                currentAgent.moveAgent(1, 0)
+                currentAgent.actionMoveAgent(1, 0)
                 lastMove = curTime
 
 
