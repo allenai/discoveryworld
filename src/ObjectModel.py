@@ -30,7 +30,7 @@ class Object:
         self.attributes = {}
 
         # Default attributes
-        self.attributes["isMovable"] = False                        # Can it be moved?
+        self.attributes["isMovable"] = True                         # Can it be moved?
         self.attributes["isPassable"] = True                        # Can an agent walk over this?
 
         # Contents (for containers)
@@ -196,6 +196,7 @@ class Wall(Object):
         # Note: Change the default sprite name to something obviously incorrect so it is obvious when it's not inferring properly. 
         Object.__init__(self, world, "wall", "wall", defaultSpriteName = "house2_wall_t")
 
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
         # Rendering attribute (wall direction, "tl", "tr", "bl", "br", "l", "r", "t", "b")     
@@ -367,6 +368,8 @@ class Floor(Object):
         Object.__init__(self, world, "floor", "floor", defaultSpriteName = "house2_floor")
 
         # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
+
         # Material type?
 
     def tick(self):
@@ -414,6 +417,7 @@ class Door(Object):
         Object.__init__(self, world, "door", "door", defaultSpriteName = "house2_door_closed")
 
         # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["open"] = False
 
     def tick(self):
@@ -461,6 +465,7 @@ class Sign(Object):
         Object.__init__(self, world, "sign", "sign", defaultSpriteName = "village1_sign_nowriting")
 
         # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this object     
         self.attributes["document"] = "This is a sign."
 
@@ -506,6 +511,7 @@ class SignVillage(Object):
         Object.__init__(self, world, "sign (village)", "sign (village)", defaultSpriteName = "village1_sign_village")
 
         # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
         self.attributes["document"] = "This is a sign."
 
@@ -548,6 +554,7 @@ class Stove(Object):
         Object.__init__(self, world, "stove", "stove", defaultSpriteName = "house1_stove_off")
 
         # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
         self.attributes["activated"] = False
         self.attributes["open"] = False
@@ -598,6 +605,7 @@ class Sink(Object):
         Object.__init__(self, world, "stove", "stove", defaultSpriteName = "house1_sink_off")
 
         # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
         self.attributes["activated"] = False
 
@@ -641,6 +649,7 @@ class Fridge(Object):
         Object.__init__(self, world, "fridge", "fridge", defaultSpriteName = "house1_fridge")
 
         # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
         self.attributes["activated"] = True
         self.attributes["open"] = False
@@ -684,6 +693,7 @@ class Table(Object):
         # Default sprite name
         Object.__init__(self, world, "table", "table", defaultSpriteName = "house1_table")
 
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
         # Container
@@ -705,6 +715,7 @@ class TableBedside(Object):
         # Default sprite name
         Object.__init__(self, world, "table", "table", defaultSpriteName = "house1_table_bedside")
 
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
         # Container
@@ -725,6 +736,7 @@ class Chair(Object):
     def __init__(self, world):
         Object.__init__(self, world, "chair", "chair", defaultSpriteName = "house1_chair_l")
 
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
         # Rendering attributes
@@ -796,6 +808,7 @@ class Bed(Object):
         Object.__init__(self, world, "bed", "bed", defaultSpriteName = "house1_bed_ud")
         #Object.__init__(self, world, "bed", "bed", defaultSpriteName = "house1_bed_lr")
 
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
         # Container
@@ -854,6 +867,7 @@ class Statue(Object):
         # Default sprite name
         Object.__init__(self, world, "statue", "statue", defaultSpriteName = "statue_statue1")
     
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
     def tick(self):
@@ -869,6 +883,9 @@ class Path(Object):
     def __init__(self, world):
         # Default sprite name
         Object.__init__(self, world, "path", "path", defaultSpriteName = "forest1_path_c")
+
+        self.attributes["isMovable"] = False                       # Can it be moved?
+
     
     def tick(self):
         # Call superclass
@@ -952,6 +969,8 @@ class SoilTile(Object):
         # Default sprite name
         Object.__init__(self, world, "soil", "soil", defaultSpriteName = "forest1_soil_c")
     
+        self.attributes["isMovable"] = False                       # Can it be moved?
+
     def tick(self):
         # Call superclass
         Object.tick(self)
@@ -1019,6 +1038,7 @@ class Fence(Object):
         # Default sprite name
         Object.__init__(self, world, "fence", "fence", defaultSpriteName = "village1_fence_single")
     
+        self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
 

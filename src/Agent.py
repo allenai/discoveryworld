@@ -18,6 +18,14 @@ class Agent(Object):
         # Rendering
         self.attributes["faceDirection"] = "south"        
 
+        # Agent is a container for its inventory
+        # Container attributes
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can be opened
+        self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+
+
 
     # Attempt to move the agent in a particular direction.  deltaX and deltaY are in world coordinates, and should nominally be (-1, 0, 1)
     def moveAgent(self, deltaX:int, deltaY:int):
