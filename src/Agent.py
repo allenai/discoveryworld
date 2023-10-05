@@ -26,6 +26,34 @@ class Agent(Object):
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
 
 
+    #   
+    #   Accessors/helpers
+    #
+    
+    # Get the grid location (x, y) that the agent is facing
+    def getWorldLocationAgentIsFacing(self):
+        # Get the current location
+        x = self.attributes["gridX"]
+        y = self.attributes["gridY"]
+
+        # Get the direction the agent is facing
+        faceDirection = self.attributes["faceDirection"]
+
+        # Get the new location
+        if (faceDirection == "north"):
+            y -= 1
+        elif (faceDirection == "south"):
+            y += 1
+        elif (faceDirection == "east"):
+            x += 1
+        elif (faceDirection == "west"):
+            x -= 1
+
+        # Return the new location
+        return (x, y)
+
+
+
     #
     #   Tick
     #
@@ -85,6 +113,24 @@ class Agent(Object):
         self.world.addObject(newX, newY, Layer.AGENT, self)     # Then, add the object to the new location in the world grid
 
         return True
+
+
+    def actionPickUp(self, objToPickUp):
+        # First, check if the object is movable
+        if (not objToPickUp.attributes["isMovable"]):
+            # Object is not movable
+            return False
+
+        # Next, check if the object is within reach (i.e. +/- 1 grid location)
+        distX = abs(objToPickUp.attributes["gridX"] - self.attributes["gridX"])
+        distY = abs(objToPickUp.attributes["gridY"] - self.attributes["gridY"])
+        if (distX > 1 or distY > 1):
+            # Object is not within reach
+            return False
+
+        # If we reach here, the object is movable and within reach.  Pick it up.
+        self.world.removeObject(objToPickUp)                    # Remove the object from the world
+        self.addObject(objToPickUp)                             # Add the object to the agent's inventory
 
 
     #

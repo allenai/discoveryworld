@@ -118,7 +118,15 @@ class World:
 
         # If we reach here, the tile is passable
         return True
-        
+
+
+    #
+    #   Bound Checking
+    #
+
+    # Returns true if the specified position is within the world grid bounds
+    def isWithinBounds(self, x, y):
+        return (x >= 0) and (x < self.sizeX) and (y >= 0) and (y < self.sizeY)
 
     #
     #   World update

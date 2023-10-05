@@ -332,17 +332,38 @@ def main():
         # Arrow keys -- move agent
         if (curTime - lastMove > 0.25):      # Only allow a movement every 0.5 seconds using the arrow keys
             if (keys[pygame.K_UP]):
+                # Move agent north
                 currentAgent.actionMoveAgent(0, -1)            
                 lastMove = curTime
             elif (keys[pygame.K_DOWN]):
+                # Move agent south
                 currentAgent.actionMoveAgent(0, 1)
                 lastMove = curTime
             elif (keys[pygame.K_LEFT]):
+                # Move agent west
                 currentAgent.actionMoveAgent(-1, 0)
                 lastMove = curTime
             elif (keys[pygame.K_RIGHT]):
+                # Move agent east
                 currentAgent.actionMoveAgent(1, 0)
                 lastMove = curTime
+
+            elif (keys[pygame.K_SPACE]):
+                # Pick-up object in front of agent
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    # Filter by objects that are movable
+                    movableObjs = [obj for obj in objs if (obj.attributes['isMovable'] == True)]
+
+                    # Check to see if there is a movable object here
+                    if (len(movableObjs) > 0):
+                        # Pick up the first movable object
+                        objToPickUp = movableObjs[0]
+                        success = currentAgent.actionPickUp(objToPickUp)
+
 
 
 

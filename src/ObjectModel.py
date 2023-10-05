@@ -119,8 +119,10 @@ class Object:
 
         # Also call tick on all contained objects
         for obj in self.contents:
+            # First, update the grid location of the contained objects to be the same as the container
+            obj.setWorldLocation(self.attributes["gridX"], self.attributes["gridY"])
+            # Next, call tick()
             obj.tick()
-
         
 
     #
