@@ -333,20 +333,27 @@ def main():
         if (curTime - lastMove > 0.25):      # Only allow a movement every 0.5 seconds using the arrow keys
             if (keys[pygame.K_UP]):
                 # Move agent north
-                currentAgent.actionMoveAgent(0, -1)            
+                success = currentAgent.actionMoveAgent(0, -1)            
                 lastMove = curTime
+                print(success)
+
             elif (keys[pygame.K_DOWN]):
                 # Move agent south
-                currentAgent.actionMoveAgent(0, 1)
+                success = currentAgent.actionMoveAgent(0, 1)
                 lastMove = curTime
+                print(success)
+
             elif (keys[pygame.K_LEFT]):
                 # Move agent west
-                currentAgent.actionMoveAgent(-1, 0)
+                success = currentAgent.actionMoveAgent(-1, 0)
                 lastMove = curTime
+                print(success)
+
             elif (keys[pygame.K_RIGHT]):
                 # Move agent east
-                currentAgent.actionMoveAgent(1, 0)
+                success = currentAgent.actionMoveAgent(1, 0)
                 lastMove = curTime
+                print(success)
 
             elif (keys[pygame.K_SPACE]):
                 # Pick-up object in front of agent
@@ -363,6 +370,21 @@ def main():
                         # Pick up the first movable object
                         objToPickUp = movableObjs[0]
                         success = currentAgent.actionPickUp(objToPickUp)
+                        print(success)
+
+                lastMove = curTime
+
+            elif (keys[pygame.K_d]):
+                # Drop an inventory item at the agents current location
+
+                # First, pick an item from the inventory (i.e. the first item)
+                if (len(currentAgent.contents) > 0):
+                    itemToDrop = currentAgent.contents[0]
+                    success = currentAgent.actionDrop(itemToDrop)
+                    print(success)
+
+                lastMove = curTime
+
 
 
 

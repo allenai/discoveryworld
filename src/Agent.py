@@ -115,7 +115,7 @@ class Agent(Object):
 
         return ActionSuccess(True, "I moved to (" + str(newX) + ", " + str(newY) + ").")
 
-
+    # Pick up an object, and add it to the agent's inventory
     def actionPickUp(self, objToPickUp):
         # First, check if the object is movable
         if (not objToPickUp.attributes["isMovable"]):
@@ -136,9 +136,10 @@ class Agent(Object):
         return ActionSuccess(True, "I picked up the " + objToPickUp.name + ".")
 
 
+    # Drop an object from the agent's inventory at the agent's current location
     def actionDrop(self, objToDrop):
         # First, check if the object is in the agent's inventory
-        if (not objToDrop in self.inventory):
+        if (not objToDrop in self.contents):
             # Object is not in the agent's inventory
             return ActionSuccess(False, "That object (" + objToDrop.name + ") is not in my inventory.")
 

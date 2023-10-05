@@ -7,3 +7,6 @@ class ActionSuccess:
         self.success = success
         self.message = message
     
+    # String method
+    def __str__(self):
+        return "ActionSuccess(" + str(self.success) + ", " + str(self.message) + ")"
