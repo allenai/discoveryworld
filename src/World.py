@@ -102,6 +102,9 @@ class World:
     #
     
     # Check if a tile is passable
+    # Returns (bool, obj) where:
+    #  - bool is true if the tile is passable, and obj is the first impassable object encountered at that location. 
+    #  - If the tile is passable, obj is None.
     def isPassable(self, x, y):
         # Bound checking: Make sure the object is within the world bounds
         if x < 0 or x >= self.sizeX or y < 0 or y >= self.sizeY:
@@ -114,10 +117,10 @@ class World:
         # Check if any of the objects are impassable
         for object in allObjs:
             if (not object.attributes["isPassable"]):
-                return False
+                return (False, object)
 
         # If we reach here, the tile is passable
-        return True
+        return (True, None)
 
 
     #

@@ -4,7 +4,7 @@ import SpriteLibrary
 import random
 from ObjectModel import *
 from Layer import * 
-
+from ActionSuccess import *
 
 #
 #   Object: Fence
@@ -102,35 +102,39 @@ class Agent(Object):
         # Check 1: Is the new location within the bounds of the world?        
         if (newX < 0 or newX >= self.world.sizeX or newY < 0 or newY >= self.world.sizeY):
             # Invalid location
-            return False
+            return ActionSuccess(False, "That is too far to move in a single step.  I can only move one step north, south, east, or west at a time.")
 
         # Check 2: Check if the new location is passable
-        if (not self.world.isPassable(newX, newY)):            
-            return False
+        isPassable, blockingObject = self.world.isPassable(newX, newY)
+        if (not isPassable):            
+            return ActionSuccess(False, "I can't move there. There is something in the way (" + blockingObject.name + ").")
 
         # If we reach here, the new location is valid. Update the agent's location to the new location
         self.world.removeObject(self)                           # First, remove the object from it's current location in the world grid
         self.world.addObject(newX, newY, Layer.AGENT, self)     # Then, add the object to the new location in the world grid
 
-        return True
+        return ActionSuccess(True, "I moved to (" + str(newX) + ", " + str(newY) + ").")
 
 
     def actionPickUp(self, objToPickUp):
         # First, check if the object is movable
         if (not objToPickUp.attributes["isMovable"]):
             # Object is not movable
-            return False
+            return ActionSuccess(False, "That object (" + objToPickUp.name + ") is not movable.")
 
         # Next, check if the object is within reach (i.e. +/- 1 grid location)
         distX = abs(objToPickUp.attributes["gridX"] - self.attributes["gridX"])
         distY = abs(objToPickUp.attributes["gridY"] - self.attributes["gridY"])
         if (distX > 1 or distY > 1):
             # Object is not within reach
-            return False
+            return ActionSuccess(False, "That object (" + objToPickUp.name + ") is not within reach. I can only pick up objects that are within +/- 1 grid location.")
 
         # If we reach here, the object is movable and within reach.  Pick it up.
         self.world.removeObject(objToPickUp)                    # Remove the object from the world
         self.addObject(objToPickUp)                             # Add the object to the agent's inventory
+
+        return ActionSuccess(True, "I picked up the " + objToPickUp.name + ".")
+
 
 
     #
