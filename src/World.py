@@ -42,10 +42,15 @@ class World:
     # Add an object to the world
     def addObject(self, x, y, layer, object:Object):
         # Bound checking: Make sure the object is within the world bounds
-        if x < 0 or x >= self.sizeX or y < 0 or y >= self.sizeY:
+        #if x < 0 or x >= self.sizeX or y < 0 or y >= self.sizeY:
+        if (self.isWithinBounds(x, y) == False):
             print("Error: Object out of bounds: " + str(x) + ", " + str(y))
-            return
+            return False
 
+
+        # Remove the object from its current container
+        object.removeSelfFromContainer()
+        
         # Set the object's position
         object.setWorldLocation(x, y)
 
@@ -62,6 +67,8 @@ class World:
             self.grid[x][y]["layers"][layer].append(object)
         else:
             print("Error: Invalid layer: " + str(layer))
+            return False
+        
 
 
     # Get all objects at a given position

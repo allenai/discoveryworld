@@ -69,6 +69,9 @@ class Object:
 
     # Add an object (obj) to this container
     def addObject(self, obj, force=False):
+        # Remove the object from its previous container
+        obj.removeSelfFromContainer()
+        
         # Add an object to this container        
         self.contents.append(obj)
         obj.parentContainer = self

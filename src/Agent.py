@@ -136,6 +136,19 @@ class Agent(Object):
         return ActionSuccess(True, "I picked up the " + objToPickUp.name + ".")
 
 
+    def actionDrop(self, objToDrop):
+        # First, check if the object is in the agent's inventory
+        if (not objToDrop in self.inventory):
+            # Object is not in the agent's inventory
+            return ActionSuccess(False, "That object (" + objToDrop.name + ") is not in my inventory.")
+
+        # Next, drop the object at the agent's current location.
+        # (Note: adding the item to a specific location should remove it from the agent's inventory)
+        self.world.addObject(self.attributes["gridX"], self.attributes["gridY"], Layer.OBJECTS, objToDrop)
+
+        
+
+
 
     #
     # Sprite
