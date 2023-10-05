@@ -385,8 +385,27 @@ def main():
 
                 lastMove = curTime
 
+            elif (keys[pygame.K_p]):
+                # Put an inventory item in a specific container
+                
+                # First, pick an item from the inventory (i.e. the first item)
+                if (len(currentAgent.contents) > 0):
+                    itemToPut = currentAgent.contents[0]
+                
+                    # Find a container at the location the agent is facing
+                    facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                    # Bound checking
+                    if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                        # Get objects at location
+                        objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                        # Filter by objects that are containers
+                        containerObjs = [obj for obj in objs if (obj.attributes['isContainer'] == True)]
 
-
+                        # Check to see if there is a container here
+                        if (len(containerObjs) > 0):
+                            # Put the item in the first container
+                            success = currentAgent.actionPut(itemToPut, containerObjs[0])
+                            print(success)
 
 
         # Fill the window with black

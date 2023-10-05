@@ -39,6 +39,7 @@ class Object:
         self.attributes['isOpenable'] = False                       # If it's a container, can you open/close it?
         self.attributes['isOpenContainer'] = False                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = ""                     # Container prefix (e.g. "in" or "on")            
+        self.attributes['isOpen'] = False                           # Closed by default
         self.contents = []                                          # Contents of the container (other objects)
 
         # Force a first infer-sprite-name
@@ -71,7 +72,7 @@ class Object:
     def addObject(self, obj, force=False):
         # Remove the object from its previous container
         obj.removeSelfFromContainer()
-        
+
         # Add an object to this container        
         self.contents.append(obj)
         obj.parentContainer = self

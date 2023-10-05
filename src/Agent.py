@@ -147,10 +147,35 @@ class Agent(Object):
         # (Note: adding the item to a specific location should remove it from the agent's inventory)
         self.world.addObject(self.attributes["gridX"], self.attributes["gridY"], Layer.OBJECTS, objToDrop)
 
+    def actionPut(self, objToPut, newContainer):
+        # First, check if the object is in the agent's inventory
+        if (not objToPut in self.contents):
+            # Object is not in the agent's inventory
+            return ActionSuccess(False, "That object (" + objToPut.name + ") is not in my inventory.")
+
+        # Next, check if the new container is within reach (i.e. +/- 1 grid location)
+        distX = abs(newContainer.attributes["gridX"] - self.attributes["gridX"])
+        distY = abs(newContainer.attributes["gridY"] - self.attributes["gridY"])
+        if (distX > 1 or distY > 1):
+            # Container is not within reach
+            return ActionSuccess(False, "That container (" + newContainer.name + ") is not within reach. I can only put objects into containers that are within +/- 1 grid location.")
+
+        # Next, check to see if the container is a container
+        if (not newContainer.attributes["isContainer"]):
+            # Container is not a container
+            return ActionSuccess(False, "That object (" + newContainer.name + ") is not a container.")
+
+        # Next, check to see if the container is open
+        if (not newContainer.attributes["isOpenContainer"]):
+            # Container is not open
+            return ActionSuccess(False, "That container (" + newContainer.name + ") is not open.")
+
+        # If we reach here, the object is in the agent's inventory, the container is within reach, and the container is open.
+        # Put the object into the container.
+        newContainer.addObject(objToPut)
+        return ActionSuccess(True, "I put the " + objToPut.name + " into the " + newContainer.name + ".")
+
         
-
-
-
     #
     # Sprite
     #
