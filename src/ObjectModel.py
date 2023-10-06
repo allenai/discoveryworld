@@ -619,6 +619,12 @@ class Sink(Object):
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
         self.attributes["activated"] = False
 
+        # Container attributes
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Always open
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")
+
 
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
@@ -749,6 +755,12 @@ class Chair(Object):
 
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+        # Container attributes
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Always open
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
 
         # Rendering attributes
         self.curDirection = "west"
