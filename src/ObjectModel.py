@@ -94,14 +94,16 @@ class Object:
             return self.parentContainer.removeObject(self)
 
     # Get all contained objects
-    def getAllContainedObjectsRecursive(self):
+    def getAllContainedObjectsRecursive(self, respectContainerStatus=False):
         # Get all contained objects, recursively
         out = []
-        for obj in self.contents:
-            # Add self
-            out.append(obj)
-            # Add children
-            out.extend(obj.getAllContainedObjectsRecursive())
+        # If this is a container, and it's open, then add the contents
+        if (not respectContainerStatus) or (respectContainerStatus and self.attributes['isOpenContainer']):
+            for obj in self.contents:
+                # Add self
+                out.append(obj)
+                # Add children
+                out.extend(obj.getAllContainedObjectsRecursive(respectContainerStatus))
         # Return
         return out
 
@@ -187,6 +189,8 @@ class Grass(Object):
     def __init__(self, world):
         # Default sprite name
         Object.__init__(self, world, "grass", "grass", defaultSpriteName = "forest1_grass")
+
+        self.attributes["isMovable"] = False                       # Can it be moved?
     
     def tick(self):
         # Call superclass
@@ -614,6 +618,7 @@ class Sink(Object):
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
         self.attributes["activated"] = False
+
 
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change

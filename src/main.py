@@ -361,7 +361,12 @@ def main():
                 # Bound checking
                 if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
                     # Get objects at location
-                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])  
+                    # Expand the list of objects by adding objects that are contained by those objects
+                    objs1 = [obj for obj in objs for obj in obj.getAllContainedObjectsRecursive(respectContainerStatus=True)]
+                    # Add this expanded list to the original list of objects at this location
+                    objs.extend(objs1)
+
                     # Filter by objects that are movable
                     movableObjs = [obj for obj in objs if (obj.attributes['isMovable'] == True)]
 
@@ -406,6 +411,9 @@ def main():
                             # Put the item in the first container
                             success = currentAgent.actionPut(itemToPut, containerObjs[0])
                             print(success)
+                            
+                lastMove = curTime
+
 
 
         # Fill the window with black
