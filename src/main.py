@@ -414,6 +414,45 @@ def main():
                             
                 lastMove = curTime
 
+            elif (keys[pygame.K_o]):
+                # Open a container or passage in front of the agent
+
+                # Find a container at the location the agent is facing
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    # Filter by objects that are containers OR passages
+                    openableObjs = [obj for obj in objs if (obj.attributes['isContainer'] == True or obj.attributes['isPassage'] == True)]
+
+                    # Check to see if there is an openable object here
+                    if (len(openableObjs) > 0):
+                        # Try to open the first one
+                        success = currentAgent.actionOpenClose(openableObjs[0], "open")
+                        print(success)
+
+                lastMove = curTime
+
+            elif (keys[pygame.K_c]):
+                # Close a container or passage in front of the agent
+
+                # Find a container at the location the agent is facing
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    # Filter by objects that are containers OR passages
+                    openableObjs = [obj for obj in objs if (obj.attributes['isContainer'] == True or obj.attributes['isPassage'] == True)]
+
+                    # Check to see if there is an openable object here
+                    if (len(openableObjs) > 0):
+                        # Try to open the first one
+                        success = currentAgent.actionOpenClose(openableObjs[0], "close")
+                        print(success)
+
+
 
 
         # Fill the window with black

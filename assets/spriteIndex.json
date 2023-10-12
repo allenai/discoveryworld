@@ -33,7 +33,8 @@
                 "sink_off":     { "baseTile": [1, 14],  "size": [1, 1] },
                 "sink_on":      { "baseTile": [1, 15],  "size": [1, 1] },
 
-                "fridge":       { "baseTile": [4, 12],  "size": [1, 2] },
+                "fridge_closed":   { "baseTile": [4, 12],  "size": [1, 2] },
+                "fridge_open":     { "baseTile": [5, 12],  "size": [1, 2] },
 
                 "bed_ud":          { "baseTile": [0, 9],  "size": [1, 2] },
                 "bed_lr":          { "baseTile": [2, 11],  "size": [2, 1] },

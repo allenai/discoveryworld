@@ -175,7 +175,64 @@ class Agent(Object):
         newContainer.addObject(objToPut)
         return ActionSuccess(True, "I put the " + objToPut.name + " into the " + newContainer.name + ".")
 
+    # Open or close an object
+    # 'whichAction' should be "open" or "close"
+    def actionOpenClose(self, objToOpenOrClose, whichAction="open"):
+        # First, check if the object is within reach (i.e. +/- 1 grid location)
+        distX = abs(objToOpenOrClose.attributes["gridX"] - self.attributes["gridX"])
+        distY = abs(objToOpenOrClose.attributes["gridY"] - self.attributes["gridY"])
+        if (distX > 1 or distY > 1):
+            # Object is not within reach
+            return ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is not within reach. I can only open/close objects that are within +/- 1 grid location.")
+
+        # Next, check if the object is openable
+        if (not objToOpenOrClose.attributes["isOpenable"]):
+            # Object is not openable
+            return ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is not openable/closeable.")
         
+        # Next, check to see whether we're dealing with a container or a passage
+        if (objToOpenOrClose.attributes["isContainer"]):
+            # Open a container
+            # Next, check if the object is already in the desired state
+            if (whichAction == "open" and objToOpenOrClose.attributes["isOpenContainer"]):
+                # Object is already open
+                return ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is already open.")
+            elif (whichAction == "close" and not objToOpenOrClose.attributes["isOpenContainer"]):
+                # Object is already closed
+                return ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is already closed.")
+
+            # If we reach here, the object is within reach and is openable.  Open/close it.
+            if (whichAction == "open"):
+                objToOpenOrClose.attributes["isOpenContainer"] = True
+                objToOpenOrClose.invalidateSpritesThisWorldTile()
+                return ActionSuccess(True, "I opened the " + objToOpenOrClose.name + ".")
+            else:
+                objToOpenOrClose.attributes["isOpenContainer"] = False
+                objToOpenOrClose.invalidateSpritesThisWorldTile()
+                return ActionSuccess(True, "I closed the " + objToOpenOrClose.name + ".")
+
+        elif (objToOpenOrClose.attributes["isPassage"]):
+            # Open a passage
+            # Next, check if the object is already in the desired state
+            if (whichAction == "open" and objToOpenOrClose.attributes["isOpenPassage"]):
+                # Object is already open
+                return ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is already open.")
+            elif (whichAction == "close" and not objToOpenOrClose.attributes["isOpenPassage"]):
+                # Object is already closed
+                return ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is already closed.")
+
+            # If we reach here, the object is within reach and is openable.  Open/close it.
+            if (whichAction == "open"):
+                objToOpenOrClose.attributes["isOpenPassage"] = True
+                objToOpenOrClose.invalidateSpritesThisWorldTile()
+                return ActionSuccess(True, "I opened the " + objToOpenOrClose.name + ".")
+            else:
+                objToOpenOrClose.attributes["isOpenPassage"] = False
+                objToOpenOrClose.invalidateSpritesThisWorldTile()
+                return ActionSuccess(True, "I closed the " + objToOpenOrClose.name + ".")
+
+
+
     #
     # Sprite
     #

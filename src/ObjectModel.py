@@ -42,6 +42,9 @@ class Object:
         self.attributes['isOpen'] = False                           # Closed by default
         self.contents = []                                          # Contents of the container (other objects)
 
+        # Passage (for dynamic passages like doors, that can be opened/closed)
+        self.attributes['isPassage'] = False                        # Is this a passage?
+
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
         self.firstInit = True
@@ -134,6 +137,19 @@ class Object:
     #
     #   Sprite
     #
+
+    # Invalidate the sprite name for this object, and all objects it contains/that contain it.
+    # This will force them to update their sprites on the next tick.
+    def invalidateSpritesThisWorldTile(self):
+        # Step 1: Get the names of all objects at this world tile
+        allObjs = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"])
+
+        # Step 2: Invalidate the sprite names for all objects at this world tile, plus all objects contained by those objects
+        for obj in allObjs:
+            obj.needsSpriteNameUpdate = True
+            for containedObj in obj.getAllContainedObjectsRecursive():
+                containedObj.needsSpriteNameUpdate = True        
+
 
     def inferSpriteName(self, force:bool=False):
         # Infer the sprite name from the current state of the object
@@ -427,8 +443,15 @@ class Door(Object):
         Object.__init__(self, world, "door", "door", defaultSpriteName = "house2_door_closed")
 
         # Default attributes
-        self.attributes["isMovable"] = False                       # Can it be moved?
-        self.attributes["open"] = False
+        self.attributes["isMovable"] = False                       # Can it be moved?        
+
+        # Open/Close attribute (similar to container, but not a container)
+        self.attributes['isPassage'] = True                       # Is this a passage?
+        self.attributes['isOpenable'] = True                      # Can be opened
+        self.attributes['isOpenPassage'] = False                  # If it's a passage, then is it open?
+        
+
+
 
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
@@ -438,11 +461,11 @@ class Door(Object):
         # TODO
         # Randomly open/close the door
         if (random.randint(0, 100) < 5):
-            self.attributes["open"] = not self.attributes["open"]
+            self.attributes["isOpenPassage"] = not self.attributes["isOpenPassage"]
             self.needsSpriteNameUpdate = True
 
         # If the door is open, the object is passable.  If closed, impassable.
-        if (self.attributes["open"]):
+        if (self.attributes["isOpenPassage"]):
             self.attributes["isPassable"] = True
         else:
             self.attributes["isPassable"] = False
@@ -458,7 +481,7 @@ class Door(Object):
             return
 
         # If the stove is open, then we need to use the open sprite
-        if (self.attributes["open"]):
+        if (self.attributes["isOpenPassage"]):
             self.curSpriteName = "house2_door_open"
         else:
             self.curSpriteName = "house2_door_closed"
@@ -566,13 +589,12 @@ class Stove(Object):
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
-        self.attributes["activated"] = False
-        self.attributes["open"] = False
+        self.attributes["activated"] = False        
 
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = True                       # Can be opened
-        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
 
 
@@ -594,7 +616,7 @@ class Stove(Object):
             return
 
         # If the stove is open, then we need to use the open sprite
-        if (self.attributes["open"]):
+        if (self.attributes["isOpenContainer"]):
             self.curSpriteName = "house1_stove_open"
         else:
             if (self.attributes["activated"]):
@@ -663,18 +685,17 @@ class Sink(Object):
 class Fridge(Object):
     # Constructor
     def __init__(self, world):
-        Object.__init__(self, world, "fridge", "fridge", defaultSpriteName = "house1_fridge")
+        Object.__init__(self, world, "fridge", "fridge", defaultSpriteName = "house1_fridge_closed")
 
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
-        self.attributes["activated"] = True
-        self.attributes["open"] = False
+        self.attributes["activated"] = True        
 
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = True                       # Can be opened
-        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['isOpenContainer'] = False                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
 
 
@@ -696,6 +717,12 @@ class Fridge(Object):
             return
 
         self.curSpriteName = self.defaultSpriteName
+
+        # TODO: If the fridge is open, then we need to use the open sprite
+        if (self.attributes["isOpenContainer"]):
+            self.curSpriteName = "house1_fridge_open"
+        else:
+            self.curSpriteName = "house1_fridge_closed"
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
@@ -856,7 +883,7 @@ class Microscope(Object):
 
         # Default attributes
         self.attributes["activated"] = True
-        self.attributes["open"] = False
+        
 
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
