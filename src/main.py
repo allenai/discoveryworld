@@ -453,6 +453,49 @@ def main():
                         print(success)
 
 
+            elif (keys[pygame.K_a]):
+                # Activate an object in front of the agent
+
+                # Find an activatable object at the location the agent is facing
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    # Filter by objects that are activatable
+                    activatableObjs = [obj for obj in objs if (obj.attributes['isActivatable'] == True)]
+
+                    # Check to see if there is an activatable object here
+                    if (len(activatableObjs) > 0):
+                        # Try to activate the first one
+                        success = currentAgent.actionActivateDeactivate(activatableObjs[0], "activate")
+                        print(success)
+
+                lastMove = curTime
+            
+            # For some read K_d doesn't work. 
+            # Should be D key here
+            elif (keys[pygame.K_e]):            
+                # Deactivate an object in front of the agent
+                
+                # Find an activatable object at the location the agent is facing
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    # Filter by objects that are activatable
+                    activatableObjs = [obj for obj in objs if (obj.attributes['isActivatable'] == True)]
+
+                    # Check to see if there is an activatable object here
+                    if (len(activatableObjs) > 0):
+                        # Try to activate the first one
+                        success = currentAgent.actionActivateDeactivate(activatableObjs[0], "deactivate")
+                        print(success)
+
+                lastMove = curTime
+
+
 
 
         # Fill the window with black

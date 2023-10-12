@@ -45,6 +45,11 @@ class Object:
         # Passage (for dynamic passages like doors, that can be opened/closed)
         self.attributes['isPassage'] = False                        # Is this a passage?
 
+        # Device (is activable)
+        self.attributes['isActivatable'] = False                      # Is this a device? (more specifically, can it be activated/deactivated?)
+        self.attributes['isActivated'] = False                      # Is this device currently activated?
+
+
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
         self.firstInit = True
@@ -589,13 +594,17 @@ class Stove(Object):
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
-        self.attributes["activated"] = False        
+#        self.attributes["activated"] = False        
 
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = True                       # Can be opened
         self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+
+        # Device (is activable)
+        self.attributes['isActivatable'] = True                       # Is this a device? (more specifically, can it be activated/deactivated?)
+        self.attributes['isActivated'] = False                      # Is this device currently activated?
 
 
     def tick(self):
@@ -619,7 +628,7 @@ class Stove(Object):
         if (self.attributes["isOpenContainer"]):
             self.curSpriteName = "house1_stove_open"
         else:
-            if (self.attributes["activated"]):
+            if (self.attributes["isActivated"]):
                 self.curSpriteName = "house1_stove_on"
             else:
                 self.curSpriteName = "house1_stove_off"
@@ -638,14 +647,19 @@ class Sink(Object):
 
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
-        self.attributes["isPassable"] = False                      # Agen't can't walk over this
-        self.attributes["activated"] = False
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this        
+        #self.attributes["activated"] = False
 
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = False                      # Always open
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")
+
+        # Device (is activable)
+        self.attributes['isActivatable'] = True                     # Is this a device? (more specifically, can it be activated/deactivated?)
+        self.attributes['isActivated'] = False                      # Is this device currently activated?
+
 
 
     def tick(self):
@@ -655,9 +669,9 @@ class Sink(Object):
 
         # TODO
         # Randomly turn on/off
-        if (random.randint(0, 100) < 5):
-            self.attributes["activated"] = not self.attributes["activated"]
-            self.needsSpriteNameUpdate = True
+        #if (random.randint(0, 100) < 5):
+        #    self.attributes["isActivated"] = not self.attributes["isActivated"]
+        #    self.needsSpriteNameUpdate = True
 
         # Call superclass
         Object.tick(self)
@@ -670,7 +684,7 @@ class Sink(Object):
             return
 
         # If the stove is open, then we need to use the open sprite
-        if (self.attributes["activated"]):
+        if (self.attributes["isActivated"]):
             self.curSpriteName = "house1_sink_on"
         else:
             self.curSpriteName = "house1_sink_off"
@@ -690,13 +704,18 @@ class Fridge(Object):
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
-        self.attributes["activated"] = True        
+        #self.attributes["activated"] = True        
 
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = True                       # Can be opened
         self.attributes['isOpenContainer'] = False                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+
+        # Device (is activable)
+        self.attributes['isActivatable'] = True                      # Is this a device? (more specifically, can it be activated/deactivated?)
+        self.attributes['isActivated'] = True                      # Is this device currently activated?
+
 
 
     def tick(self):

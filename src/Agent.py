@@ -129,9 +129,13 @@ class Agent(Object):
             # Object is not within reach
             return ActionSuccess(False, "That object (" + objToPickUp.name + ") is not within reach. I can only pick up objects that are within +/- 1 grid location.")
 
+
         # If we reach here, the object is movable and within reach.  Pick it up.
+        objToPickUp.invalidateSpritesThisWorldTile()            # Invalidate the sprites at the object's current location
         self.world.removeObject(objToPickUp)                    # Remove the object from the world
         self.addObject(objToPickUp)                             # Add the object to the agent's inventory
+
+
 
         return ActionSuccess(True, "I picked up the " + objToPickUp.name + ".")
 
@@ -173,6 +177,8 @@ class Agent(Object):
         # If we reach here, the object is in the agent's inventory, the container is within reach, and the container is open.
         # Put the object into the container.
         newContainer.addObject(objToPut)
+        objToPut.invalidateSpritesThisWorldTile()
+        newContainer.invalidateSpritesThisWorldTile()
         return ActionSuccess(True, "I put the " + objToPut.name + " into the " + newContainer.name + ".")
 
     # Open or close an object
@@ -230,6 +236,41 @@ class Agent(Object):
                 objToOpenOrClose.attributes["isOpenPassage"] = False
                 objToOpenOrClose.invalidateSpritesThisWorldTile()
                 return ActionSuccess(True, "I closed the " + objToOpenOrClose.name + ".")
+
+
+    # Activate/Deactivate an object
+    # 'whichAction' should be "activate" or "deactivate"
+    def actionActivateDeactivate(self, objToActivateOrDeactivate, whichAction="activate"):
+        # First, check if the object is within reach (i.e. +/- 1 grid location)
+        distX = abs(objToActivateOrDeactivate.attributes["gridX"] - self.attributes["gridX"])
+        distY = abs(objToActivateOrDeactivate.attributes["gridY"] - self.attributes["gridY"])
+        if (distX > 1 or distY > 1):
+            # Object is not within reach
+            return ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is not within reach. I can only activate/deactivate objects that are within +/- 1 grid location.")
+
+        # Next, check if the object is activatable
+        if (not objToActivateOrDeactivate.attributes["isActivatable"]):
+            # Object is not activatable
+            return ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is not activatable/deactivatable.")
+                
+        # Next, check if the object is already in the desired state
+        if (whichAction == "activate" and objToActivateOrDeactivate.attributes["isActivated"]):
+            # Object is already activated
+            return ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is already activated.")
+        elif (whichAction == "deactivate" and not objToActivateOrDeactivate.attributes["isActivated"]):
+            # Object is already deactivated
+            return ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is already deactivated.")
+        
+        # If we reach here, the object is within reach and is activatable.  Activate/deactivate it.
+        if (whichAction == "activate"):
+            objToActivateOrDeactivate.attributes["isActivated"] = True
+            objToActivateOrDeactivate.invalidateSpritesThisWorldTile()
+            return ActionSuccess(True, "I activated the " + objToActivateOrDeactivate.name + ".")
+        else:
+            objToActivateOrDeactivate.attributes["isActivated"] = False
+            objToActivateOrDeactivate.invalidateSpritesThisWorldTile()
+            return ActionSuccess(True, "I deactivated the " + objToActivateOrDeactivate.name + ".")
+            
 
 
 
