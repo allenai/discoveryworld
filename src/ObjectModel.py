@@ -594,7 +594,6 @@ class Stove(Object):
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
-#        self.attributes["activated"] = False        
 
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
@@ -648,7 +647,6 @@ class Sink(Object):
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this        
-        #self.attributes["activated"] = False
 
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
@@ -704,7 +702,6 @@ class Fridge(Object):
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
-        #self.attributes["activated"] = True        
 
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
@@ -901,7 +898,7 @@ class Microscope(Object):
         Object.__init__(self, world, "microscope", "microscope", defaultSpriteName = "placeholder_microscope")
 
         # Default attributes
-        self.attributes["activated"] = True
+        pass        
         
 
     def tick(self):
