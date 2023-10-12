@@ -460,9 +460,9 @@ class Door(Object):
 
         # TODO
         # Randomly open/close the door
-        if (random.randint(0, 100) < 5):
-            self.attributes["isOpenPassage"] = not self.attributes["isOpenPassage"]
-            self.needsSpriteNameUpdate = True
+        #if (random.randint(0, 100) < 5):
+        #    self.attributes["isOpenPassage"] = not self.attributes["isOpenPassage"]
+        #    self.needsSpriteNameUpdate = True
 
         # If the door is open, the object is passable.  If closed, impassable.
         if (self.attributes["isOpenPassage"]):
@@ -480,7 +480,7 @@ class Door(Object):
             # No need to update the sprite name
             return
 
-        # If the stove is open, then we need to use the open sprite
+        # If the door is open, then we need to use the open sprite
         if (self.attributes["isOpenPassage"]):
             self.curSpriteName = "house2_door_open"
         else:
