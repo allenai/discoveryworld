@@ -541,7 +541,7 @@ class NPCColonist(Agent):
             # No success -- means either (a) we're already in the goal location, or (b) there's no path to the goal location
             # In either case, we'll just pick a new goal location
             print("Finding new goal location")
-            time.sleep(1)
+            #time.sleep(1)
             self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
         
 
