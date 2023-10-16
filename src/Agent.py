@@ -14,7 +14,7 @@ import time
 #
 class Agent(Object):
     # Constructor
-    def __init__(self, world):
+    def __init__(self, world, objectType="agent", objectName="agent", defaultSpriteName="character18_agent_facing_south"):
         # Default sprite name
         Object.__init__(self, world, "agent", "agent", defaultSpriteName = "character18_agent_facing_south")
     
@@ -34,6 +34,10 @@ class Agent(Object):
 
         # Dialog attributes
         self.attributes['isDialogable'] = True                     # Can it be dialoged with?
+
+        # Door opening/closing for NPCs
+        self.attributes["doorNeedsToBeClosed"] = None              # Whether a door was recently opened that needs to be closed
+        self.attributes["movesSinceDoorOpen"] = 0                  # How many moves have happened since the door was opened
 
 
     #   
@@ -324,7 +328,8 @@ class NPC(Agent):
     # Constructor
     def __init__(self, world, name):
         # Default sprite name
-        Object.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
+        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
+        #Object.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
     
         # Rendering
         self.attributes["faceDirection"] = "south"        
@@ -375,7 +380,7 @@ class NPCChef(Agent):
     # Constructor
     def __init__(self, world, name):
         # Default sprite name
-        Object.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
+        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
     
         # Rendering
         self.attributes["faceDirection"] = "south"        
@@ -425,7 +430,7 @@ class NPCColonist(Agent):
     # Constructor
     def __init__(self, world, name):
         # Default sprite name
-        Object.__init__(self, world, "agent", name, defaultSpriteName = "character16_agent_facing_south")
+        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character16_agent_facing_south")
     
         # Rendering
         self.attributes["faceDirection"] = "south"        
@@ -498,12 +503,39 @@ class NPCColonist(Agent):
         pathSuccess, nextX, nextY = self.pathfinder.findPathNextStep(self.world, self.attributes["gridX"], self.attributes["gridY"], self.attributes["goalLocation"][0], self.attributes["goalLocation"][1])
         
         if (pathSuccess):
-            # Calculate deltas
-            deltaX = nextX - self.attributes["gridX"]
-            deltaY = nextY - self.attributes["gridY"]
+            if ("doorNeedsToBeClosed" in self.attributes) and (self.attributes["doorNeedsToBeClosed"] != None) and (self.attributes["movesSinceDoorOpen"] == 1):
+                # We recently opened a door -- close it
+                doorToClose = self.attributes["doorNeedsToBeClosed"]
+                self.actionOpenClose(doorToClose, "close")
+                self.attributes["doorNeedsToBeClosed"] = None
+                self.attributes["movesSinceDoorOpen"] = 0
+            else:
+                # Calculate deltas
+                deltaX = nextX - self.attributes["gridX"]
+                deltaY = nextY - self.attributes["gridY"]
 
-            # Move agent one step
-            moveSuccess = self.actionMoveAgent(deltaX, deltaY)
+                # First, check to see if the next step has a barrier (like a door) that needs to be opened
+                allObjs = self.world.getObjectsAt(nextX, nextY)
+                # Get a list of objects that are not passable (isPassable == False)
+                allObjsNotPassable = [obj for obj in allObjs if (obj.attributes["isPassable"] == False)]
+                
+                # If there are no impassable objects, then move the agent
+                if (len(allObjsNotPassable) == 0):
+                    # Move agent one step
+                    moveSuccess = self.actionMoveAgent(deltaX, deltaY)
+                    self.attributes["movesSinceDoorOpen"] += 1
+                else:
+                    # There's one or more impassable objects -- try to open them.
+                    for obj in allObjsNotPassable:
+                        # Check to see if the object is openable
+                        if (obj.attributes["isOpenable"]):
+                            # Open the object
+                            self.actionOpenClose(obj, "open")
+                            self.attributes["doorNeedsToBeClosed"] = obj
+                            self.attributes["movesSinceDoorOpen"] = 0
+                            # Break out of the loop
+                            break
+
         
         else:
             # No success -- means either (a) we're already in the goal location, or (b) there's no path to the goal location
