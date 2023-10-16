@@ -307,8 +307,12 @@ def main():
     world.addObject(10, 10, Layer.AGENT, currentAgent)
 
     # Add an NPC
-    exampleNPC = NPC(world, "Example NPC")
-    world.addObject(15, 15, Layer.AGENT, exampleNPC)
+    npcColonist = NPCColonist(world, "Example NPC")
+    world.addObject(15, 15, Layer.AGENT, npcColonist)
+
+    # Add the NPC Chef
+    npcChef = NPCChef(world, "Chef")
+    world.addObject(20, 21, Layer.AGENT, npcChef)
 
     # Main rendering loop
     running = True

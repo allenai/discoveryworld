@@ -203,3 +203,14 @@ class World:
                     for spriteName in object.getSpriteNamesWithContents():
                         self.spriteLibrary.renderSprite(window, spriteName, x * 32 - cameraX, y * 32 - cameraY)
 
+
+
+    #
+    #   Pathfinding
+    #   
+
+    # Get the next step in the path from one location to another
+    #def getNextStep(self, fromLocation, toLocation):
+
+    
+

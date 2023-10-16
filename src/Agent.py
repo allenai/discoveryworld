@@ -6,6 +6,8 @@ from ObjectModel import *
 from Layer import * 
 from ActionSuccess import *
 
+from Pathfinding import *
+
 #
 #   Agent (controlled by a user or model)
 #
@@ -343,6 +345,8 @@ class NPC(Agent):
         # NPC States
         self.attributes['dialogAgentsSpokenWith'] = []             # List of dialog agents that this NPC has spoken with
 
+        # Pathfinder
+        self.pathfinder = Pathfinder()
 
     #
     #   Dialog Actions
@@ -359,3 +363,126 @@ class NPC(Agent):
 
         # If we reach here, the agent has not spoken with this NPC yet
         return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
+
+
+
+
+#
+#   Non-player character (controlled by the simulation)
+#
+class NPCChef(Agent):
+    # Constructor
+    def __init__(self, world, name):
+        # Default sprite name
+        Object.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
+    
+        # Rendering
+        self.attributes["faceDirection"] = "south"        
+        self.spriteCharacterPrefix = "character17_"
+
+        # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
+
+        # Agent is a container for its inventory
+        # Container attributes
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can be opened
+        self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+    
+        # Dialog attributes
+        self.attributes['isDialogable'] = True                     # Can it be dialoged with?
+
+        # NPC States
+        self.attributes['dialogAgentsSpokenWith'] = []             # List of dialog agents that this NPC has spoken with
+
+        # Pathfinder
+        self.pathfinder = Pathfinder()
+
+
+    #
+    #   Dialog Actions
+    #
+    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+
+        # Step 1: Check if the agent has already spoken with this NPC
+        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+            # Agent has already spoken with this NPC
+            return "I've already spoken with you."
+
+        # Add the agent to the list of agents that this NPC has spoken with
+        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+
+        # If we reach here, the agent has not spoken with this NPC yet
+        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
+
+
+#
+#   Non-player character (controlled by the simulation)
+#
+class NPCColonist(Agent):
+    # Constructor
+    def __init__(self, world, name):
+        # Default sprite name
+        Object.__init__(self, world, "agent", name, defaultSpriteName = "character16_agent_facing_south")
+    
+        # Rendering
+        self.attributes["faceDirection"] = "south"        
+        self.spriteCharacterPrefix = "character16_"
+
+        # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
+
+        # Agent is a container for its inventory
+        # Container attributes
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can be opened
+        self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+    
+        # Dialog attributes
+        self.attributes['isDialogable'] = True                     # Can it be dialoged with?
+
+        # NPC States
+        self.attributes['dialogAgentsSpokenWith'] = []             # List of dialog agents that this NPC has spoken with
+
+        # Pathfinder
+        self.pathfinder = Pathfinder()
+
+
+    #
+    #   Dialog Actions
+    #
+    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+
+        # Step 1: Check if the agent has already spoken with this NPC
+        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+            # Agent has already spoken with this NPC
+            return "I've already spoken with you."
+
+        # Add the agent to the list of agents that this NPC has spoken with
+        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+
+        # If we reach here, the agent has not spoken with this NPC yet
+        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+
+    
+    #
+    #   Tick
+    #
+        
+    # Tick
+    def tick(self):
+        # # Randomly move agent
+        # if (random.random() < 0.1):
+        #     # Randomly move the agent
+        #     deltaX = random.randint(-1, 1)
+        #     deltaY = random.randint(-1, 1)
+        #     self.actionMoveAgent(deltaX, deltaY)
+
+        # Call superclass
+        Object.tick(self)
+
+        # Pathfinding
+        # signiture: def findPath(self, world, startX, startY, endX, endY):
+        self.pathfinder.findPath(self.world, self.attributes["gridX"], self.attributes["gridY"], 10, 10)
