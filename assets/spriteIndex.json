@@ -215,6 +215,18 @@
             }
     },
     {
+        "sheetName": "placeholder", 
+        "filename": "placeholder/pot.png",
+        "tileSize": [32, 32],        
+        "sprites":
+            {    
+                "pot":    { "baseTile": [0, 0],  "size": [1, 1] }                
+            },
+        "composites": 
+            {
+            }
+    },
+    {
         "sheetName": "character18", 
         "filename": "pixymoon/CuteRPG_Sprites/Characters/Character_018.png",
         "tileSize": [24, 24],

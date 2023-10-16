@@ -96,7 +96,10 @@ def mkCafeteria(x, y, world, buildingMaker):
     #world.addObject(x+2, y+5, Layer.FURNITURE, Table(world))
 
     # Back (kitchen)
-    world.addObject(x+3, y+1, Layer.FURNITURE, Table(world))
+    pot = Pot(world)
+    kitchenPrepTable = Table(world)
+    kitchenPrepTable.addObject(pot)
+    world.addObject(x+3, y+1, Layer.FURNITURE, kitchenPrepTable)
     world.addObject(x+4, y+1, Layer.FURNITURE, Fridge(world))    
     world.addObject(x+5, y+1, Layer.FURNITURE, Sink(world))
     world.addObject(x+6, y+1, Layer.FURNITURE, Stove(world))
