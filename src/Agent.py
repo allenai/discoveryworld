@@ -7,7 +7,7 @@ from Layer import *
 from ActionSuccess import *
 
 #
-#   Object: Fence
+#   Agent (controlled by a user or model)
 #
 class Agent(Object):
     # Constructor
@@ -17,6 +17,7 @@ class Agent(Object):
     
         # Rendering
         self.attributes["faceDirection"] = "south"        
+        self.spriteCharacterPrefix = "character18_"                 # Prefix for the sprite character name (e.g. "character18_")
 
         # Agent is a container for its inventory
         # Container attributes
@@ -286,16 +287,40 @@ class Agent(Object):
 
         # Change the sprite based on the direction the agent is facing
         if (self.attributes["faceDirection"] == "north"):
-            self.curSpriteName = "character18_agent_facing_north"
+            self.curSpriteName = self.spriteCharacterPrefix + "agent_facing_north"
         elif (self.attributes["faceDirection"] == "south"):
-            self.curSpriteName = "character18_agent_facing_south"
+            self.curSpriteName = self.spriteCharacterPrefix + "agent_facing_south"
         elif (self.attributes["faceDirection"] == "east"):
-            self.curSpriteName = "character18_agent_facing_east"
+            self.curSpriteName = self.spriteCharacterPrefix + "agent_facing_east"
         elif (self.attributes["faceDirection"] == "west"):
-            self.curSpriteName = "character18_agent_facing_west"
+            self.curSpriteName = self.spriteCharacterPrefix + "agent_facing_west"
         else:
             # Unknown direction -- this should never happen.  Default to south.
-            self.curSpriteName = "character18_agent_facing_south"
+            self.curSpriteName = self.spriteCharacterPrefix + "agent_facing_south"
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+
+
+#
+#   Non-player character (controlled by the simulation)
+#
+class NPC(Agent):
+    # Constructor
+    def __init__(self, world, name):
+        # Default sprite name
+        Object.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
+    
+        # Rendering
+        self.attributes["faceDirection"] = "south"        
+        self.self.spriteCharacterPrefix = "character17_"
+
+        # Agent is a container for its inventory
+        # Container attributes
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can be opened
+        self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+    
