@@ -55,16 +55,20 @@ class World:
         object.setWorldLocation(x, y)
 
         # World, building, and furniture layers are overwrite layers (i.e. they can hold only a single object)
-        if layer == Layer.WORLD or layer == Layer.BUILDING or layer == Layer.FURNITURE:
-            self.grid[x][y]["layers"][layer] = []
-            self.grid[x][y]["layers"][layer].append(object)
-        # Objects layer is an additive layer (i.e. it can hold multiple objects)
-        elif layer == Layer.OBJECTS:
-            self.grid[x][y]["layers"][layer].append(object)
-        # Player layer is a special layer that can only hold a single object
-        elif layer == Layer.AGENT:
-            self.grid[x][y]["layers"][layer] = []
-            self.grid[x][y]["layers"][layer].append(object)
+        # if layer == Layer.WORLD or layer == Layer.BUILDING or layer == Layer.FURNITURE:
+        #     self.grid[x][y]["layers"][layer] = []
+        #     self.grid[x][y]["layers"][layer].append(object)
+        # # Objects layer is an additive layer (i.e. it can hold multiple objects)
+        # elif layer == Layer.OBJECTS:
+        #     self.grid[x][y]["layers"][layer].append(object)
+        # # Player layer is a special layer that can only hold a single object
+        # elif layer == Layer.AGENT:
+        #     self.grid[x][y]["layers"][layer] = []
+        #     self.grid[x][y]["layers"][layer].append(object)
+
+        # All layers can hold multiple objects
+        if (layer == Layer.WORLD) or (layer == Layer.BUILDING) or (layer == Layer.FURNITURE) or (layer == Layer.OBJECTS) or (layer == Layer.AGENT):
+           self.grid[x][y]["layers"][layer].append(object) 
         else:
             print("Error: Invalid layer: " + str(layer))
             return False
