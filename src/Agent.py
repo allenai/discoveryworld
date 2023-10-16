@@ -19,6 +19,9 @@ class Agent(Object):
         self.attributes["faceDirection"] = "south"        
         self.spriteCharacterPrefix = "character18_"                 # Prefix for the sprite character name (e.g. "character18_")
 
+        # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
+
         # Agent is a container for its inventory
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
@@ -315,7 +318,10 @@ class NPC(Agent):
     
         # Rendering
         self.attributes["faceDirection"] = "south"        
-        self.self.spriteCharacterPrefix = "character17_"
+        self.spriteCharacterPrefix = "character17_"
+
+        # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
 
         # Agent is a container for its inventory
         # Container attributes
