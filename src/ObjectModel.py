@@ -49,6 +49,9 @@ class Object:
         self.attributes['isActivatable'] = False                      # Is this a device? (more specifically, can it be activated/deactivated?)
         self.attributes['isActivated'] = False                      # Is this device currently activated?
 
+        # Dialog attributes
+        self.attributes['isDialogable'] = False                     # Can it be dialoged with?
+
 
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)

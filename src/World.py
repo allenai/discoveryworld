@@ -66,13 +66,12 @@ class World:
         #     self.grid[x][y]["layers"][layer] = []
         #     self.grid[x][y]["layers"][layer].append(object)
 
-        # All layers can hold multiple objects
+        # All layers can hold multiple objects (prevents objects suddenly disappearing when a new object is moved to the same world location)
         if (layer == Layer.WORLD) or (layer == Layer.BUILDING) or (layer == Layer.FURNITURE) or (layer == Layer.OBJECTS) or (layer == Layer.AGENT):
            self.grid[x][y]["layers"][layer].append(object) 
         else:
             print("Error: Invalid layer: " + str(layer))
             return False
-        
 
 
     # Get all objects at a given position

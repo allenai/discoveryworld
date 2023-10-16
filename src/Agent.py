@@ -29,6 +29,9 @@ class Agent(Object):
         self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
 
+        # Dialog attributes
+        self.attributes['isDialogable'] = True                     # Can it be dialoged with?
+
 
     #   
     #   Accessors/helpers
@@ -276,7 +279,11 @@ class Agent(Object):
             return ActionSuccess(True, "I deactivated the " + objToActivateOrDeactivate.name + ".")
             
 
-
+    #
+    #   Dialog Actions
+    #
+    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+        return "Dialog placeholder"
 
     #
     # Sprite
@@ -330,3 +337,25 @@ class NPC(Agent):
         self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
     
+        # Dialog attributes
+        self.attributes['isDialogable'] = True                     # Can it be dialoged with?
+
+        # NPC States
+        self.attributes['dialogAgentsSpokenWith'] = []             # List of dialog agents that this NPC has spoken with
+
+
+    #
+    #   Dialog Actions
+    #
+    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+
+        # Step 1: Check if the agent has already spoken with this NPC
+        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+            # Agent has already spoken with this NPC
+            return "I've already spoken with you."
+
+        # Add the agent to the list of agents that this NPC has spoken with
+        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+
+        # If we reach here, the agent has not spoken with this NPC yet
+        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."

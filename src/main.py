@@ -497,6 +497,28 @@ def main():
 
                 lastMove = curTime
 
+            # Dialog/talk action
+            elif (keys[pygame.K_t]):
+                # Talk to an agent in front of the agent
+
+                # Find an agent at the location the agent is facing
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    # Filter by objects that are agents (i.e. dialogable)
+                    agentObjs = [obj for obj in objs if (obj.attributes['isDialogable'] == True)]
+
+                    # Check to see if there is an agent here
+                    if (len(agentObjs) > 0):
+                        # Try to talk to the first one
+                        agentToTalkTo = agentObjs[0]
+                        print("Dialog event:")
+                        success = agentToTalkTo.actionDialog(agentDoingTalking = currentAgent, dialogStrToSay = "Hello!")
+                        print(success)
+                        time.sleep(1)
+
 
 
 
