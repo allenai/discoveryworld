@@ -12,6 +12,9 @@ class Object:
         self.name = objectName
         self.defaultSpriteName = defaultSpriteName
 
+        # Whether the agent has had tick() called already this past update
+        self.tickCompleted = False
+
         # Whether the sprite name needs to be recalculated
         # By default this is off (i.e. static sprites).
         # If your object changes sprites based on status, then you should set this to True,
@@ -125,7 +128,11 @@ class Object:
     #
     def tick(self):
         # Update the object
-        
+
+        # Stop if the object has already had tick() called this update -- this might have happened if the object moved locations in this current update cycle.
+        if (self.tickCompleted):
+            return
+
         # Infer current name
         if (self.firstInit):
             self.firstInit = False
@@ -134,12 +141,17 @@ class Object:
             self.inferSpriteName()
 
 
+        # Set that the tick has been completed on this object
+        self.tickCompleted = True
+
         # Also call tick on all contained objects
         for obj in self.contents:
             # First, update the grid location of the contained objects to be the same as the container
             obj.setWorldLocation(self.attributes["gridX"], self.attributes["gridY"])
             # Next, call tick()
             obj.tick()
+
+        
         
 
     #

@@ -5,8 +5,9 @@ import random
 from ObjectModel import *
 from Layer import * 
 from ActionSuccess import *
-
 from Pathfinding import *
+
+import time
 
 #
 #   Agent (controlled by a user or model)
@@ -480,9 +481,37 @@ class NPCColonist(Agent):
         #     deltaY = random.randint(-1, 1)
         #     self.actionMoveAgent(deltaX, deltaY)
 
+        # Stop if the object has already had tick() called this update -- this might have happened if the object moved locations in this current update cycle.
+        if (self.tickCompleted):
+            return
+
         # Call superclass
         Object.tick(self)
 
         # Pathfinding
         # signiture: def findPath(self, world, startX, startY, endX, endY):
-        self.pathfinder.findPath(self.world, self.attributes["gridX"], self.attributes["gridY"], 10, 10)
+        
+        # Check to see if there's a goal location attribute
+        if ("goalLocation" not in self.attributes):
+            self.attributes["goalLocation"] = (10, 10)
+
+        pathSuccess, nextX, nextY = self.pathfinder.findPathNextStep(self.world, self.attributes["gridX"], self.attributes["gridY"], self.attributes["goalLocation"][0], self.attributes["goalLocation"][1])
+        
+        if (pathSuccess):
+            # Calculate deltas
+            deltaX = nextX - self.attributes["gridX"]
+            deltaY = nextY - self.attributes["gridY"]
+
+            # Move agent one step
+            moveSuccess = self.actionMoveAgent(deltaX, deltaY)
+        
+        else:
+            # No success -- means either (a) we're already in the goal location, or (b) there's no path to the goal location
+            # In either case, we'll just pick a new goal location
+            print("Finding new goal location")
+            time.sleep(1)
+            self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
+        
+
+
+    

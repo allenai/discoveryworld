@@ -146,6 +146,16 @@ class World:
     #
     def tick(self):
         # Update all objects in the world
+
+        # First, reset whether each object has had its tick() function called this tick
+        for x in range(self.sizeX):
+            for y in range(self.sizeY):
+                for layer in Layer:
+                    for object in self.grid[x][y]["layers"][layer]:
+                        object.tickCompleted = False
+
+
+        # Then, call tick() on each object in the world
         for x in range(self.sizeX):
             for y in range(self.sizeY):
                 for layer in Layer:
