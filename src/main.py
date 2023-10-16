@@ -78,15 +78,21 @@ def mkCafeteria(x, y, world, buildingMaker):
     # Create an L-shaped building (cafeteria)
     #buildingMaker.mkBuildingLDivided(world, x=x, y=y, width=10, height=8, dividerX=5)
     # Create a divided building (cafeteria)
-    buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=7, dividerX=0, apertureX=0, dividerY=3, apertureY=1, doorX=3, signText="Cafeteria")
+    #buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=7, dividerX=0, apertureX=0, dividerY=3, apertureY=1, doorX=3, signText="Cafeteria")
+    buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=8, height=7, signText="Cafeteria")
 
     # Front (eating area)
     # Table and chairs
     #buildingMaker.mkTableAndChairs(world, x=x+7, y=y+5, chairsPresent=["n", "s", "e", "w"])
-    buildingMaker.mkTableAndChairs(world, x=x+5, y=y+4, chairsPresent=["", "", "e", "w"])
+    buildingMaker.mkTableAndChairs(world, x=x+2, y=y+5, chairsPresent=["", "", "e", "w"])
 
     # Counter
-    world.addObject(x+2, y+4, Layer.FURNITURE, Table(world))
+    world.addObject(x+2, y+3, Layer.FURNITURE, Table(world))
+    world.addObject(x+3, y+3, Layer.FURNITURE, Table(world))
+    world.addObject(x+4, y+3, Layer.FURNITURE, Table(world))
+    world.addObject(x+5, y+3, Layer.FURNITURE, Table(world))
+    world.addObject(x+6, y+3, Layer.FURNITURE, Table(world))
+
     #world.addObject(x+2, y+5, Layer.FURNITURE, Table(world))
 
     # Back (kitchen)
