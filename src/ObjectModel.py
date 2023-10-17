@@ -23,6 +23,7 @@ class Object:
 
         # Name of the current and last sprite names
         self.curSpriteName = None
+        self.curSpriteModifiers = set()
         self.lastSpriteName = None
         self.tempLastSpriteName = None      # Used to store what the next 'lastSpriteName' will be -- updated when the backbuffer flips
 
@@ -140,6 +141,9 @@ class Object:
         if (self.tickCompleted):
             return
 
+        # Remove all current sprite modifiers (these are regenerated every tick)
+        self.curSpriteModifiers = set()
+
         # Infer current name
         if (self.firstInit):
             self.firstInit = False
@@ -208,6 +212,8 @@ class Object:
 
         # First, get the name of the current object itself
         spriteList = [self.getSpriteName()]
+        # Add any sprite modifiers
+        spriteList.extend(self.curSpriteModifiers)
 
         # Then, add the name of any visible contents
         # First, check if this is a container (and it's open)
@@ -218,7 +224,10 @@ class Object:
                 spriteNameObj = obj.getSpriteName()
                 #print("Object name: " + obj.name + "  sprite name: " + str(spriteNameObj))
                 if (spriteNameObj != None):
-                    spriteList.append(spriteNameObj)                
+                    spriteList.append(spriteNameObj) 
+                    # Add any sprite modifiers
+                    spriteList.extend(obj.curSpriteModifiers)
+
 
         # Return the sprite list
         return spriteList

@@ -607,6 +607,11 @@ class NPCColonist(NPC):
         # Call superclass
         NPC.tick(self)
 
+        # Sprite modifier updates
+        if ("poisoned" in self.attributes['states']):
+            self.curSpriteModifiers.add("placeholder_sick")
+
+
         # Interpret any external states
         if ("poisoned" in self.attributes['states']):
             # If the agent is poisoned, then head for the infirmary

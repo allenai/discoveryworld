@@ -220,7 +220,8 @@
         "tileSize": [32, 32],        
         "sprites":
             {    
-                "pot":    { "baseTile": [0, 0],  "size": [1, 1] }                
+                "pot":    { "baseTile": [0, 0],  "size": [1, 1] },                
+                "sick":   { "baseTile": [1, 0],  "size": [1, 1] }
             },
         "composites": 
             {
