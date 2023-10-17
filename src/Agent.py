@@ -581,6 +581,9 @@ class NPCColonist(NPC):
 
         # Interpret any external signals
         if ("eatSignal" in self.attributes['states']):
+            # Remove the "wandering" state
+            if ("wandering" in self.attributes['states']):
+                self.attributes['states'].remove("wandering")
             # Head to the cafeteria
             self.attributes["goalLocation"] = (23, 24)
             # remove "eatSignal" from external signals
