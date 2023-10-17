@@ -151,8 +151,6 @@ class Agent(Object):
         self.world.removeObject(objToPickUp)                    # Remove the object from the world
         self.addObject(objToPickUp)                             # Add the object to the agent's inventory
 
-
-
         return ActionSuccess(True, "I picked up the " + objToPickUp.name + ".")
 
 
@@ -287,6 +285,31 @@ class Agent(Object):
             objToActivateOrDeactivate.invalidateSpritesThisWorldTile()
             return ActionSuccess(True, "I deactivated the " + objToActivateOrDeactivate.name + ".")
             
+
+    # Eat an object
+    def actionEat(self, objToEat):
+        # First, check if the object is edible
+        if (not objToEat.attributes["isEdible"]):
+            # Object is not movable
+            return ActionSuccess(False, "That object (" + objToEat.name + ") is not edible.")
+
+        # Next, check if the object is within reach (i.e. +/- 1 grid location)
+        distX = abs(objToEat.attributes["gridX"] - self.attributes["gridX"])
+        distY = abs(objToEat.attributes["gridY"] - self.attributes["gridY"])
+        if (distX > 1 or distY > 1):
+            # Object is not within reach
+            return ActionSuccess(False, "That object (" + objToEat.name + ") is not within reach. I can only eat objects that are within +/- 1 grid location.")
+
+
+        # If we reach here, the object is edible and within reach.  Eat it.
+        objToEat.invalidateSpritesThisWorldTile()            # Invalidate the sprites at the object's current location
+        self.world.removeObject(objToEat)                    # Remove the object from the world
+
+        # Change agent attributes based on the food's attributes
+        # TODO
+
+        return ActionSuccess(True, "I ate the " + objToEat.name + ".")
+
 
     #
     #   Dialog Actions

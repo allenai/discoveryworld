@@ -518,7 +518,7 @@ def main():
         
         # For some read K_d doesn't work. 
         # Should be D key here
-        elif (keys[pygame.K_e]):            
+        elif (keys[pygame.K_d]):            
             # Deactivate an object in front of the agent
             
             # Find an activatable object at the location the agent is facing
