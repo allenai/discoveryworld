@@ -4,6 +4,7 @@ import os
 import json
 import random
 import time
+import subprocess
 
 # Sprite library
 import SpriteLibrary
@@ -337,6 +338,18 @@ def main():
     world.tick()
 
 
+    # Create a directory "/video" for storing video frames
+    VIDEO_DIR = "video"
+    FRAME_DIR = "video/frames"
+    if (not os.path.exists(VIDEO_DIR)):
+        os.mkdir(VIDEO_DIR)
+    if (not os.path.exists(FRAME_DIR)):
+        os.mkdir(FRAME_DIR)
+    # Empty the frames directory
+    for filename in os.listdir(FRAME_DIR):
+        os.remove(FRAME_DIR + "/" + filename)
+    
+
     # Main rendering loop
     running = True
     frames = 0
@@ -616,6 +629,11 @@ def main():
         # Render the world
         world.render(window, cameraX=0, cameraY=0)
 
+        # Save the screen frame to a file
+        if (doNextTurn):
+            frameFilename = FRAME_DIR + "/frame_" + str(frames) + ".png"
+            pygame.image.save(window, frameFilename)
+
 
         # Display the sprite
         #world.spriteLibrary.renderSprite(window, "house1_wall1", 100, 100)
@@ -626,9 +644,16 @@ def main():
         
         #time.sleep(1)
 
+    # If we get here, the game loop is over.
+    # Convert the frames to a video
+    print("Converting frames to video...")
+    # Call FFMPEG (forces overwrite)
+    subprocess.call(["./ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
 
 
 # Main
 if __name__ == "__main__":
     # Main function
     main()
+
+    
