@@ -89,7 +89,7 @@ def mkCafeteria(x, y, world, buildingMaker):
     # Counter
     world.addObject(x+2, y+3, Layer.FURNITURE, Table(world))
     world.addObject(x+3, y+3, Layer.FURNITURE, Table(world))
-    mushroom = Mushroom(world)
+    mushroom = Mushroom(world, "red")
     table1 = Table(world)
     table1.addObject(mushroom)
     world.addObject(x+4, y+3, Layer.FURNITURE, table1)
@@ -589,6 +589,12 @@ def main():
             print("Sending 'eatSignal' to colonist NPC")
             npcColonist.attributes['states'].add("eatSignal")
 
+            doNextTurn = True
+
+        # Manual "wait"
+        elif (keys[pygame.K_w]):
+            # Wait a turn
+            print("Waiting (taking no action this turn)...")
             doNextTurn = True
 
 

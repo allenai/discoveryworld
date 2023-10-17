@@ -1224,13 +1224,16 @@ class PlantGeneric(Object):
 #
 class Mushroom(Object):
     # Constructor
-    def __init__(self, world):
+    def __init__(self, world, color:str=""):
         # Default sprite name
         Object.__init__(self, world, "mushroom", "mushroom", defaultSpriteName = "forest1_mushroom_pink")
 
         #self.attributes["color"] = "pink"                           # Color of the mushroom (valid: "yellow", "pink", "red", "green")
         # Randomly choose a color
-        self.attributes["color"] = random.choice(["yellow", "pink", "red", "green"])
+        if (color == ""):
+            self.attributes["color"] = random.choice(["yellow", "pink", "red", "green"])
+        else:
+            self.attributes["color"] = color
 
         # Food attributes
         self.attributes['isEdible'] = True                         # Can it be eaten?
