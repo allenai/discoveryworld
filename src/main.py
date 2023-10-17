@@ -587,7 +587,7 @@ def main():
         elif (keys[pygame.K_1]):
             # Change the colonist NPC external signal
             print("Sending 'eatSignal' to colonist NPC")
-            npcColonist.attributes['states'].append("eatSignal")
+            npcColonist.attributes['states'].add("eatSignal")
 
             doNextTurn = True
 

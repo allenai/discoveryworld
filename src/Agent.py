@@ -40,7 +40,7 @@ class Agent(Object):
         self.attributes["movesSinceDoorOpen"] = 0                  # How many moves have happened since the door was opened
 
         # Signals (largely for NPCs)
-        self.attributes["states"] = []                             # External signals that the agent has received
+        self.attributes["states"] = set()                          # External signals that the agent has received
 
     #   
     #   Accessors/helpers
@@ -586,7 +586,7 @@ class NPCColonist(NPC):
             # remove "eatSignal" from external signals
             self.attributes['states'].remove("eatSignal")
             # Add "movingToCafeteria" to external signals
-            self.attributes['states'].append("movingToCafeteria")
+            self.attributes['states'].add("movingToCafeteria")
 
         elif ("takeFoodFromCafeteria" in self.attributes['states']):
             # Look directly in front of the agent for something edible
@@ -613,7 +613,7 @@ class NPCColonist(NPC):
                 # Remove "takeFoodFromCafeteria" from external signals
                 self.attributes['states'].remove("takeFoodFromCafeteria")
                 # Add "eating" to external signals
-                self.attributes['states'].append("eating")
+                self.attributes['states'].add("eating")
 
                 # Set which object to eat
                 self.attributes["objectToEat"] = edibleObject
@@ -632,7 +632,7 @@ class NPCColonist(NPC):
                 # Remove "eating" from external signals
                 self.attributes['states'].remove("eating")
                 # Add "wandering" to external signals
-                self.attributes['states'].append("wandering")
+                self.attributes['states'].add("wandering")
                 # Remove "objectToEat" attribute
                 del self.attributes["objectToEat"]
 
@@ -646,7 +646,7 @@ class NPCColonist(NPC):
                     if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
                         # We're in the cafeteria -- eat!
                         self.attributes['states'].remove("movingToCafeteria")
-                        self.attributes['states'].append("takeFoodFromCafeteria")
+                        self.attributes['states'].add("takeFoodFromCafeteria")
                         # Remove the goal location
                         del self.attributes["goalLocation"]
 
