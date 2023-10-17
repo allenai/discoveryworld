@@ -550,6 +550,9 @@ class NPCColonist(NPC):
         if (self.tickCompleted):
             return
 
+        # Debug
+        print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+
         # Call superclass
         Object.tick(self)
 
@@ -562,16 +565,52 @@ class NPCColonist(NPC):
             # Add "movingToCafeteria" to external signals
             self.attributes['states'].append("movingToCafeteria")
 
+        if ("takeFoodFromCafeteria" in self.attributes['states']):
+            # Look directly in front of the agent for something edible
+            # Get the location in front of the agent
+            (facingX, facingY) = self.getWorldLocationAgentIsFacing()
+            # Get all objects at that world location
+            objectsInFrontOfAgent = self.world.getObjectsAt(facingX, facingY)
+            # Print names of objects in front of agent
+            print("Objects in front of agent: " + str([x.name for x in objectsInFrontOfAgent]))
+
+            # Loop through all objects at that location, looking for edible objects
+            edibleObjects = [x for x in objectsInFrontOfAgent if x.attributes['isEdible']]
+            # Print names of edible objects in front of agent
+            print("Edible objects in front of agent: " + str([x.name for x in edibleObjects]))
+
+            if (len(edibleObjects) > 0):
+                print("I want to take the " + edibleObjects[0].name)
+                # Take the first edible object
+                edibleObject = edibleObjects[0]
+                # Take the object
+                successTake = self.actionPickUp(edibleObject)
+                print(successTake)
+
+                # Remove "takeFoodFromCafeteria" from external signals
+                self.attributes['states'].remove("takeFoodFromCafeteria")
+                # Add "eating" to external signals
+                self.attributes['states'].append("eating")
+
 
 
         # Pathfinding/Auto-navigation        
         if ("goalLocation" in self.attributes):
             success = self._doNPCAutonavigation()
             if (not success):
+                # If we're in the "movingToCafeteria" state, check to see if we're already in the goal location
+                if ("movingToCafeteria" in self.attributes['states']):
+                    if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
+                        # We're in the cafeteria -- eat!
+                        self.attributes['states'].remove("movingToCafeteria")
+                        self.attributes['states'].append("takeFoodFromCafeteria")
+                        # Remove the goal location
+                        del self.attributes["goalLocation"]
+
                 # We failed to find a path to the goal location -- pick a new goal location
-                self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
+                #self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
         else:
-            if ("movingToCafeteria" not in self.attributes['states']):
+            if ("wandering" in self.attributes['states']):
                 self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
 
 

@@ -75,16 +75,34 @@ class World:
 
 
     # Get all objects at a given position
-    def getObjectsAt(self, x, y):
+    def getObjectsAt(self, x, y, respectContainerStatus=False):
         # Bound checking: Make sure the object is within the world bounds
         if x < 0 or x >= self.sizeX or y < 0 or y >= self.sizeY:
             print("Error: Object out of bounds: " + str(x) + ", " + str(y))
             return []
 
+        print("\t\t\tGetting objects at (" + str(x) + ", " + str(y) + ")")
         # Get the objects
         objects = []
-        for layer in Layer:
-            objects += self.grid[x][y]["layers"][layer]
+        for layer in Layer:            
+            #objects += self.grid[x][y]["layers"][layer]
+            objsToAdd = self.grid[x][y]["layers"][layer]
+            if (len(objsToAdd) > 0):
+                #print("\t\t\t\tLayer: " + str(layer) + " (" + str(len(objsToAdd)) + " objects)") 
+                for obj in objsToAdd:
+                    objects.append(obj)
+                    contents = obj.getAllContainedObjectsRecursive(respectContainerStatus=respectContainerStatus)
+                    if (len(contents) > 0):
+                        #print("Contents of " + obj.name + ": " + str(contents))
+                        objects += contents
+                    
+                    
+
+            #objects += objsToAdd
+
+
+            #for obj in self.grid[x][y]["layers"][layer]:
+            #    objects += obj.getAllContainedObjectsRecursive(respectContainerStatus=True)
 
         return objects
 

@@ -89,7 +89,10 @@ def mkCafeteria(x, y, world, buildingMaker):
     # Counter
     world.addObject(x+2, y+3, Layer.FURNITURE, Table(world))
     world.addObject(x+3, y+3, Layer.FURNITURE, Table(world))
-    world.addObject(x+4, y+3, Layer.FURNITURE, Table(world))
+    mushroom = Mushroom(world)
+    table1 = Table(world)
+    table1.addObject(mushroom)
+    world.addObject(x+4, y+3, Layer.FURNITURE, table1)
     world.addObject(x+5, y+3, Layer.FURNITURE, Table(world))
     world.addObject(x+6, y+3, Layer.FURNITURE, Table(world))
 
@@ -323,7 +326,7 @@ def main():
 
     # Add an NPC
     npcColonist = NPCColonist(world, "Example NPC")
-    world.addObject(15, 15, Layer.AGENT, npcColonist)
+    world.addObject(18, 25, Layer.AGENT, npcColonist)
 
     # Add the NPC Chef
     npcChef = NPCChef(world, "Chef")
@@ -566,6 +569,8 @@ def main():
             # Change the colonist NPC external signal
             print("Sending 'eatSignal' to colonist NPC")
             npcColonist.attributes['states'].append("eatSignal")
+
+            doNextTurn = True
 
 
 

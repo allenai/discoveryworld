@@ -55,6 +55,8 @@ class Object:
         # Dialog attributes
         self.attributes['isDialogable'] = False                     # Can it be dialoged with?
 
+        # Food attributes
+        self.attributes['isEdible'] = False                         # Can it be eaten?
 
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
@@ -108,16 +110,17 @@ class Object:
             return self.parentContainer.removeObject(self)
 
     # Get all contained objects
-    def getAllContainedObjectsRecursive(self, respectContainerStatus=False):
+    def getAllContainedObjectsRecursive(self, respectContainerStatus=False, recurseDepth:int = 0):
         # Get all contained objects, recursively
         out = []
-        # If this is a container, and it's open, then add the contents
+        #print("getAllContainedObjectsRecursive: " + self.name + " (" + str(self.attributes['isOpenContainer']) + ") . recurseDepth = " + str(recurseDepth) )
+        # If this is a container, and it's open, then add the contents        
         if (not respectContainerStatus) or (respectContainerStatus and self.attributes['isOpenContainer']):
             for obj in self.contents:
                 # Add self
                 out.append(obj)
                 # Add children
-                out.extend(obj.getAllContainedObjectsRecursive(respectContainerStatus))
+                out.extend(obj.getAllContainedObjectsRecursive(respectContainerStatus, recurseDepth+1))
         # Return
         return out
 
@@ -1224,6 +1227,9 @@ class Mushroom(Object):
         #self.attributes["color"] = "pink"                           # Color of the mushroom (valid: "yellow", "pink", "red", "green")
         # Randomly choose a color
         self.attributes["color"] = random.choice(["yellow", "pink", "red", "green"])
+
+        # Food attributes
+        self.attributes['isEdible'] = True                         # Can it be eaten?
 
     
     def tick(self):
