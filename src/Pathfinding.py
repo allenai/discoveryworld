@@ -1,8 +1,11 @@
 # Pathfinding.py
 
+from Layer import Layer
+
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
+
 
 
 class Pathfinder():
@@ -37,6 +40,11 @@ class Pathfinder():
                             passableScore = -1
 
                         break
+                # If this tile has any agents in it, increase its traversal cost
+                if (passableScore > 0):
+                    if (len(world.grid[x][y]["layers"][Layer.AGENT]) > 0):
+                        passableScore += 10
+
 
                 # Store the passability score
                 costGrid[y].append(passableScore)

@@ -39,6 +39,8 @@ class Agent(Object):
         self.attributes["doorNeedsToBeClosed"] = None              # Whether a door was recently opened that needs to be closed
         self.attributes["movesSinceDoorOpen"] = 0                  # How many moves have happened since the door was opened
 
+        # Signals (largely for NPCs)
+        self.attributes["states"] = []                             # External signals that the agent has received
 
     #   
     #   Accessors/helpers
@@ -371,12 +373,70 @@ class NPC(Agent):
         return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
 
 
+    #
+    #   NPC Auto-navigation
+    #   
+    def _doNPCAutonavigation(self):
+        # Check to see if there's a goal location attribute
+        if ("goalLocation" not in self.attributes):
+            print("_doNPCAutonavigation: No goal location attribute found.  Exiting. (agent: " + self.name + ")")
+            return False
+            #self.attributes["goalLocation"] = (10, 10)
+
+        pathSuccess, nextX, nextY = self.pathfinder.findPathNextStep(self.world, self.attributes["gridX"], self.attributes["gridY"], self.attributes["goalLocation"][0], self.attributes["goalLocation"][1])
+        
+        if (not pathSuccess):
+            print("_doNPCAutonavigation: No path found to goal location.  Exiting. (agent: " + self.name + ")")
+            return False
+
+        if ("doorNeedsToBeClosed" in self.attributes) and (self.attributes["doorNeedsToBeClosed"] != None) and (self.attributes["movesSinceDoorOpen"] == 1):
+            # We recently opened a door -- close it
+            doorToClose = self.attributes["doorNeedsToBeClosed"]
+            self.actionOpenClose(doorToClose, "close")
+            self.attributes["doorNeedsToBeClosed"] = None
+            self.attributes["movesSinceDoorOpen"] = 0
+        else:
+            # Calculate deltas
+            deltaX = nextX - self.attributes["gridX"]
+            deltaY = nextY - self.attributes["gridY"]
+
+            # First, check to see if the next step has a barrier (like a door) that needs to be opened
+            allObjs = self.world.getObjectsAt(nextX, nextY)
+            # Get a list of objects that are not passable (isPassable == False)
+            allObjsNotPassable = [obj for obj in allObjs if (obj.attributes["isPassable"] == False)]
+            
+            # If there are no impassable objects, then move the agent
+            if (len(allObjsNotPassable) == 0):
+                # Move agent one step
+                moveSuccess = self.actionMoveAgent(deltaX, deltaY)
+                self.attributes["movesSinceDoorOpen"] += 1
+            else:
+                # There's one or more impassable objects -- try to open them.
+                for obj in allObjsNotPassable:
+                    # Check to see if the object is openable
+                    if (obj.attributes["isOpenable"]):
+                        # Open the object
+                        self.actionOpenClose(obj, "open")
+                        self.attributes["doorNeedsToBeClosed"] = obj
+                        self.attributes["movesSinceDoorOpen"] = 0
+                        # Break out of the loop
+                        break
+
+        return True
+        
+        # else:
+        #     # No success -- means either (a) we're already in the goal location, or (b) there's no path to the goal location
+        #     # In either case, we'll just pick a new goal location
+        #     print("Finding new goal location")
+        #     #time.sleep(1)
+        #     self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
+
 
 
 #
 #   Non-player character (controlled by the simulation)
 #
-class NPCChef(Agent):
+class NPCChef(NPC):
     # Constructor
     def __init__(self, world, name):
         # Default sprite name
@@ -426,7 +486,7 @@ class NPCChef(Agent):
 #
 #   Non-player character (controlled by the simulation)
 #
-class NPCColonist(Agent):
+class NPCColonist(NPC):
     # Constructor
     def __init__(self, world, name):
         # Default sprite name
@@ -493,57 +553,28 @@ class NPCColonist(Agent):
         # Call superclass
         Object.tick(self)
 
-        # Pathfinding
-        # signiture: def findPath(self, world, startX, startY, endX, endY):
-        
-        # Check to see if there's a goal location attribute
-        if ("goalLocation" not in self.attributes):
-            self.attributes["goalLocation"] = (10, 10)
+        # Interpret any external signals
+        if ("eatSignal" in self.attributes['states']):
+            # Head to the cafeteria
+            self.attributes["goalLocation"] = (23, 24)
+            # remove "eatSignal" from external signals
+            self.attributes['states'].remove("eatSignal")
+            # Add "movingToCafeteria" to external signals
+            self.attributes['states'].append("movingToCafeteria")
 
-        pathSuccess, nextX, nextY = self.pathfinder.findPathNextStep(self.world, self.attributes["gridX"], self.attributes["gridY"], self.attributes["goalLocation"][0], self.attributes["goalLocation"][1])
-        
-        if (pathSuccess):
-            if ("doorNeedsToBeClosed" in self.attributes) and (self.attributes["doorNeedsToBeClosed"] != None) and (self.attributes["movesSinceDoorOpen"] == 1):
-                # We recently opened a door -- close it
-                doorToClose = self.attributes["doorNeedsToBeClosed"]
-                self.actionOpenClose(doorToClose, "close")
-                self.attributes["doorNeedsToBeClosed"] = None
-                self.attributes["movesSinceDoorOpen"] = 0
-            else:
-                # Calculate deltas
-                deltaX = nextX - self.attributes["gridX"]
-                deltaY = nextY - self.attributes["gridY"]
 
-                # First, check to see if the next step has a barrier (like a door) that needs to be opened
-                allObjs = self.world.getObjectsAt(nextX, nextY)
-                # Get a list of objects that are not passable (isPassable == False)
-                allObjsNotPassable = [obj for obj in allObjs if (obj.attributes["isPassable"] == False)]
-                
-                # If there are no impassable objects, then move the agent
-                if (len(allObjsNotPassable) == 0):
-                    # Move agent one step
-                    moveSuccess = self.actionMoveAgent(deltaX, deltaY)
-                    self.attributes["movesSinceDoorOpen"] += 1
-                else:
-                    # There's one or more impassable objects -- try to open them.
-                    for obj in allObjsNotPassable:
-                        # Check to see if the object is openable
-                        if (obj.attributes["isOpenable"]):
-                            # Open the object
-                            self.actionOpenClose(obj, "open")
-                            self.attributes["doorNeedsToBeClosed"] = obj
-                            self.attributes["movesSinceDoorOpen"] = 0
-                            # Break out of the loop
-                            break
 
-        
+        # Pathfinding/Auto-navigation        
+        if ("goalLocation" in self.attributes):
+            success = self._doNPCAutonavigation()
+            if (not success):
+                # We failed to find a path to the goal location -- pick a new goal location
+                self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
         else:
-            # No success -- means either (a) we're already in the goal location, or (b) there's no path to the goal location
-            # In either case, we'll just pick a new goal location
-            print("Finding new goal location")
-            #time.sleep(1)
-            self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
-        
+            if ("movingToCafeteria" not in self.attributes['states']):
+                self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
+
+
 
 
     
