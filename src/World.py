@@ -81,7 +81,7 @@ class World:
             print("Error: Object out of bounds: " + str(x) + ", " + str(y))
             return []
 
-        print("\t\t\tGetting objects at (" + str(x) + ", " + str(y) + ")")
+        #print("\t\t\tGetting objects at (" + str(x) + ", " + str(y) + ")")
         # Get the objects
         objects = []
         for layer in Layer:            

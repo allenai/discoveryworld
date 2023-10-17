@@ -588,7 +588,7 @@ class NPCColonist(NPC):
             # Add "movingToCafeteria" to external signals
             self.attributes['states'].append("movingToCafeteria")
 
-        if ("takeFoodFromCafeteria" in self.attributes['states']):
+        elif ("takeFoodFromCafeteria" in self.attributes['states']):
             # Look directly in front of the agent for something edible
             # Get the location in front of the agent
             (facingX, facingY) = self.getWorldLocationAgentIsFacing()
@@ -615,6 +615,26 @@ class NPCColonist(NPC):
                 # Add "eating" to external signals
                 self.attributes['states'].append("eating")
 
+                # Set which object to eat
+                self.attributes["objectToEat"] = edibleObject
+
+        elif ("eating" in self.attributes['states']):
+            # Eat the food in the inventory
+            if ("objectToEat" not in self.attributes):
+                # Error -- no object to eat is listed, shouldn't be here
+                print("Error: No object to eat is listed, shouldn't be here")
+            else:
+                objectToEat = self.attributes["objectToEat"]
+                # Eat the object
+                successEat = self.actionEat(objectToEat)
+                print(successEat)
+
+                # Remove "eating" from external signals
+                self.attributes['states'].remove("eating")
+                # Add "wandering" to external signals
+                self.attributes['states'].append("wandering")
+                # Remove "objectToEat" attribute
+                del self.attributes["objectToEat"]
 
 
         # Pathfinding/Auto-navigation        
@@ -629,6 +649,10 @@ class NPCColonist(NPC):
                         self.attributes['states'].append("takeFoodFromCafeteria")
                         # Remove the goal location
                         del self.attributes["goalLocation"]
+
+                elif ("wandering" in self.attributes['states']):
+                    self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))   
+
 
                 # We failed to find a path to the goal location -- pick a new goal location
                 #self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))

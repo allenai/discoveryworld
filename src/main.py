@@ -518,7 +518,7 @@ def main():
         
         # For some read K_d doesn't work. 
         # Should be D key here
-        elif (keys[pygame.K_d]):            
+        elif (keys[pygame.K_s]):            
             # Deactivate an object in front of the agent
             
             # Find an activatable object at the location the agent is facing
@@ -562,6 +562,25 @@ def main():
                     #time.sleep(1)
 
                     doNextTurn = True
+
+        # Eat action
+        elif (keys[pygame.K_e]):
+            # Eat an item in front of the agent
+
+            # Find an edible item at the location the agent is facing
+            facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+            # Bound checking
+            if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                # Get objects at location
+                objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                # Filter by objects that are edible
+                edibleObjs = [obj for obj in objs if (obj.attributes['isEdible'] == True)]
+
+                # Check to see if there is an edible object here
+                if (len(edibleObjs) > 0):
+                    # Try to eat the first one
+                    success = currentAgent.actionEat(edibleObjs[0])
+                    print(success)
 
         
         # Manual state adjustment
