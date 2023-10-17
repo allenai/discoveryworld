@@ -42,6 +42,10 @@ class Agent(Object):
         # Signals (largely for NPCs)
         self.attributes["states"] = set()                          # External signals that the agent has received
 
+        # Health attributes
+        self.attributes["poisonedCounter"] = -1                    # Poisoned counter (if >= 0, then the agent is poisoned)
+        
+
     #   
     #   Accessors/helpers
     #
@@ -85,6 +89,25 @@ class Agent(Object):
 
         # Call superclass
         Object.tick(self)
+
+        # Check if the agent is poisoned
+        POISON_DURATION = 100
+        POISON_INCUBATION_PERIOD = 50
+        if (self.attributes['poisonedCounter'] != -1):
+            # Decrement the poisoned counter
+            self.attributes['poisonedCounter'] -= 1
+
+            # Poisoning is initially silent, and only starts to affect the agent when the poisonedCounter reaches -50. 
+            if (self.attributes['poisonedCounter'] < -POISON_INCUBATION_PERIOD):
+                self.attributes['poisonedCounter'] = POISON_DURATION     # Duration of poison
+            elif (self.attributes['poisonedCounter'] > -1):
+                # Poisoned and actively affecting the agent
+                self.attributes['states'].add('poisoned')
+                print("Agent " + self.name + ": I don't feel very well!")
+        else:
+            # Remove state of 'poisoned' from the agent
+            if ('poisoned' in self.attributes['states']):
+                self.attributes['states'].remove('poisoned')
 
 
 
@@ -307,6 +330,11 @@ class Agent(Object):
 
         # Change agent attributes based on the food's attributes
         # TODO
+        # If the food is poisonous, set the poisonedCounter randomly to (-2, -20)
+        if (objToEat.attributes["isPoisonous"]):
+            print("DEBUG: POISONED!")
+            self.attributes["poisonedCounter"] = random.randint(-20, -2)
+        
 
         return ActionSuccess(True, "I ate the " + objToEat.name + ".")
 
@@ -577,10 +605,19 @@ class NPCColonist(NPC):
         print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
-        Object.tick(self)
+        NPC.tick(self)
 
-        # Interpret any external signals
-        if ("eatSignal" in self.attributes['states']):
+        # Interpret any external states
+        if ("poisoned" in self.attributes['states']):
+            # If the agent is poisoned, then head for the infirmary
+            # Remove the "wandering" state
+            if ("wandering" in self.attributes['states']):
+                self.attributes['states'].remove("wandering")
+            # Head to the infirmary
+            self.attributes["goalLocation"] = (23, 7)   # Infirmary entrance
+
+
+        elif ("eatSignal" in self.attributes['states']):
             # Remove the "wandering" state
             if ("wandering" in self.attributes['states']):
                 self.attributes['states'].remove("wandering")
@@ -639,6 +676,11 @@ class NPCColonist(NPC):
                 # Remove "objectToEat" attribute
                 del self.attributes["objectToEat"]
 
+        else:
+            # Default behavior, if no other behaviors are present, is to wander
+            if ("wandering" not in self.attributes['states']):
+                self.attributes['states'].add("wandering")
+
 
         # Pathfinding/Auto-navigation        
         if ("goalLocation" in self.attributes):
@@ -663,7 +705,8 @@ class NPCColonist(NPC):
             if ("wandering" in self.attributes['states']):
                 self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
 
-
+        # DEBUG: End of tick -- display the agent's current state
+        print("NPC States (name: " + self.name + "): " + str(self.attributes))
 
 
     

@@ -58,6 +58,10 @@ class Object:
         # Food attributes
         self.attributes['isEdible'] = False                         # Can it be eaten?
 
+        # Poison/health attributes
+        self.attributes['isPoisonous'] = False                     # Is it poisonous?
+
+
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
         self.firstInit = True
@@ -1230,6 +1234,12 @@ class Mushroom(Object):
 
         # Food attributes
         self.attributes['isEdible'] = True                         # Can it be eaten?
+
+        # Poison/health attributes
+        self.attributes['isPoisonous'] = False                     # Is it poisonous?
+        # Make red mushrooms poisonous
+        if (self.attributes["color"] == "red"):
+            self.attributes['isPoisonous'] = True
 
     
     def tick(self):
