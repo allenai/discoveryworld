@@ -227,6 +227,18 @@
             }
     },
     {
+        "sheetName": "generated", 
+        "filename": "generated/flowerpot1_32.png",
+        "tileSize": [32, 32],        
+        "sprites":
+            {    
+                "flowerpot":    { "baseTile": [0, 0],  "size": [1, 1] }                
+            },
+        "composites": 
+            {
+            }
+    },
+    {
         "sheetName": "character18", 
         "filename": "pixymoon/CuteRPG_Sprites/Characters/Character_018.png",
         "tileSize": [24, 24],

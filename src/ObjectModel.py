@@ -1276,3 +1276,25 @@ class Pot(Object):
     def tick(self):
         # Call superclass
         Object.tick(self)    
+
+#
+#   Object: Pot (container)
+#
+class FlowerPot(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "pot", "pot", defaultSpriteName = "generated_flowerpot")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+        # Container
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can not be opened (things are stored in the open pot)
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
