@@ -1,6 +1,7 @@
 # Pathfinding.py
 
 from Layer import Layer
+from enum import Enum, unique
 
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
@@ -73,7 +74,63 @@ class Pathfinder():
             return (False, -1, -1)
         
         
-        
+    #
+    #   Autopilot Functions
+    #
 
 
 
+
+# Storage class for autopilot action
+class AutopilotAction():
+    # Constructor
+    # ActionType is an enumeration (AutopilotActionType)
+    # actionArguments are specific to each type of action
+    def __init__(self, actionType, actionArguments:dict):
+        self.actionType = actionType
+        self.args = {}
+    
+    # String representation
+    def __str__(self):
+        return "AutopilotAction: " + str(self.actionType) + " (args: " + str(self.args) + ")"
+
+
+# Specific action types
+class AutopilotAction_GotoXY(AutopilotAction):
+    # Constructor
+    def __init__(self, x, y):
+        self.actionType = AutopilotActionType.GOTO_XY
+        self.args['destinationX'] = x
+        self.args['destinationY'] = y
+
+class AutopilotAction_PickupObj(AutopilotAction):
+    # Constructor
+    def __init__(self, objectToPickUp):
+        self.actionType = AutopilotActionType.PICKUP_OBJ
+        self.args['objectToPickUp'] = objectToPickUp
+
+class AutopilotAction_PlaceObjInContainer(AutopilotAction):
+    # Constructor
+    def __init__(self, objectToPlace, container):
+        self.actionType = AutopilotActionType.PLACE_OBJ_IN_CONTAINER
+        self.args['objectToPlace'] = objectToPlace
+        self.args['container'] = container
+
+class AutopilotAction_Wander(AutopilotAction):
+    # Constructor
+    def __init__(self):
+        self.actionType = AutopilotActionType.WANDER
+
+class AutopilotAction_Wait(AutopilotAction):
+    # Constructor
+    def __init__(self):
+        self.actionType = AutopilotActionType.WAIT
+
+
+# Enumeration for types of autopilot actions
+class AutopilotActionType(Enum):
+    GOTO_XY                 = 0
+    PICKUP_OBJ              = 1
+    PLACE_OBJ_IN_CONTAINER  = 2
+    WANDER                  = 3
+    WAIT                    = 4
