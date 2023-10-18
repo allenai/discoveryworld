@@ -590,7 +590,7 @@ class NPC(Agent):
             return False
             #self.attributes["goalLocation"] = (10, 10)
 
-        pathSuccess, nextX, nextY = self.pathfinder.findPathNextStep(self.world, self.attributes["gridX"], self.attributes["gridY"], self.attributes["goalLocation"][0], self.attributes["goalLocation"][1])
+        pathSuccess, nextX, nextY, pathLength = self.pathfinder.findPathNextStep(self.world, self.attributes["gridX"], self.attributes["gridY"], self.attributes["goalLocation"][0], self.attributes["goalLocation"][1])
         
         if (not pathSuccess):
             print("_doNPCAutonavigation: No path found to goal location.  Exiting. (agent: " + self.name + ")")

@@ -16,6 +16,7 @@ class Pathfinder():
         pass
 
     # Find a path
+    # Returns the next step to take on the path, as well as the total length of the path.
     def findPathNextStep(self, world, startX, startY, endX, endY):
 
         # Step 1: Construct a cost grid representing the world, where each cell contains whether it's passable or not
@@ -70,9 +71,9 @@ class Pathfinder():
         if (len(path) > 1):
             nextX = path[1].x
             nextY = path[1].y
-            return (True, nextX, nextY)
+            return (True, nextX, nextY, len(path))
         else:
-            return (False, -1, -1)
+            return (False, -1, -1, -1)
         
         
     #
@@ -235,20 +236,41 @@ class Pathfinder():
     #   - besideIsOK: If the agent can't reach the destination, is it OK to reach a location directly N/E/S/W from it?
     def _doNPCAutonavigation(self, agent, world, destinationX, destinationY, besideIsOK=False):
 
-        pathSuccess, nextX, nextY = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX, destinationY)
+        pathSuccess, nextX, nextY, pathLength = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX, destinationY)
         # Back-off strategy: If 'besideIsOK=True', try to find a path to a location directly N/E/S/W from the destination
         if (not pathSuccess) and besideIsOK:
+            pathLength = 999999
             # North
-            pathSuccess, nextX, nextY = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX, destinationY-1)
-            if (not pathSuccess):
-                # East
-                pathSuccess, nextX, nextY = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX+1, destinationY)
-                if (not pathSuccess):
-                    # South
-                    pathSuccess, nextX, nextY = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX, destinationY+1)
-                    if (not pathSuccess):
-                        # West
-                        pathSuccess, nextX, nextY = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX-1, destinationY)
+            _pathSuccess, _nextX, _nextY, _pathLength = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX, destinationY-1)
+            if (_pathSuccess) and (_pathLength < pathLength):
+                pathSuccess = _pathSuccess
+                nextX = _nextX
+                nextY = _nextY
+                pathLength = _pathLength
+
+            # East
+            _pathSuccess, _nextX, _nextY, _pathLength = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX+1, destinationY)
+            if (_pathSuccess) and (_pathLength < pathLength):
+                pathSuccess = _pathSuccess
+                nextX = _nextX
+                nextY = _nextY
+                pathLength = _pathLength
+            
+            # South
+            _pathSuccess, _nextX, _nextY, _pathLength = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX, destinationY+1)
+            if (_pathSuccess) and (_pathLength < pathLength):
+                pathSuccess = _pathSuccess
+                nextX = _nextX
+                nextY = _nextY
+                pathLength = _pathLength
+
+            # West
+            _pathSuccess, _nextX, _nextY, _pathLength = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX-1, destinationY)
+            if (_pathSuccess) and (_pathLength < pathLength):
+                pathSuccess = _pathSuccess
+                nextX = _nextX
+                nextY = _nextY
+                pathLength = _pathLength
 
         
         if (not pathSuccess):
