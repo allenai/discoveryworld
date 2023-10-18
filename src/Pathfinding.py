@@ -113,7 +113,7 @@ class Pathfinder():
             return ActionResult.COMPLETED
 
         # Otherwise, find the next step in the path
-        result = self._doNPCAutonavigation(agent, world, args['destinationX'], args['destinationY'])
+        result = self._doNPCAutonavigation(agent, world, args['destinationX'], args['destinationY'], besideIsOK=True)
         print("runGotoXY: _doNPCAutonavigation returned: " + str(result))
 
         return result
@@ -156,7 +156,7 @@ class Pathfinder():
 
         else:
             # We're not close enough to pick up the object. Navigate to it.
-            result = self._doNPCAutonavigation(agent, world, objLocation[0], objLocation[1])
+            result = self._doNPCAutonavigation(agent, world, objLocation[0], objLocation[1], besideIsOK=True)
             print("runPickupObj: _doNPCAutonavigation returned: " + str(result))
 
             return result
@@ -205,7 +205,7 @@ class Pathfinder():
 
         else:
             # We're not close enough to pick up the object. Navigate to it.
-            result = self._doNPCAutonavigation(agent, world, containerLocation[0], containerLocation[1])
+            result = self._doNPCAutonavigation(agent, world, containerLocation[0], containerLocation[1], besideIsOK=True)
             print("runPlaceObjInContainer: _doNPCAutonavigation returned: " + str(result))
 
             return result
@@ -222,11 +222,34 @@ class Pathfinder():
     #
     #   Helper functions
     #
+
     #
     #   NPC Auto-navigation
     #   
-    def _doNPCAutonavigation(self, agent, world, destinationX, destinationY):
+    #  This function is used by the NPC to automatically navigate to a given location.
+    #  Arguments:
+    #   - agent: The agent that is navigating
+    #   - world: The world object
+    #   - destinationX: The X coordinate of the destination
+    #   - destinationY: The Y coordinate of the destination
+    #   - besideIsOK: If the agent can't reach the destination, is it OK to reach a location directly N/E/S/W from it?
+    def _doNPCAutonavigation(self, agent, world, destinationX, destinationY, besideIsOK=False):
+
         pathSuccess, nextX, nextY = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX, destinationY)
+        # Back-off strategy: If 'besideIsOK=True', try to find a path to a location directly N/E/S/W from the destination
+        if (not pathSuccess) and besideIsOK:
+            # North
+            pathSuccess, nextX, nextY = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX, destinationY-1)
+            if (not pathSuccess):
+                # East
+                pathSuccess, nextX, nextY = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX+1, destinationY)
+                if (not pathSuccess):
+                    # South
+                    pathSuccess, nextX, nextY = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX, destinationY+1)
+                    if (not pathSuccess):
+                        # West
+                        pathSuccess, nextX, nextY = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX-1, destinationY)
+
         
         if (not pathSuccess):
             print("_doNPCAutonavigation: No path found to goal location.  Exiting. (agent: " + agent.name + ")")
