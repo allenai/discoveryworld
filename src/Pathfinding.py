@@ -102,7 +102,7 @@ class Pathfinder():
             return self.runWait(autopilotAction.args, agent, world)
         else:
             print("ERROR: Invalid autopilot action type: " + str(actionType))
-            return False
+            return ActionResult.INVALID
     
 
     def runGotoXY(self, args:dict, agent, world):

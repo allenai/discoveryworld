@@ -19,3 +19,4 @@ class ActionResult(Enum):
     SUCCESS = 0
     COMPLETED = 1
     FAILURE = 2
+    INVALID = 3
