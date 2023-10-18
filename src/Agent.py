@@ -22,8 +22,9 @@ class Agent(Object):
         self.attributes["faceDirection"] = "south"        
         self.spriteCharacterPrefix = "character18_"                 # Prefix for the sprite character name (e.g. "character18_")
 
-        # Autopilot action queue
+        # Autopilot action queue and pathfinder
         self.autopilotActionQueue = []                              # Queue of autopilot actions
+        self.pathfinder = Pathfinder()
 
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
@@ -1155,4 +1156,93 @@ class NPCColonist(NPC):
         print("NPC States (name: " + self.name + "): " + str(self.attributes))
 
 
+
+#
+#   Non-player character (controlled by the simulation)
+#
+class NPCColonist1(NPC):
+    # Constructor
+    def __init__(self, world, name):
+        # Default sprite name
+        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character16_agent_facing_south")
     
+        # Rendering
+        self.attributes["faceDirection"] = "south"        
+        self.spriteCharacterPrefix = "character16_"
+
+
+    #
+    #   Dialog Actions
+    #
+    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+
+        # Step 1: Check if the agent has already spoken with this NPC
+        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+            # Agent has already spoken with this NPC
+            return "I've already spoken with you."
+
+        # Add the agent to the list of agents that this NPC has spoken with
+        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+
+        # If we reach here, the agent has not spoken with this NPC yet
+        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+
+    
+    #
+    #   Tick
+    #
+        
+    # Tick
+    def tick(self):
+        # # Randomly move agent
+        # if (random.random() < 0.1):
+        #     # Randomly move the agent
+        #     deltaX = random.randint(-1, 1)
+        #     deltaY = random.randint(-1, 1)
+        #     self.actionMoveAgent(deltaX, deltaY)
+
+        # Stop if the object has already had tick() called this update -- this might have happened if the object moved locations in this current update cycle.
+        if (self.tickCompleted):
+            return
+
+        # Debug
+        print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+
+        # Call superclass
+        NPC.tick(self)
+
+        # Sprite modifier updates
+        if ("poisoned" in self.attributes['states']):
+            self.curSpriteModifiers.add("placeholder_sick")
+
+
+        # Interpret any external states
+        if ("poisoned" in self.attributes['states']):
+            # If the agent is poisoned, then head for the infirmary
+            # Remove the "wandering" state
+            if ("wandering" in self.attributes['states']):
+                self.attributes['states'].remove("wandering")
+            # Head to the infirmary
+            self.attributes["goalLocation"] = (23, 7)   # Infirmary entrance
+
+
+        elif ("eatSignal" in self.attributes['states']):
+            # TODO: Add the action sequence to go to the cafeteria and eat
+            pass
+
+    
+        # Call the NPC's action interpreter
+        #self.autopilotActionQueue = []                              # Queue of autopilot actions
+        #self.pathfinder = Pathfinder()
+
+        # Get the NPC's current autopilot action
+        if (len(self.autopilotActionQueue) > 0):
+            # Get the current autopilot action
+            curAutopilotAction = self.autopilotActionQueue[0]
+            # Call the action interpreter to run it
+            result = self.pathfinder.actionInterpreter(curAutopilotAction, agent=self, world=self.world)
+            print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
+
+
+
+
