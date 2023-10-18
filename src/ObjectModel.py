@@ -115,17 +115,17 @@ class Object:
             return self.parentContainer.removeObject(self)
 
     # Get all contained objects
-    def getAllContainedObjectsRecursive(self, respectContainerStatus=False, recurseDepth:int = 0):
+    def getAllContainedObjectsRecursive(self, respectContainerStatus=False):
         # Get all contained objects, recursively
         out = []
-        #print("getAllContainedObjectsRecursive: " + self.name + " (" + str(self.attributes['isOpenContainer']) + ") . recurseDepth = " + str(recurseDepth) )
+        #print("getAllContainedObjectsRecursive: " + self.name + " (" + str(self.attributes['isOpenContainer']) + ") ." )
         # If this is a container, and it's open, then add the contents        
         if (not respectContainerStatus) or (respectContainerStatus and self.attributes['isOpenContainer']):
             for obj in self.contents:
                 # Add self
                 out.append(obj)
                 # Add children
-                out.extend(obj.getAllContainedObjectsRecursive(respectContainerStatus, recurseDepth+1))
+                out.extend(obj.getAllContainedObjectsRecursive(respectContainerStatus))
         # Return
         return out
 

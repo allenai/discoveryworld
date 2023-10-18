@@ -101,6 +101,10 @@ def mkCafeteria(x, y, world, buildingMaker):
 
     # Back (kitchen)
     pot = Pot(world)
+    # add 5 mushrooms to pot
+    for i in range(5):
+        pot.addObject(Mushroom(world))
+    # Put the pot on a table    
     kitchenPrepTable = Table(world)
     kitchenPrepTable.addObject(pot)
     world.addObject(x+3, y+1, Layer.FURNITURE, kitchenPrepTable)
@@ -603,6 +607,14 @@ def main():
             npcColonist.attributes['states'].add("eatSignal")
 
             doNextTurn = True
+        
+        elif (keys[pygame.K_2]):
+            # Change the Chef NPC external signal
+            print("Sending 'eatSignal' to chef NPC")
+            npcChef.attributes['states'].add("serveDinner")
+
+            doNextTurn = True
+
 
         # Manual "wait"
         elif (keys[pygame.K_w]):
@@ -621,6 +633,7 @@ def main():
         if (doNextTurn):
             world.tick()
             frames += 1
+            print("")
             print("Step: " + str(frames))
             time.sleep(0.25)
 

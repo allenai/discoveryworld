@@ -16,7 +16,7 @@ class Agent(Object):
     # Constructor
     def __init__(self, world, objectType="agent", objectName="agent", defaultSpriteName="character18_agent_facing_south"):
         # Default sprite name
-        Object.__init__(self, world, "agent", "agent", defaultSpriteName = "character18_agent_facing_south")
+        Object.__init__(self, world, objectType, objectName, defaultSpriteName = "character18_agent_facing_south")
     
         # Rendering
         self.attributes["faceDirection"] = "south"        
@@ -29,7 +29,7 @@ class Agent(Object):
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = False                      # Can be opened
-        self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
+        self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
 
         # Dialog attributes
@@ -80,6 +80,7 @@ class Agent(Object):
         
     # Tick
     def tick(self):
+        print("")
         # # Randomly move agent
         # if (random.random() < 0.1):
         #     # Randomly move the agent
@@ -180,7 +181,10 @@ class Agent(Object):
     # Drop an object from the agent's inventory at the agent's current location
     def actionDrop(self, objToDrop):
         # First, check if the object is in the agent's inventory
-        if (not objToDrop in self.contents):
+        objectsInInventory = self.getAllContainedObjectsRecursive(respectContainerStatus=True)
+        #objectsInInventory = self.getAllContainedObjectsRecursive(respectContainerStatus=False)
+        print("OBJECTS IN INVENTORY: " + str(objectsInInventory))
+        if (not objToDrop in objectsInInventory):
             # Object is not in the agent's inventory
             return ActionSuccess(False, "That object (" + objToDrop.name + ") is not in my inventory.")
 
@@ -395,7 +399,7 @@ class NPC(Agent):
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = False                      # Can be opened
-        self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
+        self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
     
         # Dialog attributes
@@ -504,7 +508,7 @@ class NPCChef(NPC):
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = False                      # Can be opened
-        self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
+        self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
     
         # Dialog attributes
@@ -534,6 +538,279 @@ class NPCChef(NPC):
         return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
 
 
+    #
+    #   Tick
+    #
+        
+    # Tick
+    def tick(self):
+        # # Randomly move agent
+        # if (random.random() < 0.1):
+        #     # Randomly move the agent
+        #     deltaX = random.randint(-1, 1)
+        #     deltaY = random.randint(-1, 1)
+        #     self.actionMoveAgent(deltaX, deltaY)
+
+        # Stop if the object has already had tick() called this update -- this might have happened if the object moved locations in this current update cycle.
+        if (self.tickCompleted):
+            return
+
+        # Debug
+        print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+
+        # Call superclass
+        NPC.tick(self)
+
+        # Sprite modifier updates
+        if ("poisoned" in self.attributes['states']):
+            self.curSpriteModifiers.add("placeholder_sick")
+
+
+        # Interpret any external states
+        if ("poisoned" in self.attributes['states']):
+            # If the agent is poisoned, then head for the infirmary
+            # Remove the "wandering" state
+            if ("wandering" in self.attributes['states']):
+                self.attributes['states'].remove("wandering")
+            # Head to the infirmary
+            self.attributes["goalLocation"] = (23, 7)   # Infirmary entrance
+
+        elif ("moveToInitialLocation" in self.attributes['states']):
+            # Move to the starting location
+            self.attributes["goalLocation"] = (20, 21)
+        elif ("moveToPutPotPack" in self.attributes['states']):
+            # Move to the starting location
+            self.attributes["goalLocation"] = (21, 21)    
+        elif ("putPotBack" in self.attributes['states']):
+            # Get pot from inventory
+            pot = self.attributes["foodContainer"]
+            # Drop pot
+            successDrop = self.actionDrop(pot)
+            # Remove "putPotBack" from external signals
+            self.attributes['states'].remove("putPotBack")
+            # Add "moveToInitialLocation" to state
+            self.attributes['states'].add("moveToInitialLocation")
+            # Remove 'foodContainer' attribute
+            del self.attributes['foodContainer']
+
+
+        elif ("serveDinner" in self.attributes['states']):
+            # Remove the "waiting" state
+            if ("waiting" in self.attributes['states']):
+                self.attributes['states'].remove("waiting")
+            # Head to the cafeteria kitchen, beside the table with the pot
+            self.attributes["goalLocation"] = (21, 21)
+            # remove "eatSignal" from external signals
+            self.attributes['states'].remove("serveDinner")
+            # Add "movingToCafeteria" to external signals
+            self.attributes['states'].add("pickupFoodFromCafeteria")
+
+        elif ("takePotFromCafeteria" in self.attributes['states']):
+            # Look directly in front of the agent for something edible
+            # Get the location in front of the agent
+            (facingX, facingY) = self.getWorldLocationAgentIsFacing()
+            # Get all objects at that world location
+            objectsInFrontOfAgent = self.world.getObjectsAt(facingX, facingY)
+            # Print names of objects in front of agent
+            print("Objects in front of agent: " + str([x.name for x in objectsInFrontOfAgent]))
+
+            # Loop through all objects at that location, looking for the pot
+            potObjects = [x for x in objectsInFrontOfAgent if x.type == 'pot']
+            # Print names of edible objects in front of agent
+            print("Pot objects in front of agent: " + str([x.name for x in potObjects]))
+
+            if (len(potObjects) > 0):
+                print("I want to take the " + potObjects[0].name)
+                # Take the first edible object
+                potObject = potObjects[0]
+                # Take the object
+                successTake = self.actionPickUp(potObject)
+                print("TAKE: " + str(successTake))
+
+                # Remove "takeFoodFromCafeteria" from external signals
+                self.attributes['states'].remove("takePotFromCafeteria")
+                # Add "eating" to external signals
+                self.attributes['states'].add("serveFood")
+                self.attributes['states'].add("moveToSpot1")
+
+                # Set which object to eat
+                self.attributes["foodContainer"] = potObject
+
+        elif ("serveFood" in self.attributes['states']):
+            # Moving to spots
+            if ("moveToSpot1" in self.attributes['states']):
+                self.attributes["goalLocation"] = (21, 22)      # Move to spot 1
+            elif ("moveToSpot2" in self.attributes['states']):
+                self.attributes["goalLocation"] = (22, 22)      # Move to spot 2
+            elif ("moveToSpot3" in self.attributes['states']):
+                self.attributes["goalLocation"] = (23, 22)      # Move to spot 3
+            elif ("moveToSpot4" in self.attributes['states']):
+                self.attributes["goalLocation"] = (24, 22)      # Move to spot 4
+            elif ("moveToSpot5" in self.attributes['states']):
+                self.attributes["goalLocation"] = (25, 22)      # Move to spot 5
+
+            # Putting food at spots
+            elif ("putFoodAtSpot1" in self.attributes['states']):
+                # Take the food out of the container
+                containerObjects = self.attributes["foodContainer"].contents
+                if (len(containerObjects) > 0):
+                    foodObject = self.attributes["foodContainer"].contents[0]
+                    # Put the food at the spot
+                    successDrop = self.actionDrop(foodObject)
+                    # Move to next spot
+                    self.attributes['states'].remove("putFoodAtSpot1")
+                    self.attributes['states'].add("moveToSpot2")
+                else:
+                    print("NO FOOD IN CONTAINER!")
+            elif ("putFoodAtSpot2" in self.attributes['states']):
+                # Take the food out of the container
+                containerObjects = self.attributes["foodContainer"].contents
+                if (len(containerObjects) > 0):
+                    foodObject = self.attributes["foodContainer"].contents[0]
+                    # Put the food at the spot
+                    successDrop = self.actionDrop(foodObject)
+                    # Move to next spot
+                    self.attributes['states'].remove("putFoodAtSpot2")
+                    self.attributes['states'].add("moveToSpot3")
+                else:
+                    print("NO FOOD IN CONTAINER!")
+            elif ("putFoodAtSpot3" in self.attributes['states']):
+                # Take the food out of the container
+                containerObjects = self.attributes["foodContainer"].contents
+                if (len(containerObjects) > 0):
+                    foodObject = self.attributes["foodContainer"].contents[0]
+                    # Put the food at the spot
+                    successDrop = self.actionDrop(foodObject)
+                    # Move to next spot
+                    self.attributes['states'].remove("putFoodAtSpot3")
+                    self.attributes['states'].add("moveToSpot4")
+                else:
+                    print("NO FOOD IN CONTAINER!")
+            elif ("putFoodAtSpot4" in self.attributes['states']):
+                # Take the food out of the container
+                containerObjects = self.attributes["foodContainer"].contents
+                if (len(containerObjects) > 0):
+                    foodObject = self.attributes["foodContainer"].contents[0]
+                    # Put the food at the spot
+                    successDrop = self.actionDrop(foodObject)
+                    # Move to next spot
+                    self.attributes['states'].remove("putFoodAtSpot4")
+                    self.attributes['states'].add("moveToSpot5")
+                else:
+                    print("NO FOOD IN CONTAINER!")
+            elif ("putFoodAtSpot5" in self.attributes['states']):
+                # Take the food out of the container
+                containerObjects = self.attributes["foodContainer"].contents
+                if (len(containerObjects) > 0):
+                    foodObject = self.attributes["foodContainer"].contents[0]
+                    # Put the food at the spot
+                    successDrop = self.actionDrop(foodObject)
+                    # Move to next spot
+                    self.attributes['states'].remove("putFoodAtSpot5")
+                    self.attributes['states'].add("moveToPutPotPack")
+                else:
+                    print("NO FOOD IN CONTAINER!")
+    
+
+
+
+
+
+
+        # elif ("eating" in self.attributes['states']):
+        #     # Eat the food in the inventory
+        #     if ("objectToEat" not in self.attributes):
+        #         # Error -- no object to eat is listed, shouldn't be here
+        #         print("Error: No object to eat is listed, shouldn't be here")
+        #     else:
+        #         objectToEat = self.attributes["objectToEat"]
+        #         # Eat the object
+        #         successEat = self.actionEat(objectToEat)
+        #         print(successEat)
+
+        #         # Remove "eating" from external signals
+        #         self.attributes['states'].remove("eating")
+        #         # Add "wandering" to external signals
+        #         self.attributes['states'].add("wandering")
+        #         # Remove "objectToEat" attribute
+        #         del self.attributes["objectToEat"]
+
+        else:
+            # Default behavior, if no other behaviors are present, is to wander
+            if ("waiting" not in self.attributes['states']):
+                self.attributes['states'].add("waiting")
+
+
+        # Pathfinding/Auto-navigation        
+        if ("goalLocation" in self.attributes):
+            success = self._doNPCAutonavigation()
+            if (not success):
+                # If we're in the "pickupFoodFromCafeteria" state, check to see if we're already in the goal location
+                if ("pickupFoodFromCafeteria" in self.attributes['states']):
+                    if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
+                        # We're in the kitchen at the pot -- pick it up
+                        self.attributes['states'].remove("pickupFoodFromCafeteria")
+                        self.attributes['states'].add("takePotFromCafeteria")
+                        # Remove the goal location
+                        del self.attributes["goalLocation"]
+                elif ("moveToInitialLocation" in self.attributes['states']):
+                    # Check to see if we've moved to the initial location
+                    if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
+                        # We're in the kitchen at the pot -- pick it up
+                        self.attributes['states'].remove("moveToInitialLocation")
+                        self.attributes['states'].add("TODO")
+                        # Remove the goal location
+                        del self.attributes["goalLocation"]
+                elif ("moveToPutPotPack" in self.attributes['states']):
+                    # Check to see if we've moved to the initial location
+                    if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
+                        # We're in the kitchen at the pot -- pick it up
+                        self.attributes['states'].remove("moveToPutPotPack")
+                        self.attributes['states'].add("putPotBack")
+                        # Remove the goal location
+                        del self.attributes["goalLocation"]
+
+                elif ("serveFood" in self.attributes['states']):
+                    if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
+                        # We're in the kitchen at the pot -- pick it up
+                        #self.attributes['states'].remove("serveFood")
+                        if ("moveToSpot1" in self.attributes['states']):
+                            self.attributes['states'].remove("moveToSpot1")
+                            self.attributes['states'].add("putFoodAtSpot1")
+                            del self.attributes["goalLocation"]
+                        elif ("moveToSpot2" in self.attributes['states']):
+                            self.attributes['states'].remove("moveToSpot2")
+                            self.attributes['states'].add("putFoodAtSpot2")
+                            del self.attributes["goalLocation"]
+                        elif ("moveToSpot3" in self.attributes['states']):
+                            self.attributes['states'].remove("moveToSpot3")
+                            self.attributes['states'].add("putFoodAtSpot3")
+                            del self.attributes["goalLocation"]
+                        elif ("moveToSpot4" in self.attributes['states']):
+                            self.attributes['states'].remove("moveToSpot4")
+                            self.attributes['states'].add("putFoodAtSpot4")
+                            del self.attributes["goalLocation"]
+                        elif ("moveToSpot5" in self.attributes['states']):
+                            self.attributes['states'].remove("moveToSpot5")
+                            self.attributes['states'].add("putFoodAtSpot5")
+                            del self.attributes["goalLocation"]
+
+
+                elif ("wandering" in self.attributes['states']):
+                    self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))   
+
+
+                # We failed to find a path to the goal location -- pick a new goal location
+                #self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
+        else:
+            if ("wandering" in self.attributes['states']):
+                self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
+
+        # DEBUG: End of tick -- display the agent's current state
+        print("NPC States (name: " + self.name + "): " + str(self.attributes))
+
+
+
 #
 #   Non-player character (controlled by the simulation)
 #
@@ -554,7 +831,7 @@ class NPCColonist(NPC):
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = False                      # Can be opened
-        self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
+        self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
     
         # Dialog attributes
