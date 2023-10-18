@@ -142,7 +142,7 @@ class Agent(Object):
         # Check 1: Is the new location within the bounds of the world?        
         if (newX < 0 or newX >= self.world.sizeX or newY < 0 or newY >= self.world.sizeY):
             # Invalid location
-            return ActionSuccess(False, "That is too far to move in a single step.  I can only move one step north, south, east, or west at a time.")
+            return ActionSuccess(False, "That would take me beyond the edge of the world.")
 
         # Check 2: Check if the new location is passable
         isPassable, blockingObject = self.world.isPassable(newX, newY)
@@ -154,6 +154,93 @@ class Agent(Object):
         self.world.addObject(newX, newY, Layer.AGENT, self)     # Then, add the object to the new location in the world grid
 
         return ActionSuccess(True, "I moved to (" + str(newX) + ", " + str(newY) + ").")
+
+    # Rotate the direction the agent is facing
+    # Direction: +1 = clockwise, -1 = counterclockwise
+    def actionRotateAgentFacingDirection(self, direction=+1):
+        # Get the current direction
+        currentDirection = self.attributes["faceDirection"]
+
+        # Get the new direction
+        if (direction == +1):
+            if (currentDirection == "north"):
+                newDirection = "east"
+            elif (currentDirection == "east"):
+                newDirection = "south"
+            elif (currentDirection == "south"):
+                newDirection = "west"
+            elif (currentDirection == "west"):
+                newDirection = "north"
+        elif (direction == -1):
+            if (currentDirection == "north"):
+                newDirection = "west"
+            elif (currentDirection == "east"):
+                newDirection = "north"
+            elif (currentDirection == "south"):
+                newDirection = "east"
+            elif (currentDirection == "west"):
+                newDirection = "south"
+
+        # Update the direction
+        self.attributes["faceDirection"] = newDirection
+
+        # Invalidate the sprite name
+        self.needsSpriteNameUpdate = True
+
+        return ActionSuccess(True, "I rotated to face " + newDirection + ".")
+
+    # Move forward (or backward) in the direction the agent is facing
+    # Direction: +1 = forward, -1 = backward
+    def actionMoveAgentForwardBackward(self, direction=+1):
+        # Get the current direction
+        currentDirection = self.attributes["faceDirection"]
+
+        # Get the new location
+        if (direction == +1):
+            if (currentDirection == "north"):
+                newX = self.attributes["gridX"]
+                newY = self.attributes["gridY"] - 1
+            elif (currentDirection == "east"):
+                newX = self.attributes["gridX"] + 1
+                newY = self.attributes["gridY"]
+            elif (currentDirection == "south"):
+                newX = self.attributes["gridX"]
+                newY = self.attributes["gridY"] + 1
+            elif (currentDirection == "west"):
+                newX = self.attributes["gridX"] - 1
+                newY = self.attributes["gridY"]
+        elif (direction == -1):
+            if (currentDirection == "north"):
+                newX = self.attributes["gridX"]
+                newY = self.attributes["gridY"] + 1
+            elif (currentDirection == "east"):
+                newX = self.attributes["gridX"] - 1
+                newY = self.attributes["gridY"]
+            elif (currentDirection == "south"):
+                newX = self.attributes["gridX"]
+                newY = self.attributes["gridY"] - 1
+            elif (currentDirection == "west"):
+                newX = self.attributes["gridX"] + 1
+                newY = self.attributes["gridY"]
+        
+        # Check if the new location is valid
+        # Check 1: Is the new location within the bounds of the world?
+        if (newX < 0 or newX >= self.world.sizeX or newY < 0 or newY >= self.world.sizeY):
+            # Invalid location
+            return ActionSuccess(False, "That would take me beyond the edge of the world.")
+        
+        # Check 2: Check if the new location is passable
+        isPassable, blockingObject = self.world.isPassable(newX, newY)
+        if (not isPassable):
+            return ActionSuccess(False, "I can't move there. There is something in the way (" + blockingObject.name + ").")
+
+        # If we reach here, the new location is valid. Update the agent's location to the new location
+        self.world.removeObject(self)                           # First, remove the object from it's current location in the world grid
+        self.world.addObject(newX, newY, Layer.AGENT, self)     # Then, add the object to the new location in the world grid
+
+        return ActionSuccess(True, "I moved to (" + str(newX) + ", " + str(newY) + ").")
+
+
 
     # Pick up an object, and add it to the agent's inventory
     def actionPickUp(self, objToPickUp):

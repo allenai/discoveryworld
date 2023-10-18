@@ -379,32 +379,54 @@ def main():
         if (keys[pygame.K_ESCAPE]):
             running = False    
 
-        # Arrow keys -- move agent
+        # # Arrow keys -- move agent (directly up/down/left/right)
+        # elif (keys[pygame.K_UP]):
+        #     # Move agent north
+        #     success = currentAgent.actionMoveAgent(0, -1)            
+        #     lastMove = curTime
+        #     print(success)
+        #     doNextTurn = True
+
+        # elif (keys[pygame.K_DOWN]):
+        #     # Move agent south
+        #     success = currentAgent.actionMoveAgent(0, 1)
+        #     lastMove = curTime
+        #     print(success)
+        #     doNextTurn = True
+
+        # elif (keys[pygame.K_LEFT]):
+        #     # Move agent west
+        #     success = currentAgent.actionMoveAgent(-1, 0)
+        #     lastMove = curTime
+        #     print(success)
+        #     doNextTurn = True
+
+        # elif (keys[pygame.K_RIGHT]):
+        #     # Move agent east
+        #     success = currentAgent.actionMoveAgent(1, 0)
+        #     lastMove = curTime
+        #     print(success)
+        #     doNextTurn = True
+
+        # Arrow keys -- move agent.  Left/right rotate agent clockwise/counterclockwise, up/down move agent forward/backward
         elif (keys[pygame.K_UP]):
-            # Move agent north
-            success = currentAgent.actionMoveAgent(0, -1)            
-            lastMove = curTime
+            # Move agent forward
+            success = currentAgent.actionMoveAgentForwardBackward(direction=+1)
             print(success)
             doNextTurn = True
-
         elif (keys[pygame.K_DOWN]):
-            # Move agent south
-            success = currentAgent.actionMoveAgent(0, 1)
-            lastMove = curTime
+            # Move agent backwards
+            success = currentAgent.actionMoveAgentForwardBackward(direction=-1)
             print(success)
             doNextTurn = True
-
         elif (keys[pygame.K_LEFT]):
-            # Move agent west
-            success = currentAgent.actionMoveAgent(-1, 0)
-            lastMove = curTime
+            # Rotate agent counterclockwise
+            success = currentAgent.actionRotateAgentFacingDirection(direction=-1)
             print(success)
             doNextTurn = True
-
         elif (keys[pygame.K_RIGHT]):
-            # Move agent east
-            success = currentAgent.actionMoveAgent(1, 0)
-            lastMove = curTime
+            # Rotate agent clockwise
+            success = currentAgent.actionRotateAgentFacingDirection(direction=+1)
             print(success)
             doNextTurn = True
 
