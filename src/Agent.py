@@ -1164,12 +1164,14 @@ class NPCColonist1(NPC):
     # Constructor
     def __init__(self, world, name):
         # Default sprite name
-        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character16_agent_facing_south")
+        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character15_agent_facing_south")
     
         # Rendering
         self.attributes["faceDirection"] = "south"        
-        self.spriteCharacterPrefix = "character16_"
+        self.spriteCharacterPrefix = "character15_"
 
+        # Add a default action into the action queue 
+        self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=1, y=1) )
 
     #
     #   Dialog Actions
@@ -1240,9 +1242,9 @@ class NPCColonist1(NPC):
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
+            print("(Agent: " + self.name + "): Calling action interpreter with action: " + str(curAutopilotAction))
             result = self.pathfinder.actionInterpreter(curAutopilotAction, agent=self, world=self.world)
             print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
-
 
 
 

@@ -337,6 +337,9 @@ def main():
     npcChef = NPCChef(world, "Chef")
     world.addObject(20, 21, Layer.AGENT, npcChef)
 
+    # Add another NPC colonist
+    npcColonist1 = NPCColonist1(world, "Colonist 1")
+    world.addObject(18, 20, Layer.AGENT, npcColonist1)
 
     # Initial world tick
     world.tick()
