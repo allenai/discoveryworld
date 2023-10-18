@@ -78,6 +78,50 @@ class Pathfinder():
     #   Autopilot Functions
     #
 
+    # Run the next step of a given autopilot action. 
+    # Arguments:
+    #   autopilotAction: The action to run
+    #   agent: The agent running the action
+    #   world: The world the agent is in
+    # Returns:
+    #   success: True (action running successfully) or False (action completed)
+    def actionInterpreter(autopilotAction, agent, world):
+        # First, figure out which type of action we're running
+        actionType = autopilotAction.actionType
+        # Then, run the appropriate function
+        if (actionType == AutopilotActionType.GOTO_XY):
+            return Pathfinder.runGotoXY(autopilotAction.args)
+        elif (actionType == AutopilotActionType.PICKUP_OBJ):
+            return Pathfinder.runPickupObj(autopilotAction.args)
+        elif (actionType == AutopilotActionType.PLACE_OBJ_IN_CONTAINER):
+            return Pathfinder.runPlaceObjInContainer(autopilotAction.args)
+        elif (actionType == AutopilotActionType.WANDER):
+            return Pathfinder.runWander(autopilotAction.args)
+        elif (actionType == AutopilotActionType.WAIT):
+            return Pathfinder.runWait(autopilotAction.args)
+        else:
+            print("ERROR: Invalid autopilot action type: " + str(actionType))
+            return False
+    
+
+    def runGotoXY(args:dict):
+        pass
+
+    def runPickupObj(args:dict):
+        pass
+
+    def runPlaceObjInContainer(args:dict):
+        pass
+
+    def runWander(args:dict):
+        pass
+
+    def runWait(args:dict):
+        pass
+
+        
+
+
 
 
 
