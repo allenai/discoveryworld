@@ -120,6 +120,43 @@ class Pathfinder():
         
 
     def runPickupObj(self, args:dict, agent, world):
+        # First, get the object's world location
+        objectToPickUp = args['objectToPickUp']
+        objLocation = objectToPickUp.getWorldLocation()
+
+        # Check if we are directly left, right, up, or down from the object
+        agentLocation = agent.getWorldLocation()
+        isBeside, besideDir = self._isAgentDirectlyAdjacentToDestination(agentLocation[0], agentLocation[1], objLocation[0], objLocation[1])
+
+        if (isBeside):
+            print("runPickupObj: We are beside the object (it is to our " + str(besideDir) + ")")
+
+            # We're directly beside the object.  Is the agent facing the object?
+            if (agent.attributes["faceDirection"] != besideDir):
+                # We're not facing the object.  Rotate.
+                print("runPickupObj: We're not facing the object.  Rotating to face it.")
+                success = agent.rotateToFaceDirection(besideDir)
+                return ActionResult.SUCCESS
+            else:
+                # We're facing the object.  Check to see if we can pick it up (i.e. if it's accessible, or in a closed container)
+                print("runPickupObj: We're facing the object.  Checking if we can pick it up.")
+                #TODO
+
+                # If we reach here, the object is accessible and we can pick it up.  Pick it up.
+                success = agent.actionPickUp(objectToPickUp)
+                
+                # TODO: Check for success
+                return ActionResult.COMPLETED
+
+        else:
+            # We're not close enough to pick up the object. Navigate to it.
+            result = self._doNPCAutonavigation(agent, world, objLocation[0], objLocation[1])
+            print("runPickupObj: _doNPCAutonavigation returned: " + str(result))
+
+            return result
+
+
+
         pass
 
     def runPlaceObjInContainer(self, args:dict, agent, world):
@@ -193,6 +230,26 @@ class Pathfinder():
                         break
 
         return ActionResult.SUCCESS
+
+    # Check to see if the agent is directly north, east, south, or west from the destination
+    # Returns (True, "north"/"east"/"south"/"west") if the agent is directly adjacent to the destination
+    # Returns (False, None) if the agent is not directly adjacent to the destination
+    def _isAgentDirectlyAdjacentToDestination(self, queryX, queryY, destinationX, destinationY):
+        # Check north
+        if (queryX == destinationX) and (queryY == destinationY + 1):
+            return (True, "north")
+        # Check east
+        if (queryX == destinationX + 1) and (queryY == destinationY):
+            return (True, "east")
+        # Check south
+        if (queryX == destinationX) and (queryY == destinationY - 1):
+            return (True, "south")
+        # Check west
+        if (queryX == destinationX - 1) and (queryY == destinationY):
+            return (True, "west")
+
+        # Default return
+        return (False, None)
 
 
 

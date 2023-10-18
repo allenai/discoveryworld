@@ -170,6 +170,7 @@ def mkFarm(x, y, world, buildingMaker):
     numMushroomsToAdd = 5
     numMushroomsAdded = 0
     attempts = 0
+    mushroomsAdded = []
     while (numMushroomsAdded < numMushroomsToAdd):    
         # Pick a random location
         randX = random.randint(x, x+soilPlotSizeX-1)
@@ -177,13 +178,19 @@ def mkFarm(x, y, world, buildingMaker):
 
         # If there isn't already a mushroom there, add one
         if (not _hasObj(randX, randY, world, "mushroom")):
-            world.addObject(randX, randY, Layer.OBJECTS, Mushroom(world))
+            mushroom = Mushroom(world)
+            world.addObject(randX, randY, Layer.OBJECTS, mushroom)
+            mushroomsAdded.append(mushroom)
             numMushroomsAdded += 1
 
         attempts += 1
         if (attempts > 100):
             print("ERROR: Couldn't add all mushrooms to farm.  Exiting to prevent infinite loop.")
             break
+
+    ## Debug, gives references to mushrooms added for agents to pick up
+    return mushroomsAdded
+    
 
 
 
@@ -267,7 +274,7 @@ def main():
     mkTownSquare(16, 18, world, buildingMaker)
 
     ## TODO: Add Farm?
-    mkFarm(10, 8, world, buildingMaker)
+    mushroomsAdded = mkFarm(10, 8, world, buildingMaker)
 
     # Paths
     mkPathY(17, 1, 30, world)       # Top/bottom, through town square
@@ -338,7 +345,8 @@ def main():
     world.addObject(20, 21, Layer.AGENT, npcChef)
 
     # Add another NPC colonist
-    npcColonist1 = NPCColonist1(world, "Colonist 1")
+    #npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickup=None)
+    npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickUp=mushroomsAdded[0])
     world.addObject(18, 20, Layer.AGENT, npcColonist1)
 
     # Initial world tick

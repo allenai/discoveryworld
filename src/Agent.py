@@ -1162,7 +1162,7 @@ class NPCColonist(NPC):
 #
 class NPCColonist1(NPC):
     # Constructor
-    def __init__(self, world, name):
+    def __init__(self, world, name, thingToPickUp=None):        ## DEBUG: thingToPickUp is a placeholder
         # Default sprite name
         Agent.__init__(self, world, "agent", name, defaultSpriteName = "character15_agent_facing_south")
     
@@ -1171,7 +1171,11 @@ class NPCColonist1(NPC):
         self.spriteCharacterPrefix = "character15_"
 
         # Add a default action into the action queue 
-        self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=1, y=1) )
+        if (thingToPickUp is not None):
+            self.autopilotActionQueue.append( AutopilotAction_PickupObj(thingToPickUp) )
+        else:
+            self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=1, y=1) )
+        
 
     #
     #   Dialog Actions
