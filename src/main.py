@@ -94,7 +94,8 @@ def mkCafeteria(x, y, world, buildingMaker):
     table1 = Table(world)
     table1.addObject(mushroom)
     world.addObject(x+4, y+3, Layer.FURNITURE, table1)
-    world.addObject(x+5, y+3, Layer.FURNITURE, Table(world))
+    table2 = Table(world)
+    world.addObject(x+5, y+3, Layer.FURNITURE, table2)
     world.addObject(x+6, y+3, Layer.FURNITURE, Table(world))
 
     #world.addObject(x+2, y+5, Layer.FURNITURE, Table(world))
@@ -118,7 +119,8 @@ def mkCafeteria(x, y, world, buildingMaker):
     flowerTable.addObject(flowerpot)
     world.addObject(x+6, y+5, Layer.FURNITURE, flowerTable)
 
-
+    ## debug
+    return table2
 
 
 def mkScienceLab(x, y, world, buildingMaker):
@@ -269,7 +271,7 @@ def main():
 
     mkBarracks(19, 11, world, buildingMaker)
     
-    mkCafeteria(19, 20, world, buildingMaker)
+    table2 = mkCafeteria(19, 20, world, buildingMaker)
 
     mkTownSquare(16, 18, world, buildingMaker)
 
@@ -346,7 +348,7 @@ def main():
 
     # Add another NPC colonist
     #npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickup=None)
-    npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickUp=mushroomsAdded[0])
+    npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickUp=mushroomsAdded[0], whereToPlace=table2)
     world.addObject(18, 20, Layer.AGENT, npcColonist1)
 
     # Initial world tick

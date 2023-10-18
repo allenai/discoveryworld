@@ -1162,7 +1162,7 @@ class NPCColonist(NPC):
 #
 class NPCColonist1(NPC):
     # Constructor
-    def __init__(self, world, name, thingToPickUp=None):        ## DEBUG: thingToPickUp is a placeholder
+    def __init__(self, world, name, thingToPickUp=None, whereToPlace=None):        ## DEBUG: thingToPickUp is a placeholder
         # Default sprite name
         Agent.__init__(self, world, "agent", name, defaultSpriteName = "character15_agent_facing_south")
     
@@ -1173,6 +1173,8 @@ class NPCColonist1(NPC):
         # Add a default action into the action queue 
         if (thingToPickUp is not None):
             self.autopilotActionQueue.append( AutopilotAction_PickupObj(thingToPickUp) )
+            if (whereToPlace is not None):
+                self.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(thingToPickUp, whereToPlace) )
         else:
             self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=1, y=1) )
         
@@ -1249,6 +1251,21 @@ class NPCColonist1(NPC):
             print("(Agent: " + self.name + "): Calling action interpreter with action: " + str(curAutopilotAction))
             result = self.pathfinder.actionInterpreter(curAutopilotAction, agent=self, world=self.world)
             print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
+
+            # If the result is "COMPLETED", then remove the action from the queue
+            if (result == ActionResult.COMPLETED):
+                self.autopilotActionQueue.pop(0)
+                print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
+            # If the result is "FAILURE", then remove the action from the queue
+            elif (result == ActionResult.FAILURE):
+                self.autopilotActionQueue.pop(0)
+                print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
+            # If the result is "INVALID", then remove the action from the queue
+            elif (result == ActionResult.INVALID):
+                self.autopilotActionQueue.pop(0)
+                print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
+            
+            # If the result is "success", then do nothing -- the action is still in progress.
 
 
 

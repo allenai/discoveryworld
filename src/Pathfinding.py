@@ -140,7 +140,13 @@ class Pathfinder():
             else:
                 # We're facing the object.  Check to see if we can pick it up (i.e. if it's accessible, or in a closed container)
                 print("runPickupObj: We're facing the object.  Checking if we can pick it up.")
-                #TODO
+                objectContainerIfClosed = objectToPickUp.getOutermostClosedContainer()
+                if (objectContainerIfClosed != None):
+                    # The object is in a closed container.  Open the container.
+                    print("runPickupObj: The object is in a closed container (" + objectContainerIfClosed.name + ").  Opening the container.")
+                    success = agent.actionOpenContainer(objectContainerIfClosed)
+                    print("runPickupObj: actionOpenContainer returned: " + str(success))
+                    return ActionResult.SUCCESS
 
                 # If we reach here, the object is accessible and we can pick it up.  Pick it up.
                 success = agent.actionPickUp(objectToPickUp)
@@ -156,11 +162,54 @@ class Pathfinder():
             return result
 
 
-
-        pass
-
     def runPlaceObjInContainer(self, args:dict, agent, world):
-        pass
+        # self.args['objectToPlace'] = objectToPlace
+        # self.args['container'] = container
+
+        # First, get the container's world location
+        objectToPlace = args['objectToPlace']
+        container = args['container']
+        containerLocation = container.getWorldLocation()
+
+        # TODO: Check if we have the object in our inventory.  If not, something unexpected has happened, so return an error.
+
+        # Check if we are directly left, right, up, or down from the container
+        agentLocation = agent.getWorldLocation()
+        isBeside, besideDir = self._isAgentDirectlyAdjacentToDestination(agentLocation[0], agentLocation[1], containerLocation[0], containerLocation[1])
+
+        if (isBeside):
+            print("runPlaceObjInContainer: We are beside the container (it is to our " + str(besideDir) + ")")
+
+            # We're directly beside the object.  Is the agent facing the object?
+            if (agent.attributes["faceDirection"] != besideDir):
+                # We're not facing the object.  Rotate.
+                print("runPlaceObjInContainer: We're not facing the container.  Rotating to face it.")
+                success = agent.rotateToFaceDirection(besideDir)
+                return ActionResult.SUCCESS
+            else:
+                # We're facing the container.  If it needs to be opened, open it.
+                print("runPlaceObjInContainer: We're facing the container.  Checking if we need to open it.")
+                objectContainerIfClosed = container.getOutermostClosedContainer(includeSelf=True)
+                if (objectContainerIfClosed != None):
+                    # The object is in a closed container.  Open the container.
+                    print("runPlaceObjInContainer: The following container is closed and needs to be opened (" + objectContainerIfClosed.name + ").  Opening the container.")
+                    success = agent.actionOpenContainer(objectContainerIfClosed)
+                    print("runPlaceObjInContainer: actionOpenContainer returned: " + str(success))
+                    return ActionResult.SUCCESS
+
+                # If we reach here, the object is accessible and we can put it in/on the container.  Move it to the container.
+                success = agent.actionPut(objToPut=objectToPlace, newContainer=container)
+                
+                # TODO: Check for success
+                return ActionResult.COMPLETED
+
+        else:
+            # We're not close enough to pick up the object. Navigate to it.
+            result = self._doNPCAutonavigation(agent, world, containerLocation[0], containerLocation[1])
+            print("runPlaceObjInContainer: _doNPCAutonavigation returned: " + str(result))
+
+            return result
+
 
     def runWander(self, args:dict, agent, world):
         pass

@@ -129,7 +129,27 @@ class Object:
         # Return
         return out
 
+    # Get outermost closed container (if this object is contained in a closed container).
+    # Essentially answers the question: "What is the next container that I'd have to open to (eventually) get at this object?"
+    # Returns None if there is no closed container.
+    def getOutermostClosedContainer(self, includeSelf=False):
+        lastContainer = None
+        lastParent = self.parentContainer
 
+        # If 'includeSelf' is true, and this object is a closed container, then add it as the initial last container
+        if (includeSelf):
+            if (self.attributes['isContainer'] == True) and (self.attributes['isOpenContainer'] == False):
+                lastContainer = self
+
+        # Iterate through all parents, looking for the last closed container
+        while (lastParent != None):
+            if (lastParent.attributes['isOpenContainer'] == False):
+                lastContainer = lastParent
+            lastParent = lastParent.parentContainer
+
+        # Return the last container
+        return lastContainer
+        
 
     #
     #   Update/Tick
