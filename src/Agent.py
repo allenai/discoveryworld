@@ -330,7 +330,9 @@ class Agent(Object):
 
         # If we reach here, the object is edible and within reach.  Eat it.
         objToEat.invalidateSpritesThisWorldTile()            # Invalidate the sprites at the object's current location
+        print("EATEN OBJECT PARENT CONTAINER: " + str(objToEat.parentContainer))    
         self.world.removeObject(objToEat)                    # Remove the object from the world
+        print("EATEN OBJECT PARENT CONTAINER: " + str(objToEat.parentContainer))
 
         # Change agent attributes based on the food's attributes
         # TODO

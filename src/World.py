@@ -113,16 +113,23 @@ class World:
         # Then, set the object's position to -1 (i.e. not in the world)
         object.setWorldLocation(-1, -1)
 
+        # Remove the object from its current container
+        object.removeSelfFromContainer()
+
         # Remove the object from the world
         if (objX >= 0) and (objY >= 0):
             for layer in Layer:
                 if object in self.grid[objX][objY]["layers"][layer]:
+                    # Remove object from this layer
                     self.grid[objX][objY]["layers"][layer].remove(object)
+                    # Success
                     return True
-        
+
+
+
         # If we reach here, something went wrong -- the object could not be removed from the world.
-        print("WARNING: Object could not be removed from the world (" + object.name + ") at (" + str(objX) + ", " + str(objY) + ")")
-        return False
+        #print("WARNING: Object could not be removed from the world (" + object.name + ") at (" + str(objX) + ", " + str(objY) + ")")
+        return True
 
 
     #
