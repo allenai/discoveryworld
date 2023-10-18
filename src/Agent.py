@@ -475,6 +475,20 @@ class Agent(Object):
         
         return ActionSuccess(True, "I am rotating towards facing the requested direction (" + directionToFace + ").")
 
+    # Convert x/y deltas (e.g. (0, -1 ) to a direction (e.g. "north", "east")
+    def convertXYDeltasToDirection(self, deltaX, deltaY):
+        if (deltaX == 0) and (deltaY == +1):
+            return "south"
+        elif (deltaX == 0) and (deltaY == -1):
+            return "north"
+        elif (deltaX == +1) and (deltaY == 0):
+            return "east"
+        elif (deltaX == -1) and (deltaY == 0):
+            return "west"
+        else:
+            raise ValueError("Invalid deltaX/deltaY: " + str(deltaX) + ", " + str(deltaY) + " (must be (0, +1), (0, -1), (+1, 0), or (-1, 0))")
+
+
 
 
     #
@@ -580,6 +594,7 @@ class NPC(Agent):
 
         if ("doorNeedsToBeClosed" in self.attributes) and (self.attributes["doorNeedsToBeClosed"] != None) and (self.attributes["movesSinceDoorOpen"] == 1):
             # We recently opened a door -- close it
+            print("AGENT: CLOSING DOOR")
             doorToClose = self.attributes["doorNeedsToBeClosed"]
             self.actionOpenClose(doorToClose, "close")
             self.attributes["doorNeedsToBeClosed"] = None
@@ -589,17 +604,29 @@ class NPC(Agent):
             deltaX = nextX - self.attributes["gridX"]
             deltaY = nextY - self.attributes["gridY"]
 
+            # First, check to see if we're facing the correct direction.  If not, start rotating in that direction.
+            desiredDirection = self.convertXYDeltasToDirection(deltaX, deltaY)
+            if (desiredDirection != self.attributes["faceDirection"]):
+                # We're not facing the correct direction -- rotate
+                print("AGENT: ROTATING TO FACE DIRECTION (curDirection: " + self.attributes["faceDirection"] + ", desiredDirection: " + desiredDirection + ")")
+                rotateSuccess = self.rotateToFaceDirection(desiredDirection)
+                print(rotateSuccess)
+                return True
+
             # First, check to see if the next step has a barrier (like a door) that needs to be opened
             allObjs = self.world.getObjectsAt(nextX, nextY)
             # Get a list of objects that are not passable (isPassable == False)
             allObjsNotPassable = [obj for obj in allObjs if (obj.attributes["isPassable"] == False)]
             
-            # If there are no impassable objects, then move the agent
+            # If there are no impassable objects, then move the agent one step in the forward direction
             if (len(allObjsNotPassable) == 0):
-                # Move agent one step
-                moveSuccess = self.actionMoveAgent(deltaX, deltaY)
+                # Move agent one step in the forward direction
+                #moveSuccess = self.actionMoveAgent(deltaX, deltaY)
+                print("AGENT: MOVING FORWARD")
+                moveSuccess = self.actionMoveAgentForwardBackward(direction=+1)
                 self.attributes["movesSinceDoorOpen"] += 1
             else:
+                print("AGENT: TRYING TO OPEN IMPASSABLE OBJECT")
                 # There's one or more impassable objects -- try to open them.
                 for obj in allObjsNotPassable:
                     # Check to see if the object is openable
