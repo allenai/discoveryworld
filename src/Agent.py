@@ -433,6 +433,51 @@ class Agent(Object):
 
 
     #
+    #   Autopilot helpers
+    #
+
+    # Incrementally rotate (one rotation at a time) to face the given direction
+    # Returns 'True' if a rotation action took place, and 'False' if the agent is already facing the desired direction
+    def rotateToFaceDirection(self, directionToFace):
+        # Get the current direction the agent is facing
+        curDirection = self.attributes["faceDirection"]
+
+        # Check to make sure 'directionToFace' is a valid direction
+        if (directionToFace not in ["north", "east", "south", "west"]):
+            raise ValueError("Invalid directionToFace: " + str(directionToFace) + " (must be 'north', 'east', 'south', or 'west')")
+
+        # If the agent is already facing the desired direction, return False
+        if (curDirection == directionToFace):
+            return ActionSuccess(False, "I am already facing in the requested direction (" + directionToFace + ").")
+
+        # Otherwise, rotate the agent one rotation at a time
+        # Clockwise: +1, Counter-clockwise: -1
+        # This look-up table describes the next movement that the agent should take, in order to ultimately rotate to the desired direction
+        movementLUT = {
+            "north:east": +1,
+            "north:west": -1,
+            "north:south": +1,
+            "east:south": +1,
+            "east:north": -1,
+            "east:west": +1,
+            "south:west": +1,
+            "south:east": -1,
+            "south:north": +1,
+            "west:north": +1,
+            "west:south": -1,
+            "west:east": +1,
+        }
+
+        # Get the next movement to take
+        nextMovement = movementLUT[curDirection + ":" + directionToFace]
+        # Take the action
+        self.actionRotateAgentFacingDirection(nextMovement)
+        
+        return ActionSuccess(True, "I am rotating towards facing the requested direction (" + directionToFace + ").")
+
+
+
+    #
     #   Dialog Actions
     #
     def actionDialog(self, agentDoingTalking, dialogStrToSay):
