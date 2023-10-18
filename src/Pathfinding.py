@@ -90,37 +90,108 @@ class Pathfinder():
         actionType = autopilotAction.actionType
         # Then, run the appropriate function
         if (actionType == AutopilotActionType.GOTO_XY):
-            return Pathfinder.runGotoXY(autopilotAction.args)
+            return Pathfinder.runGotoXY(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.PICKUP_OBJ):
-            return Pathfinder.runPickupObj(autopilotAction.args)
+            return Pathfinder.runPickupObj(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.PLACE_OBJ_IN_CONTAINER):
-            return Pathfinder.runPlaceObjInContainer(autopilotAction.args)
+            return Pathfinder.runPlaceObjInContainer(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.WANDER):
-            return Pathfinder.runWander(autopilotAction.args)
+            return Pathfinder.runWander(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.WAIT):
-            return Pathfinder.runWait(autopilotAction.args)
+            return Pathfinder.runWait(autopilotAction.args, agent, world)
         else:
             print("ERROR: Invalid autopilot action type: " + str(actionType))
             return False
     
 
-    def runGotoXY(args:dict):
+    def runGotoXY(args:dict, agent, world):
+        # First, check if we're already at the destination
+        agentLocation = agent.getWorldLocation()
+        if (agentLocation[0] == args['destinationX']) and (agentLocation[1] == args['destinationY']):
+            # We're already there
+            return True
+
+        # Otherwise, find the next step in the path
+        success = Pathfinder._doNPCAutonavigation(agent, world, args['destinationX'], args['destinationY'])
+        print("runGotoXY: _doNPCAutonavigation returned: " + str(success))
+
+        return success
+        
+
+    def runPickupObj(args:dict, agent, world):
         pass
 
-    def runPickupObj(args:dict):
+    def runPlaceObjInContainer(args:dict, agent, world):
         pass
 
-    def runPlaceObjInContainer(args:dict):
+    def runWander(args:dict, agent, world):
         pass
 
-    def runWander(args:dict):
-        pass
-
-    def runWait(args:dict):
+    def runWait(args:dict, agent, world):
         pass
 
         
 
+    #
+    #   Helper functions
+    #
+    #
+    #   NPC Auto-navigation
+    #   
+    def _doNPCAutonavigation(self, agent, world, destinationX, destinationY):
+        pathSuccess, nextX, nextY = self.findPathNextStep(world, agent.attributes["gridX"], agent.attributes["gridY"], destinationX, destinationY)
+        
+        if (not pathSuccess):
+            print("_doNPCAutonavigation: No path found to goal location.  Exiting. (agent: " + agent.name + ")")
+            return False
+
+        if ("doorNeedsToBeClosed" in agent.attributes) and (agent.attributes["doorNeedsToBeClosed"] != None) and (agent.attributes["movesSinceDoorOpen"] == 1):
+            # We recently opened a door -- close it
+            print("AGENT: CLOSING DOOR")
+            doorToClose = agent.attributes["doorNeedsToBeClosed"]
+            agent.actionOpenClose(doorToClose, "close")
+            agent.attributes["doorNeedsToBeClosed"] = None
+            agent.attributes["movesSinceDoorOpen"] = 0
+        else:
+            # Calculate deltas
+            deltaX = nextX - agent.attributes["gridX"]
+            deltaY = nextY - agent.attributes["gridY"]
+
+            # First, check to see if we're facing the correct direction.  If not, start rotating in that direction.
+            desiredDirection = agent.convertXYDeltasToDirection(deltaX, deltaY)
+            if (desiredDirection != agent.attributes["faceDirection"]):
+                # We're not facing the correct direction -- rotate
+                print("AGENT: ROTATING TO FACE DIRECTION (curDirection: " + agent.attributes["faceDirection"] + ", desiredDirection: " + desiredDirection + ")")
+                rotateSuccess = agent.rotateToFaceDirection(desiredDirection)
+                print(rotateSuccess)
+                return True
+
+            # First, check to see if the next step has a barrier (like a door) that needs to be opened
+            allObjs = world.getObjectsAt(nextX, nextY)
+            # Get a list of objects that are not passable (isPassable == False)
+            allObjsNotPassable = [obj for obj in allObjs if (obj.attributes["isPassable"] == False)]
+            
+            # If there are no impassable objects, then move the agent one step in the forward direction
+            if (len(allObjsNotPassable) == 0):
+                # Move agent one step in the forward direction
+                #moveSuccess = self.actionMoveAgent(deltaX, deltaY)
+                print("AGENT: MOVING FORWARD")
+                moveSuccess = agent.actionMoveAgentForwardBackward(direction=+1)
+                agent.attributes["movesSinceDoorOpen"] += 1
+            else:
+                print("AGENT: TRYING TO OPEN IMPASSABLE OBJECT")
+                # There's one or more impassable objects -- try to open them.
+                for obj in allObjsNotPassable:
+                    # Check to see if the object is openable
+                    if (obj.attributes["isOpenable"]):
+                        # Open the object
+                        agent.actionOpenClose(obj, "open")
+                        agent.attributes["doorNeedsToBeClosed"] = obj
+                        agent.attributes["movesSinceDoorOpen"] = 0
+                        # Break out of the loop
+                        break
+
+        return True
 
 
 
@@ -130,9 +201,10 @@ class AutopilotAction():
     # Constructor
     # ActionType is an enumeration (AutopilotActionType)
     # actionArguments are specific to each type of action
-    def __init__(self, actionType, actionArguments:dict):
+    def __init__(self, actionType, actionArguments:dict, priority=0):
         self.actionType = actionType
-        self.args = {}
+        self.args = actionArguments
+        self.priority = priority       # Priority of this action (higher priority actions will be executed first)
     
     # String representation
     def __str__(self):
@@ -142,33 +214,38 @@ class AutopilotAction():
 # Specific action types
 class AutopilotAction_GotoXY(AutopilotAction):
     # Constructor
-    def __init__(self, x, y):
+    def __init__(self, x, y, priority=2):
         self.actionType = AutopilotActionType.GOTO_XY
         self.args['destinationX'] = x
         self.args['destinationY'] = y
+        self.priority = priority
 
 class AutopilotAction_PickupObj(AutopilotAction):
     # Constructor
-    def __init__(self, objectToPickUp):
+    def __init__(self, objectToPickUp, priority=4):
         self.actionType = AutopilotActionType.PICKUP_OBJ
         self.args['objectToPickUp'] = objectToPickUp
+        self.priority = priority
 
 class AutopilotAction_PlaceObjInContainer(AutopilotAction):
     # Constructor
-    def __init__(self, objectToPlace, container):
+    def __init__(self, objectToPlace, container, priority=3):
         self.actionType = AutopilotActionType.PLACE_OBJ_IN_CONTAINER
         self.args['objectToPlace'] = objectToPlace
         self.args['container'] = container
+        self.priority = priority
 
 class AutopilotAction_Wander(AutopilotAction):
     # Constructor
-    def __init__(self):
+    def __init__(self, priority=1):
         self.actionType = AutopilotActionType.WANDER
+        self.priority = priority
 
 class AutopilotAction_Wait(AutopilotAction):
     # Constructor
-    def __init__(self):
+    def __init__(self, priority=0):
         self.actionType = AutopilotActionType.WAIT
+        self.priority = priority
 
 
 # Enumeration for types of autopilot actions

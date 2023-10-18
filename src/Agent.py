@@ -22,6 +22,9 @@ class Agent(Object):
         self.attributes["faceDirection"] = "south"        
         self.spriteCharacterPrefix = "character18_"                 # Prefix for the sprite character name (e.g. "character18_")
 
+        # Autopilot action queue
+        self.autopilotActionQueue = []                              # Queue of autopilot actions
+
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
 
