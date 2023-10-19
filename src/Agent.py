@@ -317,7 +317,7 @@ class Agent(Object):
         newContainer.addObject(objToPut)
         objToPut.invalidateSpritesThisWorldTile()
         newContainer.invalidateSpritesThisWorldTile()
-        
+
         return ActionSuccess(True, "I put the " + objToPut.name + " into the " + newContainer.name + ".")
 
     # Open or close an object
@@ -1266,6 +1266,7 @@ class NPCChef1(NPC):
 
         ## DEBUG
         self.pot = pot
+        self.tables = tables
 
         # Rendering
         self.attributes["faceDirection"] = "south"        
@@ -1273,20 +1274,11 @@ class NPCChef1(NPC):
 
         # Add a default action into the action queue 
         if (tables is not None) and (pot is not None):
-            potParentContainer = pot.parentContainer
+            self.potParentContainer = pot.parentContainer
 
             # First, pick up the pot
             self.autopilotActionQueue.append( AutopilotAction_PickupObj(pot) )
-            # Then, get a reference to all the edible contents of the pot
-            potContents = pot.contents
-            edibleContents = [x for x in potContents if x.attributes['isEdible']]
-            # For each edible item in the pot (up to 5), place it on a table
-            for i in range(0, min(5, len(edibleContents))):
-                self.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(edibleContents[i], tables[i]) )
-            # Then, put the pot back on the original table
-            self.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(pot, potParentContainer) )
-            # Then, goto the original location
-            self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=20, y=21) )
+            # Since the rest is dependent upon the pot's contents at pick-up time, the rest of the actions are added in tick()
 
     #
     #   Dialog Actions
@@ -1356,8 +1348,22 @@ class NPCChef1(NPC):
         # Only run the action queue if there are at least 8 items in the pot
         if ("hasStarted" not in self.attributes):
             self.attributes['hasStarted'] = False
-        if (len(self.pot.contents) < 8) and (self.attributes['hasStarted'] == False): 
+        if (len(self.pot.contents) < 5) and (self.attributes['hasStarted'] == False): 
             return
+        
+        if (self.attributes['hasStarted'] == False):
+            # Finish adding the rest of the actions to the queue, based on the pot contents
+            # Then, get a reference to all the edible contents of the pot
+            potContents = self.pot.contents
+            edibleContents = [x for x in potContents if x.attributes['isEdible']]
+            # For each edible item in the pot (up to 5), place it on a table
+            for i in range(0, min(5, len(edibleContents))):
+                self.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(edibleContents[i], self.tables[i]) )
+            # Then, put the pot back on the original table
+            self.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(self.pot, self.potParentContainer) )
+            # Then, goto the original location
+            self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=20, y=21) )
+
         self.attributes['hasStarted'] = True
 
 

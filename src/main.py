@@ -662,6 +662,12 @@ def main():
             print("Setting autorun cycles to 100...")
             doNextTurn = True
 
+        # Manual "run for 500 cycles"
+        elif (keys[pygame.K_9]):
+            # Run for 100 cycles
+            autoRunCycles = 500
+            print("Setting autorun cycles to 100...")
+            doNextTurn = True
 
 
 
@@ -676,9 +682,10 @@ def main():
             print("")
             if (autoRunCycles > 0):
                 print("Step: " + str(frames) + " (autorun)")
+                time.sleep(0.10)
             else:
                 print("Step: " + str(frames))
-            time.sleep(0.25)
+                time.sleep(0.25)
 
             if (autoRunCycles > 0):
                 autoRunCycles -= 1
