@@ -88,23 +88,21 @@ def mkCafeteria(x, y, world, buildingMaker):
     buildingMaker.mkTableAndChairs(world, x=x+2, y=y+5, chairsPresent=["", "", "e", "w"])
 
     # Counter
-    world.addObject(x+2, y+3, Layer.FURNITURE, Table(world))
-    world.addObject(x+3, y+3, Layer.FURNITURE, Table(world))
-    mushroom = Mushroom(world, "red")
-    table1 = Table(world)
-    table1.addObject(mushroom)
-    world.addObject(x+4, y+3, Layer.FURNITURE, table1)
-    table2 = Table(world)
-    world.addObject(x+5, y+3, Layer.FURNITURE, table2)
-    world.addObject(x+6, y+3, Layer.FURNITURE, Table(world))
+    tables = []
+    for i in range(5):
+        tableToAdd = Table(world)
+        if (i == 2):
+            tableToAdd.addObject(Mushroom(world, "red"))
+        world.addObject(x+i+2, y+3, Layer.FURNITURE, tableToAdd)
+        tables.append(tableToAdd)
 
     #world.addObject(x+2, y+5, Layer.FURNITURE, Table(world))
 
     # Back (kitchen)
     pot = Pot(world)
     # add 5 mushrooms to pot
-    for i in range(5):
-        pot.addObject(Mushroom(world))
+    #for i in range(5):
+    #    pot.addObject(Mushroom(world))
     # Put the pot on a table    
     kitchenPrepTable = Table(world)
     kitchenPrepTable.addObject(pot)
@@ -120,7 +118,7 @@ def mkCafeteria(x, y, world, buildingMaker):
     world.addObject(x+6, y+5, Layer.FURNITURE, flowerTable)
 
     ## debug
-    return table2
+    return tables, pot
 
 
 def mkScienceLab(x, y, world, buildingMaker):
@@ -271,7 +269,7 @@ def main():
 
     mkBarracks(19, 11, world, buildingMaker)
     
-    table2 = mkCafeteria(19, 20, world, buildingMaker)
+    tables, pot = mkCafeteria(19, 20, world, buildingMaker)
 
     mkTownSquare(16, 18, world, buildingMaker)
 
@@ -343,12 +341,12 @@ def main():
     world.addObject(18, 25, Layer.AGENT, npcColonist)
 
     # Add the NPC Chef
-    npcChef = NPCChef(world, "Chef")
+    npcChef = NPCChef1(world, "Chef", tables=tables, pot=pot)
     world.addObject(20, 21, Layer.AGENT, npcChef)
 
     # Add another NPC colonist
     #npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickup=None)
-    npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickUp=mushroomsAdded[0], whereToPlace=table2)
+    npcColonist1 = NPCColonist1(world, "Colonist 1", thingsToPickup=mushroomsAdded, whereToPlace=pot)
     world.addObject(18, 20, Layer.AGENT, npcColonist1)
 
     # Initial world tick
@@ -370,6 +368,7 @@ def main():
     # Main rendering loop
     running = True
     frames = 0
+    autoRunCycles = 0
     lastMove = time.time()        # Time of last move (in seconds since start of game)
     while running:        
         #print("Frame: " + str(frames))
@@ -650,11 +649,17 @@ def main():
 
             doNextTurn = True
 
-
         # Manual "wait"
         elif (keys[pygame.K_w]):
             # Wait a turn
             print("Waiting (taking no action this turn)...")
+            doNextTurn = True
+        
+        # Manual "run for 100 cycles"
+        elif (keys[pygame.K_0]):
+            # Run for 100 cycles
+            autoRunCycles = 100
+            print("Setting autorun cycles to 100...")
             doNextTurn = True
 
 
@@ -665,12 +670,18 @@ def main():
 
         # Update the world
         # If the agent has taken their turn, then update the world
-        if (doNextTurn):
+        if (doNextTurn) or (autoRunCycles > 0):
             world.tick()
             frames += 1
             print("")
-            print("Step: " + str(frames))
+            if (autoRunCycles > 0):
+                print("Step: " + str(frames) + " (autorun)")
+            else:
+                print("Step: " + str(frames))
             time.sleep(0.25)
+
+            if (autoRunCycles > 0):
+                autoRunCycles -= 1
 
 
 

@@ -242,6 +242,9 @@ class Agent(Object):
         self.world.removeObject(self)                           # First, remove the object from it's current location in the world grid
         self.world.addObject(newX, newY, Layer.AGENT, self)     # Then, add the object to the new location in the world grid
 
+        # Invalidate sprite name
+        self.needsSpriteNameUpdate = True
+
         return ActionSuccess(True, "I moved to (" + str(newX) + ", " + str(newY) + ").")
 
 
@@ -273,7 +276,6 @@ class Agent(Object):
     def actionDrop(self, objToDrop):
         # First, check if the object is in the agent's inventory
         objectsInInventory = self.getAllContainedObjectsRecursive(respectContainerStatus=True)
-        #objectsInInventory = self.getAllContainedObjectsRecursive(respectContainerStatus=False)
         print("OBJECTS IN INVENTORY: " + str(objectsInInventory))
         if (not objToDrop in objectsInInventory):
             # Object is not in the agent's inventory
@@ -283,9 +285,13 @@ class Agent(Object):
         # (Note: adding the item to a specific location should remove it from the agent's inventory)
         self.world.addObject(self.attributes["gridX"], self.attributes["gridY"], Layer.OBJECTS, objToDrop)
 
+        # Invalidate the sprites at the object's new location
+        objToDrop.invalidateSpritesThisWorldTile()
+
     def actionPut(self, objToPut, newContainer):
         # First, check if the object is in the agent's inventory
-        if (not objToPut in self.contents):
+        objectsInInventory = self.getAllContainedObjectsRecursive(respectContainerStatus=True)
+        if (not objToPut in objectsInInventory):
             # Object is not in the agent's inventory
             return ActionSuccess(False, "That object (" + objToPut.name + ") is not in my inventory.")
 
@@ -311,6 +317,7 @@ class Agent(Object):
         newContainer.addObject(objToPut)
         objToPut.invalidateSpritesThisWorldTile()
         newContainer.invalidateSpritesThisWorldTile()
+        
         return ActionSuccess(True, "I put the " + objToPut.name + " into the " + newContainer.name + ".")
 
     # Open or close an object
@@ -660,30 +667,12 @@ class NPCChef(NPC):
     # Constructor
     def __init__(self, world, name):
         # Default sprite name
-        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
+        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south", tables=None, pot=None)
     
         # Rendering
         self.attributes["faceDirection"] = "south"        
         self.spriteCharacterPrefix = "character17_"
 
-        # Default attributes
-        self.attributes["isMovable"] = False                       # Can it be moved?
-
-        # Agent is a container for its inventory
-        # Container attributes
-        self.attributes['isContainer'] = True                      # Is it a container?
-        self.attributes['isOpenable'] = False                      # Can be opened
-        self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
-        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
-    
-        # Dialog attributes
-        self.attributes['isDialogable'] = True                     # Can it be dialoged with?
-
-        # NPC States
-        self.attributes['dialogAgentsSpokenWith'] = []             # List of dialog agents that this NPC has spoken with
-
-        # Pathfinder
-        self.pathfinder = Pathfinder()
 
 
     #
@@ -1162,7 +1151,7 @@ class NPCColonist(NPC):
 #
 class NPCColonist1(NPC):
     # Constructor
-    def __init__(self, world, name, thingToPickUp=None, whereToPlace=None):        ## DEBUG: thingToPickUp is a placeholder
+    def __init__(self, world, name, thingsToPickup=None, whereToPlace=None):        ## DEBUG: thingToPickUp is a placeholder
         # Default sprite name
         Agent.__init__(self, world, "agent", name, defaultSpriteName = "character15_agent_facing_south")
     
@@ -1171,10 +1160,10 @@ class NPCColonist1(NPC):
         self.spriteCharacterPrefix = "character15_"
 
         # Add a default action into the action queue 
-        if (thingToPickUp is not None):
-            self.autopilotActionQueue.append( AutopilotAction_PickupObj(thingToPickUp) )
-            if (whereToPlace is not None):
-                self.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(thingToPickUp, whereToPlace) )
+        if (thingsToPickup is not None):
+            for thingToPickup in thingsToPickup:
+                self.autopilotActionQueue.append( AutopilotAction_PickupObj(thingToPickup) )
+                self.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace) )
         else:
             self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=1, y=1) )
         
@@ -1269,3 +1258,130 @@ class NPCColonist1(NPC):
 
 
 
+class NPCChef1(NPC):
+    # Constructor
+    def __init__(self, world, name, tables=None, pot=None):
+        # Default sprite name
+        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
+
+        ## DEBUG
+        self.pot = pot
+
+        # Rendering
+        self.attributes["faceDirection"] = "south"        
+        self.spriteCharacterPrefix = "character15_"
+
+        # Add a default action into the action queue 
+        if (tables is not None) and (pot is not None):
+            potParentContainer = pot.parentContainer
+
+            # First, pick up the pot
+            self.autopilotActionQueue.append( AutopilotAction_PickupObj(pot) )
+            # Then, get a reference to all the edible contents of the pot
+            potContents = pot.contents
+            edibleContents = [x for x in potContents if x.attributes['isEdible']]
+            # For each edible item in the pot (up to 5), place it on a table
+            for i in range(0, min(5, len(edibleContents))):
+                self.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(edibleContents[i], tables[i]) )
+            # Then, put the pot back on the original table
+            self.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(pot, potParentContainer) )
+            # Then, goto the original location
+            self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=20, y=21) )
+
+    #
+    #   Dialog Actions
+    #
+    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+
+        # Step 1: Check if the agent has already spoken with this NPC
+        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+            # Agent has already spoken with this NPC
+            return "I've already spoken with you."
+
+        # Add the agent to the list of agents that this NPC has spoken with
+        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+
+        # If we reach here, the agent has not spoken with this NPC yet
+        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+
+    
+    #
+    #   Tick
+    #
+        
+    # Tick
+    def tick(self):
+        # # Randomly move agent
+        # if (random.random() < 0.1):
+        #     # Randomly move the agent
+        #     deltaX = random.randint(-1, 1)
+        #     deltaY = random.randint(-1, 1)
+        #     self.actionMoveAgent(deltaX, deltaY)
+
+        # Stop if the object has already had tick() called this update -- this might have happened if the object moved locations in this current update cycle.
+        if (self.tickCompleted):
+            return
+
+        # Debug
+        print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+
+        # Call superclass
+        NPC.tick(self)
+
+        # Sprite modifier updates
+        if ("poisoned" in self.attributes['states']):
+            self.curSpriteModifiers.add("placeholder_sick")
+
+
+        # Interpret any external states
+        if ("poisoned" in self.attributes['states']):
+            # If the agent is poisoned, then head for the infirmary
+            # Remove the "wandering" state
+            if ("wandering" in self.attributes['states']):
+                self.attributes['states'].remove("wandering")
+            # Head to the infirmary
+            self.attributes["goalLocation"] = (23, 7)   # Infirmary entrance
+
+
+        elif ("eatSignal" in self.attributes['states']):
+            # TODO: Add the action sequence to go to the cafeteria and eat
+            pass
+
+    
+        # Call the NPC's action interpreter
+        #self.autopilotActionQueue = []                              # Queue of autopilot actions
+        #self.pathfinder = Pathfinder()
+
+        # HACK:
+        # Only run the action queue if there are at least 8 items in the pot
+        if ("hasStarted" not in self.attributes):
+            self.attributes['hasStarted'] = False
+        if (len(self.pot.contents) < 8) and (self.attributes['hasStarted'] == False): 
+            return
+        self.attributes['hasStarted'] = True
+
+
+
+        # Get the NPC's current autopilot action
+        if (len(self.autopilotActionQueue) > 0):
+            # Get the current autopilot action
+            curAutopilotAction = self.autopilotActionQueue[0]
+            # Call the action interpreter to run it
+            print("(Agent: " + self.name + "): Calling action interpreter with action: " + str(curAutopilotAction))
+            result = self.pathfinder.actionInterpreter(curAutopilotAction, agent=self, world=self.world)
+            print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
+
+            # If the result is "COMPLETED", then remove the action from the queue
+            if (result == ActionResult.COMPLETED):
+                self.autopilotActionQueue.pop(0)
+                print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
+            # If the result is "FAILURE", then remove the action from the queue
+            elif (result == ActionResult.FAILURE):
+                self.autopilotActionQueue.pop(0)
+                print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
+            # If the result is "INVALID", then remove the action from the queue
+            elif (result == ActionResult.INVALID):
+                self.autopilotActionQueue.pop(0)
+                print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
+            
+            # If the result is "success", then do nothing -- the action is still in progress.

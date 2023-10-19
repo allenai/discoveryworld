@@ -199,7 +199,9 @@ class Pathfinder():
                     return ActionResult.SUCCESS
 
                 # If we reach here, the object is accessible and we can put it in/on the container.  Move it to the container.
+                print("runPlaceObjInContainer: Putting object (" + objectToPlace.name + ") in container (" + container.name + ")")
                 success = agent.actionPut(objToPut=objectToPlace, newContainer=container)
+                print("runPlaceObjInContainer: actionPut returned: " + str(success))
                 
                 # TODO: Check for success
                 return ActionResult.COMPLETED

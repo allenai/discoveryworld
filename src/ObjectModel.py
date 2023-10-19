@@ -33,6 +33,12 @@ class Object:
         # Properties/attributes
         self.attributes = {}
 
+        # Initial world location (undefined)
+        if ("gridX" not in self.attributes):
+            self.attributes["gridX"] = -1   
+        if ("gridY" not in self.attributes):
+            self.attributes["gridY"] = -1
+
         # Default attributes
         self.attributes["isMovable"] = True                         # Can it be moved?
         self.attributes["isPassable"] = True                        # Can an agent walk over this?
@@ -192,14 +198,16 @@ class Object:
     # Invalidate the sprite name for this object, and all objects it contains/that contain it.
     # This will force them to update their sprites on the next tick.
     def invalidateSpritesThisWorldTile(self):
-        # Step 1: Get the names of all objects at this world tile
-        allObjs = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"])
-
-        # Step 2: Invalidate the sprite names for all objects at this world tile, plus all objects contained by those objects
+        print("##### INVALIDATING SPRITES FOR " + self.name + " #####")
+        print("#### LOCATION: " + str(self.attributes["gridX"]) + ", " + str(self.attributes["gridY"]) + " ####")
+        # Step 1: Get the names of all objects (and any objects they contain) at this world tile
+        allObjs = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"], respectContainerStatus=False)
+        print("#### OBJECTS: " + str(allObjs) + " ####")
+        # Step 2: Invalidate the sprite names for all objects at this world tile
         for obj in allObjs:
             obj.needsSpriteNameUpdate = True
-            for containedObj in obj.getAllContainedObjectsRecursive():
-                containedObj.needsSpriteNameUpdate = True        
+            #for containedObj in obj.getAllContainedObjectsRecursive():
+            #    containedObj.needsSpriteNameUpdate = True        
 
 
     def inferSpriteName(self, force:bool=False):
@@ -230,6 +238,12 @@ class Object:
         # Get the sprite name, including the contents of the object
         # This is used for rendering objects that contain other objects (e.g. containers)
 
+        # Check if this sprite is invalidated and needs to be updated
+        if (self.needsSpriteNameUpdate):
+            # If so, then update it
+            self.inferSpriteName()
+            self.needsSpriteNameUpdate = False
+
         # First, get the name of the current object itself
         spriteList = [self.getSpriteName()]
         # Add any sprite modifiers
@@ -240,6 +254,12 @@ class Object:
         if (self.attributes['isContainer'] and self.attributes['isOpenContainer']):
             # If so, then add the contents
             for obj in self.contents:
+                # Check if this sprite is invalidated and needs to be updated
+                if (obj.needsSpriteNameUpdate):
+                    # If so, then update it
+                    obj.inferSpriteName()
+                    obj.needsSpriteNameUpdate = False
+
                 # Add the sprite name of the object
                 spriteNameObj = obj.getSpriteName()
                 #print("Object name: " + obj.name + "  sprite name: " + str(spriteNameObj))
@@ -1310,7 +1330,7 @@ class Pot(Object):
     # Constructor
     def __init__(self, world):
         # Default sprite name
-        Object.__init__(self, world, "pot", "pot", defaultSpriteName = "placeholder_pot")
+        Object.__init__(self, world, "pot", "pot", defaultSpriteName = "placeholder_pot_empty")
 
         self.attributes["isMovable"] = True                       # Can it be moved?
         self.attributes["isPassable"] = True                      # Agen't can't walk over this
@@ -1324,6 +1344,21 @@ class Pot(Object):
     def tick(self):
         # Call superclass
         Object.tick(self)    
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+        # Infer sprite based on whether empty/non-empty
+        if (len(self.contents) == 0):
+            self.curSpriteName = "placeholder_pot_empty"
+        else:
+            self.curSpriteName = "placeholder_pot_full"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
 
 #
 #   Object: Pot (container)
