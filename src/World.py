@@ -190,18 +190,12 @@ class World:
 
     #
     #   Rendering
-    #   
+    #       
     def render(self, window, cameraX, cameraY):
         #world.spriteLibrary.displaySprite("house1_house_corner_tl", window, 0, 0)
         # Render the world
         for y in range(self.sizeY):
             for x in range(self.sizeX):
-
-                # print("Rendering: " + str(x) + ", " + str(y))
-                # for layer in self.grid[x][y]["layers"].values():
-                #     for object in layer:
-                #         # print object and sprite names
-                #         print("\t" + object.name + " (" + str(object.getSpriteNamesWithContents()) + ")")
 
                 # Render the world layer
                 for object in self.grid[x][y]["layers"][Layer.WORLD]:
@@ -237,6 +231,45 @@ class World:
                     #self.spriteLibrary.renderSprite(window, object.getSpriteName(), x * 32 - cameraX, y * 32 - cameraY)
                     for spriteName in object.getSpriteNamesWithContents():
                         self.spriteLibrary.renderSprite(window, spriteName, x * 32 - cameraX, y * 32 - cameraY)
+
+
+    #   Render a viewport, starting from world position (worldStartX, worldStartY), and of size (in tiles) (sizeTilesX, sizeTilesY). 
+    #   The offset (in pixels) from the top-left corner of the window is (offsetX, offsetY)
+    def renderViewport(self, window, worldStartX, worldStartY, sizeTilesX, sizeTilesY, offsetX, offsetY):
+        # Render the viewport
+        for y in range(worldStartY, worldStartY + sizeTilesY):
+            for x in range(worldStartX, worldStartX + sizeTilesX):
+                # Determine screen x/y coordinates
+                screenX = (x - worldStartX) * 32 + offsetX
+                screenY = (y - worldStartY) * 32 + offsetY
+
+                # Render the world layer
+                for object in self.grid[x][y]["layers"][Layer.WORLD]:
+                    for spriteName in object.getSpriteNamesWithContents():
+                        self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY)
+
+                # Render the building layer
+                for object in self.grid[x][y]["layers"][Layer.BUILDING]:
+                    for spriteName in object.getSpriteNamesWithContents():
+                        self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY)
+
+                # Render the furniture layer
+                for object in self.grid[x][y]["layers"][Layer.FURNITURE]:
+                    for spriteName in object.getSpriteNamesWithContents():
+                        self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY)
+
+                # Render the objects layer
+                for object in self.grid[x][y]["layers"][Layer.OBJECTS]:
+                    for spriteName in object.getSpriteNamesWithContents():
+                        self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY)
+                
+                # Render the agent layer
+                for object in self.grid[x][y]["layers"][Layer.AGENT]:
+                    for spriteName in object.getSpriteNamesWithContents():
+                        self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY)
+    
+
+                    
 
 
 

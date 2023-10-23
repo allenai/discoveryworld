@@ -686,7 +686,22 @@ def main():
 
 
         # Render the world
-        world.render(window, cameraX=0, cameraY=0)
+        #world.render(window, cameraX=0, cameraY=0)
+
+        # Render a viewport centered on the agent
+        # def renderViewport(self, window, worldStartX, worldStartY, sizeTilesX, sizeTilesY, offsetX, offsetY):
+        # Step 1: Get the agent's location
+        agentLocation = currentAgent.getWorldLocation()
+        # Step 2: Define the viewport size (in tiles)
+        viewportSizeX = 11
+        viewportSizeY = 11
+        # Step 3: Determine the worldStartX and worldStartY coordinates
+        worldStartX = agentLocation[0] - int(viewportSizeX / 2)
+        worldStartY = agentLocation[1] - int(viewportSizeY / 2)
+        # Step 4: Render the viewport
+        world.renderViewport(window, worldStartX, worldStartY, viewportSizeX, viewportSizeY, 0, 0)
+
+
 
         # Save the screen frame to a file
         if (doNextTurn):
