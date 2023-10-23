@@ -693,8 +693,8 @@ def main():
         # Step 1: Get the agent's location
         agentLocation = currentAgent.getWorldLocation()
         # Step 2: Define the viewport size (in tiles)
-        viewportSizeX = 11
-        viewportSizeY = 11
+        viewportSizeX = 32
+        viewportSizeY = 32
         # Step 3: Determine the worldStartX and worldStartY coordinates
         worldStartX = agentLocation[0] - int(viewportSizeX / 2)
         worldStartY = agentLocation[1] - int(viewportSizeY / 2)
