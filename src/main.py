@@ -8,6 +8,7 @@ import subprocess
 
 # Sprite library
 import SpriteLibrary
+import ObjectLoader
 from World import World
 from Layer import Layer
 from BuildingMaker import BuildingMaker
@@ -242,10 +243,16 @@ def main():
     
     clock = pygame.time.Clock()
 
+    # Load objects from property sheet
+
+
+
     # Intialize world
     world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json")
     print ("All sprite names: ")
     print (world.spriteLibrary.getSpriteNames())
+
+    
 
     # Populate with structures/objects
     buildingMaker = BuildingMaker(world)

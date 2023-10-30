@@ -1,0 +1,6 @@
+ReferenceName	ObjectName	ObjectType	contents	color	size	isPoisonous	isEdible
+mushroom1	mushroom	mushroom	spacemold1	red			yes
+mushroom2	mushroom	mushroom		green			yes
+mushroom3	mushroom	mushroom		yellow			yes
+mushroom4	mushroom	mushroom		pink			yes
+spacemold1	mold	mold		red	microscopic	yes	yes
