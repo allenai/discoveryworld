@@ -8,7 +8,7 @@ import subprocess
 
 # Sprite library
 import SpriteLibrary
-import ObjectLoader
+from ObjectLoader import ObjectLoader
 from World import World
 from Layer import Layer
 from BuildingMaker import BuildingMaker
@@ -244,7 +244,9 @@ def main():
     clock = pygame.time.Clock()
 
     # Load objects from property sheet
+    objectLoader = ObjectLoader("data/", "objects.tsv")
 
+    exit(1)
 
 
     # Intialize world
