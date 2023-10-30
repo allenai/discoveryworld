@@ -1,6 +1,48 @@
-ReferenceName	ObjectName	ObjectType	contents_list	color_str	size_str	isPoisonous_bool	isEdible_bool
-mushroom1	mushroom	mushroom	spacemold1	red		FALSE	TRUE
-mushroom2	mushroom	mushroom		green		FALSE	TRUE
-mushroom3	mushroom	mushroom		yellow		FALSE	TRUE
-mushroom4	mushroom	mushroom		pink		FALSE	TRUE
-spacemold1	mold	mold		red	microscopic	TRUE	TRUE
+ReferenceName	ObjectName	ObjectType	BaseClass	contents_list	color_str	size_str	isPoisonous_bool	isEdible_bool
+mushroom1	mushroom	mushroom		spacemold1	red		FALSE	TRUE
+mushroom2	mushroom	mushroom			green		FALSE	TRUE
+mushroom3	mushroom	mushroom			yellow		FALSE	TRUE
+mushroom4	mushroom	mushroom			pink		FALSE	TRUE
+spacemold1	mold	mold			red	microscopic	TRUE	TRUE
+								
+								
+# Base Class								
+			Object					
+# Building Materials								
+			Wall					
+			Floor					
+			Door					
+			Sign					
+			SignVillage					
+								
+# Outside Ground								
+			Grass					
+			Path					
+			SoilTile					
+								
+# Furniture								
+			Table					
+			TableBedside					
+			Chair					
+			Bed					
+								
+								
+# Appliances								
+			Stove					
+			Sink					
+			Fridge					
+								
+# Instruments								
+			Microscope					
+								
+								
+# Plants								
+			PlantGeneric					
+			Mushroom					
+								
+								
+# Other								
+			Statue					
+			Fence					
+			Pot					
+			FlowerPot					
