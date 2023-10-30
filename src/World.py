@@ -136,6 +136,16 @@ class World:
         return True
 
 
+
+    #
+    #   Object Generation (light wrapper around ObjectMaker)
+    #
+    
+    def createObject(self, objectReferenceName):
+        return self.objectMaker.createObject(objectReferenceName)
+
+
+
     #
     #   Traversability
     #

@@ -24,11 +24,11 @@ def mkHouse(x, y, world, buildingMaker):
     #buildingMaker.mkTableAndChairs(world, x=6, y=9, chairsPresent=["n", "s", "e", "w"])
     buildingMaker.mkTableAndChairs(world, x=x+1, y=y+4, chairsPresent=["n", "s", "", ""])
 
-    world.addObject(x+1, y+1, Layer.FURNITURE, Fridge(world))    
-    world.addObject(x+2, y+1, Layer.FURNITURE, Sink(world))
-    world.addObject(x+3, y+1, Layer.FURNITURE, Stove(world))
+    world.addObject(x+1, y+1, Layer.FURNITURE, world.createObject("Fridge"))    
+    world.addObject(x+2, y+1, Layer.FURNITURE, world.createObject("Sink"))
+    world.addObject(x+3, y+1, Layer.FURNITURE, world.createObject("Stove"))
 
-    world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
+    world.addObject(x+5, y+1, Layer.FURNITURE, world.createObject("Bed"))
 
 
 def mkBarracks(x, y, world, buildingMaker):
@@ -39,18 +39,18 @@ def mkBarracks(x, y, world, buildingMaker):
 
 
     # Add 3 beds and bedside tables (back wall)
-    world.addObject(x+2, y+1, Layer.FURNITURE, Bed(world))
-    world.addObject(x+3, y+1, Layer.FURNITURE, TableBedside(world))
-    world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
-    world.addObject(x+6, y+1, Layer.FURNITURE, TableBedside(world))
+    world.addObject(x+2, y+1, Layer.FURNITURE, world.createObject("Bed"))
+    world.addObject(x+3, y+1, Layer.FURNITURE, world.createObject("TableBedside"))
+    world.addObject(x+5, y+1, Layer.FURNITURE, world.createObject("Bed"))
+    world.addObject(x+6, y+1, Layer.FURNITURE, world.createObject("TableBedside"))
     #world.addObject(x+8, y+1, Layer.FURNITURE, Bed(world))
     #world.addObject(x+9, y+1, Layer.FURNITURE, TableBedside(world))
 
     # Add 3 beds and bedside tables (middle wall)
-    world.addObject(x+2, y+4, Layer.FURNITURE, Bed(world))
-    world.addObject(x+3, y+4, Layer.FURNITURE, TableBedside(world))
-    world.addObject(x+5, y+4, Layer.FURNITURE, Bed(world))
-    world.addObject(x+6, y+4, Layer.FURNITURE, TableBedside(world))
+    world.addObject(x+2, y+4, Layer.FURNITURE, world.createObject("Bed"))
+    world.addObject(x+3, y+4, Layer.FURNITURE, world.createObject("TableBedside"))
+    world.addObject(x+5, y+4, Layer.FURNITURE, world.createObject("Bed"))
+    world.addObject(x+6, y+4, Layer.FURNITURE, world.createObject("TableBedside"))
     #world.addObject(x+8, y+4, Layer.FURNITURE, Bed(world))
     #world.addObject(x+9, y+4, Layer.FURNITURE, TableBedside(world))
 
@@ -66,15 +66,15 @@ def mkInfirmary(x, y, world, buildingMaker):
     buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=8, height=5)
 
     # Add 4 beds
-    world.addObject(x+1, y+1, Layer.FURNITURE, Bed(world))
-    world.addObject(x+3, y+1, Layer.FURNITURE, Bed(world))
+    world.addObject(x+1, y+1, Layer.FURNITURE, world.createObject("Bed"))
+    world.addObject(x+3, y+1, Layer.FURNITURE, world.createObject("Bed"))
     #world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
     #world.addObject(x+7, y+1, Layer.FURNITURE, Bed(world))
 
     # Table
-    world.addObject(x+5, y+1, Layer.FURNITURE, Table(world))    
+    world.addObject(x+5, y+1, Layer.FURNITURE, world.createObject("Table"))
     # Fridge
-    world.addObject(x+6, y+1, Layer.FURNITURE, Fridge(world))    
+    world.addObject(x+6, y+1, Layer.FURNITURE, world.createObject("Fridge"))
     
 def mkCafeteria(x, y, world, buildingMaker):
     # Create an L-shaped building (cafeteria)
@@ -91,7 +91,7 @@ def mkCafeteria(x, y, world, buildingMaker):
     # Counter
     tables = []
     for i in range(5):
-        tableToAdd = Table(world)
+        tableToAdd = world.createObject("Table")
         if (i == 2):
             tableToAdd.addObject(Mushroom(world, "red"))
         world.addObject(x+i+2, y+3, Layer.FURNITURE, tableToAdd)
@@ -105,16 +105,16 @@ def mkCafeteria(x, y, world, buildingMaker):
     #for i in range(5):
     #    pot.addObject(Mushroom(world))
     # Put the pot on a table    
-    kitchenPrepTable = Table(world)
+    kitchenPrepTable = world.createObject("Table")
     kitchenPrepTable.addObject(pot)
     world.addObject(x+3, y+1, Layer.FURNITURE, kitchenPrepTable)
-    world.addObject(x+4, y+1, Layer.FURNITURE, Fridge(world))    
-    world.addObject(x+5, y+1, Layer.FURNITURE, Sink(world))
-    world.addObject(x+6, y+1, Layer.FURNITURE, Stove(world))
+    world.addObject(x+4, y+1, Layer.FURNITURE, world.createObject("Fridge"))
+    world.addObject(x+5, y+1, Layer.FURNITURE, world.createObject("Sink"))
+    world.addObject(x+6, y+1, Layer.FURNITURE, world.createObject("Stove"))
 
     # Front (decorations)
-    flowerpot = FlowerPot(world)
-    flowerTable = Table(world)
+    flowerpot = world.createObject("FlowerPot")
+    flowerTable = world.createObject("Table")
     flowerTable.addObject(flowerpot)
     world.addObject(x+6, y+5, Layer.FURNITURE, flowerTable)
 
@@ -126,9 +126,9 @@ def mkScienceLab(x, y, world, buildingMaker):
     # Create a building (science lab)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
     buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=6, dividerX=5, apertureX=3, dividerY=0, apertureY=0, doorX=3, signText="Science Lab")
-    bench1 = Table(world)
+    bench1 = world.createObject("Table")
     world.addObject(x+1, y+1, Layer.FURNITURE, bench1)
-    bench1.addObject( Microscope(world) )
+    bench1.addObject( world.createObject("Microscope") )
 
 
 # Check if a tile already contains a "path"
@@ -143,13 +143,13 @@ def _hasObj(x, y, world, objType):
 
 def mkTownSquare(x, y, world, buildingMaker):
     # Add statue
-    world.addObject(x+1, y+1, Layer.OBJECTS, Statue(world))
+    world.addObject(x+1, y+1, Layer.OBJECTS, world.createObject("Statue"))
     
     # Create a square that's made out of "Path" tiles
     for i in range(0, 3):
         for j in range(0, 3):
             if (not _hasObj(x+i, y+j, world, "path")):                
-                world.addObject(x+i, y+j, Layer.WORLD, Path(world))
+                world.addObject(x+i, y+j, Layer.WORLD, world.createObject("Path"))
 
 
 def mkFarm(x, y, world, buildingMaker):
@@ -165,7 +165,7 @@ def mkFarm(x, y, world, buildingMaker):
     for i in range(0, soilPlotSizeX):
         for j in range(0, soilPlotSizeY):
             if (not _hasObj(x+i, y+j + houseSizeX + 1, world, "soil")):
-                world.addObject(x+i, y+j + houseSizeX + 1, Layer.WORLD, SoilTile(world))
+                world.addObject(x+i, y+j + houseSizeX + 1, Layer.WORLD, world.createObject("SoilTile"))
 
     # Randomly add a number of Mushrooms to the soil
     numMushroomsToAdd = 5
@@ -179,7 +179,7 @@ def mkFarm(x, y, world, buildingMaker):
 
         # If there isn't already a mushroom there, add one
         if (not _hasObj(randX, randY, world, "mushroom")):
-            mushroom = Mushroom(world)
+            mushroom = world.createObject("Mushroom")
             world.addObject(randX, randY, Layer.OBJECTS, mushroom)
             mushroomsAdded.append(mushroom)
             numMushroomsAdded += 1
@@ -199,23 +199,23 @@ def mkFarm(x, y, world, buildingMaker):
 def mkPathX(x, y, lengthX, world):
     for i in range(0, lengthX):
         if (not _hasObj(x+i, y, world, "path")):
-            world.addObject(x+i, y, Layer.WORLD, Path(world))
+            world.addObject(x+i, y, Layer.WORLD, world.createObject("Path"))
 
 def mkPathY(x, y, lengthY, world):
     for i in range(0, lengthY):
         if (not _hasObj(x, y+i, world, "path")):
-            world.addObject(x, y+i, Layer.WORLD, Path(world))
+            world.addObject(x, y+i, Layer.WORLD, world.createObject("Path"))
 
 # Fence making
 def mkFenceX(x, y, lengthX, world):
     for i in range(0, lengthX):
         if (not _hasObj(x+i, y, world, "fence")):
-            world.addObject(x+i, y, Layer.BUILDING, Fence(world))
+            world.addObject(x+i, y, Layer.BUILDING, world.createObject("Fence"))
 
 def mkFenceY(x, y, lengthY, world):
     for i in range(0, lengthY):
         if (not _hasObj(x, y+i, world, "fence")):
-            world.addObject(x, y+i, Layer.BUILDING, Fence(world))
+            world.addObject(x, y+i, Layer.BUILDING, world.createObject("Fence"))
 
 
 
@@ -309,11 +309,11 @@ def main():
 
 
     # Add big village sign
-    world.addObject(16, 2, Layer.BUILDING, SignVillage(world))
-    world.addObject(16, 29, Layer.BUILDING, SignVillage(world))
+    world.addObject(16, 2, Layer.BUILDING, world.createObject("SignVillage"))
+    world.addObject(16, 29, Layer.BUILDING, world.createObject("SignVillage"))
 
     # Add some plants
-    world.addObject(15, 1, Layer.OBJECTS, PlantGeneric(world))
+    world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))
 
     plantCount = 0
     minPlants = 15
