@@ -243,14 +243,8 @@ def main():
     
     clock = pygame.time.Clock()
 
-    # Load objects from property sheet
-    objectMaker = ObjectMaker("data/", "objects.tsv")
-
-    exit(1)
-
-
     # Intialize world
-    world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json")
+    world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json", dataPath = "data/", filenameObjectData = "objects.tsv")
     print ("All sprite names: ")
     print (world.spriteLibrary.getSpriteNames())
 

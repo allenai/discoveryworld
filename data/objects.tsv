@@ -3,7 +3,7 @@ mushroom1	mushroom	mushroom	Mushroom		spacemold1	red		FALSE	TRUE
 mushroom2	mushroom	mushroom	Mushroom			green		FALSE	TRUE
 mushroom3	mushroom	mushroom	Mushroom			yellow		FALSE	TRUE
 mushroom4	mushroom	mushroom	Mushroom			pink		FALSE	TRUE
-spacemold1	mold	mold	Object			red	microscopic	TRUE	TRUE
+spacemold1	mold	mold	Object	placeholder_1		red	microscopic	TRUE	TRUE
 									
 									
 # Base Class									

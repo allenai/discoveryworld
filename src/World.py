@@ -1,6 +1,7 @@
 # World.py
 
 import SpriteLibrary
+from ObjectMaker import ObjectMaker
 from Layer import Layer
 from ObjectModel import Object
 
@@ -8,13 +9,16 @@ from ObjectModel import Object
 # Storage class for the world (including the full environment grid)
 class World:
     # Constructor
-    def __init__(self, assetPath, filenameSpriteIndex):
+    def __init__(self, assetPath, filenameSpriteIndex, dataPath, filenameObjectData):
         # World size (in tiles)
         self.sizeX = 32
         self.sizeY = 32
 
         # Load sprites
         self.spriteLibrary = SpriteLibrary.SpriteLibrary(assetPath, filenameSpriteIndex)
+
+        # Load object data
+        self.objectMaker = ObjectMaker(dataPath, filenameObjectData, knownSpriteNames=self.spriteLibrary.getSpriteNames())
 
         # Initialize grid
         self.grid = [[self.mkBlankGridTile() for x in range(self.sizeX)] for y in range(self.sizeY)]
