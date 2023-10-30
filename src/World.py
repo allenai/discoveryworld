@@ -18,7 +18,7 @@ class World:
         self.spriteLibrary = SpriteLibrary.SpriteLibrary(assetPath, filenameSpriteIndex)
 
         # Load object data
-        self.objectMaker = ObjectMaker(dataPath, filenameObjectData, knownSpriteNames=self.spriteLibrary.getSpriteNames())
+        self.objectMaker = ObjectMaker(dataPath, filenameObjectData, world=self, knownSpriteNames=self.spriteLibrary.getSpriteNames())
 
         # Initialize grid
         self.grid = [[self.mkBlankGridTile() for x in range(self.sizeX)] for y in range(self.sizeY)]
