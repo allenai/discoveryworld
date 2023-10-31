@@ -56,6 +56,9 @@ class Object:
         self.attributes['isOpen'] = False                           # Closed by default
         self.contents = []                                          # Contents of the container (other objects)
 
+        # Parts (for composite objects -- similar to containers)
+        self.parts = []                                             # List of parts that this object is made of
+
         # Passage (for dynamic passages like doors, that can be opened/closed)
         self.attributes['isPassage'] = False                        # Is this a passage?
 
@@ -87,6 +90,13 @@ class Object:
         self.attributes["gridX"] = gridX
         self.attributes["gridY"] = gridY
 
+        # Recursively update the world location of all contained objects and parts
+        for obj in self.contents:
+            obj.setWorldLocation(gridX, gridY)
+
+        for obj in self.parts:
+            obj.setWorldLocation(gridX, gridY)
+
     def getWorldLocation(self):
         # Get the world location of the object
         return (self.attributes["gridX"], self.attributes["gridY"])
@@ -107,6 +117,17 @@ class Object:
 
         # Add an object to this container        
         self.contents.append(obj)
+        # Set the parent container
+        obj.parentContainer = self        
+
+
+    # Add an object (obj) as a part of this object
+    def addPart(self, obj):
+        # Remove the object from its previous container
+        obj.removeSelfFromContainer()
+
+        # Add an object as part (using parentContainer as a backreference to whole)
+        self.parts.append(obj)
         obj.parentContainer = self
 
     # Remove an object from this container
@@ -114,6 +135,10 @@ class Object:
         # Remove an object from this container
         if (obj in self.contents):
             self.contents.remove(obj)
+            obj.parentContainer = None
+            return True
+        elif (obj in self.parts):
+            self.parts.remove(obj)
             obj.parentContainer = None
             return True
         else:
@@ -137,6 +162,7 @@ class Object:
                 out.append(obj)
                 # Add children
                 out.extend(obj.getAllContainedObjectsRecursive(respectContainerStatus))
+
         # Return
         return out
 
@@ -202,7 +228,39 @@ class Object:
             # Next, call tick()
             obj.tick()
 
-        
+
+    #
+    #   Text Observations
+    #
+    def getTextObservationMicroscopic(self):
+        # Get a text description of this object, under a microscope
+        # TODO: Check object size (normal, microscopic, nanoscopic?)
+
+        microscopeDescriptionStr = ""
+
+        # First, describe the object itself
+        partNames = [part.name for part in self.parts]
+        if (len(partNames) > 0):
+            microscopeDescriptionStr = "Observing the " + self.name + ", you see the following parts: " + ", ".join(partNames) + ". \n"
+            
+        # Describe the materials            
+        materials = self.attributes['materials']
+        if (len(materials) == 0):
+            microscopeDescriptionStr += "Observing the " + self.name + ", you don't observe anything particularly noteworthy.\n"
+        else:
+            microscopeDescriptionStr += "Observing the " + self.name + ", you see the following: "
+            materialDescs = []
+            for material in materials:
+                materialDescs.append(material['microscopeDesc'])                
+            microscopeDescriptionStr += ", ".join(materialDescs) + ".\n"
+
+        # Then, recursively describe all the parts. 
+        for part in self.parts:
+            microscopeDescriptionStr += part.getTextObservationMicroscopic()
+
+        # Return
+        return microscopeDescriptionStr
+
         
 
     #
@@ -995,21 +1053,15 @@ class Microscope(Object):
     def actionUseWith(self, patientObj):
         # Use this object on the patient object
 
-        # First, get a list of the materials that the patient object is made out of
-        patientMaterials = patientObj.attributes['materials']
+        microscopeDescriptionStr = "You use the microscope to view the " + patientObj.name + ".\n"
 
-        # If there are no materials specified, give a generic response
-        microscopeDescriptionStr = "You use the microscope to view the " + patientObj.name + ". "
-        if (len(patientMaterials) == 0):
-            microscopeDescriptionStr += " You don't see anything particularly noteworthy. "
-        else:
-            # If there are materials specified, then give a detailed response for each material.
-            for material in patientMaterials:
-                materialDescription = material['microscopeDesc']
-                microscopeDescriptionStr += "You see " + materialDescription + ". "
+        # Get the description of the object as observed under a microscope
+        microscopeDescriptionStr += patientObj.getTextObservationMicroscopic()
 
         # Return the action response
         return ActionSuccess(True, microscopeDescriptionStr)        
+
+    
 
 
     #
