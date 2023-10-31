@@ -9,7 +9,7 @@ from ObjectModel import Object
 # Storage class for the world (including the full environment grid)
 class World:
     # Constructor
-    def __init__(self, assetPath, filenameSpriteIndex, dataPath, filenameObjectData):
+    def __init__(self, assetPath, filenameSpriteIndex, dataPath, filenameObjectData, filenameMaterialData):
         # World size (in tiles)
         self.sizeX = 32
         self.sizeY = 32
@@ -18,7 +18,7 @@ class World:
         self.spriteLibrary = SpriteLibrary.SpriteLibrary(assetPath, filenameSpriteIndex)
 
         # Load object data
-        self.objectMaker = ObjectMaker(dataPath, filenameObjectData, world=self, knownSpriteNames=self.spriteLibrary.getSpriteNames())
+        self.objectMaker = ObjectMaker(dataPath, filenameObjectData, filenameMaterialData, world=self, knownSpriteNames=self.spriteLibrary.getSpriteNames())
 
         # Initialize grid
         self.grid = [[self.mkBlankGridTile() for x in range(self.sizeX)] for y in range(self.sizeY)]

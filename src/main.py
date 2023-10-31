@@ -244,7 +244,7 @@ def main():
     clock = pygame.time.Clock()
 
     # Intialize world
-    world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json", dataPath = "data/", filenameObjectData = "objects.tsv")
+    world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json", dataPath = "data/", filenameObjectData = "objects.tsv", filenameMaterialData="materials.tsv")
     print ("All sprite names: ")
     print (world.spriteLibrary.getSpriteNames())
 
