@@ -636,11 +636,39 @@ def main():
                     success = currentAgent.actionEat(edibleObjs[0])
                     print(success)
 
+                    doNextTurn = True
+
         # Use action
         elif (keys[pygame.K_u]):
-            # Use one item with another item
-            # TODO
-            pass
+            # Use one item with another item.
+
+            # Find a usable item at the location the agent is facing
+            facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+            # Bound checking
+            if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                # Get objects at location
+                objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                # Filter by objects that are usable
+                usableObjs = [obj for obj in objs if (obj.attributes['isUsable'] == True)]
+
+                # Check to see if there is a usable object here
+                if (len(usableObjs) > 0):
+                    
+                    # The patient object will be the first item in the inventory. 
+                    if (len(currentAgent.contents) > 0):
+                        patientObj = currentAgent.contents[0]
+
+                        # Try to use the first one
+                        success = currentAgent.actionUse(usableObjs[0], patientObj)
+                        print(success)
+                        
+                    else: 
+                        print("No items in inventory to use.")
+                else:
+                    print("No usable objects found in front of the agent.")
+
+                doNextTurn = True
+
 
         
         # Manual state adjustment

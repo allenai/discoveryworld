@@ -1,4 +1,4 @@
-ReferenceName	ObjectName	ObjectType	BaseClass	defaultSpriteName	contents_list	material_list	color_str	size_str	isPoisonous_bool	isEdible_bool
+ReferenceName	ObjectName	ObjectType	BaseClass	defaultSpriteName	contents_list	materials_set	color_str	size_str	isPoisonous_bool	isEdible_bool
 mushroom1	mushroom	mushroom	Mushroom		spacemold1	PlantMatterWhite	red		FALSE	TRUE
 mushroom2	mushroom	mushroom	Mushroom			PlantMatterWhite	green		FALSE	TRUE
 mushroom3	mushroom	mushroom	Mushroom			PlantMatterWhite	yellow		FALSE	TRUE

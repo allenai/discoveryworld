@@ -1,6 +1,7 @@
 # ObjectModel.py
 
 import SpriteLibrary
+from ActionSuccess import *
 import random
 
 # Storage class for a single object
@@ -43,6 +44,9 @@ class Object:
         self.attributes["isMovable"] = True                         # Can it be moved?
         self.attributes["isPassable"] = True                        # Can an agent walk over this?
 
+        # Materials
+        self.attributes["materials"] = []                           # List of materials that this object is made of
+
         # Contents (for containers)
         self.parentContainer = None                                 # Back-reference for the container that this object is in
         self.attributes['isContainer'] = False                      # Is it a container?
@@ -56,8 +60,9 @@ class Object:
         self.attributes['isPassage'] = False                        # Is this a passage?
 
         # Device (is activable)
-        self.attributes['isActivatable'] = False                      # Is this a device? (more specifically, can it be activated/deactivated?)
+        self.attributes['isActivatable'] = False                    # Is this a device? (more specifically, can it be activated/deactivated?)
         self.attributes['isActivated'] = False                      # Is this device currently activated?
+        self.attributes['isUsable'] = False                         # Can this device be used with another object? (e.g. specifically through the 'use' action)
 
         # Dialog attributes
         self.attributes['isDialogable'] = False                     # Can it be dialoged with?
@@ -155,7 +160,16 @@ class Object:
 
         # Return the last container
         return lastContainer
-        
+
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+        return ActionSuccess(False, "I'm not sure how to use the " + self.name + " with the " + patientObj.name + ".")        
+
+
 
     #
     #   Update/Tick
@@ -969,9 +983,38 @@ class Microscope(Object):
         Object.__init__(self, world, "microscope", "microscope", defaultSpriteName = "placeholder_microscope")
 
         # Default attributes
+
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
         pass        
         
 
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+
+        # First, get a list of the materials that the patient object is made out of
+        patientMaterials = patientObj.attributes['materials']
+
+        # If there are no materials specified, give a generic response
+        microscopeDescriptionStr = "You use the microscope to view the " + patientObj.name + ". "
+        if (len(patientMaterials) == 0):
+            microscopeDescriptionStr += " You don't see anything particularly noteworthy. "
+        else:
+            # If there are materials specified, then give a detailed response for each material.
+            for material in patientMaterials:
+                materialDescription = material['microscopeDesc']
+                microscopeDescriptionStr += "You see " + materialDescription + ". "
+
+        # Return the action response
+        return ActionSuccess(True, microscopeDescriptionStr)        
+
+
+    #
+    #   Tick
+    #
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
         if (False):
