@@ -179,7 +179,13 @@ def mkFarm(x, y, world, buildingMaker):
 
         # If there isn't already a mushroom there, add one
         if (not _hasObj(randX, randY, world, "mushroom")):
-            mushroom = world.createObject("Mushroom")
+            # Add a mushroom 
+            mushroomTypes = ["mushroom1", "mushroom2", "mushroom3", "mushroom4"]
+            # Randomly pick a mushroom type
+            mushroomType = mushroomTypes[random.randint(0, len(mushroomTypes)-1)]
+            mushroom = world.createObject(mushroomType)
+            #mushroom = world.createObject("Mushroom")
+
             world.addObject(randX, randY, Layer.OBJECTS, mushroom)
             mushroomsAdded.append(mushroom)
             numMushroomsAdded += 1
