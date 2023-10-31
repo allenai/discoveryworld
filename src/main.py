@@ -636,6 +636,12 @@ def main():
                     success = currentAgent.actionEat(edibleObjs[0])
                     print(success)
 
+        # Use action
+        elif (keys[pygame.K_u]):
+            # Use one item with another item
+            # TODO
+            pass
+
         
         # Manual state adjustment
         elif (keys[pygame.K_1]):

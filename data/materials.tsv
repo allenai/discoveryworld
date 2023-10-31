@@ -1,0 +1,6 @@
+ReferenceName	MaterialName	MaterialType	BaseClass	microscopeDesc_str	color_str	isPoisonous_bool	isEdible_bool	cosCanBeLiquid_bool	cosCanBeSolid_bool	cosCanBeGas_bool	cosMeltingPointC_float	cosBoilingPointC_float	cosCombustionPointC_float	isLiving_bool	livingMinTemp_float	livingMaxTemp_float
+PlantMatterGreen	plant matter			The fibers and cells associated with plant matter	green	FALSE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	35
+PlantMatterWhite	plant matter			The fibers and cells associated with plant matter	white	FALSE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	35
+PlantMatterWood	plant matter			The fibers and cells associated with plant matter	brown	FALSE	TRUE	FALSE	TRUE	FALSE	0	10000	300	FALSE	0	35
+MoldRed	mold			Fuzzy filaments indicative of mold	red	TRUE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	60
+MoldGreen	mold			Fuzzy filaments indicative of mold	green	TRUE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	60
