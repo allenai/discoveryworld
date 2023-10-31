@@ -665,6 +665,12 @@ def main():
             print("Setting autorun cycles to 100...")
             doNextTurn = True
 
+        # Manual "run for 500 cycles"
+        elif (keys[pygame.K_9]):
+            # Run for 100 cycles
+            autoRunCycles = 500
+            print("Setting autorun cycles to 500...")
+            doNextTurn = True
 
 
 
