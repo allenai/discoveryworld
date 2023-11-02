@@ -92,8 +92,8 @@ def mkCafeteria(x, y, world, buildingMaker):
     tables = []
     for i in range(5):
         tableToAdd = world.createObject("Table")
-        if (i == 2):
-            tableToAdd.addObject(Mushroom(world, "red"))
+        #if (i == 2):
+        #    tableToAdd.addObject(Mushroom(world, "red"))
         world.addObject(x+i+2, y+3, Layer.FURNITURE, tableToAdd)
         tables.append(tableToAdd)
 
@@ -360,6 +360,10 @@ def main():
     #npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickup=None)
     ##npcColonist1 = NPCColonist1(world, "Colonist 1", thingsToPickup=mushroomsAdded, whereToPlace=pot)
     ##world.addObject(18, 20, Layer.AGENT, npcColonist1)
+
+    # Add another NPC colonist
+    npcColonist2 = NPCColonistAuto2(world, "Colonist 2")
+    world.addObject(18, 20, Layer.AGENT, npcColonist2)
 
     # Initial world tick
     world.tick()
@@ -684,7 +688,7 @@ def main():
         elif (keys[pygame.K_1]):
             # Change the colonist NPC external signal
             print("Sending 'eatSignal' to colonist NPC")
-            npcColonist.attributes['states'].add("eatSignal")
+            npcColonist2.attributes['states'].add("eatSignal")
 
             doNextTurn = True
         
