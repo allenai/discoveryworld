@@ -676,20 +676,22 @@ def main():
 
         # Update the world
         # If the agent has taken their turn, then update the world
-        if (doNextTurn) or (autoRunCycles > 0):
+        if (autoRunCycles > 0):
+            doNextTurn = True
+
+        if (doNextTurn):
             world.tick()
             frames += 1
             print("")
             if (autoRunCycles > 0):
                 print("Step: " + str(frames) + " (autorun)")
-                time.sleep(0.10)
+                time.sleep(0.05)
             else:
                 print("Step: " + str(frames))
                 time.sleep(0.25)
 
             if (autoRunCycles > 0):
                 autoRunCycles -= 1
-
 
 
         # Render the world

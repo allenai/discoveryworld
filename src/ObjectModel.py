@@ -1354,8 +1354,12 @@ class Pot(Object):
         # Infer sprite based on whether empty/non-empty
         if (len(self.contents) == 0):
             self.curSpriteName = "placeholder_pot_empty"
+        elif (len(self.contents) == 1):
+            self.curSpriteName = "placeholder_pot_full1"
+        elif (len(self.contents) == 2):
+            self.curSpriteName = "placeholder_pot_full2"
         else:
-            self.curSpriteName = "placeholder_pot_full"
+            self.curSpriteName = "placeholder_pot_full3"
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName

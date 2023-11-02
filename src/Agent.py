@@ -314,6 +314,8 @@ class Agent(Object):
 
         # If we reach here, the object is in the agent's inventory, the container is within reach, and the container is open.
         # Put the object into the container.
+        if (objToPut.parentContainer != None):
+            objToPut.parentContainer.invalidateSpritesThisWorldTile()
         newContainer.addObject(objToPut)
         objToPut.invalidateSpritesThisWorldTile()
         newContainer.invalidateSpritesThisWorldTile()
@@ -1164,6 +1166,9 @@ class NPCColonist1(NPC):
             for thingToPickup in thingsToPickup:
                 self.autopilotActionQueue.append( AutopilotAction_PickupObj(thingToPickup) )
                 self.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace) )
+
+            # Then, move to the farm
+            self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=10, y=16) )
         else:
             self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=1, y=1) )
         
