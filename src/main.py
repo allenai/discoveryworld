@@ -358,8 +358,8 @@ def main():
 
     # Add another NPC colonist
     #npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickup=None)
-    npcColonist1 = NPCColonist1(world, "Colonist 1", thingsToPickup=mushroomsAdded, whereToPlace=pot)
-    world.addObject(18, 20, Layer.AGENT, npcColonist1)
+    ##npcColonist1 = NPCColonist1(world, "Colonist 1", thingsToPickup=mushroomsAdded, whereToPlace=pot)
+    ##world.addObject(18, 20, Layer.AGENT, npcColonist1)
 
     # Initial world tick
     world.tick()
@@ -690,10 +690,18 @@ def main():
         
         elif (keys[pygame.K_2]):
             # Change the Chef NPC external signal
-            print("Sending 'serveDinner' to chef NPC")
-            npcChef.attributes['states'].add("serveDinner")
+            print("Sending 'collectSignal' to chef NPC")
+            npcChef.attributes['states'].add("collectSignal")
 
             doNextTurn = True
+
+        elif (keys[pygame.K_3]):
+            # Change the Chef NPC external signal
+            print("Sending 'serveSignal' to chef NPC")
+            npcChef.attributes['states'].add("serveSignal")
+
+            doNextTurn = True
+
 
         # Manual "wait"
         elif (keys[pygame.K_w]):

@@ -135,7 +135,7 @@ class Pathfinder():
             print("runPickupObj: We are beside the object (it is to our " + str(besideDir) + ")")
 
             # We're directly beside the object.  Is the agent facing the object?
-            if (agent.attributes["faceDirection"] != besideDir):
+            if (agent.attributes["faceDirection"] != besideDir) and (besideDir != "identical"):
                 # We're not facing the object.  Rotate.
                 print("runPickupObj: We're not facing the object.  Rotating to face it.")
                 success = agent.rotateToFaceDirection(besideDir)
@@ -173,13 +173,24 @@ class Pathfinder():
         endY = args['y'] + args['height']
         objectTypes = args['objectTypes']
 
+        excludeObjectsOnAgent = args['excludeObjectsOnAgent']
+
+        agentInventory = []
+        if (excludeObjectsOnAgent):
+            agentInventory = agent.getAllContainedObjectsRecursive(respectContainerStatus=False)
+
         for tileX in range(startX, endX):
             for tileY in range(startY, endY):
                 objectsAtTile = world.getObjectsAt(tileX, tileY, respectContainerStatus=True)
                 for obj in objectsAtTile:
                     if (obj.type in objectTypes):
                         # We found an object that matches one of the types we're looking for.  Place it in the container.
-                        return obj
+                        # But, first check that the object isn't in the agents inventory (if we're supposed to exclude objects on the agent)
+                        if (excludeObjectsOnAgent):
+                            if (obj not in agentInventory):
+                                return obj
+                        else:
+                            return obj
         
         # If we reach here, we didn't find any objects of the specified type
         return None
@@ -236,12 +247,14 @@ class Pathfinder():
         # Check if we are directly left, right, up, or down from the container
         agentLocation = agent.getWorldLocation()
         isBeside, besideDir = self._isAgentDirectlyAdjacentToDestination(agentLocation[0], agentLocation[1], containerLocation[0], containerLocation[1])
+        print ("## runPlaceObjInContainer: Agent is at (" + str(agentLocation[0]) + ", " + str(agentLocation[1]) + ")")
+        print ("## runPlaceObjInContainer: Container is at (" + str(containerLocation[0]) + ", " + str(containerLocation[1]) + ")")
 
         if (isBeside):
             print("runPlaceObjInContainer: We are beside the container (it is to our " + str(besideDir) + ")")
 
             # We're directly beside the object.  Is the agent facing the object?
-            if (agent.attributes["faceDirection"] != besideDir):
+            if (agent.attributes["faceDirection"] != besideDir) and (besideDir != "identical"):
                 # We're not facing the object.  Rotate.
                 print("runPlaceObjInContainer: We're not facing the container.  Rotating to face it.")
                 success = agent.rotateToFaceDirection(besideDir)
@@ -390,6 +403,10 @@ class Pathfinder():
     # Returns (True, "north"/"east"/"south"/"west") if the agent is directly adjacent to the destination
     # Returns (False, None) if the agent is not directly adjacent to the destination
     def _isAgentDirectlyAdjacentToDestination(self, queryX, queryY, destinationX, destinationY):
+        # Check to see if the locations are identical
+        if (queryX == destinationX) and (queryY == destinationY):
+            return (True, "identical")
+
         # Check north
         if (queryX == destinationX) and (queryY == destinationY + 1):
             return (True, "north")
@@ -473,7 +490,7 @@ class AutopilotAction_PlaceObjInContainer(AutopilotAction):
 
 class AutopilotAction_PickupObjectsInArea(AutopilotAction):
     # Constructor
-    def __init__(self, x, y, width, height, objectTypes:list, container, priority=4):
+    def __init__(self, x, y, width, height, objectTypes:list, container, excludeObjectsOnAgent=True, priority=4):
         self.actionType = AutopilotActionType.FIND_OBJS_AREA_PLACE
         self.args = {}
         self.args['x'] = x
@@ -482,6 +499,7 @@ class AutopilotAction_PickupObjectsInArea(AutopilotAction):
         self.args['height'] = height
         self.args['objectTypes'] = objectTypes
         self.args['container'] = container
+        self.args['excludeObjectsOnAgent'] = excludeObjectsOnAgent      # If True, will not look for objects on the agent if/when the agent is in the area
         self.args['priority'] = priority                
 
 
