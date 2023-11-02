@@ -8,6 +8,7 @@ import subprocess
 
 # Sprite library
 import SpriteLibrary
+from ObjectMaker import ObjectMaker
 from World import World
 from Layer import Layer
 from BuildingMaker import BuildingMaker
@@ -23,11 +24,11 @@ def mkHouse(x, y, world, buildingMaker):
     #buildingMaker.mkTableAndChairs(world, x=6, y=9, chairsPresent=["n", "s", "e", "w"])
     buildingMaker.mkTableAndChairs(world, x=x+1, y=y+4, chairsPresent=["n", "s", "", ""])
 
-    world.addObject(x+1, y+1, Layer.FURNITURE, Fridge(world))    
-    world.addObject(x+2, y+1, Layer.FURNITURE, Sink(world))
-    world.addObject(x+3, y+1, Layer.FURNITURE, Stove(world))
+    world.addObject(x+1, y+1, Layer.FURNITURE, world.createObject("Fridge"))    
+    world.addObject(x+2, y+1, Layer.FURNITURE, world.createObject("Sink"))
+    world.addObject(x+3, y+1, Layer.FURNITURE, world.createObject("Stove"))
 
-    world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
+    world.addObject(x+5, y+1, Layer.FURNITURE, world.createObject("Bed"))
 
 
 def mkBarracks(x, y, world, buildingMaker):
@@ -38,18 +39,18 @@ def mkBarracks(x, y, world, buildingMaker):
 
 
     # Add 3 beds and bedside tables (back wall)
-    world.addObject(x+2, y+1, Layer.FURNITURE, Bed(world))
-    world.addObject(x+3, y+1, Layer.FURNITURE, TableBedside(world))
-    world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
-    world.addObject(x+6, y+1, Layer.FURNITURE, TableBedside(world))
+    world.addObject(x+2, y+1, Layer.FURNITURE, world.createObject("Bed"))
+    world.addObject(x+3, y+1, Layer.FURNITURE, world.createObject("TableBedside"))
+    world.addObject(x+5, y+1, Layer.FURNITURE, world.createObject("Bed"))
+    world.addObject(x+6, y+1, Layer.FURNITURE, world.createObject("TableBedside"))
     #world.addObject(x+8, y+1, Layer.FURNITURE, Bed(world))
     #world.addObject(x+9, y+1, Layer.FURNITURE, TableBedside(world))
 
     # Add 3 beds and bedside tables (middle wall)
-    world.addObject(x+2, y+4, Layer.FURNITURE, Bed(world))
-    world.addObject(x+3, y+4, Layer.FURNITURE, TableBedside(world))
-    world.addObject(x+5, y+4, Layer.FURNITURE, Bed(world))
-    world.addObject(x+6, y+4, Layer.FURNITURE, TableBedside(world))
+    world.addObject(x+2, y+4, Layer.FURNITURE, world.createObject("Bed"))
+    world.addObject(x+3, y+4, Layer.FURNITURE, world.createObject("TableBedside"))
+    world.addObject(x+5, y+4, Layer.FURNITURE, world.createObject("Bed"))
+    world.addObject(x+6, y+4, Layer.FURNITURE, world.createObject("TableBedside"))
     #world.addObject(x+8, y+4, Layer.FURNITURE, Bed(world))
     #world.addObject(x+9, y+4, Layer.FURNITURE, TableBedside(world))
 
@@ -65,15 +66,15 @@ def mkInfirmary(x, y, world, buildingMaker):
     buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=8, height=5)
 
     # Add 4 beds
-    world.addObject(x+1, y+1, Layer.FURNITURE, Bed(world))
-    world.addObject(x+3, y+1, Layer.FURNITURE, Bed(world))
+    world.addObject(x+1, y+1, Layer.FURNITURE, world.createObject("Bed"))
+    world.addObject(x+3, y+1, Layer.FURNITURE, world.createObject("Bed"))
     #world.addObject(x+5, y+1, Layer.FURNITURE, Bed(world))
     #world.addObject(x+7, y+1, Layer.FURNITURE, Bed(world))
 
     # Table
-    world.addObject(x+5, y+1, Layer.FURNITURE, Table(world))    
+    world.addObject(x+5, y+1, Layer.FURNITURE, world.createObject("Table"))
     # Fridge
-    world.addObject(x+6, y+1, Layer.FURNITURE, Fridge(world))    
+    world.addObject(x+6, y+1, Layer.FURNITURE, world.createObject("Fridge"))
     
 def mkCafeteria(x, y, world, buildingMaker):
     # Create an L-shaped building (cafeteria)
@@ -90,7 +91,7 @@ def mkCafeteria(x, y, world, buildingMaker):
     # Counter
     tables = []
     for i in range(5):
-        tableToAdd = Table(world)
+        tableToAdd = world.createObject("Table")
         if (i == 2):
             tableToAdd.addObject(Mushroom(world, "red"))
         world.addObject(x+i+2, y+3, Layer.FURNITURE, tableToAdd)
@@ -104,16 +105,16 @@ def mkCafeteria(x, y, world, buildingMaker):
     #for i in range(5):
     #    pot.addObject(Mushroom(world))
     # Put the pot on a table    
-    kitchenPrepTable = Table(world)
+    kitchenPrepTable = world.createObject("Table")
     kitchenPrepTable.addObject(pot)
     world.addObject(x+3, y+1, Layer.FURNITURE, kitchenPrepTable)
-    world.addObject(x+4, y+1, Layer.FURNITURE, Fridge(world))    
-    world.addObject(x+5, y+1, Layer.FURNITURE, Sink(world))
-    world.addObject(x+6, y+1, Layer.FURNITURE, Stove(world))
+    world.addObject(x+4, y+1, Layer.FURNITURE, world.createObject("Fridge"))
+    world.addObject(x+5, y+1, Layer.FURNITURE, world.createObject("Sink"))
+    world.addObject(x+6, y+1, Layer.FURNITURE, world.createObject("Stove"))
 
     # Front (decorations)
-    flowerpot = FlowerPot(world)
-    flowerTable = Table(world)
+    flowerpot = world.createObject("FlowerPot")
+    flowerTable = world.createObject("Table")
     flowerTable.addObject(flowerpot)
     world.addObject(x+6, y+5, Layer.FURNITURE, flowerTable)
 
@@ -125,9 +126,9 @@ def mkScienceLab(x, y, world, buildingMaker):
     # Create a building (science lab)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
     buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=6, dividerX=5, apertureX=3, dividerY=0, apertureY=0, doorX=3, signText="Science Lab")
-    bench1 = Table(world)
+    bench1 = world.createObject("Table")
     world.addObject(x+1, y+1, Layer.FURNITURE, bench1)
-    bench1.addObject( Microscope(world) )
+    bench1.addObject( world.createObject("Microscope") )
 
 
 # Check if a tile already contains a "path"
@@ -142,13 +143,13 @@ def _hasObj(x, y, world, objType):
 
 def mkTownSquare(x, y, world, buildingMaker):
     # Add statue
-    world.addObject(x+1, y+1, Layer.OBJECTS, Statue(world))
+    world.addObject(x+1, y+1, Layer.OBJECTS, world.createObject("Statue"))
     
     # Create a square that's made out of "Path" tiles
     for i in range(0, 3):
         for j in range(0, 3):
             if (not _hasObj(x+i, y+j, world, "path")):                
-                world.addObject(x+i, y+j, Layer.WORLD, Path(world))
+                world.addObject(x+i, y+j, Layer.WORLD, world.createObject("Path"))
 
 
 def mkFarm(x, y, world, buildingMaker):
@@ -164,7 +165,7 @@ def mkFarm(x, y, world, buildingMaker):
     for i in range(0, soilPlotSizeX):
         for j in range(0, soilPlotSizeY):
             if (not _hasObj(x+i, y+j + houseSizeX + 1, world, "soil")):
-                world.addObject(x+i, y+j + houseSizeX + 1, Layer.WORLD, SoilTile(world))
+                world.addObject(x+i, y+j + houseSizeX + 1, Layer.WORLD, world.createObject("SoilTile"))
 
     # Randomly add a number of Mushrooms to the soil
     numMushroomsToAdd = 5
@@ -178,7 +179,13 @@ def mkFarm(x, y, world, buildingMaker):
 
         # If there isn't already a mushroom there, add one
         if (not _hasObj(randX, randY, world, "mushroom")):
-            mushroom = Mushroom(world)
+            # Add a mushroom 
+            mushroomTypes = ["mushroom1", "mushroom2", "mushroom3", "mushroom4"]
+            # Randomly pick a mushroom type
+            mushroomType = mushroomTypes[random.randint(0, len(mushroomTypes)-1)]
+            mushroom = world.createObject(mushroomType)
+            #mushroom = world.createObject("Mushroom")
+
             world.addObject(randX, randY, Layer.OBJECTS, mushroom)
             mushroomsAdded.append(mushroom)
             numMushroomsAdded += 1
@@ -198,23 +205,23 @@ def mkFarm(x, y, world, buildingMaker):
 def mkPathX(x, y, lengthX, world):
     for i in range(0, lengthX):
         if (not _hasObj(x+i, y, world, "path")):
-            world.addObject(x+i, y, Layer.WORLD, Path(world))
+            world.addObject(x+i, y, Layer.WORLD, world.createObject("Path"))
 
 def mkPathY(x, y, lengthY, world):
     for i in range(0, lengthY):
         if (not _hasObj(x, y+i, world, "path")):
-            world.addObject(x, y+i, Layer.WORLD, Path(world))
+            world.addObject(x, y+i, Layer.WORLD, world.createObject("Path"))
 
 # Fence making
 def mkFenceX(x, y, lengthX, world):
     for i in range(0, lengthX):
         if (not _hasObj(x+i, y, world, "fence")):
-            world.addObject(x+i, y, Layer.BUILDING, Fence(world))
+            world.addObject(x+i, y, Layer.BUILDING, world.createObject("Fence"))
 
 def mkFenceY(x, y, lengthY, world):
     for i in range(0, lengthY):
         if (not _hasObj(x, y+i, world, "fence")):
-            world.addObject(x, y+i, Layer.BUILDING, Fence(world))
+            world.addObject(x, y+i, Layer.BUILDING, world.createObject("Fence"))
 
 
 
@@ -243,9 +250,11 @@ def main():
     clock = pygame.time.Clock()
 
     # Intialize world
-    world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json")
+    world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json", dataPath = "data/", filenameObjectData = "objects.tsv", filenameMaterialData="materials.tsv")
     print ("All sprite names: ")
     print (world.spriteLibrary.getSpriteNames())
+
+    
 
     # Populate with structures/objects
     buildingMaker = BuildingMaker(world)
@@ -306,11 +315,11 @@ def main():
 
 
     # Add big village sign
-    world.addObject(16, 2, Layer.BUILDING, SignVillage(world))
-    world.addObject(16, 29, Layer.BUILDING, SignVillage(world))
+    world.addObject(16, 2, Layer.BUILDING, world.createObject("SignVillage"))
+    world.addObject(16, 29, Layer.BUILDING, world.createObject("SignVillage"))
 
     # Add some plants
-    world.addObject(15, 1, Layer.OBJECTS, PlantGeneric(world))
+    world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))
 
     plantCount = 0
     minPlants = 15
@@ -633,6 +642,40 @@ def main():
                     success = currentAgent.actionEat(edibleObjs[0])
                     print(success)
 
+                    doNextTurn = True
+
+        # Use action
+        elif (keys[pygame.K_u]):
+            # Use one item with another item.
+
+            # Find a usable item at the location the agent is facing
+            facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+            # Bound checking
+            if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                # Get objects at location
+                objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                # Filter by objects that are usable
+                usableObjs = [obj for obj in objs if (obj.attributes['isUsable'] == True)]
+
+                # Check to see if there is a usable object here
+                if (len(usableObjs) > 0):
+                    
+                    # The patient object will be the first item in the inventory. 
+                    if (len(currentAgent.contents) > 0):
+                        patientObj = currentAgent.contents[0]
+
+                        # Try to use the first one
+                        success = currentAgent.actionUse(usableObjs[0], patientObj)
+                        print(success)
+                        
+                    else: 
+                        print("No items in inventory to use.")
+                else:
+                    print("No usable objects found in front of the agent.")
+
+                doNextTurn = True
+
+
         
         # Manual state adjustment
         elif (keys[pygame.K_1]):
@@ -662,6 +705,12 @@ def main():
             print("Setting autorun cycles to 100...")
             doNextTurn = True
 
+        # Manual "run for 500 cycles"
+        elif (keys[pygame.K_9]):
+            # Run for 100 cycles
+            autoRunCycles = 500
+            print("Setting autorun cycles to 500...")
+            doNextTurn = True
 
 
 
@@ -670,16 +719,12 @@ def main():
 
         # Update the world
         # If the agent has taken their turn, then update the world
-        if (autoRunCycles > 0):
-            doNextTurn = True
-
-        if (doNextTurn):
+        if (doNextTurn) or (autoRunCycles > 0):
             world.tick()
             frames += 1
             print("")
             if (autoRunCycles > 0):
                 print("Step: " + str(frames) + " (autorun)")
-                time.sleep(0.05)
             else:
                 print("Step: " + str(frames))
             #time.sleep(0.25)
@@ -689,8 +734,24 @@ def main():
                 autoRunCycles -= 1
 
 
+
         # Render the world
-        world.render(window, cameraX=0, cameraY=0)
+        #world.render(window, cameraX=0, cameraY=0)
+
+        # Render a viewport centered on the agent
+        # def renderViewport(self, window, worldStartX, worldStartY, sizeTilesX, sizeTilesY, offsetX, offsetY):
+        # Step 1: Get the agent's location
+        agentLocation = currentAgent.getWorldLocation()
+        # Step 2: Define the viewport size (in tiles)
+        viewportSizeX = 32
+        viewportSizeY = 32
+        # Step 3: Determine the worldStartX and worldStartY coordinates
+        worldStartX = agentLocation[0] - int(viewportSizeX / 2)
+        worldStartY = agentLocation[1] - int(viewportSizeY / 2)
+        # Step 4: Render the viewport
+        world.renderViewport(window, worldStartX, worldStartY, viewportSizeX, viewportSizeY, 0, 0)
+
+
 
         # Save the screen frame to a file
         if (doNextTurn):
@@ -712,8 +773,7 @@ def main():
     print("Converting frames to video...")
     # Call FFMPEG (forces overwrite)
     #subprocess.call(["./ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
-    # As above, but store lossless
-    subprocess.call(["./ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-preset", "lossless", "-crf", "0", "-pix_fmt", "yuv420p", "output.mp4"])
+    subprocess.call(["ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
 
 
 # Main
