@@ -16,7 +16,9 @@ class ActionSuccess:
 
 # Enumeration to define different types of action results (success, completion, failure)
 class ActionResult(Enum):
-    SUCCESS = 0
-    COMPLETED = 1
-    FAILURE = 2
-    INVALID = 3
+    SUCCESS     = 0
+    COMPLETED   = 1
+    SUSPEND     = 2
+    FAILURE     = 3
+    INVALID     = 4
+    

@@ -766,9 +766,8 @@ def main():
         pygame.display.flip()
         #frames += 1
         
-        #time.sleep(1)
-        #
-        
+        #time.sleep(1)        
+
     # If we get here, the game loop is over.
     # Convert the frames to a video
     print("Converting frames to video...")

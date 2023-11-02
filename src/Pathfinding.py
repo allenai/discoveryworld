@@ -97,6 +97,8 @@ class Pathfinder():
             return self.runPickupObj(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.PLACE_OBJ_IN_CONTAINER):
             return self.runPlaceObjInContainer(autopilotAction.args, agent, world)
+        elif (actionType == AutopilotActionType.FIND_OBJS_AREA_PLACE):
+            return self.runFindObjsInAreaThenPlace(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.WANDER):
             return self.runWander(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.WAIT):
@@ -161,6 +163,50 @@ class Pathfinder():
             print("runPickupObj: _doNPCAutonavigation returned: " + str(result))
 
             return result
+
+
+    # Helper: Find the first object meeting a given type within a specified area
+    def _findFirstObjectOfType(self, args:dict, agent, world):
+        startX = args['x']
+        startY = args['y']
+        endX = args['x'] + args['width']
+        endY = args['y'] + args['height']
+        objectTypes = args['objectTypes']
+
+        for tileX in range(startX, endX):
+            for tileY in range(startY, endY):
+                objectsAtTile = world.getObjectsAt(tileX, tileY, respectContainerStatus=True)
+                for obj in objectsAtTile:
+                    if (obj.type in objectTypes):
+                        # We found an object that matches one of the types we're looking for.  Place it in the container.
+                        return obj
+        
+        # If we reach here, we didn't find any objects of the specified type
+        return None
+                
+
+
+    def runFindObjsInAreaThenPlace(self, args:dict, agent, world):
+        # Step 1: Find if there's an object in the area that matches the object type(s) we're looking for (if not, we're done)
+        nextObj = self._findFirstObjectOfType(args, agent, world)
+
+        # If there are no objects to find, we're done
+        if (nextObj == None):            
+            return ActionResult.COMPLETED
+
+        # Step 2: If we reach here, we found an object -- place it in the container        
+        container = args['container']
+        priority = args['priority']
+
+        # Pop on a 'placeObjInContainer' action, with a higher priority
+        thingToPickup = nextObj
+        whereToPlace = container
+        agent.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace, priority=priority+1) )
+        # Suspend the current action, so the 'placeObjInContainer' action can run
+        return ActionResult.SUSPEND
+
+
+
 
 
     def runPlaceObjInContainer(self, args:dict, agent, world):
@@ -392,6 +438,20 @@ class AutopilotAction_PlaceObjInContainer(AutopilotAction):
         self.args['container'] = container
         self.priority = priority
 
+class AutopilotAction_PickupObjectsInArea(AutopilotAction):
+    # Constructor
+    def __init__(self, x, y, width, height, objectTypes:list, container, priority=4):
+        self.actionType = AutopilotActionType.FIND_OBJS_AREA_PLACE
+        self.args = {}
+        self.args['x'] = x
+        self.args['y'] = y
+        self.args['width'] = width
+        self.args['height'] = height
+        self.args['objectTypes'] = objectTypes
+        self.args['container'] = container
+        self.priority = priority
+
+
 class AutopilotAction_Wander(AutopilotAction):
     # Constructor
     def __init__(self, priority=1):
@@ -414,4 +474,5 @@ class AutopilotActionType(Enum):
     PLACE_OBJ_IN_CONTAINER  = 2
     WANDER                  = 3
     WAIT                    = 4
+    FIND_OBJS_AREA_PLACE    = 5
 
