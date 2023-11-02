@@ -158,6 +158,24 @@ def mkFarm(x, y, world, buildingMaker):
     houseSizeY = 4
     buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Farm")
 
+    # Add a table in the farm house
+    seedTable = world.createObject("Table")
+    seedJar = world.createObject("Jar")
+    #seedJar.addObject(Seed(world, "red"))
+
+    # Add 5 seeds to the jar
+    for i in range(5):
+        seedJar.addObject( world.createObject("Seed") )
+
+    seedTable.addObject(seedJar)
+    world.addObject(x+3, y+1, Layer.FURNITURE, seedTable)
+
+    # Add a shovel in the farm house
+    shovel = world.createObject("Shovel")
+    world.addObject(x+2, y+1, Layer.FURNITURE, shovel)
+
+    # Add a seed just outside the farm house
+    world.addObject(x+1, y+houseSizeY+1, Layer.OBJECTS, world.createObject("Seed"))
 
     # Create a soil plot
     soilPlotSizeX = 6

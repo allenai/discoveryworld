@@ -226,6 +226,7 @@
                 "pot_full3":    { "baseTile": [0, 3],  "size": [1, 1] },                
                 "sick":         { "baseTile": [1, 0],  "size": [1, 1] },
                 "shovel":       { "baseTile": [1, 1],  "size": [1, 1] },
+                "seed":         { "baseTile": [1, 2],  "size": [1, 1] },
                 "jar_empty":    { "baseTile": [2, 0],  "size": [1, 1] },                
                 "jar_full1":    { "baseTile": [2, 1],  "size": [1, 1] },                
                 "jar_full2":    { "baseTile": [2, 2],  "size": [1, 1] },                

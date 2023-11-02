@@ -1459,8 +1459,87 @@ class Pot(Object):
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
 
+
 #
 #   Object: Pot (container)
+#
+class Jar(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "pot", "pot", defaultSpriteName = "placeholder_jar_empty")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+        # Container
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can not be opened (things are stored in the open pot)
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+        # Infer sprite based on whether empty/non-empty
+        if (len(self.contents) == 0):
+            self.curSpriteName = "placeholder_jar_empty"
+        elif (len(self.contents) == 1):
+            self.curSpriteName = "placeholder_jar_full1"
+        elif (len(self.contents) == 2):
+            self.curSpriteName = "placeholder_jar_full2"
+        else:
+            self.curSpriteName = "placeholder_jar_full3"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+
+#
+#   Object: Shovel (tool)
+#
+class Shovel(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "pot", "pot", defaultSpriteName = "placeholder_shovel")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
+
+#
+#   Object: Seed (placeholder object -- plants should probably have their own sprite class)
+#
+class Seed(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "pot", "pot", defaultSpriteName = "placeholder_seed")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
+
+
+#
+#   Object: Flower (container)
 #
 class FlowerPot(Object):
     # Constructor
