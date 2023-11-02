@@ -662,12 +662,6 @@ def main():
             print("Setting autorun cycles to 100...")
             doNextTurn = True
 
-        # Manual "run for 500 cycles"
-        elif (keys[pygame.K_9]):
-            # Run for 100 cycles
-            autoRunCycles = 500
-            print("Setting autorun cycles to 100...")
-            doNextTurn = True
 
 
 
@@ -716,7 +710,9 @@ def main():
     # Convert the frames to a video
     print("Converting frames to video...")
     # Call FFMPEG (forces overwrite)
-    subprocess.call(["./ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
+    #subprocess.call(["./ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
+    # As above, but store lossless
+    subprocess.call(["./ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-preset", "lossless", "-crf", "0", "-pix_fmt", "yuv420p", "output.mp4"])
 
 
 # Main

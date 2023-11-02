@@ -445,6 +445,39 @@ class Agent(Object):
         return ActionSuccess(True, "I ate the " + objToEat.name + ".")
 
 
+    # Use an object on another object
+    def actionUse(self, objToUse, objToUseOn):
+        # First, check if the object to use is within reach (i.e. +/- 1 grid location)
+        distX = abs(objToUse.attributes["gridX"] - self.attributes["gridX"])
+        distY = abs(objToUse.attributes["gridY"] - self.attributes["gridY"])
+        if (distX > 1 or distY > 1):
+            # Object is not within reach
+            return ActionSuccess(False, "That object (" + objToUse.name + ") is not within reach. I can only use objects that are within +/- 1 grid location.")
+
+        # Next, check if the object to use is usable
+        if (not objToUse.attributes["isUsable"]):
+            # Object is not usable
+            return ActionSuccess(False, "That object (" + objToUse.name + ") is not usable.")
+
+        # Next, check if the patient object is within reach (i.e. +/- 1 grid location)
+        distX = abs(objToUseOn.attributes["gridX"] - self.attributes["gridX"])
+        distY = abs(objToUseOn.attributes["gridY"] - self.attributes["gridY"])
+        if (distX > 1 or distY > 1):
+            # Object is not within reach
+            return ActionSuccess(False, "That object (" + objToUseOn.name + ") is not within reach. I can only use objects on other objects that are within +/- 1 grid location.")
+
+        # If we reach here, the object is usable, and both the device and patient object are within reach. Use it. 
+        result = objToUse.actionUseWith(objToUseOn)
+
+        # Invalidate the sprites of all objects at these locations. 
+        objToUse.invalidateSpritesThisWorldTile()
+        objToUseOn.invalidateSpritesThisWorldTile()
+
+        # Return result
+        return result
+
+
+
     #
     #   Autopilot helpers
     #

@@ -31,7 +31,7 @@ class BuildingMaker:
         # Fill the world with grass
         for y in range(world.sizeY):
             for x in range(world.sizeX):
-                world.addObject(x, y, Layer.WORLD, Grass(world))
+                world.addObject(x, y, Layer.WORLD, world.createObject("Grass"))
 
 
     #
@@ -46,37 +46,37 @@ class BuildingMaker:
             return
 
         # Top-left corner
-        world.addObject(x, y, Layer.BUILDING, Wall(world))
+        world.addObject(x, y, Layer.BUILDING, world.createObject("Wall"))
         # Top-right corner
-        world.addObject(x + width - 1, y, Layer.BUILDING, Wall(world))
+        world.addObject(x + width - 1, y, Layer.BUILDING, world.createObject("Wall"))
         # Bottom-left corner
-        world.addObject(x, y + height - 1, Layer.BUILDING, Wall(world))
+        world.addObject(x, y + height - 1, Layer.BUILDING, world.createObject("Wall"))
         # Bottom-right corner
-        world.addObject(x + width - 1, y + height - 1, Layer.BUILDING, Wall(world))
+        world.addObject(x + width - 1, y + height - 1, Layer.BUILDING, world.createObject("Wall"))
         # Top wall
         for i in range(1, width - 1):
-            world.addObject(x + i, y, Layer.BUILDING, Wall(world))
+            world.addObject(x + i, y, Layer.BUILDING, world.createObject("Wall"))
         # Bottom wall
         for i in range(1, width - 1):
             # The middle of the bottom wall should be a door
             if (i == int(width / 2) and includeDoor):
-                world.addObject(x + i, y + height - 1, Layer.BUILDING, Floor(world))
-                world.addObject(x + i, y + height - 1, Layer.FURNITURE, Door(world))
+                world.addObject(x + i, y + height - 1, Layer.BUILDING, world.createObject("Floor"))
+                world.addObject(x + i, y + height - 1, Layer.FURNITURE, world.createObject("Door"))
             else:
-                world.addObject(x + i, y + height - 1, Layer.BUILDING, Wall(world))
+                world.addObject(x + i, y + height - 1, Layer.BUILDING, world.createObject("Wall"))
         # Left wall
         for i in range(1, height - 1):
-            world.addObject(x, y + i, Layer.BUILDING, Wall(world))
+            world.addObject(x, y + i, Layer.BUILDING, world.createObject("Wall"))
         # Right wall
         for i in range(1, height - 1):
-            world.addObject(x + width - 1, y + i, Layer.BUILDING, Wall(world))
+            world.addObject(x + width - 1, y + i, Layer.BUILDING, world.createObject("Wall"))
         # Floor
         for i in range(1, width - 1):
             for j in range(1, height - 1):
-                world.addObject(x + i, y + j, Layer.BUILDING, Floor(world))
+                world.addObject(x + i, y + j, Layer.BUILDING, world.createObject("Floor"))
         # Sign infront of the door
         if (len(signText) > 0):
-            sign = Sign(world)
+            sign = world.createObject("Sign")
             sign.setText(signText)
             world.addObject(x + int(width / 2)-1, y + height, Layer.FURNITURE, sign)
     
@@ -94,60 +94,60 @@ class BuildingMaker:
             doorX = int(width / 2)
 
         # Top-left corner
-        world.addObject(x, y, Layer.BUILDING, Wall(world))
+        world.addObject(x, y, Layer.BUILDING, world.createObject("Wall"))
         # Top-right corner
-        world.addObject(x + width - 1, y, Layer.BUILDING, Wall(world))
+        world.addObject(x + width - 1, y, Layer.BUILDING, world.createObject("Wall"))
         # Bottom-left corner
-        world.addObject(x, y + height - 1, Layer.BUILDING, Wall(world))
+        world.addObject(x, y + height - 1, Layer.BUILDING, world.createObject("Wall"))
         # Bottom-right corner
-        world.addObject(x + width - 1, y + height - 1, Layer.BUILDING, Wall(world))
+        world.addObject(x + width - 1, y + height - 1, Layer.BUILDING, world.createObject("Wall"))
         # Top wall
         for i in range(1, width - 1):
-            world.addObject(x + i, y, Layer.BUILDING, Wall(world))
+            world.addObject(x + i, y, Layer.BUILDING, world.createObject("Wall"))
         # Bottom wall
         for i in range(1, width - 1):
             # The middle of the bottom wall should be a door
             if i == doorX:
-                #world.addObject(x + i, y + height - 1, Layer.BUILDING, Door(world))
-                world.addObject(x + i, y + height - 1, Layer.BUILDING, Floor(world))
-                world.addObject(x + i, y + height - 1, Layer.FURNITURE, Door(world))
+                #world.addObject(x + i, y + height - 1, Layer.BUILDING, world.createObject("Door"))
+                world.addObject(x + i, y + height - 1, Layer.BUILDING, world.createObject("Floor"))
+                world.addObject(x + i, y + height - 1, Layer.FURNITURE, world.createObject("Door"))
             else:
-                world.addObject(x + i, y + height - 1, Layer.BUILDING, Wall(world))
+                world.addObject(x + i, y + height - 1, Layer.BUILDING, world.createObject("Wall"))
         # Left wall
         for i in range(1, height - 1):
-            world.addObject(x, y + i, Layer.BUILDING, Wall(world))
+            world.addObject(x, y + i, Layer.BUILDING, world.createObject("Wall"))
         # Right wall
         for i in range(1, height - 1):
-            world.addObject(x + width - 1, y + i, Layer.BUILDING, Wall(world))
+            world.addObject(x + width - 1, y + i, Layer.BUILDING, world.createObject("Wall"))
         # Floor
         for i in range(1, width - 1):
             for j in range(1, height - 1):
-                world.addObject(x + i, y + j, Layer.BUILDING, Floor(world))
+                world.addObject(x + i, y + j, Layer.BUILDING, world.createObject("Floor"))
 
         if (dividerX > 0):
             # Add an interior wall to divide the room
             for i in range(1, height - 1):
                 # Add a hole in the middle
                 if i == apertureX:
-                    #world.addObject(x + dividerX, y + i, Layer.BUILDING, Floor(world))
+                    #world.addObject(x + dividerX, y + i, Layer.BUILDING, world.createObject("Floor"))
                     pass
                 else:                
-                    world.addObject(x + dividerX, y + i, Layer.BUILDING, Wall(world))
+                    world.addObject(x + dividerX, y + i, Layer.BUILDING, world.createObject("Wall"))
 
         # Add an interior wall to divide the room
         if (dividerY > 0):
             for i in range(1, width - 1):
                 # Add a hole in the middle
                 if i == apertureY:
-                    #world.addObject(x + i, y + dividerY, Layer.BUILDING, Floor(world))
+                    #world.addObject(x + i, y + dividerY, Layer.BUILDING, world.createObject("Floor"))
                     pass
                 else:
-                    world.addObject(x + i, y + dividerY, Layer.BUILDING, Wall(world))
+                    world.addObject(x + i, y + dividerY, Layer.BUILDING, world.createObject("Wall"))
 
             
         # Sign infront of the door
         if (len(signText) > 0):
-            sign = Sign(world)
+            sign = world.createObject("Sign")
             sign.setText(signText)
             world.addObject(x + doorX-1, y + height, Layer.FURNITURE, sign)
     
@@ -171,22 +171,22 @@ class BuildingMaker:
             self.mkBuildingOneRoom(world, x + width - dividerX, y + 1 + int(height/2), dividerX, int(height/2), signText="", includeDoor=False)
         # Add a hole in the wall between the two buildings
         for i in range(1, int(height/2)):
-            world.addObject(x + width - dividerX, y + i + int(height/2), Layer.BUILDING, Floor(world))
+            world.addObject(x + width - dividerX, y + i + int(height/2), Layer.BUILDING, world.createObject("Floor"))
 
 
 
     # Make table and chairs
     def mkTableAndChairs(self, world, x, y, chairsPresent = ["n", "s", "e", "w"]):
         # Table
-        world.addObject(x, y, Layer.FURNITURE, Table(world))
+        world.addObject(x, y, Layer.FURNITURE, world.createObject("Table"))
         # Chairs
         if "n" in chairsPresent:
-            world.addObject(x, y - 1, Layer.FURNITURE, Chair(world))
+            world.addObject(x, y - 1, Layer.FURNITURE, world.createObject("Chair"))
         if "s" in chairsPresent:            
-            world.addObject(x, y + 1, Layer.FURNITURE, Chair(world))
+            world.addObject(x, y + 1, Layer.FURNITURE, world.createObject("Chair"))
         if "w" in chairsPresent:
-            world.addObject(x - 1, y, Layer.FURNITURE, Chair(world))
+            world.addObject(x - 1, y, Layer.FURNITURE, world.createObject("Chair"))
         if "e" in chairsPresent:
-            world.addObject(x + 1, y, Layer.FURNITURE, Chair(world))
+            world.addObject(x + 1, y, Layer.FURNITURE, world.createObject("Chair"))
 
     

@@ -86,6 +86,24 @@ class SpriteLibrary:
             spriteRect = pygame.Rect((spriteX * tileSize[0]) + offset[0], (spriteY * tileSize[1]) + offset[1], spriteWidthInTiles * tileSize[0], spriteHeightInTiles * tileSize[1])
             spriteImage = spritesheet.subsurface(spriteRect)
 
+            # If the sprite is less than 32x32, then add blank canvas to the right and bottom of the sprite
+            # This SHOULD NOT SCALE THE SPRITE! It should only add blank canvas to the right and bottom of the sprite.
+            if spriteImage.get_width() < 32:
+                # Create a new surface
+                newSpriteImage = pygame.Surface((32, spriteImage.get_height()), pygame.SRCALPHA, 32)                
+                # Blit the original sprite onto the new surface
+                newSpriteImage.blit(spriteImage, (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
+                # Set the new surface as the sprite
+                spriteImage = newSpriteImage
+            if spriteImage.get_height() < 32:
+                # Create a new surface
+                newSpriteImage = pygame.Surface((spriteImage.get_width(), 32), pygame.SRCALPHA, 32)                
+                # Blit the original sprite onto the new surface
+                newSpriteImage.blit(spriteImage, (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
+                # Set the new surface as the sprite
+                spriteImage = newSpriteImage
+
+
             # Debug: Print the color at pixel 0,0 within the sprite
             #print("Color at 1,1: " + str(spriteImage.get_at((1,1))))
 
@@ -150,9 +168,11 @@ class SpriteLibrary:
     # window: The window to display the sprite in
     # x: The x coordinate of the top left corner of the sprite
     # y: The y coordinate of the top left corner of the sprite
-    def renderSprite(self, window, spriteName, x, y):
+    def renderSprite(self, window, spriteName, x, y, scale=1):
         # Tile size
         tileSize = 32
+        if (scale != 1):
+            tileSize = int(32 * scale)
 
         if (spriteName not in self.sprites):
             print("WARNING: Sprite not found: " + str(spriteName))
@@ -162,6 +182,9 @@ class SpriteLibrary:
 
         # Adjust the y-coordinate based on the sprite's height
         adjusted_y = y - sprite.get_height() + tileSize
+
+        if (scale != 1):
+            sprite = pygame.transform.scale(sprite, (int(sprite.get_width() * scale), int(sprite.get_height() * scale)))            
 
         window.blit(sprite, (x, adjusted_y))
         

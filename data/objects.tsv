@@ -1,0 +1,48 @@
+ReferenceName	ObjectName	ObjectType	BaseClass	defaultSpriteName	parts_list	contents_list	materials_list	color_str	size_str	isPoisonous_bool	isEdible_bool
+mushroom1	mushroom	mushroom	Mushroom		spacemold1		PlantMatterWhite	red		FALSE	TRUE
+mushroom2	mushroom	mushroom	Mushroom				PlantMatterWhite	green		FALSE	TRUE
+mushroom3	mushroom	mushroom	Mushroom				PlantMatterWhite	yellow		FALSE	TRUE
+mushroom4	mushroom	mushroom	Mushroom				PlantMatterWhite	pink		FALSE	TRUE
+spacemold1	mold	mold	Object	placeholder_1			MoldRed	red	microscopic	TRUE	TRUE
+											
+											
+# Base Class											
+			Object								
+# Building Materials											
+			Wall								
+			Floor								
+			Door								
+			Sign								
+			SignVillage								
+											
+# Outside Ground											
+			Grass								
+			Path								
+			SoilTile								
+											
+# Furniture											
+			Table								
+			TableBedside								
+			Chair								
+			Bed								
+											
+											
+# Appliances											
+			Stove								
+			Sink								
+			Fridge								
+											
+# Instruments											
+			Microscope								
+											
+											
+# Plants											
+			PlantGeneric								
+			Mushroom								
+											
+											
+# Other											
+			Statue								
+			Fence								
+			Pot								
+			FlowerPot								
