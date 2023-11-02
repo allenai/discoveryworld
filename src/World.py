@@ -4,7 +4,7 @@ import SpriteLibrary
 from ObjectMaker import ObjectMaker
 from Layer import Layer
 from ObjectModel import Object
-
+import pygame
 
 # Storage class for the world (including the full environment grid)
 class World:
@@ -26,6 +26,7 @@ class World:
         # Load world data
         # TODO
 
+        self.font = pygame.font.SysFont("Arial", 8)
 
     #
     #   Grid
@@ -253,6 +254,9 @@ class World:
         # Render the viewport
         tileSize = int(32 * scale)
 
+        # DEBUG: Enable rendering grid locations
+        renderGridLocations = True
+
         for y in range(worldStartY, worldStartY + sizeTilesY):
             for x in range(worldStartX, worldStartX + sizeTilesX):
                 # Bound checking: Make sure the object is within the world bounds
@@ -289,6 +293,14 @@ class World:
                     for spriteName in object.getSpriteNamesWithContents():
                         self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
     
+                # If enabled, render the grid location (for debugging)
+                if (renderGridLocations):
+                    text = self.font.render(str(x) + "," + str(y), True, (0, 0, 0))
+                    window.blit(text, (screenX, screenY))
+                    # Also draw a rectangle around the tile
+                    pygame.draw.rect(window, (0, 0, 0), (screenX, screenY, tileSize, tileSize), 1)
+
+
 
                     
 

@@ -1194,16 +1194,29 @@ class NPCColonist1(NPC):
         self.attributes["faceDirection"] = "south"        
         self.spriteCharacterPrefix = "character15_"
 
-        # Add a default action into the action queue 
-        if (thingsToPickup is not None):
-            for thingToPickup in thingsToPickup:
-                self.autopilotActionQueue.append( AutopilotAction_PickupObj(thingToPickup) )
-                self.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace) )
+        # Below is the original farm behavior (picking up mushrooms and taking them to the kitchen)
+        # # Add a default action into the action queue 
+        # if (thingsToPickup is not None):
+        #     for thingToPickup in thingsToPickup:
+        #         self.autopilotActionQueue.append( AutopilotAction_PickupObj(thingToPickup) )
+        #         self.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace) )
 
-            # Then, move to the farm
-            self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=10, y=16) )
-        else:
-            self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=1, y=1) )
+        #     # Then, move to the farm
+        #     self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=10, y=16) )
+        # else:
+        #     self.autopilotActionQueue.append( AutopilotAction_GotoXY(x=1, y=1) )
+
+        # Test of the new action
+        #class AutopilotAction_PickupObjectsInArea(AutopilotAction):
+        #def __init__(self, x, y, width, height, objectTypes:list, container, priority=4):
+        fieldX = 10
+        fieldY = 13
+        fieldWidth = 6
+        fieldHeight = 5
+        objectTypes = ["mushroom"]
+        container = whereToPlace
+        self.autopilotActionQueue.append( AutopilotAction_PickupObjectsInArea(fieldX, fieldY, fieldWidth, fieldHeight, objectTypes, container) )
+
         
 
     #
@@ -1272,6 +1285,9 @@ class NPCColonist1(NPC):
 
         # Get the NPC's current autopilot action
         if (len(self.autopilotActionQueue) > 0):
+            # Sort the autopilot action queue by priority (highest priority first)
+            self.autopilotActionQueue.sort(key=lambda x: x.priority, reverse=True)
+            
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
@@ -1408,6 +1424,9 @@ class NPCChef1(NPC):
 
         # Get the NPC's current autopilot action
         if (len(self.autopilotActionQueue) > 0):
+            # Sort the autopilot action queue by priority (highest priority first)
+            self.autopilotActionQueue.sort(key=lambda x: x.priority, reverse=True)
+
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it

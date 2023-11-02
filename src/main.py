@@ -249,6 +249,9 @@ def main():
     
     clock = pygame.time.Clock()
 
+    # Initialize font renderer
+    pygame.font.init()
+
     # Intialize world
     world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json", dataPath = "data/", filenameObjectData = "objects.tsv", filenameMaterialData="materials.tsv")
     print ("All sprite names: ")

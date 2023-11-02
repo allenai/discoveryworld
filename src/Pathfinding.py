@@ -190,6 +190,8 @@ class Pathfinder():
         # Step 1: Find if there's an object in the area that matches the object type(s) we're looking for (if not, we're done)
         nextObj = self._findFirstObjectOfType(args, agent, world)
 
+        print("##### runFindObjsInAreaThenPlace: Found object: " + str(nextObj))
+
         # If there are no objects to find, we're done
         if (nextObj == None):            
             return ActionResult.COMPLETED
@@ -201,7 +203,12 @@ class Pathfinder():
         # Pop on a 'placeObjInContainer' action, with a higher priority
         thingToPickup = nextObj
         whereToPlace = container
-        agent.autopilotActionQueue.append( AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace, priority=priority+1) )
+        actionPick = AutopilotAction_PickupObj(thingToPickup, priority=priority+2)
+        actionPlace = AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace, priority=priority+1)        
+        agent.autopilotActionQueue.append( actionPick )
+        agent.autopilotActionQueue.append( actionPlace )
+        print("##### Added action to queue " + str(actionPick) )
+        print("##### Added action to queue " + str(actionPlace) )
         # Suspend the current action, so the 'placeObjInContainer' action can run
         return ActionResult.SUSPEND
 
@@ -218,7 +225,13 @@ class Pathfinder():
         container = args['container']
         containerLocation = container.getWorldLocation()
 
-        # TODO: Check if we have the object in our inventory.  If not, something unexpected has happened, so return an error.
+        # Check if we have the object in our inventory.  If not, something unexpected has happened, so return an error.
+        agentInventory = agent.getAllContainedObjectsRecursive(respectContainerStatus=True)        
+        # TODO: Handle case where the object is in a closed container, and we need to open the container to get it
+        if (objectToPlace not in agentInventory):
+            print("runPlaceObjInContainer: ERROR: I can't seem to find the object I need to place (" + objectToPlace.name + ") in the agent inventory. Stopping place action.")
+            return ActionResult.ERROR
+
 
         # Check if we are directly left, right, up, or down from the container
         agentLocation = agent.getWorldLocation()
@@ -404,8 +417,18 @@ class AutopilotAction():
     def __init__(self, actionType, actionArguments:dict, priority=0):
         self.actionType = actionType
         self.args = actionArguments
-        self.priority = priority       # Priority of this action (higher priority actions will be executed first)
+        self.args['priority'] = priority      # Priority of this action (higher priority actions will be executed first)
     
+    # Priority property getter
+    @property
+    def priority(self):
+        return self.args.get('priority', 0)
+    
+    # Priority property setter
+    @priority.setter
+    def priority(self, value):
+        self.args['priority'] = value
+
     # String representation
     def __str__(self):
         return "AutopilotAction: " + str(self.actionType) + " (args: " + str(self.args) + ", priority: " + str(self.priority) + ")"
@@ -418,8 +441,8 @@ class AutopilotAction_GotoXY(AutopilotAction):
         self.actionType = AutopilotActionType.GOTO_XY
         self.args = {}
         self.args['destinationX'] = x
-        self.args['destinationY'] = y
-        self.priority = priority
+        self.args['destinationY'] = y        
+        self.args['priority'] = priority                
 
 class AutopilotAction_PickupObj(AutopilotAction):
     # Constructor
@@ -427,7 +450,7 @@ class AutopilotAction_PickupObj(AutopilotAction):
         self.actionType = AutopilotActionType.PICKUP_OBJ
         self.args = {}
         self.args['objectToPickUp'] = objectToPickUp
-        self.priority = priority
+        self.args['priority'] = priority                
 
 class AutopilotAction_PlaceObjInContainer(AutopilotAction):
     # Constructor
@@ -436,7 +459,7 @@ class AutopilotAction_PlaceObjInContainer(AutopilotAction):
         self.args = {}
         self.args['objectToPlace'] = objectToPlace
         self.args['container'] = container
-        self.priority = priority
+        self.args['priority'] = priority                
 
 class AutopilotAction_PickupObjectsInArea(AutopilotAction):
     # Constructor
@@ -449,7 +472,7 @@ class AutopilotAction_PickupObjectsInArea(AutopilotAction):
         self.args['height'] = height
         self.args['objectTypes'] = objectTypes
         self.args['container'] = container
-        self.priority = priority
+        self.args['priority'] = priority                
 
 
 class AutopilotAction_Wander(AutopilotAction):
@@ -457,14 +480,14 @@ class AutopilotAction_Wander(AutopilotAction):
     def __init__(self, priority=1):
         self.actionType = AutopilotActionType.WANDER
         self.args = {}
-        self.priority = priority
+        self.args['priority'] = priority                
 
 class AutopilotAction_Wait(AutopilotAction):
     # Constructor
     def __init__(self, priority=0):
         self.actionType = AutopilotActionType.WAIT
         self.args = {}
-        self.priority = priority
+        self.args['priority'] = priority                
 
 
 # Enumeration for types of autopilot actions
