@@ -103,6 +103,8 @@ class Pathfinder():
             result = self.runWander(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.WAIT):
             result = self.runWait(autopilotAction.args, agent, world)
+        elif (actionType == AutopilotActionType.EAT_OBJ_IN_INVENTORY):
+            result = self.runEat(autopilotAction.args, agent, world)
         else:
             print("ERROR: Invalid autopilot action type: " + str(actionType))
             return ActionResult.INVALID
@@ -138,6 +140,39 @@ class Pathfinder():
 
         return result
         
+
+    # Eat an object in the agent's inventory
+    def runEat(self, args:dict, agent, world):
+        # First, check that the object to eat is in the agent's inventory
+        objectNamesOrTypesToEat = args['objectNamesOrTypesToEat']
+
+        # Check if an object with an appropriate name/type is in the agent's inventory
+        agentInventory = agent.getAllContainedObjectsRecursive(respectContainerStatus=True)
+        objectToEat = None        
+        for invObj in agentInventory:
+            # Check if this object matches the name or type
+            if (invObj.name in objectNamesOrTypesToEat) or (invObj.objectType in objectNamesOrTypesToEat):
+                # Found the object
+                objectToEat = invObj
+                break
+
+        if (objectToEat == None):
+            # Object meeting name/type requirements not found in inventory.
+            print("runEat: Object with that name or type (" + objectNamesOrTypesToEat.name + " not found in agent's inventory.")
+            return ActionResult.FAILURE
+
+        # Perform the action
+        result = agent.actionEat(objectToEat)
+
+        # Check the result
+        if (result.success == False):
+            # Action failed
+            print("runEat: Action failed (" + result.message + ")")
+            return ActionResult.FAILURE
+
+        # Action succeeded
+        return ActionResult.COMPLETED
+     
 
     def runPickupObj(self, args:dict, agent, world):
         # First, get the object's world location
@@ -555,6 +590,16 @@ class AutopilotAction_PickupObjectsInArea(AutopilotAction):
         self.args['priority'] = priority                
 
 
+class AutopilotAction_EatObjectInInventory(AutopilotAction):
+    # Constructor
+    def __init__(self, objectNamesOrTypesToEat, callback=None, callbackArgs=None, priority=3):
+        self.actionType = AutopilotActionType.EAT_OBJ_IN_INVENTORY
+        self.args = {}
+        self.args['objectNamesOrTypesToEat'] = objectNamesOrTypesToEat        
+        self.args['priority'] = priority
+        self.args['callback'] = callback            
+        self.args['callbackArgs'] = callbackArgs
+
 class AutopilotAction_Wander(AutopilotAction):
     # Constructor
     def __init__(self, priority=1):
@@ -578,4 +623,5 @@ class AutopilotActionType(Enum):
     WANDER                  = 3
     WAIT                    = 4
     FIND_OBJS_AREA_PLACE    = 5
+    EAT_OBJ_IN_INVENTORY    = 6
 

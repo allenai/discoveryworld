@@ -1608,6 +1608,10 @@ class NPCColonistAuto2(NPC):
             container = self
             self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(fieldX, fieldY, fieldWidth, fieldHeight, objectTypes, container, maxToTake=1, priority=5) )
 
+            # Then, eat the object
+            # Find the object in the agent's inventory            
+            self.addAutopilotActionToQueue( AutopilotAction_EatObjectInInventory(objectNamesOrTypesToEat=["mushroom"], priority=5) )
+
             # Then, travel back to your starting location
             self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=10, y=10, priority=5) )
 
