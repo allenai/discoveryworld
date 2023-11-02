@@ -323,7 +323,8 @@ class Pathfinder():
         # TODO: Handle case where the object is in a closed container, and we need to open the container to get it
         if (objectToPlace not in agentInventory):
             print("runPlaceObjInContainer: ERROR: I can't seem to find the object I need to place (" + objectToPlace.name + ") in the agent inventory. Stopping place action.")
-            return ActionResult.ERROR
+            return ActionResult.FAILURE
+            #return ActionResult.ERROR
 
 
         # Check if we are directly left, right, up, or down from the container

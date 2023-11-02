@@ -255,7 +255,7 @@ class World:
         tileSize = int(32 * scale)
 
         # DEBUG: Enable rendering grid locations
-        renderGridLocations = True
+        renderGridLocations = False
 
         for y in range(worldStartY, worldStartY + sizeTilesY):
             for x in range(worldStartX, worldStartX + sizeTilesX):

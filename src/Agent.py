@@ -435,13 +435,29 @@ class Agent(Object):
         self.world.removeObject(objToEat)                    # Remove the object from the world
         print("EATEN OBJECT PARENT CONTAINER: " + str(objToEat.parentContainer))
 
-        # Change agent attributes based on the food's attributes
-        # TODO
-        # If the food is poisonous, set the poisonedCounter randomly to (-2, -20)
-        if (objToEat.attributes["isPoisonous"]):
-            print("DEBUG: POISONED!")
-            self.attributes["poisonedCounter"] = random.randint(-20, -2)
+        # When the agent eats something, it eats all of that object's contained objects (and, parts). 
+        # First, collect all the parts that are being consumed
+        allObjs = objToEat.getAllContainedObjectsRecursive(respectContainerStatus=False)
+        allObjs.append(objToEat)
+        objsAndParts = []
+        for obj in allObjs:            
+            objsAndParts.append(obj)
+            objParts = obj.parts
+            for part in objParts:
+                objsAndParts.append(part)
+                allPartContents = part.getAllContainedObjectsRecursive(respectContainerStatus=False)
+                # add to objAndParts
+                objsAndParts.extend(allPartContents)
         
+        # Process any of the attributes of the objects being eaten
+        for eatenObj in objsAndParts:
+            print("## Eating object: " + eatenObj.name + " with attributes: " + str(eatenObj.attributes))
+            # If the object is poisonous, set the poisonedCounter randomly to (-2, -20)
+            if (eatenObj.attributes["isPoisonous"] == True):
+                print("DEBUG: POISONED! (from " + eatenObj.name + ")")
+                self.attributes["poisonedCounter"] = random.randint(-20, -2)
+        
+
 
         return ActionSuccess(True, "I ate the " + objToEat.name + ".")
 
@@ -1504,6 +1520,9 @@ class NPCChef1(NPC):
                 print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
             
             # If the result is "success", then do nothing -- the action is still in progress.
+        # DEBUG: End of tick -- display the agent's current state
+        print("NPC States (name: " + self.name + "): " + str(self.attributes))
+        print("--------------------\n")
 
 
 
@@ -1616,7 +1635,7 @@ class NPCColonistAuto2(NPC):
             self.addAutopilotActionToQueue( AutopilotAction_EatObjectInInventory(objectNamesOrTypesToEat=["mushroom"], priority=5) )
 
             # Then, travel back to your starting location
-            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=10, y=10, priority=5) )
+            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=agentStartingLocation[0], y=agentStartingLocation[1], priority=5) )
 
 
 
@@ -1649,3 +1668,8 @@ class NPCColonistAuto2(NPC):
                 print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
             
             # If the result is "success", then do nothing -- the action is still in progress.
+
+        # DEBUG: End of tick -- display the agent's current state
+        print("NPC States (name: " + self.name + "): " + str(self.attributes))
+
+        print("--------------------\n")

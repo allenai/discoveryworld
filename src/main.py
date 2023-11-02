@@ -362,8 +362,10 @@ def main():
     ##world.addObject(18, 20, Layer.AGENT, npcColonist1)
 
     # Add another NPC colonist
-    npcColonist2 = NPCColonistAuto2(world, "Colonist 2")
-    world.addObject(18, 20, Layer.AGENT, npcColonist2)
+    npcColonists = []
+    for i in range(0, 5):
+        npcColonists.append(NPCColonistAuto2(world, "Colonist " + str(i)))
+        world.addObject(13+i, 20, Layer.AGENT, npcColonists[i])
 
     # Initial world tick
     world.tick()
@@ -688,7 +690,8 @@ def main():
         elif (keys[pygame.K_1]):
             # Change the colonist NPC external signal
             print("Sending 'eatSignal' to colonist NPC")
-            npcColonist2.attributes['states'].add("eatSignal")
+            for npcColonist in npcColonists:
+                npcColonist.attributes['states'].add("eatSignal")
 
             doNextTurn = True
         
@@ -734,6 +737,7 @@ def main():
 
         # Update the world
         # If the agent has taken their turn, then update the world
+        exportFrame = False
         if (doNextTurn) or (autoRunCycles > 0):
             world.tick()
             frames += 1
@@ -747,6 +751,8 @@ def main():
 
             if (autoRunCycles > 0):
                 autoRunCycles -= 1
+
+            exportFrame = True
 
 
 
@@ -769,7 +775,7 @@ def main():
 
 
         # Save the screen frame to a file
-        if (doNextTurn):
+        if (exportFrame):
             frameFilename = FRAME_DIR + "/frame_" + str(frames) + ".png"
             pygame.image.save(window, frameFilename)
 
