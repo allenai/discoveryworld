@@ -23,8 +23,9 @@ class Agent(Object):
         self.spriteCharacterPrefix = "character18_"                 # Prefix for the sprite character name (e.g. "character18_")
 
         # Autopilot action queue and pathfinder
-        self.autopilotActionQueue = []                              # Queue of autopilot actions
+        self.autopilotActionQueue = []                              # Queue of autopilot actions        
         self.pathfinder = Pathfinder()
+        self.actionTimestampCounter = 0                             # Counter for the timestamp of the last action
 
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
@@ -534,6 +535,33 @@ class Agent(Object):
         else:
             raise ValueError("Invalid deltaX/deltaY: " + str(deltaX) + ", " + str(deltaY) + " (must be (0, +1), (0, -1), (+1, 0), or (-1, 0))")
 
+
+    #
+    #   Autopilot: Adding actions to the queue
+    #
+    def addAutopilotActionToQueue(self, action):
+        # Add a timestamp to the action 
+        action.timestamp = self.actionTimestampCounter
+
+        # Add the action to the queue
+        self.autopilotActionQueue.append(action)
+
+        # Increment the timestamp
+        self.actionTimestampCounter += 1
+
+        # Sort the autopilot action queue by priority (highest priority first).  Sort by two fields: first priority, then time added to queue 'timestamp')
+        #  Note: The 'timestamp' field is used to break ties in priority
+        self.autopilotActionQueue.sort(key=lambda x: (x.priority, -x.timestamp), reverse=True)                        
+        
+
+    # Display the autopilot queue (for debugging)
+    def displayAutopilotQueueStr(self):
+        outStr = "Autopilot Action Queue:\n"
+
+        for idx, action in enumerate(self.autopilotActionQueue):            
+            outStr += "  #" + str(idx) + " (priority " + str(action.priority) + "): " + str(action) + "\n"
+
+        return outStr
 
 
 
@@ -1215,7 +1243,7 @@ class NPCColonist1(NPC):
         fieldHeight = 5
         objectTypes = ["mushroom"]
         container = whereToPlace
-        self.autopilotActionQueue.append( AutopilotAction_PickupObjectsInArea(fieldX, fieldY, fieldWidth, fieldHeight, objectTypes, container) )
+        self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(fieldX, fieldY, fieldWidth, fieldHeight, objectTypes, container) )
 
         
 
@@ -1283,11 +1311,11 @@ class NPCColonist1(NPC):
         #self.autopilotActionQueue = []                              # Queue of autopilot actions
         #self.pathfinder = Pathfinder()
 
+        # Display autopilot action queue (debug)
+        print(self.displayAutopilotQueueStr())
+
         # Get the NPC's current autopilot action
-        if (len(self.autopilotActionQueue) > 0):
-            # Sort the autopilot action queue by priority (highest priority first)
-            self.autopilotActionQueue.sort(key=lambda x: x.priority, reverse=True)
-            
+        if (len(self.autopilotActionQueue) > 0):            
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
@@ -1421,12 +1449,11 @@ class NPCChef1(NPC):
         self.attributes['hasStarted'] = True
 
 
+        # Display autopilot action queue (debug)
+        print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
         if (len(self.autopilotActionQueue) > 0):
-            # Sort the autopilot action queue by priority (highest priority first)
-            self.autopilotActionQueue.sort(key=lambda x: x.priority, reverse=True)
-
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it

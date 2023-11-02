@@ -205,8 +205,8 @@ class Pathfinder():
         whereToPlace = container
         actionPick = AutopilotAction_PickupObj(thingToPickup, priority=priority+2)
         actionPlace = AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace, priority=priority+1)        
-        agent.autopilotActionQueue.append( actionPick )
-        agent.autopilotActionQueue.append( actionPlace )
+        agent.addAutopilotActionToQueue( actionPick )
+        agent.addAutopilotActionToQueue( actionPlace )
         print("##### Added action to queue " + str(actionPick) )
         print("##### Added action to queue " + str(actionPlace) )
         # Suspend the current action, so the 'placeObjInContainer' action can run
@@ -428,6 +428,16 @@ class AutopilotAction():
     @priority.setter
     def priority(self, value):
         self.args['priority'] = value
+
+    # Timestamp
+    @property
+    def timestamp(self):
+        return self.args.get('timestamp', 0)
+
+    # Timestamp property setter
+    @timestamp.setter
+    def timestamp(self, value):
+        self.args['timestamp'] = value
 
     # String representation
     def __str__(self):
