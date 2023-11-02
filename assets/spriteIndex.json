@@ -220,8 +220,10 @@
         "tileSize": [32, 32],        
         "sprites":
             {    
-                "pot_empty":    { "baseTile": [0, 0],  "size": [1, 1] },                
-                "pot_full":     { "baseTile": [0, 1],  "size": [1, 1] },                
+                "pot_empty":    { "baseTile": [0, 0],  "size": [1, 1] },                                
+                "pot_full1":    { "baseTile": [0, 1],  "size": [1, 1] },
+                "pot_full2":    { "baseTile": [0, 2],  "size": [1, 1] },
+                "pot_full3":    { "baseTile": [0, 3],  "size": [1, 1] },                
                 "sick":         { "baseTile": [1, 0],  "size": [1, 1] }
             },
         "composites": 

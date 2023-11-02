@@ -687,7 +687,7 @@ def main():
         
         elif (keys[pygame.K_2]):
             # Change the Chef NPC external signal
-            print("Sending 'eatSignal' to chef NPC")
+            print("Sending 'serveDinner' to chef NPC")
             npcChef.attributes['states'].add("serveDinner")
 
             doNextTurn = True
@@ -727,7 +727,8 @@ def main():
                 print("Step: " + str(frames) + " (autorun)")
             else:
                 print("Step: " + str(frames))
-            time.sleep(0.25)
+            #time.sleep(0.25)
+            time.sleep(0.10)
 
             if (autoRunCycles > 0):
                 autoRunCycles -= 1
