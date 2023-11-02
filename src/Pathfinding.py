@@ -203,7 +203,7 @@ class Pathfinder():
         # Pop on a 'placeObjInContainer' action, with a higher priority
         thingToPickup = nextObj
         whereToPlace = container
-        actionPick = AutopilotAction_PickupObj(thingToPickup, priority=priority+2)
+        actionPick = AutopilotAction_PickupObj(thingToPickup, priority=priority+1)
         actionPlace = AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace, priority=priority+1)        
         agent.addAutopilotActionToQueue( actionPick )
         agent.addAutopilotActionToQueue( actionPlace )
