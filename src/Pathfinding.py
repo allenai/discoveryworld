@@ -92,20 +92,37 @@ class Pathfinder():
         actionType = autopilotAction.actionType
         # Then, run the appropriate function
         if (actionType == AutopilotActionType.GOTO_XY):
-            return self.runGotoXY(autopilotAction.args, agent, world)
+            result = self.runGotoXY(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.PICKUP_OBJ):
-            return self.runPickupObj(autopilotAction.args, agent, world)
+            result = self.runPickupObj(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.PLACE_OBJ_IN_CONTAINER):
-            return self.runPlaceObjInContainer(autopilotAction.args, agent, world)
+            result = self.runPlaceObjInContainer(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.FIND_OBJS_AREA_PLACE):
-            return self.runFindObjsInAreaThenPlace(autopilotAction.args, agent, world)
+            result = self.runFindObjsInAreaThenPlace(autopilotAction, autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.WANDER):
-            return self.runWander(autopilotAction.args, agent, world)
+            result = self.runWander(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.WAIT):
-            return self.runWait(autopilotAction.args, agent, world)
+            result = self.runWait(autopilotAction.args, agent, world)
         else:
             print("ERROR: Invalid autopilot action type: " + str(actionType))
             return ActionResult.INVALID
+
+        # Check if there's a callback in the args
+        if ("callback" in autopilotAction.args) and (autopilotAction.args["callback"] != None):
+            # Run the callback
+            print("Running callback")            
+            # Append 'result' to existing parameters in callback
+            callbackArgs = []
+            if ("callbackArgs" in autopilotAction.args):
+                # Copy existing params
+                callbackArgs = autopilotAction.args["callbackArgs"]
+            # Append result
+            callbackArgs.append(result)
+            # Run callback
+            autopilotAction.args["callback"](callbackArgs)                                    
+        
+        return result
+
     
 
     def runGotoXY(self, args:dict, agent, world):
@@ -197,15 +214,25 @@ class Pathfinder():
                 
 
 
-    def runFindObjsInAreaThenPlace(self, args:dict, agent, world):
+    def runFindObjsInAreaThenPlace(self, originalAction, args:dict, agent, world):
         # Step 1: Find if there's an object in the area that matches the object type(s) we're looking for (if not, we're done)
         nextObj = self._findFirstObjectOfType(args, agent, world)
 
         print("##### runFindObjsInAreaThenPlace: Found object: " + str(nextObj))
-
         # If there are no objects to find, we're done
         if (nextObj == None):            
             return ActionResult.COMPLETED
+
+        #self.args['maxToTake'] = maxToTake                              # The maximum number of objects meeting the criteria to take
+        #self.args['numTaken'] = 0
+        # If the 'maxToTake' parameter is set (i.e. > 0), and we've already taken that many objects, we're done
+        if ('maxToTake' in args):
+            print("###### runFindObjsInAreaThenPlace: Already taken " + str(args['numTaken']) + " objects, and maxToTake is " + str(args['maxToTake']) + ".  Checking if we're done.")
+            if (args['maxToTake'] > 0):
+                if ('numTaken' in args):
+                    if (args['numTaken'] >= args['maxToTake']):
+                        print("###### runFindObjsInAreaThenPlace: Already taken " + str(args['numTaken']) + " objects, and maxToTake is " + str(args['maxToTake']) + ".  Action completed.")
+                        return ActionResult.COMPLETED
 
         # Step 2: If we reach here, we found an object -- place it in the container        
         container = args['container']
@@ -215,7 +242,26 @@ class Pathfinder():
         thingToPickup = nextObj
         whereToPlace = container
         actionPick = AutopilotAction_PickupObj(thingToPickup, priority=priority+1)
-        actionPlace = AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace, priority=priority+1)        
+        #actionPlace = AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace, priority=priority+1)        
+        # Provide a callback to PickupObj that increments the 'numTaken' parameter
+        def callbackPickupObj(callbackArgs):
+            action = callbackArgs[0]
+            result = callbackArgs[1]
+            if (result == ActionResult.COMPLETED):                
+                if ('numTaken' in action.args):
+                    action.args['numTaken'] += 1
+                else:
+                    action.args['numTaken'] = 1
+                
+                print("##### runFindObjsInAreaThenPlace: CALLBACK Incremented numTaken to " + str(action.args['numTaken']))
+
+        #actionPlace = AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace, priority=priority+1, callback=callbackPickupObj(self))
+        # Above doesn't work because the callback is called with an additional 'result' parameter, which is the result of the action that just completed.
+        # e.g. autopilotAction.args["callback"](result)
+        # Instead, we'll change the call to this:
+        actionPlace = AutopilotAction_PlaceObjInContainer(thingToPickup, whereToPlace, priority=priority+1, callback=callbackPickupObj, callbackArgs=[originalAction])
+            
+
         agent.addAutopilotActionToQueue( actionPick )
         agent.addAutopilotActionToQueue( actionPlace )
         print("##### Added action to queue " + str(actionPick) )
@@ -473,24 +519,28 @@ class AutopilotAction_GotoXY(AutopilotAction):
 
 class AutopilotAction_PickupObj(AutopilotAction):
     # Constructor
-    def __init__(self, objectToPickUp, priority=4):
+    def __init__(self, objectToPickUp, callback=None, callbackArgs=None, priority=4):
         self.actionType = AutopilotActionType.PICKUP_OBJ
         self.args = {}
         self.args['objectToPickUp'] = objectToPickUp
         self.args['priority'] = priority                
+        self.args['callback'] = callback
+        self.args['callbackArgs'] = callbackArgs
 
 class AutopilotAction_PlaceObjInContainer(AutopilotAction):
     # Constructor
-    def __init__(self, objectToPlace, container, priority=3):
+    def __init__(self, objectToPlace, container, callback=None, callbackArgs=None, priority=3):
         self.actionType = AutopilotActionType.PLACE_OBJ_IN_CONTAINER
         self.args = {}
         self.args['objectToPlace'] = objectToPlace
         self.args['container'] = container
-        self.args['priority'] = priority                
+        self.args['priority'] = priority
+        self.args['callback'] = callback            
+        self.args['callbackArgs'] = callbackArgs
 
 class AutopilotAction_PickupObjectsInArea(AutopilotAction):
     # Constructor
-    def __init__(self, x, y, width, height, objectTypes:list, container, excludeObjectsOnAgent=True, priority=4):
+    def __init__(self, x, y, width, height, objectTypes:list, container, excludeObjectsOnAgent=True, maxToTake=-1, priority=4):
         self.actionType = AutopilotActionType.FIND_OBJS_AREA_PLACE
         self.args = {}
         self.args['x'] = x
@@ -500,6 +550,8 @@ class AutopilotAction_PickupObjectsInArea(AutopilotAction):
         self.args['objectTypes'] = objectTypes
         self.args['container'] = container
         self.args['excludeObjectsOnAgent'] = excludeObjectsOnAgent      # If True, will not look for objects on the agent if/when the agent is in the area
+        self.args['maxToTake'] = maxToTake                              # The maximum number of objects meeting the criteria to take
+        self.args['numTaken'] = 0
         self.args['priority'] = priority                
 
 
