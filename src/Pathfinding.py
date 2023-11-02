@@ -8,6 +8,7 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
+import random
 
 
 class Pathfinder():
@@ -158,7 +159,7 @@ class Pathfinder():
 
         if (objectToEat == None):
             # Object meeting name/type requirements not found in inventory.
-            print("runEat: Object with that name or type (" + objectNamesOrTypesToEat.name + " not found in agent's inventory.")
+            print("runEat: Object with that name or type (" + str(objectNamesOrTypesToEat) + " not found in agent's inventory.")
             return ActionResult.FAILURE
 
         # Perform the action
@@ -368,7 +369,19 @@ class Pathfinder():
 
 
     def runWander(self, args:dict, agent, world):
-        pass
+        # Randomly pick a location to move to on the map
+        newX = random.randint(0, world.sizeX-1)
+        newY = random.randint(0, world.sizeX-1)
+
+        # Generate a GOTO action to move to that location
+        print("runWander:  Generating new x/y location to wander to (" + str(newX) + ", " + str(newY) + ")" )
+        action = AutopilotAction_GotoXY(newX, newY, priority=args['priority']+1)
+
+        # Add the action to the agent's queue
+        agent.addAutopilotActionToQueue(action)
+
+        return ActionResult.SUCCESS
+        
 
     def runWait(self, args:dict, agent, world):
         pass
@@ -602,7 +615,7 @@ class AutopilotAction_EatObjectInInventory(AutopilotAction):
 
 class AutopilotAction_Wander(AutopilotAction):
     # Constructor
-    def __init__(self, priority=1):
+    def __init__(self, priority=0):
         self.actionType = AutopilotActionType.WANDER
         self.args = {}
         self.args['priority'] = priority                

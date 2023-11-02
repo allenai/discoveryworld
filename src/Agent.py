@@ -1511,11 +1511,11 @@ class NPCColonistAuto2(NPC):
     # Constructor
     def __init__(self, world, name):
         # Default sprite name
-        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character16_agent_facing_south")
+        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
 
         # Rendering
         self.attributes["faceDirection"] = "south"        
-        self.spriteCharacterPrefix = "character16_"
+        self.spriteCharacterPrefix = "character17_"
 
         # # Add a default action into the action queue 
         # if (tables is not None) and (pot is not None):
@@ -1524,6 +1524,9 @@ class NPCColonistAuto2(NPC):
         #     # First, pick up the pot
         #     self.autopilotActionQueue.append( AutopilotAction_PickupObj(pot) )
         #     # Since the rest is dependent upon the pot's contents at pick-up time, the rest of the actions are added in tick()
+
+        # Add default action (wandering), which has a low priority
+        self.addAutopilotActionToQueue( AutopilotAction_Wander() )
 
     #
     #   Dialog Actions
@@ -1597,7 +1600,7 @@ class NPCColonistAuto2(NPC):
             agentStartingLocation = self.getWorldLocation()
 
             # First, travel to the cafeteria 
-            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=23, y=27, priority=5) )            
+            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=23, y=25, priority=5) )            
 
             # Then, pick up one mushroom
             fieldX = 21
