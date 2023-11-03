@@ -1213,7 +1213,7 @@ class SoilTile(Object):
         # Check to see if the object has a hole (and if so, change the name, and add the sprite modifier)
         if (self.attributes["hasHole"]):
             # Add the sprite modifier
-            self.spriteModifiers.add("placeholder_hole")            
+            self.curSpriteModifiers.add("placeholder_hole")            
             # Change the name of the object to "hole"
             if (self.name != "hole"):
                 self.name = "hole"
