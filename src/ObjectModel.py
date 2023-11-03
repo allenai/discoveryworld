@@ -59,6 +59,9 @@ class Object:
         # Parts (for composite objects -- similar to containers)
         self.parts = []                                             # List of parts that this object is made of
 
+        # Whether the object has a hole in it (e.g. a hole in the ground), that allows objects to be contained inside it.
+        self.attributes['hasHole'] = False                          # Does it have a hole?
+
         # Passage (for dynamic passages like doors, that can be opened/closed)
         self.attributes['isPassage'] = False                        # Is this a passage?
 
@@ -1207,6 +1210,31 @@ class SoilTile(Object):
         # Call superclass
         Object.tick(self)
 
+        # Check to see if the object has a hole (and if so, change the name, and add the sprite modifier)
+        if (self.attributes["hasHole"]):
+            # Add the sprite modifier
+            self.spriteModifiers.add("placeholder_hole")            
+            # Change the name of the object to "hole"
+            if (self.name != "hole"):
+                self.name = "hole"
+                # If so, then we need to update the sprite name
+                self.needsSpriteNameUpdate = True
+
+            # Allow the object to be a container, and be open
+            self.attributes["isContainer"] = True
+            self.attributes["isOpenContainer"] = True
+        else:
+            # No sprite modifier needed (they are cleared each tick automatically)
+            # Change the name of the object to "soil"
+            if (self.name != "soil"):
+                self.name = "soil"
+                self.needsSpriteNameUpdate = True
+
+            # Object is not a container, and not open
+            self.attributes["isContainer"] = False
+            self.attributes["isOpenContainer"] = False
+
+
     # Check if a tile already contains a "path"
     def _hasObj(self, x, y, type):
         objects = self.world.getObjectsAt(x, y)
@@ -1259,6 +1287,10 @@ class SoilTile(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+        
+
 
 
 #
@@ -1467,7 +1499,7 @@ class Jar(Object):
     # Constructor
     def __init__(self, world):
         # Default sprite name
-        Object.__init__(self, world, "pot", "pot", defaultSpriteName = "placeholder_jar_empty")
+        Object.__init__(self, world, "jar", "jar", defaultSpriteName = "placeholder_jar_empty")
 
         self.attributes["isMovable"] = True                       # Can it be moved?
         self.attributes["isPassable"] = True                      # Agen't can't walk over this
@@ -1510,7 +1542,7 @@ class Shovel(Object):
     # Constructor
     def __init__(self, world):
         # Default sprite name
-        Object.__init__(self, world, "pot", "pot", defaultSpriteName = "placeholder_shovel")
+        Object.__init__(self, world, "shovel", "shovel", defaultSpriteName = "placeholder_shovel")
 
         self.attributes["isMovable"] = True                       # Can it be moved?
         self.attributes["isPassable"] = True                      # Agen't can't walk over this
@@ -1527,7 +1559,7 @@ class Seed(Object):
     # Constructor
     def __init__(self, world):
         # Default sprite name
-        Object.__init__(self, world, "pot", "pot", defaultSpriteName = "placeholder_seed")
+        Object.__init__(self, world, "seed", "seed", defaultSpriteName = "placeholder_seed")
 
         self.attributes["isMovable"] = True                       # Can it be moved?
         self.attributes["isPassable"] = True                      # Agen't can't walk over this
@@ -1537,15 +1569,48 @@ class Seed(Object):
         Object.tick(self)    
 
 
+#
+#   Object: Hole (placeholder)
+#
+class Hole(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "hole", "hole", defaultSpriteName = "placeholder_hole")
+
+        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
 
 #
-#   Object: Flower (container)
+#   Object: Dirt Pile (placeholder)
+#
+class Dirt(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "dirt", "dirt", defaultSpriteName = "placeholder_dirt_pile")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self) 
+
+
+#
+#   Object: Flower (container)      # (TODO? This one is just a decorative placeholder?)
 #
 class FlowerPot(Object):
     # Constructor
     def __init__(self, world):
         # Default sprite name
-        Object.__init__(self, world, "pot", "pot", defaultSpriteName = "generated_flowerpot")
+        Object.__init__(self, world, "flowerpot", "flowerpot", defaultSpriteName = "generated_flowerpot")
 
         self.attributes["isMovable"] = True                       # Can it be moved?
         self.attributes["isPassable"] = True                      # Agen't can't walk over this

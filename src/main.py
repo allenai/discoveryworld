@@ -175,7 +175,7 @@ def mkFarm(x, y, world, buildingMaker):
     world.addObject(x+2, y+1, Layer.FURNITURE, shovel)
 
     # Add a seed just outside the farm house
-    world.addObject(x+1, y+houseSizeY+1, Layer.OBJECTS, world.createObject("Seed"))
+    world.addObject(x+1, y+houseSizeY+2, Layer.OBJECTS, world.createObject("Seed"))
 
     # Create a soil plot
     soilPlotSizeX = 6
@@ -184,6 +184,12 @@ def mkFarm(x, y, world, buildingMaker):
         for j in range(0, soilPlotSizeY):
             if (not _hasObj(x+i, y+j + houseSizeX + 1, world, "soil")):
                 world.addObject(x+i, y+j + houseSizeX + 1, Layer.WORLD, world.createObject("SoilTile"))
+
+    # Add a hole in one soil plot at the top left
+    world.addObject(x+1, y+houseSizeY+1, Layer.OBJECTS, world.createObject("Hole"))
+    # Add dirt beside the hole
+    world.addObject(x, y+houseSizeY+1, Layer.OBJECTS, world.createObject("Dirt"))
+
 
     # Randomly add a number of Mushrooms to the soil
     numMushroomsToAdd = 5

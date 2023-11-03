@@ -237,6 +237,19 @@
             }
     },
     {
+        "sheetName": "placeholder", 
+        "filename": "placeholder/holes.png",
+        "tileSize": [32, 32],        
+        "sprites":
+            {    
+                "hole":         { "baseTile": [0, 0],  "size": [1, 1] },
+                "dirt_pile":    { "baseTile": [1, 0],  "size": [1, 1] }
+            },
+        "composites": 
+            {
+            }
+    },
+    {
         "sheetName": "generated", 
         "filename": "generated/flowerpot1_32.png",
         "tileSize": [32, 32],        
