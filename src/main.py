@@ -183,7 +183,12 @@ def mkFarm(x, y, world, buildingMaker):
     for i in range(0, soilPlotSizeX):
         for j in range(0, soilPlotSizeY):
             if (not _hasObj(x+i, y+j + houseSizeX + 1, world, "soil")):
-                world.addObject(x+i, y+j + houseSizeX + 1, Layer.WORLD, world.createObject("SoilTile"))
+                soilTile = world.createObject("SoilTile")
+                # Randomly set the 'hasHole' attribute to True for some of the soil tiles
+                if (random.randint(0, 2) == 0):
+                    soilTile.attributes['hasHole'] = True
+
+                world.addObject(x+i, y+j + houseSizeX + 1, Layer.WORLD, soilTile)
 
     # Add a hole in one soil plot at the top left
     world.addObject(x+1, y+houseSizeY+1, Layer.OBJECTS, world.createObject("Hole"))
