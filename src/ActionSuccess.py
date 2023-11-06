@@ -25,10 +25,24 @@ class ActionSuccess:
         self.success = success
         self.message = message
         self.importance = importance
+        self.data = {}
     
     # String method
     def __str__(self):
         return "ActionSuccess(" + str(self.success) + ", " + str(self.importance) + ", " + str(self.message) + ")"
 
 
+
+# Storage class for the result of a "use with" action
+class UseWithSuccess(ActionSuccess):
+    # Constructor
+    def __init__(self, success, message, generatedItems = [], importance = MessageImportance.NORMAL):
+        ActionSuccess.__init__(self, success, message, importance)
+        self.data['generatedItems'] = generatedItems
+
+
+    
+    # String method
+    def __str__(self):
+        return "UseWithSuccess(" + str(self.success) + ", " + str(self.importance) + ", " + str(self.message) + ", " + str(self.item) + ")"
 

@@ -79,6 +79,9 @@ class Object:
         # Poison/health attributes
         self.attributes['isPoisonous'] = False                     # Is it poisonous?
 
+        # Can it be used with a shovel (e.g. dug up?).  The function is called useWithShovelResult().
+        self.attributes['isShovelable'] = False                    # Can it be shoveled?
+
 
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
@@ -198,6 +201,10 @@ class Object:
         # Use this object on the patient object
         return ActionSuccess(False, "I'm not sure how to use the " + self.name + " with the " + patientObj.name + ".")        
 
+    # Specific use-with actions
+    def useWithShovelResult():
+        # Use this object with a shovel
+        return None
 
 
     #
@@ -1205,6 +1212,23 @@ class SoilTile(Object):
         Object.__init__(self, world, "soil", "soil", defaultSpriteName = "forest1_soil_c")
     
         self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes['isShovelable'] = True                     # Can it be shoveled?
+
+    #def __init__(self, success, message, generatedItem = None, importance = MessageImportance.NORMAL):
+    def useWithShovelResult(self):
+        # First, check to see if the object already has a hole -- if so, it can't be shovelled. 
+        if (self.attributes["hasHole"]):
+            return UseWithSuccess(False, "There is already a hole here.")
+
+        # Otherwise, we can dig a hole
+        self.attributes["hasHole"] = True
+
+        # Generate 'dirt' object. 
+        generatedObjects = [self.world.createObject("Dirt")]
+
+        # Return success
+        return UseWithSuccess(True, "You dig a hole in the soil, creating a hole and dirt.", generatedObjects)
+        
 
     def tick(self):
         # Call superclass
@@ -1546,6 +1570,27 @@ class Shovel(Object):
 
         self.attributes["isMovable"] = True                       # Can it be moved?
         self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+        self.attributes["isUsable"] = True                        # Can it be used?
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+
+        # Check if the patient object has the 'isShovelable' attribute
+        if (not patientObj.attributes["isShovelable"]):
+            # Can't use the shovel on this object
+            return ActionSuccess(False, "You can't use the shovel on that.")
+
+        
+        # Run the 'useWithShovelResult' function on the patient object
+        result = patientObj.useWithShovelResult()
+
+        # Return the result
+        return result
+
 
     def tick(self):
         # Call superclass
