@@ -823,6 +823,8 @@ def main():
 
             print("List of objects the agent is facing: " + str(objs))
 
+            # Test the text box
+            ui.renderTextBox("This is a test\nThis is an extra long line apple orange banana pineapple fruit flower tree coconut sky water air summer water blue green yellow orange purple this is the end of the second line.\nThis is the second line.")
 
 
         # Save the screen frame to a file
