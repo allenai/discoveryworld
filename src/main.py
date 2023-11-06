@@ -440,332 +440,317 @@ def main():
         # Signify whether the agent has done their move this turn
         doNextTurn = False
 
-        # Escape -- quits the game
-        if (keys[pygame.K_ESCAPE]):
-            running = False    
+        if (ui.inModal):
+            # Pressing any key will close the modal
+            if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN]):
+                ui.closeModal()
+                doNextTurn = True
 
-        # # Arrow keys -- move agent (directly up/down/left/right)
-        # elif (keys[pygame.K_UP]):
-        #     # Move agent north
-        #     success = currentAgent.actionMoveAgent(0, -1)            
-        #     lastMove = curTime
-        #     print(success)
-        #     doNextTurn = True
+        else:
+            # Escape -- quits the game
+            if (keys[pygame.K_ESCAPE]):
+                running = False    
 
-        # elif (keys[pygame.K_DOWN]):
-        #     # Move agent south
-        #     success = currentAgent.actionMoveAgent(0, 1)
-        #     lastMove = curTime
-        #     print(success)
-        #     doNextTurn = True
+            # Arrow keys -- move agent.  Left/right rotate agent clockwise/counterclockwise, up/down move agent forward/backward
+            elif (keys[pygame.K_UP]):
+                # Move agent forward
+                success = currentAgent.actionMoveAgentForwardBackward(direction=+1)
+                print(success)
+                doNextTurn = True
+            elif (keys[pygame.K_DOWN]):
+                # Move agent backwards
+                success = currentAgent.actionMoveAgentForwardBackward(direction=-1)
+                print(success)
+                doNextTurn = True
+            elif (keys[pygame.K_LEFT]):
+                # Rotate agent counterclockwise
+                success = currentAgent.actionRotateAgentFacingDirection(direction=-1)
+                print(success)
+                doNextTurn = True
+            elif (keys[pygame.K_RIGHT]):
+                # Rotate agent clockwise
+                success = currentAgent.actionRotateAgentFacingDirection(direction=+1)
+                print(success)
+                doNextTurn = True
 
-        # elif (keys[pygame.K_LEFT]):
-        #     # Move agent west
-        #     success = currentAgent.actionMoveAgent(-1, 0)
-        #     lastMove = curTime
-        #     print(success)
-        #     doNextTurn = True
+            elif (keys[pygame.K_SPACE]):
+                # Pick-up object in front of agent
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])  
+                    # Expand the list of objects by adding objects that are contained by those objects
+                    objs1 = [obj for obj in objs for obj in obj.getAllContainedObjectsRecursive(respectContainerStatus=True)]
+                    # Add this expanded list to the original list of objects at this location
+                    objs.extend(objs1)
 
-        # elif (keys[pygame.K_RIGHT]):
-        #     # Move agent east
-        #     success = currentAgent.actionMoveAgent(1, 0)
-        #     lastMove = curTime
-        #     print(success)
-        #     doNextTurn = True
+                    # Filter by objects that are movable
+                    movableObjs = [obj for obj in objs if (obj.attributes['isMovable'] == True)]
 
-        # Arrow keys -- move agent.  Left/right rotate agent clockwise/counterclockwise, up/down move agent forward/backward
-        elif (keys[pygame.K_UP]):
-            # Move agent forward
-            success = currentAgent.actionMoveAgentForwardBackward(direction=+1)
-            print(success)
-            doNextTurn = True
-        elif (keys[pygame.K_DOWN]):
-            # Move agent backwards
-            success = currentAgent.actionMoveAgentForwardBackward(direction=-1)
-            print(success)
-            doNextTurn = True
-        elif (keys[pygame.K_LEFT]):
-            # Rotate agent counterclockwise
-            success = currentAgent.actionRotateAgentFacingDirection(direction=-1)
-            print(success)
-            doNextTurn = True
-        elif (keys[pygame.K_RIGHT]):
-            # Rotate agent clockwise
-            success = currentAgent.actionRotateAgentFacingDirection(direction=+1)
-            print(success)
-            doNextTurn = True
+                    # Check to see if there is a movable object here
+                    if (len(movableObjs) > 0):
+                        # Pick up the first movable object
+                        objToPickUp = movableObjs[0]
+                        success = currentAgent.actionPickUp(objToPickUp)
+                        print(success)
 
-        elif (keys[pygame.K_SPACE]):
-            # Pick-up object in front of agent
-            facingLocation = currentAgent.getWorldLocationAgentIsFacing()
-            # Bound checking
-            if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
-                # Get objects at location
-                objs = world.getObjectsAt(facingLocation[0], facingLocation[1])  
-                # Expand the list of objects by adding objects that are contained by those objects
-                objs1 = [obj for obj in objs for obj in obj.getAllContainedObjectsRecursive(respectContainerStatus=True)]
-                # Add this expanded list to the original list of objects at this location
-                objs.extend(objs1)
+                lastMove = curTime
+                doNextTurn = True
 
-                # Filter by objects that are movable
-                movableObjs = [obj for obj in objs if (obj.attributes['isMovable'] == True)]
+            elif (keys[pygame.K_d]):
+                # Drop an inventory item at the agents current location
 
-                # Check to see if there is a movable object here
-                if (len(movableObjs) > 0):
-                    # Pick up the first movable object
-                    objToPickUp = movableObjs[0]
-                    success = currentAgent.actionPickUp(objToPickUp)
+                # First, pick an item from the inventory (i.e. the first item)
+                if (len(currentAgent.contents) > 0):
+                    itemToDrop = currentAgent.contents[0]
+                    success = currentAgent.actionDrop(itemToDrop)
                     print(success)
 
-            lastMove = curTime
-            doNextTurn = True
+                lastMove = curTime
+                doNextTurn = True
 
-        elif (keys[pygame.K_d]):
-            # Drop an inventory item at the agents current location
+            elif (keys[pygame.K_p]):
+                # Put an inventory item in a specific container
+                
+                # First, pick an item from the inventory (i.e. the first item)
+                if (len(currentAgent.contents) > 0):
+                    itemToPut = currentAgent.contents[0]
+                
+                    # Find a container at the location the agent is facing
+                    facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                    # Bound checking
+                    if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                        # Get objects at location
+                        objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                        # Filter by objects that are containers
+                        containerObjs = [obj for obj in objs if (obj.attributes['isContainer'] == True)]
 
-            # First, pick an item from the inventory (i.e. the first item)
-            if (len(currentAgent.contents) > 0):
-                itemToDrop = currentAgent.contents[0]
-                success = currentAgent.actionDrop(itemToDrop)
-                print(success)
+                        # Check to see if there is a container here
+                        if (len(containerObjs) > 0):
+                            # Put the item in the first container
+                            success = currentAgent.actionPut(itemToPut, containerObjs[0])
+                            print(success)
+                            
+                lastMove = curTime
+                doNextTurn = True
 
-            lastMove = curTime
-            doNextTurn = True
+            elif (keys[pygame.K_o]):
+                # Open a container or passage in front of the agent
 
-        elif (keys[pygame.K_p]):
-            # Put an inventory item in a specific container
-            
-            # First, pick an item from the inventory (i.e. the first item)
-            if (len(currentAgent.contents) > 0):
-                itemToPut = currentAgent.contents[0]
-            
                 # Find a container at the location the agent is facing
                 facingLocation = currentAgent.getWorldLocationAgentIsFacing()
                 # Bound checking
                 if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
                     # Get objects at location
                     objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
-                    # Filter by objects that are containers
-                    containerObjs = [obj for obj in objs if (obj.attributes['isContainer'] == True)]
+                    # Filter by objects that are containers OR passages
+                    openableObjs = [obj for obj in objs if (obj.attributes['isContainer'] == True or obj.attributes['isPassage'] == True)]
 
-                    # Check to see if there is a container here
-                    if (len(containerObjs) > 0):
-                        # Put the item in the first container
-                        success = currentAgent.actionPut(itemToPut, containerObjs[0])
+                    # Check to see if there is an openable object here
+                    if (len(openableObjs) > 0):
+                        # Try to open the first one
+                        success = currentAgent.actionOpenClose(openableObjs[0], "open")
                         print(success)
-                        
-            lastMove = curTime
-            doNextTurn = True
 
-        elif (keys[pygame.K_o]):
-            # Open a container or passage in front of the agent
+                lastMove = curTime
+                doNextTurn = True
 
-            # Find a container at the location the agent is facing
-            facingLocation = currentAgent.getWorldLocationAgentIsFacing()
-            # Bound checking
-            if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
-                # Get objects at location
-                objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
-                # Filter by objects that are containers OR passages
-                openableObjs = [obj for obj in objs if (obj.attributes['isContainer'] == True or obj.attributes['isPassage'] == True)]
+            elif (keys[pygame.K_c]):
+                # Close a container or passage in front of the agent
 
-                # Check to see if there is an openable object here
-                if (len(openableObjs) > 0):
-                    # Try to open the first one
-                    success = currentAgent.actionOpenClose(openableObjs[0], "open")
-                    print(success)
+                # Find a container at the location the agent is facing
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    # Filter by objects that are containers OR passages
+                    openableObjs = [obj for obj in objs if (obj.attributes['isContainer'] == True or obj.attributes['isPassage'] == True)]
 
-            lastMove = curTime
-            doNextTurn = True
-
-        elif (keys[pygame.K_c]):
-            # Close a container or passage in front of the agent
-
-            # Find a container at the location the agent is facing
-            facingLocation = currentAgent.getWorldLocationAgentIsFacing()
-            # Bound checking
-            if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
-                # Get objects at location
-                objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
-                # Filter by objects that are containers OR passages
-                openableObjs = [obj for obj in objs if (obj.attributes['isContainer'] == True or obj.attributes['isPassage'] == True)]
-
-                # Check to see if there is an openable object here
-                if (len(openableObjs) > 0):
-                    # Try to open the first one
-                    success = currentAgent.actionOpenClose(openableObjs[0], "close")
-                    print(success)
-
-            doNextTurn = True
-
-
-        elif (keys[pygame.K_a]):
-            # Activate an object in front of the agent
-
-            # Find an activatable object at the location the agent is facing
-            facingLocation = currentAgent.getWorldLocationAgentIsFacing()
-            # Bound checking
-            if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
-                # Get objects at location
-                objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
-                # Filter by objects that are activatable
-                activatableObjs = [obj for obj in objs if (obj.attributes['isActivatable'] == True)]
-
-                # Check to see if there is an activatable object here
-                if (len(activatableObjs) > 0):
-                    # Try to activate the first one
-                    success = currentAgent.actionActivateDeactivate(activatableObjs[0], "activate")
-                    print(success)
-
-            lastMove = curTime
-            doNextTurn = True
-        
-        # For some read K_d doesn't work. 
-        # Should be D key here
-        elif (keys[pygame.K_s]):            
-            # Deactivate an object in front of the agent
-            
-            # Find an activatable object at the location the agent is facing
-            facingLocation = currentAgent.getWorldLocationAgentIsFacing()
-            # Bound checking
-            if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
-                # Get objects at location
-                objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
-                # Filter by objects that are activatable
-                activatableObjs = [obj for obj in objs if (obj.attributes['isActivatable'] == True)]
-
-                # Check to see if there is an activatable object here
-                if (len(activatableObjs) > 0):
-                    # Try to activate the first one
-                    success = currentAgent.actionActivateDeactivate(activatableObjs[0], "deactivate")
-                    print(success)
-
-            lastMove = curTime
-            doNextTurn = True
-
-        # Dialog/talk action
-        elif (keys[pygame.K_t]):
-            # Talk to an agent in front of the agent
-
-            # Find an agent at the location the agent is facing
-            facingLocation = currentAgent.getWorldLocationAgentIsFacing()
-            # Bound checking
-            if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
-                # Get objects at location
-                objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
-                # Filter by objects that are agents (i.e. dialogable)
-                agentObjs = [obj for obj in objs if (obj.attributes['isDialogable'] == True)]
-
-                # Check to see if there is an agent here
-                if (len(agentObjs) > 0):
-                    # Try to talk to the first one
-                    agentToTalkTo = agentObjs[0]
-                    print("Dialog event:")
-                    success = agentToTalkTo.actionDialog(agentDoingTalking = currentAgent, dialogStrToSay = "Hello!")
-                    print(success)
-                    #time.sleep(1)
-
-                    doNextTurn = True
-
-        # Eat action
-        elif (keys[pygame.K_e]):
-            # Eat an item in front of the agent
-
-            # Find an edible item at the location the agent is facing
-            facingLocation = currentAgent.getWorldLocationAgentIsFacing()
-            # Bound checking
-            if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
-                # Get objects at location
-                objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
-                # Filter by objects that are edible
-                edibleObjs = [obj for obj in objs if (obj.attributes['isEdible'] == True)]
-
-                # Check to see if there is an edible object here
-                if (len(edibleObjs) > 0):
-                    # Try to eat the first one
-                    success = currentAgent.actionEat(edibleObjs[0])
-                    print(success)
-
-                    doNextTurn = True
-
-        # Use action
-        elif (keys[pygame.K_u]):
-            # Use one item with another item.
-
-            # Find a usable item at the location the agent is facing
-            facingLocation = currentAgent.getWorldLocationAgentIsFacing()
-            # Bound checking
-            if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
-                # Get objects at location
-                objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
-                # Filter by objects that are usable
-                usableObjs = [obj for obj in objs if (obj.attributes['isUsable'] == True)]
-
-                # Check to see if there is a usable object here
-                if (len(usableObjs) > 0):
-                    
-                    # The patient object will be the first item in the inventory. 
-                    if (len(currentAgent.contents) > 0):
-                        patientObj = currentAgent.contents[0]
-
-                        # Try to use the first one
-                        success = currentAgent.actionUse(usableObjs[0], patientObj)
+                    # Check to see if there is an openable object here
+                    if (len(openableObjs) > 0):
+                        # Try to open the first one
+                        success = currentAgent.actionOpenClose(openableObjs[0], "close")
                         print(success)
-                        
-                    else: 
-                        print("No items in inventory to use.")
-                else:
-                    print("No usable objects found in front of the agent.")
 
                 doNextTurn = True
 
 
-        
-        # Manual state adjustment
-        elif (keys[pygame.K_1]):
-            # Change the colonist NPC external signal
-            print("Sending 'eatSignal' to colonist NPC")
-            for npcColonist in npcColonists:
-                npcColonist.attributes['states'].add("eatSignal")
+            elif (keys[pygame.K_a]):
+                # Activate an object in front of the agent
 
-            doNextTurn = True
-        
-        elif (keys[pygame.K_2]):
-            # Change the Chef NPC external signal
-            print("Sending 'collectSignal' to chef NPC")
-            npcChef.attributes['states'].add("collectSignal")
+                # Find an activatable object at the location the agent is facing
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    # Filter by objects that are activatable
+                    activatableObjs = [obj for obj in objs if (obj.attributes['isActivatable'] == True)]
 
-            doNextTurn = True
+                    # Check to see if there is an activatable object here
+                    if (len(activatableObjs) > 0):
+                        # Try to activate the first one
+                        success = currentAgent.actionActivateDeactivate(activatableObjs[0], "activate")
+                        print(success)
 
-        elif (keys[pygame.K_3]):
-            # Change the Chef NPC external signal
-            print("Sending 'serveSignal' to chef NPC")
-            npcChef.attributes['states'].add("serveSignal")
+                lastMove = curTime
+                doNextTurn = True
+            
+            # For some read K_d doesn't work. 
+            # Should be D key here
+            elif (keys[pygame.K_s]):            
+                # Deactivate an object in front of the agent
+                
+                # Find an activatable object at the location the agent is facing
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    # Filter by objects that are activatable
+                    activatableObjs = [obj for obj in objs if (obj.attributes['isActivatable'] == True)]
 
-            doNextTurn = True
+                    # Check to see if there is an activatable object here
+                    if (len(activatableObjs) > 0):
+                        # Try to activate the first one
+                        success = currentAgent.actionActivateDeactivate(activatableObjs[0], "deactivate")
+                        print(success)
+
+                lastMove = curTime
+                doNextTurn = True
+
+            # Dialog/talk action
+            elif (keys[pygame.K_t]):
+                # Talk to an agent in front of the agent
+
+                # Find an agent at the location the agent is facing
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    # Filter by objects that are agents (i.e. dialogable)
+                    agentObjs = [obj for obj in objs if (obj.attributes['isDialogable'] == True)]
+
+                    # Check to see if there is an agent here
+                    if (len(agentObjs) > 0):
+                        # Try to talk to the first one
+                        agentToTalkTo = agentObjs[0]
+                        print("Dialog event:")
+                        success = agentToTalkTo.actionDialog(agentDoingTalking = currentAgent, dialogStrToSay = "Hello!")
+                        print(success)
+                        #time.sleep(1)
+
+                        doNextTurn = True
+
+            # Eat action
+            elif (keys[pygame.K_e]):
+                # Eat an item in front of the agent
+
+                # Find an edible item at the location the agent is facing
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    # Filter by objects that are edible
+                    edibleObjs = [obj for obj in objs if (obj.attributes['isEdible'] == True)]
+
+                    # Check to see if there is an edible object here
+                    if (len(edibleObjs) > 0):
+                        # Try to eat the first one
+                        success = currentAgent.actionEat(edibleObjs[0])
+                        print(success)
+
+                        doNextTurn = True
+
+            # Use action
+            elif (keys[pygame.K_u]):
+                # Use one item with another item.
+
+                # Find a usable item at the location the agent is facing
+                facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+                # Bound checking
+                if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+                    # Get objects at location
+                    objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+                    # Filter by objects that are usable
+                    usableObjs = [obj for obj in objs if (obj.attributes['isUsable'] == True)]
+
+                    # Check to see if there is a usable object here
+                    if (len(usableObjs) > 0):
+                        
+                        # The patient object will be the first item in the inventory. 
+                        if (len(currentAgent.contents) > 0):
+                            patientObj = currentAgent.contents[0]
+
+                            # Try to use the first one
+                            success = currentAgent.actionUse(usableObjs[0], patientObj)
+                            print(success)
+                            
+                        else: 
+                            print("No items in inventory to use.")
+                    else:
+                        print("No usable objects found in front of the agent.")
+
+                    doNextTurn = True
 
 
-        # Manual "wait"
-        elif (keys[pygame.K_w]):
-            # Wait a turn
-            print("Waiting (taking no action this turn)...")
-            doNextTurn = True
-        
-        # Manual "run for 100 cycles"
-        elif (keys[pygame.K_0]):
-            # Run for 100 cycles
-            autoRunCycles = 100
-            print("Setting autorun cycles to 100...")
-            doNextTurn = True
+            
+            # Manual state adjustment
+            elif (keys[pygame.K_1]):
+                # Change the colonist NPC external signal
+                print("Sending 'eatSignal' to colonist NPC")
+                for npcColonist in npcColonists:
+                    npcColonist.attributes['states'].add("eatSignal")
 
-        # Manual "run for 500 cycles"
-        elif (keys[pygame.K_9]):
-            # Run for 100 cycles
-            autoRunCycles = 500
-            print("Setting autorun cycles to 500...")
-            doNextTurn = True
+                doNextTurn = True
+            
+            elif (keys[pygame.K_2]):
+                # Change the Chef NPC external signal
+                print("Sending 'collectSignal' to chef NPC")
+                npcChef.attributes['states'].add("collectSignal")
+
+                doNextTurn = True
+
+            elif (keys[pygame.K_3]):
+                # Change the Chef NPC external signal
+                print("Sending 'serveSignal' to chef NPC")
+                npcChef.attributes['states'].add("serveSignal")
+
+                doNextTurn = True
 
 
+            # Manual "wait"
+            elif (keys[pygame.K_w]):
+                # Wait a turn
+                print("Waiting (taking no action this turn)...")
+                doNextTurn = True
+            
+            # Manual "run for 100 cycles"
+            elif (keys[pygame.K_0]):
+                # Run for 100 cycles
+                autoRunCycles = 100
+                print("Setting autorun cycles to 100...")
+                doNextTurn = True
+
+            # Manual "run for 500 cycles"
+            elif (keys[pygame.K_9]):
+                # Run for 100 cycles
+                autoRunCycles = 500
+                print("Setting autorun cycles to 500...")
+                doNextTurn = True
+
+            # Test the text message queue
+            elif (keys[pygame.K_5]):
+                # Test the text message queue
+                ui.addTextMessageToQueue("This is a test\nThis is an extra long line apple orange banana pineapple fruit flower tree coconut sky water air summer water blue green yellow orange purple this is the end of the second line.\nThis is the second line.")
+
+
+
+        # Rendering
 
         # Fill the window with black
         window.fill((0, 0, 0))
@@ -822,9 +807,6 @@ def main():
             ui.renderObjectSelectionBox(objs)
 
             print("List of objects the agent is facing: " + str(objs))
-
-            # Test the text box
-            ui.renderTextBox("This is a test\nThis is an extra long line apple orange banana pineapple fruit flower tree coconut sky water air summer water blue green yellow orange purple this is the end of the second line.\nThis is the second line.")
 
 
         # Save the screen frame to a file
