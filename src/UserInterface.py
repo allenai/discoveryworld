@@ -97,11 +97,11 @@ class UserInterface:
         # Render argument 1 box
         if (self.curSelectedArgument1Idx >= len(objects)):
             self.curSelectedArgument1Idx = len(objects) - 1
-        self.renderObjectSelectionBox(objects, self.curSelectedArgument1Idx, offsetX=32, offsetY=-(32*10))
+        self.renderObjectSelectionBox(objects, self.curSelectedArgument1Idx, offsetX=32, offsetY=-(32*9), labelPrefixStr="Arg 1: ")
         # Render argument 2 box
         if (self.curSelectedArgument2Idx >= len(objects)):
             self.curSelectedArgument2Idx = len(objects) - 1
-        self.renderObjectSelectionBox(objects, self.curSelectedArgument2Idx, offsetX=32, offsetY=-(32*5))
+        self.renderObjectSelectionBox(objects, self.curSelectedArgument2Idx, offsetX=32, offsetY=-(32*6), labelPrefixStr="Arg 2: ")
 
 
 
@@ -176,7 +176,7 @@ class UserInterface:
 
     # Render a box that shows (graphically) a set of objects the agent might select from.  
     # Should look similar to the inventory box, only with the potential to hold more objects. 
-    def renderObjectSelectionBox(self, objectList, curSelectedObjIdx, offsetX, offsetY):
+    def renderObjectSelectionBox(self, objectList, curSelectedObjIdx, offsetX, offsetY, labelPrefixStr=""):
         # The object selection box is a single row with 10 columns.  If there are more than 10 objects, then the user can scroll through them.        
         numObjs = len(objectList)
         numCols = 10        
@@ -204,7 +204,7 @@ class UserInterface:
             if (startIdx < 0):
                 startIdx = 0
                 
-        objIdx = startIdx
+        objIdx = startIdx        
         # For each column
         for col in range(numCols):
             # Get the X and Y coordinates of the inventory box (starting from the bottom left corner)
@@ -220,7 +220,7 @@ class UserInterface:
             # Display the object's sprite                
             if (objIdx < endIdx):
                 obj = objectList[objIdx]
-                print("Object " + str(objIdx) + " name: " + obj.name + "  Sprite name: " + obj.getSpriteName())
+                #print("Object " + str(objIdx) + " name: " + obj.name + "  Sprite name: " + obj.getSpriteName())
                 #self._renderObjectSprite(obj, x+xAdj, y+yAdj, scale=scale1)
                 self._renderObjectSprite(obj, x+xAdj, y + tileSize - yAdj, scale=scale1)
 
@@ -230,6 +230,17 @@ class UserInterface:
 
             # Increment the object index
             objIdx += 1
+
+        # Render the selected object's name
+        selectedObjectName = ""
+        if (curSelectedObjIdx < len(objectList)):
+            selectedObjectName = objectList[curSelectedObjIdx].name        
+
+        # Render the name above the box
+        x = 0 * (32 * scale) + offsetX            
+        y = self.window.get_height() + offsetY + (tileSize * scale)
+        label = self.font.render(labelPrefixStr + selectedObjectName, 1, (255, 255, 255))
+        self.window.blit(label, (x+4, y + (tileSize * scale) - 48))
 
         pass
 
