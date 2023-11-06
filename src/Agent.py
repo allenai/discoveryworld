@@ -311,6 +311,8 @@ class Agent(Object):
         # Invalidate the sprites at the object's new location
         objToDrop.invalidateSpritesThisWorldTile()
 
+        return ActionSuccess(True, "I dropped the " + objToDrop.name + ".")
+
     def actionPut(self, objToPut, newContainer):
         # First, check if the object is in the agent's inventory
         objectsInInventory = self.getAllContainedObjectsRecursive(respectContainerStatus=True)

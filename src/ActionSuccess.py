@@ -1,19 +1,6 @@
 # ActionSuccess.py
 from enum import Enum, unique
 
-# Storage class for the result of an action
-class ActionSuccess:
-    # Constructor
-    def __init__(self, success, message):
-        self.success = success
-        self.message = message
-    
-    # String method
-    def __str__(self):
-        return "ActionSuccess(" + str(self.success) + ", " + str(self.message) + ")"
-
-
-
 # Enumeration to define different types of action results (success, completion, failure)
 class ActionResult(Enum):
     SUCCESS     = 0
@@ -22,3 +9,26 @@ class ActionResult(Enum):
     FAILURE     = 3
     INVALID     = 4
     
+
+# Enumeration to define message importance
+class MessageImportance(Enum):
+    LOW         = 0
+    NORMAL      = 1
+    HIGH        = 2
+    
+
+
+# Storage class for the result of an action
+class ActionSuccess:
+    # Constructor
+    def __init__(self, success, message, importance = MessageImportance.NORMAL):
+        self.success = success
+        self.message = message
+        self.importance = importance
+    
+    # String method
+    def __str__(self):
+        return "ActionSuccess(" + str(self.success) + ", " + str(self.importance) + ", " + str(self.message) + ")"
+
+
+

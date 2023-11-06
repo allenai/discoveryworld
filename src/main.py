@@ -458,10 +458,12 @@ def main():
                 # Action was performed
                 doNextTurn = True
 
-                # Check if action was not successful
-                #if (success.success == False):
-                # Display a modal with the error message
-                ui.addTextMessageToQueue(success.message)
+                # Update the UI with the message (for the bottom of the screen)
+                ui.updateLastActionMessage(success.message)
+
+                # If the message was rated as high importance, also add it to the explicit modal dialog queue
+                if (success.importance == MessageImportance.HIGH):
+                    ui.addTextMessageToQueue(success.message)
 
             else:
             

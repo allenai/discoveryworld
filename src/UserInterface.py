@@ -27,6 +27,9 @@ class UserInterface:
         self.currentAgent = None
         self.curSelectedInventoryIdx = 0
 
+        # Most recent action result/message (to place on the bottom of the UI)
+        self.lastActionMessage = ""
+
         # Queue of messages to display
         self.messageQueueText = []
 
@@ -61,6 +64,11 @@ class UserInterface:
     # Close whatever modal is currently active
     def closeModal(self):
         self.popMessageFromQueue()
+
+
+    # Update last action message
+    def updateLastActionMessage(self, messageStr):
+        self.lastActionMessage = messageStr
 
 
     # 
@@ -151,6 +159,8 @@ class UserInterface:
             self.inModal = True
             
 
+        # Render the last action message
+        self.renderLastActionMessage()
 
         pass
 
@@ -357,6 +367,28 @@ class UserInterface:
         pass
     
 
+    # Render the last action message, as a (maximum) single line message at the bottom of the screen. 
+    # If the message is too long, it will be truncated.
+    def renderLastActionMessage(self):
+        # If the last action message is empty, don't render anything
+        if (self.lastActionMessage == ""):
+            return
+
+        # Split the message into multiple lines
+        lines = self._splitLongTextLines(self.lastActionMessage)
+        lineToWrite = lines[0]
+
+        # Render the first line
+        x = 32
+        y = self.window.get_height() - 24
+        # Render the background
+        width, height = self.fontBold.size(lineToWrite)
+        fontSize = 15
+        pygame.draw.rect(self.window, (128, 128, 128), (x, y, width, height), 0)
+        # Render the text
+        label = self.font.render(lineToWrite, 1, (255, 255, 255))
+        self.window.blit(label, (x, y))
+
 
     #
     # Action abstraction layer
@@ -547,17 +579,20 @@ class UserInterface:
         # UI element (incrementing argument boxes with [, ], ;, and ')
         elif (keys[pygame.K_LEFTBRACKET]):
             self.changeArgumentBox(delta=-1, whichBox=1)
+            return ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name))
             
         elif (keys[pygame.K_RIGHTBRACKET]):
             self.changeArgumentBox(delta=1, whichBox=1)
+            return ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name))
             
         elif (keys[pygame.K_SEMICOLON]):
             self.changeArgumentBox(delta=-1, whichBox=2)
+            return ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name))
             
         elif (keys[pygame.K_QUOTE]):
             self.changeArgumentBox(delta=1, whichBox=2)
+            return ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name))
             
-
 
         # If we reach here, then no known key was pressed
         return None
