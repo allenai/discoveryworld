@@ -209,7 +209,7 @@ class UserInterface:
                 self._renderObjectSprite(item, x, y - tileSize, scale)
             
             # Add a number to the box            
-            label = self.font.render(str(idx + 1), 1, (255, 255, 255))
+            label = self.fontBold.render(str(idx + 1), 1, (255, 255, 255))
             self.window.blit(label, (x + 2, y + 2))
 
             
@@ -279,7 +279,7 @@ class UserInterface:
                 self._renderObjectSprite(obj, x+xAdj, y + tileSize - yAdj, scale=scale1)
 
             # Display the number
-            label = self.font.render(str(objIdx + 1), 1, (255, 255, 255))
+            label = self.fontBold.render(str(objIdx + 1), 1, (255, 255, 255))
             self.window.blit(label, (x + 4, y + (tileSize * scale) - 24))
 
             # Increment the object index
@@ -293,7 +293,7 @@ class UserInterface:
         # Render the name above the box
         x = 0 * (32 * scale) + offsetX            
         y = self.window.get_height() + offsetY + (tileSize * scale)
-        label = self.font.render(labelPrefixStr + selectedObjectName, 1, (255, 255, 255))
+        label = self.fontBold.render(labelPrefixStr + selectedObjectName, 1, (255, 255, 255))
         self.window.blit(label, (x+4, y + (tileSize * scale) - 48))
 
         pass
@@ -374,8 +374,9 @@ class UserInterface:
         if (self.lastActionMessage == ""):
             return
 
-        # Split the message into multiple lines
-        lines = self._splitLongTextLines(self.lastActionMessage)
+        # Replace newlines with spaces, to merge the message into a single line        
+        oneLine = self.lastActionMessage.replace("\n", " ")
+        lines = self._splitLongTextLines(oneLine, MAX_LENGTH=80)
         lineToWrite = lines[0]
 
         # Render the first line
@@ -386,7 +387,7 @@ class UserInterface:
         fontSize = 15
         pygame.draw.rect(self.window, (128, 128, 128), (x, y, width, height), 0)
         # Render the text
-        label = self.font.render(lineToWrite, 1, (255, 255, 255))
+        label = self.fontBold.render(lineToWrite, 1, (255, 255, 255))
         self.window.blit(label, (x, y))
 
 

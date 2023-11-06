@@ -1062,7 +1062,7 @@ class Microscope(Object):
         microscopeDescriptionStr += patientObj.getTextObservationMicroscopic()
 
         # Return the action response
-        return ActionSuccess(True, microscopeDescriptionStr)        
+        return ActionSuccess(True, microscopeDescriptionStr, importance=MessageImportance.HIGH)        
 
     
 
