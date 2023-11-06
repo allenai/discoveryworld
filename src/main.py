@@ -15,6 +15,7 @@ from BuildingMaker import BuildingMaker
 from ObjectModel import *
 from Agent import *
 from ActionSuccess import *
+from UserInterface import UserInterface
 
 
 
@@ -286,6 +287,8 @@ def main():
     print ("All sprite names: ")
     print (world.spriteLibrary.getSpriteNames())
 
+    # Initialize the user interface
+    ui = UserInterface(window, world.spriteLibrary)
     
 
     # Populate with structures/objects
@@ -398,6 +401,9 @@ def main():
 
     # Initial world tick
     world.tick()
+
+    # Attach the user interface to the agent
+    ui.setAgent(currentAgent)
 
 
     # Create a directory "/video" for storing video frames
@@ -770,12 +776,14 @@ def main():
         if (doNextTurn) or (autoRunCycles > 0):
             world.tick()
             frames += 1
-            print("")
+            print("\n\n############################################################################################")
             if (autoRunCycles > 0):
                 print("Step: " + str(frames) + " (autorun)")
             else:
                 print("Step: " + str(frames))
+            print("############################################################################################\n")                
             #time.sleep(0.25)
+            
             time.sleep(0.10)
 
             if (autoRunCycles > 0):
@@ -800,6 +808,9 @@ def main():
         worldStartY = agentLocation[1] - int(viewportSizeY / 2)
         # Step 4: Render the viewport
         world.renderViewport(window, worldStartX, worldStartY, viewportSizeX, viewportSizeY, 0, 0)
+        # Step 5: Render the user interface
+        print("*** Rendering UI ***")
+        ui.render()
 
 
 

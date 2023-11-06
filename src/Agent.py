@@ -78,6 +78,14 @@ class Agent(Object):
         return (x, y)
 
 
+    # 
+    #   Get inventory    
+    #
+
+    # Helper to get inventory
+    def getInventory(self):
+        return self.getAllContainedObjectsRecursive(respectContainerStatus=True)
+
 
     #
     #   Tick
