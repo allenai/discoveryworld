@@ -89,19 +89,21 @@ class UserInterface:
         # Step 1: Render argument boxes
         
         # Step 1A: First, collect all objects (inventory, objects in front of the agent)
-        objects = []
+        objsInv = []
+        objsEnv = []
         if (self.currentAgent != None):
-            objects = self.currentAgent.getInventory()
-            objects += self.currentAgent.getObjectsAgentFacing(respectContainerStatus=True)
+            objsInv = self.currentAgent.getInventory()
+            objsEnv += self.currentAgent.getObjectsAgentFacing(respectContainerStatus=True)
+        allObjs = objsInv + objsEnv
 
         # Render argument 1 box
-        if (self.curSelectedArgument1Idx >= len(objects)):
-            self.curSelectedArgument1Idx = len(objects) - 1
-        self.renderObjectSelectionBox(objects, self.curSelectedArgument1Idx, offsetX=32, offsetY=-(32*9), labelPrefixStr="Arg 1: ")
+        if (self.curSelectedArgument1Idx >= len(allObjs)):
+            self.curSelectedArgument1Idx = len(allObjs) - 1
+        self.renderObjectSelectionBox(objsInv, objsEnv, self.curSelectedArgument1Idx, offsetX=32, offsetY=-(32*9), labelPrefixStr="Arg 1: ")
         # Render argument 2 box
-        if (self.curSelectedArgument2Idx >= len(objects)):
-            self.curSelectedArgument2Idx = len(objects) - 1
-        self.renderObjectSelectionBox(objects, self.curSelectedArgument2Idx, offsetX=32, offsetY=-(32*6), labelPrefixStr="Arg 2: ")
+        if (self.curSelectedArgument2Idx >= len(allObjs)):
+            self.curSelectedArgument2Idx = len(allObjs) - 1
+        self.renderObjectSelectionBox(objsInv, objsEnv, self.curSelectedArgument2Idx, offsetX=32, offsetY=-(32*6), labelPrefixStr="Arg 2: ")
 
 
 
@@ -176,8 +178,9 @@ class UserInterface:
 
     # Render a box that shows (graphically) a set of objects the agent might select from.  
     # Should look similar to the inventory box, only with the potential to hold more objects. 
-    def renderObjectSelectionBox(self, objectList, curSelectedObjIdx, offsetX, offsetY, labelPrefixStr=""):
+    def renderObjectSelectionBox(self, objsInv, objsEnv, curSelectedObjIdx, offsetX, offsetY, labelPrefixStr=""):
         # The object selection box is a single row with 10 columns.  If there are more than 10 objects, then the user can scroll through them.        
+        objectList = objsInv + objsEnv
         numObjs = len(objectList)
         numCols = 10        
 
@@ -215,7 +218,15 @@ class UserInterface:
             if (objIdx == curSelectedObjIdx):
                 self.spriteLibrary.renderSprite(self.window, "ui_inventory_selected", x, y, scale)
             else:
-                self.spriteLibrary.renderSprite(self.window, "ui_inventory_background", x, y, scale)
+                if (objIdx > len(objectList)):
+                    # Empty inventory spot
+                    self.spriteLibrary.renderSprite(self.window, "ui_inventory_empty", x, y, scale)
+                elif (objIdx >= len(objsInv)):
+                    # Environmental inventory spot (slightly different background)
+                    self.spriteLibrary.renderSprite(self.window, "ui_inventory_background_env", x, y, scale)
+                else:
+                    # Inventory spot                    
+                    self.spriteLibrary.renderSprite(self.window, "ui_inventory_background", x, y, scale)
 
             # Display the object's sprite                
             if (objIdx < endIdx):

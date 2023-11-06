@@ -332,7 +332,9 @@
         "sprites":
             {    
                 "inventory_background":         { "baseTile": [0, 0],  "size": [1, 1] },
-                "inventory_selected":           { "baseTile": [0, 1],  "size": [1, 1] }
+                "inventory_selected":           { "baseTile": [0, 1],  "size": [1, 1] },
+                "inventory_background_env":     { "baseTile": [0, 2],  "size": [1, 1] },
+                "inventory_empty":              { "baseTile": [0, 3],  "size": [1, 1] }
             },
         "composites": 
             {
