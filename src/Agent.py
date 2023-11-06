@@ -86,6 +86,20 @@ class Agent(Object):
     def getInventory(self):
         return self.getAllContainedObjectsRecursive(respectContainerStatus=True)
 
+    # Get all objects in the world tile that the agent is facing
+    def getObjectsAgentFacing(self, respectContainerStatus=True):
+        # Find a usable item at the location the agent is facing
+        facingLocation = self.getWorldLocationAgentIsFacing()
+        # Bound checking
+        if (self.world.isWithinBounds(facingLocation[0], facingLocation[1]) == False):
+            return []
+
+        # Get objects at location
+        objs = self.world.getObjectsAt(facingLocation[0], facingLocation[1], respectContainerStatus=respectContainerStatus)                    
+
+        # Return the objects
+        return objs
+
 
     #
     #   Tick

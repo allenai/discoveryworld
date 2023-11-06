@@ -729,6 +729,22 @@ def main():
                 print("Waiting (taking no action this turn)...")
                 doNextTurn = True
             
+
+            # UI element (incrementing argument boxes with [, ], ;, and ')
+            elif (keys[pygame.K_LEFTBRACKET]):
+                ui.changeArgumentBox(delta=-1, whichBox=1)
+                doNextTurn = True
+            elif (keys[pygame.K_RIGHTBRACKET]):
+                ui.changeArgumentBox(delta=1, whichBox=1)
+                doNextTurn = True
+            elif (keys[pygame.K_SEMICOLON]):
+                ui.changeArgumentBox(delta=-1, whichBox=2)
+                doNextTurn = True
+            elif (keys[pygame.K_QUOTE]):
+                ui.changeArgumentBox(delta=1, whichBox=2)
+                doNextTurn = True
+                
+
             # Manual "run for 100 cycles"
             elif (keys[pygame.K_0]):
                 # Run for 100 cycles
@@ -797,16 +813,16 @@ def main():
         ui.render()
 
 
-        # Find a usable item at the location the agent is facing
-        facingLocation = currentAgent.getWorldLocationAgentIsFacing()
-        # Bound checking
-        if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
-            # Get objects at location
-            objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
-            # Step 6: Display the object inventory box
-            ui.renderObjectSelectionBox(objs)
+        # # Find a usable item at the location the agent is facing
+        # facingLocation = currentAgent.getWorldLocationAgentIsFacing()
+        # # Bound checking
+        # if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
+        #     # Get objects at location
+        #     objs = world.getObjectsAt(facingLocation[0], facingLocation[1])                    
+        #     # Step 6: Display the object inventory box
+        #     ui.renderObjectSelectionBox(objs, curSelectedObjIdx=2)
 
-            print("List of objects the agent is facing: " + str(objs))
+        #     print("List of objects the agent is facing: " + str(objs))
 
 
         # Save the screen frame to a file
