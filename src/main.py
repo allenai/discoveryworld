@@ -808,8 +808,7 @@ def main():
         worldStartY = agentLocation[1] - int(viewportSizeY / 2)
         # Step 4: Render the viewport
         world.renderViewport(window, worldStartX, worldStartY, viewportSizeX, viewportSizeY, 0, 0)
-        # Step 5: Render the user interface
-        print("*** Rendering UI ***")
+        # Step 5: Render the user interface        
         ui.render()
 
 
