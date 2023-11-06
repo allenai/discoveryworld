@@ -168,7 +168,7 @@ class SpriteLibrary:
     # window: The window to display the sprite in
     # x: The x coordinate of the top left corner of the sprite
     # y: The y coordinate of the top left corner of the sprite
-    def renderSprite(self, window, spriteName, x, y, scale=1):
+    def renderSprite(self, window, spriteName, x, y, scale=1, adjustY=True):
         # Tile size
         tileSize = 32
         if (scale != 1):
@@ -181,7 +181,9 @@ class SpriteLibrary:
         sprite = self.sprites[spriteName]
 
         # Adjust the y-coordinate based on the sprite's height
-        adjusted_y = y - sprite.get_height() + tileSize
+        adjusted_y = y
+        if (adjustY):
+            adjusted_y = y - sprite.get_height() + tileSize
 
         if (scale != 1):
             sprite = pygame.transform.scale(sprite, (int(sprite.get_width() * scale), int(sprite.get_height() * scale)))            
