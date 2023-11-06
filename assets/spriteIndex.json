@@ -324,6 +324,17 @@
         "composites": 
             {
             }
+    },
+    {
+        "sheetName": "ui", 
+        "filename": "placeholder/ui.png",
+        "tileSize": [32, 32],        
+        "sprites":
+            {    
+                "inventory_background":         { "baseTile": [0, 0],  "size": [1, 1] }
+            },
+        "composites": 
+            {
+            }
     }
-
 ]
