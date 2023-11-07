@@ -202,8 +202,7 @@ class ObjectMaker:
             "Pot": Pot,
             "Jar": Jar,
             "Shovel": Shovel,
-            "Seed": Seed,
-            "Hole": Hole,
+            "Seed": Seed,            
             "Dirt": Dirt,
             "FlowerPot": FlowerPot,
         }

@@ -1,8 +1,10 @@
 # ObjectModel.py
 
 import SpriteLibrary
+from Layer import Layer
 from ActionSuccess import *
 import random
+
 
 # Storage class for a single object
 class Object:
@@ -112,6 +114,8 @@ class Object:
 
     # Remove from world location -- this is analagous to the removeObject() method for containers, but removes the object from the world tile.
     def removeFromWorldLocation(self):
+        # TODO: Depricated? use self.world.removeObject(obj) instead?
+        
         # Remove this object from its world location
         self.world.removeObjectFromTile(self)
 
@@ -166,12 +170,13 @@ class Object:
         if (self.parentContainer != None):
             # Get the index of self in the parent container
             idx = self.parentContainer.contents.index(self)
+            parentContainerCopy = self.parentContainer
             # Remove self from the parent container
             self.parentContainer.removeObject(self)
             # Add the new object at the same index
-            self.parentContainer.contents.insert(idx, obj)
+            parentContainerCopy.contents.insert(idx, obj)
             # Set the parent container
-            obj.parentContainer = self.parentContainer
+            obj.parentContainer = parentContainerCopy
 
 
     # Get all contained objects
@@ -1273,6 +1278,7 @@ class SoilTile(Object):
         # By default, it contains Dirt, which can be removed by shovelling
         dirt = self.world.createObject("Dirt")
         self.addObject(dirt, force=True)
+        
 
     #def __init__(self, success, message, generatedItem = None, importance = MessageImportance.NORMAL):
     def useWithShovelResult(self):
@@ -1281,7 +1287,7 @@ class SoilTile(Object):
             return UseWithSuccess(False, "There is already a hole here.")
 
         # Otherwise, we can dig a hole
-        self.attributes["hasHole"] = True
+        #self.attributes["hasHole"] = True
 
         # Generate 'dirt' object. 
         #generatedObjects = [self.world.createObject("Dirt")]
@@ -1693,26 +1699,78 @@ class Seed(Object):
         self.attributes["isMovable"] = True                       # Can it be moved?
         self.attributes["isPassable"] = True                      # Agen't can't walk over this
 
-    def tick(self):
-        # Call superclass
-        Object.tick(self)    
-
-
-#
-#   Object: Hole (placeholder)
-#
-class Hole(Object):
-    # Constructor
-    def __init__(self, world):
-        # Default sprite name
-        Object.__init__(self, world, "hole", "hole", defaultSpriteName = "placeholder_hole")
-
-        self.attributes["isMovable"] = False                       # Can it be moved?
-        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+        self.attributes["sproutTime"] = -1                        # How many ticks until the seed sprouts?
 
     def tick(self):
         # Call superclass
         Object.tick(self)    
+
+        # Check if the conditions for the seed to grow have been met
+        # Condition 1: Check that the seed is contained in a 'SoilTile' object
+        inSoilTile = False
+        hasHole = False
+        if (self.parentContainer is not None):
+            print("*** Parent Container Attributes: " + str(self.parentContainer.attributes))
+            if (self.parentContainer.type == "soil"):
+                inSoilTile = True
+
+        # Condition 2: Also check that the hole is filled                        
+        if (self.parentContainer is not None):
+            if (self.parentContainer.attributes['hasHole'] == True):
+                hasHole = True
+
+        # Debug information
+        print("*** Seed: inSoilTile = " + str(inSoilTile) + ", hasHole = " + str(hasHole) + ", sproutTime: " + str(self.attributes["sproutTime"]))
+
+        # If the conditions have been met, continue the growth process
+        if (inSoilTile and not hasHole):
+            # Perform action based on sprout time
+            if (self.attributes["sproutTime"] == 0):
+                print("Turn into plant")
+                # Turn into plant
+                plant = self.world.createObject("Mushroom")
+                # Replace self with the plant
+                #self.replaceSelfWithObject(plant)
+                # Return, since this object is no longer valid
+                # Add the plant to the same world location as the soil tile
+                #self.world.addObjectToLocation(plant, self.parentContainer.parentContainer)
+                #def addObject(self, x, y, layer, object:Object):
+                seedLocation = self.getWorldLocation()
+                self.world.addObject(seedLocation[0], seedLocation[1], Layer.OBJECTS, plant)
+
+                # Remove self
+                self.world.removeObject(self)
+
+                return
+
+            elif (self.attributes["sproutTime"] == -1):                
+                print("Random sprout time")
+                # Sprout time was not set -- so this is the first time the conditions have been met. Set sprout time to a random value between 10 and 20 ticks
+                self.attributes["sproutTime"] = random.randint(10, 20)
+            else:
+                print("Decrement sprout time")
+                # If the sprout time has already been set, then decrement it
+                self.attributes["sproutTime"] -= 1
+                    
+
+        
+
+
+# #
+# #   Object: Hole (placeholder)
+# #
+# class Hole(Object):
+#     # Constructor
+#     def __init__(self, world):
+#         # Default sprite name
+#         Object.__init__(self, world, "hole", "hole", defaultSpriteName = "placeholder_hole")
+
+#         self.attributes["isMovable"] = False                       # Can it be moved?
+#         self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+#     def tick(self):
+#         # Call superclass
+#         Object.tick(self)    
 
 
 #

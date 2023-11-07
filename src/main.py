@@ -190,13 +190,18 @@ def mkFarm(x, y, world, buildingMaker):
                 # Randomly set the 'hasHole' attribute to True for some of the soil tiles
                 #if (random.randint(0, 2) == 0):
                 #    soilTile.attributes['hasHole'] = True
+                # Randomly add seeds to some of the soil tiles
+                if (random.randint(0, 2) == 0):
+                    soilTile.addObject(world.createObject("Seed"), force=True)
 
                 world.addObject(x+i, y+j + houseSizeX + 1, Layer.WORLD, soilTile)
 
     # Add a hole in one soil plot at the top left
-    world.addObject(x+1, y+houseSizeY+1, Layer.OBJECTS, world.createObject("Hole"))
+    #world.addObject(x+1, y+houseSizeY+1, Layer.OBJECTS, world.createObject("Hole"))
     # Add dirt beside the hole
-    world.addObject(x, y+houseSizeY+1, Layer.OBJECTS, world.createObject("Dirt"))
+    #world.addObject(x, y+houseSizeY+1, Layer.OBJECTS, world.createObject("Dirt"))
+
+    
 
 
     # Randomly add a number of Mushrooms to the soil
@@ -381,6 +386,10 @@ def main():
     # Add an agent
     currentAgent = Agent(world)
     world.addObject(10, 10, Layer.AGENT, currentAgent)
+
+    # Add tools for agent
+    currentAgent.addObject(world.createObject("Shovel"))
+    currentAgent.addObject(world.createObject("Seed"))
 
     # Add an NPC
     npcColonist = NPCColonist(world, "Example NPC")
