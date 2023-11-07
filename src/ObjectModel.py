@@ -115,7 +115,7 @@ class Object:
     # Remove from world location -- this is analagous to the removeObject() method for containers, but removes the object from the world tile.
     def removeFromWorldLocation(self):
         # TODO: Depricated? use self.world.removeObject(obj) instead?
-        
+
         # Remove this object from its world location
         self.world.removeObjectFromTile(self)
 
@@ -1710,7 +1710,7 @@ class Seed(Object):
         inSoilTile = False
         hasHole = False
         if (self.parentContainer is not None):
-            print("*** Parent Container Attributes: " + str(self.parentContainer.attributes))
+            #print("*** Parent Container Attributes: " + str(self.parentContainer.attributes))
             if (self.parentContainer.type == "soil"):
                 inSoilTile = True
 
@@ -1720,13 +1720,13 @@ class Seed(Object):
                 hasHole = True
 
         # Debug information
-        print("*** Seed: inSoilTile = " + str(inSoilTile) + ", hasHole = " + str(hasHole) + ", sproutTime: " + str(self.attributes["sproutTime"]))
+        #print("*** Seed: inSoilTile = " + str(inSoilTile) + ", hasHole = " + str(hasHole) + ", sproutTime: " + str(self.attributes["sproutTime"]))
 
         # If the conditions have been met, continue the growth process
         if (inSoilTile and not hasHole):
             # Perform action based on sprout time
             if (self.attributes["sproutTime"] == 0):
-                print("Turn into plant")
+                #print("Turn into plant")
                 # Turn into plant
                 plant = self.world.createObject("Mushroom")
                 # Replace self with the plant
@@ -1744,11 +1744,11 @@ class Seed(Object):
                 return
 
             elif (self.attributes["sproutTime"] == -1):                
-                print("Random sprout time")
+                #print("Random sprout time")
                 # Sprout time was not set -- so this is the first time the conditions have been met. Set sprout time to a random value between 10 and 20 ticks
                 self.attributes["sproutTime"] = random.randint(10, 20)
             else:
-                print("Decrement sprout time")
+                #print("Decrement sprout time")
                 # If the sprout time has already been set, then decrement it
                 self.attributes["sproutTime"] -= 1
                     

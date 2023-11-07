@@ -1834,6 +1834,9 @@ class NPCFarmer1(NPC):
             self.addAutopilotActionToQueue( AutopilotAction_LocateBlankTileInArea(farmX, farmY, farmWidth, farmHeight, tileTypesToFind, priority=5) )
 
             # Then, go to each spot, dig the hole, plant the seed, and put dirt back in the hole
+            #class AutoPilotAction_BuryInFrontOfAgent(AutopilotAction):    
+            #def __init__(self, objectNamesOrTypesToDig, objectNamesOrTypesToBury, callback=None, callbackArgs=None, priority=3):
+            self.addAutopilotActionToQueue( AutoPilotAction_BuryInFrontOfAgent(objectNamesOrTypesToDig=["soil"], objectNamesOrTypesToBury=["seed"], priority=5) )
 
             # Then, return any remaining seeds to the container
 

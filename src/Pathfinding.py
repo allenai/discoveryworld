@@ -108,6 +108,10 @@ class Pathfinder():
             result = self.runWait(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.EAT_OBJ_IN_INVENTORY):
             result = self.runEat(autopilotAction.args, agent, world)
+        elif (actionType == AutopilotActionType.DIG_IN_FRONT_OF_AGENT):
+            result = self.runDigInFrontOfAgent(autopilotAction.args, agent, world)
+        elif (actionType == AutopilotActionType.BURY_IN_FRONT_OF_AGENT):
+            result = self.runBuryInFrontOfAgent(autopilotAction.args, agent, world)
         else:
             print("ERROR: Invalid autopilot action type: " + str(actionType))
             return ActionResult.INVALID
@@ -162,6 +166,10 @@ class Pathfinder():
 
                 # We're facing the object.  We're done.
                 return ActionResult.COMPLETED
+            else:
+                result = self._doNPCAutonavigation(agent, world, args['destinationX'], args['destinationY'], besideIsOK=True)
+                print("runGotoXY: _doNPCAutonavigation returned: " + str(result))
+
 
         # If we reach here, it's running
         return ActionResult.SUCCESS
@@ -199,6 +207,91 @@ class Pathfinder():
         # Action succeeded
         return ActionResult.COMPLETED
      
+
+    # Bury an object in front of the agent
+    def runBuryInFrontOfAgent(self, args:dict, agent, world):
+        objectNamesOrTypesToDig = args['objectNamesOrTypesToDig']
+        objectNamesOrTypesToBury = args['objectNamesOrTypesToBury']
+
+        # Check if an object with an appropriate name/type is in the agent's inventory
+        agentInventory = agent.getInventory()
+        objToBury = None
+        for invObj in agentInventory:
+            if (invObj.name in objectNamesOrTypesToBury) or (invObj.objectType in objectNamesOrTypesToBury):
+                # Found the object
+                objToBury = invObj
+                break
+
+        if (objToBury == None):
+            # Object meeting name/type requirements not found in inventory.
+            print("runBuryInFrontOfAgent: Object with that name or type (" + str(objectNamesOrTypesToBury) + " not found in agent's inventory.")
+            return ActionResult.FAILURE
+
+        # First, try to dig in front of the agent
+        actionDig = AutopilotAction_DigInFrontOfAgent(objectNamesOrTypesToDig, priority=args['priority']+1)
+        agent.addAutopilotActionToQueue( actionDig )
+
+        # Then, try to put the object in the hole
+        #class AutopilotAction_PlaceObjInContainer(AutopilotAction):    
+        #   def __init__(self, objectToPlace, container, containerNamesOrTypes = None, callback=None, callbackArgs=None, priority=3):
+        actionPlaceObj = AutopilotAction_PlaceObjInContainer(objToBury, container=None, containerNamesOrTypes=objectNamesOrTypesToDig, priority=args['priority']+1)
+        agent.addAutoPilotActionToQueue( actionPlaceObj )
+
+        # Then, put the dirt back in the hole
+        actionPlaceDirt = AutopilotAction_PlaceObjInContainer(objToBury=None, container=None, objectNamesOrTypes=["dirt"], containerNamesOrTypes=objectNamesOrTypesToDig, priority=args['priority']+1)
+        agent.addAutoPilotActionToQueue( actionPlaceDirt )
+
+        # Complete this action, so we can start the above sequence
+        return ActionResult.COMPLETED
+
+
+
+    # Eat an object in the agent's inventory
+    def runDigInFrontOfAgent(self, args:dict, agent, world):        
+        objectNamesOrTypesToDig = args['objectNamesOrTypesToDig']
+
+        # Check if an object with an appropriate name/type is in the agent's inventory
+        agentInventory = agent.getInventory()
+        # Check that the agent has a shovel
+        shovel = None
+        for invObj in agentInventory:
+            if (invObj.type == "shovel"):
+                shovel = invObj
+                break
+
+        # If no shovel, then break
+        if (shovel == None):
+            print("runDigInFrontOfAgent: Agent does not have a shovel.")
+            return ActionResult.FAILURE
+
+        # Check if there's a diggable object in front of the agent
+        objsAgentFacing = agent.getObjectsAgentFacing()
+        # Filter to include only diggable objects
+        diggableObjsAgentFacing = []
+        for obj in objsAgentFacing:
+            if (obj.attributes['isShovelable']):
+                diggableObjsAgentFacing.append(obj)
+
+        # Find the first object meeting the criteria
+        objToDig = None
+        for obj in diggableObjsAgentFacing:
+            if (obj.name in objectNamesOrTypesToDig) or (obj.objectType in objectNamesOrTypesToDig):
+                # Found the object
+                objToDig = obj
+                break
+
+        # Check if we found an object
+        if (objToDig == None):
+            # Object meeting name/type requirements not found in inventory.
+            print("runDigInFrontOfAgent: Object with that name or type (" + str(objectNamesOrTypesToDig) + " not found in front of agent.")
+            return ActionResult.FAILURE
+
+        # Perform the action (use shovel on object)
+        result = agent.actionUseOn(objToDig, shovel)
+        
+        # Action succeeded
+        return ActionResult.COMPLETED
+
 
     def runPickupObj(self, args:dict, agent, world):
         # First, get the object's world location
@@ -373,16 +466,18 @@ class Pathfinder():
         # Step 1: Find if there's an object in the area that matches the object type(s) we're looking for (if not, we're done)
         blankTiles = self._findBlankTilesOfType(args, agent, world)
 
-        print("##### runFindObjsInAreaThenPlace: Found " + str(len(blankTiles)) + " blank tiles of type(s): " + str(args['objectTypes']))        
+        print("##### runBlankTileInAreaThenMove: Found " + str(len(blankTiles)) + " blank tiles of type(s): " + str(args['objectTypes']))        
         # If there are no objects to find, we're done
         if (len(blankTiles) == 0):            
+            print("##### runBlankTileInAreaThenMove: No blank tiles found. exiting.")
             # TODO: Should this be an error?
             return ActionResult.COMPLETED
 
         # If we're beside and facing one of the tiles, then we're done            
         objsAgentFacing = agent.getObjectsAgentFacing(respectContainerStatus=True)
         for blankTile in blankTiles:
-            if (blankTile in objsAgentFacing):            
+            if (blankTile in objsAgentFacing):          
+                print("##### runBlankTileInAreaThenMove: We're already facing a blank tile with the required properties.  Exiting.")
                 return ActionResult.COMPLETED
 
         # If not, then randomly pick one tile
@@ -404,9 +499,38 @@ class Pathfinder():
         # self.args['objectToPlace'] = objectToPlace
         # self.args['container'] = container
 
-        # First, get the container's world location
+        # Object to place
         objectToPlace = args['objectToPlace']
+        objectNamesOrTypes = args['objectNamesOrTypes']
+        # If objectToPlace is None and objectNames is a list, then we need to find the object in the agents inventory, or directly in front of the agent
+        if (objectToPlace == None and objectNamesOrTypes != None):
+            # First, check inventory
+            objsAgentInventory = agent.getInventory()            
+            for objAgentInventory in objsAgentInventory:
+                if (objAgentInventory.name in objectNamesOrTypes or objAgentInventory.type in objectNamesOrTypes):
+                    objectToPlace = objAgentInventory
+                    break
+            # If we still haven't found it, then we're done
+            if (objectToPlace == None):
+                print("runPlaceObjInContainer: ERROR: Couldn't find object (" + str(objectNamesOrTypes) + " to place in agent's inventory.  Exiting.")
+                return ActionResult.ERROR
+
+        # Container
         container = args['container']
+        containerNamesOrTypes = args['containerNamesOrTypes']
+        # If container is None and containerNames is a list, then we need to find the container (directly in front of the agent)
+        if (container == None and containerNamesOrTypes != None):
+            objsAgentFacing = agent.getObjectsAgentFacing(respectContainerStatus=True)
+            for objAgentFacing in objsAgentFacing:
+                if (objAgentFacing.name in containerNamesOrTypes or objAgentFacing.type in containerNamesOrTypes):
+                    container = objAgentFacing
+                    break
+            # If we still haven't found it, then we're done
+            if (container == None):
+                print("runPlaceObjInContainer: ERROR: Couldn't find container (" + str(containerNamesOrTypes) + " in front of agent.  Exiting.")
+                return ActionResult.ERROR                
+        
+        # Container location
         containerLocation = container.getWorldLocation()
 
         # Check if we have the object in our inventory.  If not, something unexpected has happened, so return an error.
@@ -670,11 +794,13 @@ class AutopilotAction_PickupObj(AutopilotAction):
 
 class AutopilotAction_PlaceObjInContainer(AutopilotAction):
     # Constructor
-    def __init__(self, objectToPlace, container, callback=None, callbackArgs=None, priority=3):
+    def __init__(self, objectToPlace, container, objectNamesOrTypes=None, containerNamesOrTypes = None, callback=None, callbackArgs=None, priority=3):
         self.actionType = AutopilotActionType.PLACE_OBJ_IN_CONTAINER
         self.args = {}
-        self.args['objectToPlace'] = objectToPlace
+        self.args['objectToPlace'] = objectToPlace        
         self.args['container'] = container
+        self.args['objectNamesOrTypes'] = objectNamesOrTypes        
+        self.args['containerNamesOrTypes'] = containerNamesOrTypes
         self.args['priority'] = priority
         self.args['callback'] = callback            
         self.args['callbackArgs'] = callbackArgs
@@ -719,6 +845,31 @@ class AutopilotAction_EatObjectInInventory(AutopilotAction):
         self.args['callback'] = callback            
         self.args['callbackArgs'] = callbackArgs
 
+    # def runDigInFrontOfAgent(self, args:dict, agent, world):        
+    #     objectNamesOrTypesToDig = args['objectNamesOrTypesToDig']
+class AutopilotAction_DigInFrontOfAgent(AutopilotAction):
+    # Constructor
+    def __init__(self, objectNamesOrTypesToDig, callback=None, callbackArgs=None, priority=3):
+        self.actionType = AutopilotActionType.DIG_IN_FRONT_OF_AGENT
+        self.args = {}
+        self.args['objectNamesOrTypesToDig'] = objectNamesOrTypesToDig        
+        self.args['priority'] = priority
+        self.args['callback'] = callback            
+        self.args['callbackArgs'] = callbackArgs
+
+
+class AutoPilotAction_BuryInFrontOfAgent(AutopilotAction):
+    # Constructor
+    def __init__(self, objectNamesOrTypesToDig, objectNamesOrTypesToBury, callback=None, callbackArgs=None, priority=3):
+        self.actionType = AutopilotActionType.BURY_IN_FRONT_OF_AGENT
+        self.args = {}
+        self.args['objectNamesOrTypesToDig'] = objectNamesOrTypesToDig        
+        self.args['objectNamesOrTypesToBury'] = objectNamesOrTypesToBury        
+        self.args['priority'] = priority
+        self.args['callback'] = callback            
+        self.args['callbackArgs'] = callbackArgs
+
+
 class AutopilotAction_Wander(AutopilotAction):
     # Constructor
     def __init__(self, priority=0):
@@ -744,4 +895,6 @@ class AutopilotActionType(Enum):
     FIND_OBJS_AREA_PLACE    = 5    
     EAT_OBJ_IN_INVENTORY    = 6
     LOCATE_BLANK_TILE_IN_AREA = 7
+    DIG_IN_FRONT_OF_AGENT   = 8
+    BURY_IN_FRONT_OF_AGENT  = 9
 
