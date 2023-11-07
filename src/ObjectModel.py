@@ -159,6 +159,21 @@ class Object:
         if (self.parentContainer != None):
             return self.parentContainer.removeObject(self)
 
+    # Replace self with another object (obj) in the container that it's currently in
+    # Largely intended for objects that change into completely different objects. 
+    def replaceSelfWithObject(self, obj):
+        # Replace self with another object in the container that it's currently in
+        if (self.parentContainer != None):
+            # Get the index of self in the parent container
+            idx = self.parentContainer.contents.index(self)
+            # Remove self from the parent container
+            self.parentContainer.removeObject(self)
+            # Add the new object at the same index
+            self.parentContainer.contents.insert(idx, obj)
+            # Set the parent container
+            obj.parentContainer = self.parentContainer
+
+
     # Get all contained objects
     def getAllContainedObjectsRecursive(self, respectContainerStatus=False):
         # Get all contained objects, recursively
@@ -172,6 +187,37 @@ class Object:
                 # Add children
                 out.extend(obj.getAllContainedObjectsRecursive(respectContainerStatus))
 
+        # Return
+        return out
+
+    # Get one or more objects of a specific type. 
+    # maxMatches specifies the maximum number of objects to return (all returns are a list)
+    # recursive specifies whether to look recursively through all contained objects (True), or just the immediate contents (False)
+    # respectContainerStatus specifies whether to respect the container status (e.g. if it's closed, then don't return anything, or recurse into it)
+    def getContainedObjectByType(self, objType, maxMatches=1, recursive=False, respectContainerStatus=False):
+        # Get an object of a specific type
+        out = []
+
+        # If not recursive, then just look at the immediate contents. 
+        if (not recursive):
+            if (not respectContainerStatus) or (respectContainerStatus and self.attributes['isOpenContainer']):
+                for obj in self.contents:
+                    # If this is the type we're looking for, then add it
+                    if (obj.type == objType):
+                        out.append(obj)
+                        if (len(out) >= maxMatches):
+                            break
+            
+        else: 
+            # Recursive 
+            # If this is a container, and it's open, then add the contents
+            allObjs = self.getAllContainedObjectsRecursive(respectContainerStatus)
+            for obj in allObjs:
+                # If this is the type we're looking for, then add it
+                if (obj.type == objType):
+                    out.append(obj)
+                    if (len(out) >= maxMatches):
+                        break
         # Return
         return out
 
@@ -1224,6 +1270,10 @@ class SoilTile(Object):
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes['isShovelable'] = True                     # Can it be shoveled?
 
+        # By default, it contains Dirt, which can be removed by shovelling
+        dirt = self.world.createObject("Dirt")
+        self.addObject(dirt, force=True)
+
     #def __init__(self, success, message, generatedItem = None, importance = MessageImportance.NORMAL):
     def useWithShovelResult(self):
         # First, check to see if the object already has a hole -- if so, it can't be shovelled. 
@@ -1234,7 +1284,19 @@ class SoilTile(Object):
         self.attributes["hasHole"] = True
 
         # Generate 'dirt' object. 
-        generatedObjects = [self.world.createObject("Dirt")]
+        #generatedObjects = [self.world.createObject("Dirt")]
+        # Find 'dirt' object contained in this object        
+        generatedObjects = []
+        dirtList = self.getContainedObjectByType("dirt", maxMatches=1, recursive=False, respectContainerStatus=False)
+        if (len(dirtList) == 0):
+            # No dirt found -- this shouldn't happen
+            return UseWithSuccess(False, "Error: No dirt found in soil tile. This should never happen.")
+        else:
+            # Dirt found -- remove it from the soil tile, and add it to the list of generated objects
+            dirt = dirtList[0]
+            self.removeObject(dirt)
+            generatedObjects.append(dirt)
+
 
         # Return success
         return UseWithSuccess(True, "You dig a hole in the soil, creating a hole and dirt.", generatedObjects)
@@ -1243,6 +1305,18 @@ class SoilTile(Object):
     def tick(self):
         # Call superclass
         Object.tick(self)
+
+        # Check to see if this object contains dirt (in which case, the 'hasHole' attribute should be False)
+        hasDirt = False
+        for obj in self.contents:
+            if (obj.type == "dirt"):
+                hasDirt = True
+                break
+        if (hasDirt):
+            self.attributes["hasHole"] = False
+        else:
+            self.attributes["hasHole"] = True
+
 
         # Check to see if the object has a hole (and if so, change the name, and add the sprite modifier)
         if (self.attributes["hasHole"]):

@@ -188,8 +188,8 @@ def mkFarm(x, y, world, buildingMaker):
             if (not _hasObj(x+i, y+j + houseSizeX + 1, world, "soil")):
                 soilTile = world.createObject("SoilTile")
                 # Randomly set the 'hasHole' attribute to True for some of the soil tiles
-                if (random.randint(0, 2) == 0):
-                    soilTile.attributes['hasHole'] = True
+                #if (random.randint(0, 2) == 0):
+                #    soilTile.attributes['hasHole'] = True
 
                 world.addObject(x+i, y+j + houseSizeX + 1, Layer.WORLD, soilTile)
 
