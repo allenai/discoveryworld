@@ -461,6 +461,11 @@ class UserInterface:
         success = self.currentAgent.actionEat(objToEat)
         return success
 
+    # Read an object
+    def actionRead(self, objToRead):
+        success = self.currentAgent.actionRead(objToRead)
+        return success
+
     # Use an object (with another object)
     def actionUse(self, objToUse, objToUseWith):
         success = self.currentAgent.actionUse(objToUse, objToUseWith)
@@ -567,6 +572,14 @@ class UserInterface:
                 return False
 
             return self.actionEat(objToEat = self.curSelectedArgument1Obj)
+
+        # Read arg1
+        elif (keys[pygame.K_r]):
+            checkArgSuccess = self._checkArgs(actionName = "read", arg1 = True, arg2 = False)
+            if (checkArgSuccess == False):
+                return False
+
+            return self.actionRead(objToRead = self.curSelectedArgument1Obj)
 
         # Use action (use arg1 with arg2)
         elif (keys[pygame.K_u]):

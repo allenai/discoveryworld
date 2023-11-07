@@ -82,6 +82,9 @@ class Object:
         # Can it be used with a shovel (e.g. dug up?).  The function is called useWithShovelResult().
         self.attributes['isShovelable'] = False                    # Can it be shoveled?
 
+        # Readable
+        self.attributes['isReadable'] = False                      # Can it be read?
+        self.attributes['document'] = ""                           # Any text to read
 
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
@@ -658,6 +661,8 @@ class Sign(Object):
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this object     
+
+        self.attributes['isReadable'] = True                       # Can it be read?
         self.attributes["document"] = "This is a sign."
 
     def tick(self):
@@ -1111,6 +1116,11 @@ class Statue(Object):
     
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+    # Add readable text (e.g. for a plaque on the statue)
+    def addReadableText(self, text):
+        self.attributes["isReadable"] = True
+        self.attributes['document'] = text
 
     def tick(self):
         # Call superclass

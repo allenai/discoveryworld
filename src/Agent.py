@@ -486,6 +486,30 @@ class Agent(Object):
         return ActionSuccess(True, "I ate the " + objToEat.name + ".")
 
 
+    # Read an object
+    def actionRead(self, objToRead):
+        # First, check if the object to read is within reach (i.e. +/- 1 grid location)
+        distX = abs(objToRead.attributes["gridX"] - self.attributes["gridX"])
+        distY = abs(objToRead.attributes["gridY"] - self.attributes["gridY"])
+        if (distX > 1 or distY > 1):
+            # Object is not within reach
+            return ActionSuccess(False, "That object (" + objToRead.name + ") is not within reach. I can only read objects that are within +/- 1 grid location.")
+
+        # Next, check if the object to read is readable
+        if (not objToRead.attributes["isReadable"]):
+            # Object is not readable
+            return ActionSuccess(False, "That object (" + objToRead.name + ") is not readable.")
+
+        # If we reach here, the object is within reach and is readable.  Read it.
+        # Check if the object is blank (i.e. document length is zero)
+        if (len(objToRead.attributes["document"].strip()) == 0):
+            # Object is blank
+            return ActionSuccess(False, "The " + objToRead.name + " appears blank. There is nothing to read.", MessageImportance.HIGH)
+        else:
+            # Object is not blank
+            return ActionSuccess(True, "The " + objToRead.name + " reads:\n" + objToRead.attributes["document"], MessageImportance.HIGH)
+
+
     # Use an object on another object
     def actionUse(self, objToUse, objToUseOn):
         # First, check if the object to use is within reach (i.e. +/- 1 grid location)

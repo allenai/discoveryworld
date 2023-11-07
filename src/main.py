@@ -144,7 +144,9 @@ def _hasObj(x, y, world, objType):
 
 def mkTownSquare(x, y, world, buildingMaker):
     # Add statue
-    world.addObject(x+1, y+1, Layer.OBJECTS, world.createObject("Statue"))
+    statue = world.createObject("Statue")
+    statue.addReadableText("A statue of the colony founder.")
+    world.addObject(x+1, y+1, Layer.OBJECTS, statue)
     
     # Create a square that's made out of "Path" tiles
     for i in range(0, 3):
