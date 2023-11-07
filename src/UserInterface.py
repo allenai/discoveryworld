@@ -589,10 +589,10 @@ class UserInterface:
 
             result = self.actionUse(objToUse = self.curSelectedArgument1Obj, objToUseWith = self.curSelectedArgument2Obj)
 
-            # If there is a .generatedItems populated in this result, then process it            
-            if ('generatedItems' in result.data):
-                for item in result.data['generatedItems']:
-                    self.currentAgent.addObject(item)
+            # # If there is a .generatedItems populated in this result, then process it            
+            # if ('generatedItems' in result.data):
+            #     for item in result.data['generatedItems']:
+            #         self.currentAgent.addObject(item)
 
             return (True, result)
 

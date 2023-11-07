@@ -185,7 +185,7 @@ class Pathfinder():
         objectToEat = None        
         for invObj in agentInventory:
             # Check if this object matches the name or type
-            if (invObj.name in objectNamesOrTypesToEat) or (invObj.objectType in objectNamesOrTypesToEat):
+            if (invObj.name in objectNamesOrTypesToEat) or (invObj.type in objectNamesOrTypesToEat):
                 # Found the object
                 objectToEat = invObj
                 break
@@ -217,7 +217,7 @@ class Pathfinder():
         agentInventory = agent.getInventory()
         objToBury = None
         for invObj in agentInventory:
-            if (invObj.name in objectNamesOrTypesToBury) or (invObj.objectType in objectNamesOrTypesToBury):
+            if (invObj.name in objectNamesOrTypesToBury) or (invObj.type in objectNamesOrTypesToBury):
                 # Found the object
                 objToBury = invObj
                 break
@@ -230,16 +230,23 @@ class Pathfinder():
         # First, try to dig in front of the agent
         actionDig = AutopilotAction_DigInFrontOfAgent(objectNamesOrTypesToDig, priority=args['priority']+1)
         agent.addAutopilotActionToQueue( actionDig )
+        print("Added actionDig to queue: " + str(actionDig))
+
+        actionDig = AutopilotAction_DigInFrontOfAgent(objectNamesOrTypesToDig, priority=args['priority']+1)
+        agent.addAutopilotActionToQueue( actionDig )
+        print("Added actionDig to queue: " + str(actionDig))
 
         # Then, try to put the object in the hole
         #class AutopilotAction_PlaceObjInContainer(AutopilotAction):    
         #   def __init__(self, objectToPlace, container, containerNamesOrTypes = None, callback=None, callbackArgs=None, priority=3):
         actionPlaceObj = AutopilotAction_PlaceObjInContainer(objToBury, container=None, containerNamesOrTypes=objectNamesOrTypesToDig, priority=args['priority']+1)
-        agent.addAutoPilotActionToQueue( actionPlaceObj )
+        agent.addAutopilotActionToQueue( actionPlaceObj )
+        print ("Added actionPlaceObj to queue: " + str(actionPlaceObj))
 
         # Then, put the dirt back in the hole
-        actionPlaceDirt = AutopilotAction_PlaceObjInContainer(objToBury=None, container=None, objectNamesOrTypes=["dirt"], containerNamesOrTypes=objectNamesOrTypesToDig, priority=args['priority']+1)
-        agent.addAutoPilotActionToQueue( actionPlaceDirt )
+        actionPlaceDirt = AutopilotAction_PlaceObjInContainer(objectToPlace=None, container=None, objectNamesOrTypes=["dirt"], containerNamesOrTypes=objectNamesOrTypesToDig, priority=args['priority']+1)
+        agent.addAutopilotActionToQueue( actionPlaceDirt )
+        print ("Added actionPlaceDirt to queue: " + str(actionPlaceDirt))
 
         # Complete this action, so we can start the above sequence
         return ActionResult.COMPLETED
@@ -247,8 +254,10 @@ class Pathfinder():
 
 
     # Eat an object in the agent's inventory
-    def runDigInFrontOfAgent(self, args:dict, agent, world):        
+    def runDigInFrontOfAgent(self, args:dict, agent, world):                
         objectNamesOrTypesToDig = args['objectNamesOrTypesToDig']
+
+        print("### runDigInFrontOfAgent: Digging in front of agent.")
 
         # Check if an object with an appropriate name/type is in the agent's inventory
         agentInventory = agent.getInventory()
@@ -261,7 +270,7 @@ class Pathfinder():
 
         # If no shovel, then break
         if (shovel == None):
-            print("runDigInFrontOfAgent: Agent does not have a shovel.")
+            print("### runDigInFrontOfAgent: Agent does not have a shovel.")
             return ActionResult.FAILURE
 
         # Check if there's a diggable object in front of the agent
@@ -275,7 +284,7 @@ class Pathfinder():
         # Find the first object meeting the criteria
         objToDig = None
         for obj in diggableObjsAgentFacing:
-            if (obj.name in objectNamesOrTypesToDig) or (obj.objectType in objectNamesOrTypesToDig):
+            if (obj.name in objectNamesOrTypesToDig) or (obj.type in objectNamesOrTypesToDig):
                 # Found the object
                 objToDig = obj
                 break
@@ -287,7 +296,9 @@ class Pathfinder():
             return ActionResult.FAILURE
 
         # Perform the action (use shovel on object)
-        result = agent.actionUseOn(objToDig, shovel)
+        print("### runDigInFrontOfAgent: Digging object.")
+        result = agent.actionUse(objToUse=shovel, objToUseOn=objToDig)
+        print("### runDigInFrontOfAgent: Digging object result: " + str(result))
         
         # Action succeeded
         return ActionResult.COMPLETED
@@ -513,7 +524,7 @@ class Pathfinder():
             # If we still haven't found it, then we're done
             if (objectToPlace == None):
                 print("runPlaceObjInContainer: ERROR: Couldn't find object (" + str(objectNamesOrTypes) + " to place in agent's inventory.  Exiting.")
-                return ActionResult.ERROR
+                return ActionResult.FAILURE
 
         # Container
         container = args['container']
@@ -528,7 +539,7 @@ class Pathfinder():
             # If we still haven't found it, then we're done
             if (container == None):
                 print("runPlaceObjInContainer: ERROR: Couldn't find container (" + str(containerNamesOrTypes) + " in front of agent.  Exiting.")
-                return ActionResult.ERROR                
+                return ActionResult.FAILURE                
         
         # Container location
         containerLocation = container.getWorldLocation()

@@ -44,5 +44,5 @@ class UseWithSuccess(ActionSuccess):
     
     # String method
     def __str__(self):
-        return "UseWithSuccess(" + str(self.success) + ", " + str(self.importance) + ", " + str(self.message) + ", " + str(self.item) + ")"
+        return "UseWithSuccess(" + str(self.success) + ", " + str(self.importance) + ", " + str(self.message) + ", " + str(self.data['generatedItems']) + ")"
 

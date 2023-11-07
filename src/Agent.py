@@ -534,6 +534,12 @@ class Agent(Object):
         # If we reach here, the object is usable, and both the device and patient object are within reach. Use it. 
         result = objToUse.actionUseWith(objToUseOn)
 
+        # If there is a .generatedItems populated in this result, then process it            
+        if ('generatedItems' in result.data):
+            for item in result.data['generatedItems']:
+                self.addObject(item)
+
+
         # Invalidate the sprites of all objects at these locations. 
         objToUse.invalidateSpritesThisWorldTile()
         objToUseOn.invalidateSpritesThisWorldTile()

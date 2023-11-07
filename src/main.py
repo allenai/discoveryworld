@@ -178,7 +178,7 @@ def mkFarm(x, y, world, buildingMaker):
     world.addObject(x+2, y+1, Layer.FURNITURE, shovel)
 
     # Add a seed just outside the farm house
-    world.addObject(x+1, y+houseSizeY+2, Layer.OBJECTS, world.createObject("Seed"))
+    #world.addObject(x+1, y+houseSizeY+2, Layer.OBJECTS, world.createObject("Seed"))
 
     # Create a soil plot
     soilPlotSizeX = 6
