@@ -1829,6 +1829,15 @@ class NPCFarmer1(NPC):
             objectTypes = ["seed"]
             self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, priority=5) )
 
+            # Then, pick 5 unoccupied spots in the field 
+
+            # Then, go to each spot, dig the hole, plant the seed, and put dirt back in the hole
+
+            # Then, return any remaining seeds to the container
+
+            # Then, put the shovel back down
+
+            # Then, travel back to your starting location
 
             # fieldX = 10
             # fieldY = 13
