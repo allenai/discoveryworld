@@ -232,6 +232,7 @@ class Pathfinder():
         agent.addAutopilotActionToQueue( actionDig )
         print("Added actionDig to queue: " + str(actionDig))
 
+        ### TODO: WHY DOES THIS NEED TO HAPPEN TWICE?  WHY DOES THE ACTION DISAPPEAR THE FIRST TIME?
         actionDig = AutopilotAction_DigInFrontOfAgent(objectNamesOrTypesToDig, priority=args['priority']+1)
         agent.addAutopilotActionToQueue( actionDig )
         print("Added actionDig to queue: " + str(actionDig))
