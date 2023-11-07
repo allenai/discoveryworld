@@ -233,6 +233,7 @@ class Pathfinder():
         print("Added actionDig to queue: " + str(actionDig))
 
         ### TODO: WHY DOES THIS NEED TO HAPPEN TWICE?  WHY DOES THE ACTION DISAPPEAR THE FIRST TIME?
+        ### ALSO: DIGS ALL 5 TIMES.  POTENTIALLY SOMETHING TO DO WITH THAT??? (e.g. an action unintentionally repeating for all seeds in inventory)
         actionDig = AutopilotAction_DigInFrontOfAgent(objectNamesOrTypesToDig, priority=args['priority']+1)
         agent.addAutopilotActionToQueue( actionDig )
         print("Added actionDig to queue: " + str(actionDig))
