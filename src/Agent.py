@@ -1721,3 +1721,182 @@ class NPCColonistAuto2(NPC):
         print("NPC States (name: " + self.name + "): " + str(self.attributes))
 
         print("--------------------\n")
+
+
+
+class NPCFarmer1(NPC):
+    # Constructor
+    def __init__(self, world, name, tables=None, pot=None):
+        # Default sprite name
+        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
+
+        ## DEBUG
+        self.pot = pot
+        self.tables = tables
+
+        # Rendering
+        self.attributes["faceDirection"] = "south"        
+        self.spriteCharacterPrefix = "character15_"
+
+        # # Add a default action into the action queue 
+        # if (tables is not None) and (pot is not None):
+        #     self.potParentContainer = pot.parentContainer
+
+        #     # First, pick up the pot
+        #     self.autopilotActionQueue.append( AutopilotAction_PickupObj(pot) )
+        #     # Since the rest is dependent upon the pot's contents at pick-up time, the rest of the actions are added in tick()
+
+    #
+    #   Dialog Actions
+    #
+    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+
+        # Step 1: Check if the agent has already spoken with this NPC
+        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+            # Agent has already spoken with this NPC
+            return "I've already spoken with you."
+
+        # Add the agent to the list of agents that this NPC has spoken with
+        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+
+        # If we reach here, the agent has not spoken with this NPC yet
+        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+
+    
+    #
+    #   Tick
+    #
+        
+    # Tick
+    def tick(self):
+        # # Randomly move agent
+        # if (random.random() < 0.1):
+        #     # Randomly move the agent
+        #     deltaX = random.randint(-1, 1)
+        #     deltaY = random.randint(-1, 1)
+        #     self.actionMoveAgent(deltaX, deltaY)
+
+        # Stop if the object has already had tick() called this update -- this might have happened if the object moved locations in this current update cycle.
+        if (self.tickCompleted):
+            return
+
+        # Debug
+        print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+
+        # Call superclass
+        NPC.tick(self)
+
+        # Sprite modifier updates
+        if ("poisoned" in self.attributes['states']):
+            self.curSpriteModifiers.add("placeholder_sick")
+
+
+        # Interpret any external states
+        if ("poisoned" in self.attributes['states']):
+            # If the agent is poisoned, then head for the infirmary
+            # Remove the "wandering" state
+            if ("wandering" in self.attributes['states']):
+                self.attributes['states'].remove("wandering")
+            # Head to the infirmary
+            self.attributes["goalLocation"] = (23, 7)   # Infirmary entrance
+
+
+        elif ("eatSignal" in self.attributes['states']):
+            # TODO: Add the action sequence to go to the cafeteria and eat
+            pass
+
+    
+        # Call the NPC's action interpreter
+        #self.autopilotActionQueue = []                              # Queue of autopilot actions
+        #self.pathfinder = Pathfinder()
+
+        elif ("plantSignal" in self.attributes['states']):
+            # Collect the mushrooms from the field
+            # First, remove the collect signal
+            self.attributes['states'].remove("plantSignal")
+
+            # First, pick up a shovel
+            farmX = 10
+            farmY = 8
+            farmWidth = 6
+            farmHeight = 5+5
+            objectTypes = ["shovel"]
+            container = self            
+            self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, priority=5) )
+            #self.addAutopilotActionToQueue( AutopilotAction_PickupObj(self.pot, priority=5) )
+
+            # Then, pick up some seeds
+            objectTypes = ["seed"]
+            self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, priority=5) )
+
+
+            # fieldX = 10
+            # fieldY = 13
+            # fieldWidth = 6
+            # fieldHeight = 5
+            # objectTypes = ["mushroom"]
+            # container = self.pot
+            # self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(fieldX, fieldY, fieldWidth, fieldHeight, objectTypes, container, priority=5) )
+
+            # # Then, put the pot back down
+            # self.addAutopilotActionToQueue( AutopilotAction_PlaceObjInContainer(self.pot, potContainer, priority=5) )
+
+            # Then, travel back to your starting location
+            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=11, y=12, priority=5) )
+
+        
+        elif ("serveSignal" in self.attributes['states']):
+            # # Serve the food
+            # # First, remove the serve signal
+            # self.attributes['states'].remove("serveSignal")
+
+            # # First, pick up the pot
+            # potContainer = self.pot.parentContainer
+            # self.addAutopilotActionToQueue( AutopilotAction_PickupObj(self.pot, priority=5) )
+
+            # # Then, for each edible item in the pot (up to 5), place it on a table
+            # potContents = self.pot.contents
+            # edibleContents = [x for x in potContents if x.attributes['isEdible']]
+            # for i in range(0, min(5, len(edibleContents))):
+            #     self.addAutopilotActionToQueue( AutopilotAction_PlaceObjInContainer(edibleContents[i], self.tables[i], priority=5) )
+            
+            # # Then, put the pot back down on the original table
+            # self.addAutopilotActionToQueue( AutopilotAction_PlaceObjInContainer(self.pot, potContainer, priority=5) )
+
+            # # Then, travel back to your starting location
+            # self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=20, y=21, priority=5) )
+            pass
+
+        # Run the autopilot action queue
+
+        # Display autopilot action queue (debug)
+        print(self.displayAutopilotQueueStr())
+
+        # Get the NPC's current autopilot action
+        if (len(self.autopilotActionQueue) > 0):
+            # Get the current autopilot action
+            curAutopilotAction = self.autopilotActionQueue[0]
+            # Call the action interpreter to run it
+            print("(Agent: " + self.name + "): Calling action interpreter with action: " + str(curAutopilotAction))
+            result = self.pathfinder.actionInterpreter(curAutopilotAction, agent=self, world=self.world)
+            print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
+
+            # If the result is "COMPLETED", then remove the action from the queue
+            if (result == ActionResult.COMPLETED):
+                self.autopilotActionQueue.pop(0)
+                print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
+            # If the result is "FAILURE", then remove the action from the queue
+            elif (result == ActionResult.FAILURE):
+                self.autopilotActionQueue.pop(0)
+                print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
+            # If the result is "INVALID", then remove the action from the queue
+            elif (result == ActionResult.INVALID):
+                self.autopilotActionQueue.pop(0)
+                print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
+            
+            # If the result is "success", then do nothing -- the action is still in progress.
+        # DEBUG: End of tick -- display the agent's current state
+        print("NPC States (name: " + self.name + "): " + str(self.attributes))
+        print("--------------------\n")
+
+

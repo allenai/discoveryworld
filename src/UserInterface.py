@@ -479,73 +479,73 @@ class UserInterface:
 
         
 
-
+    # returns (doTick, success)
     def parseKeys(self, keys):
         
         # Move the agent forward
         if (keys[pygame.K_UP]):            
-            return self.actionMoveAgentForward()
+            return (True, self.actionMoveAgentForward())
 
         # Move the agent backward
         elif (keys[pygame.K_DOWN]):            
-            return self.actionMoveAgentBackward()
+            return (True, self.actionMoveAgentBackward())
 
         # Rotate the agent counterclockwise
         elif (keys[pygame.K_LEFT]):            
-            return self.actionRotateAgentCounterclockwise()
+            return (True, self.actionRotateAgentCounterclockwise())
 
         # Rotate the agent clockwise
         elif (keys[pygame.K_RIGHT]):            
-            return self.actionRotateAgentClockwise()
+            return (True, self.actionRotateAgentClockwise())
 
 
         # Pick-up Object in arg1 slot
         elif (keys[pygame.K_SPACE]):
             checkArgSuccess = self._checkArgs(actionName = "pick up object", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return False
+                return (False, False)
 
-            return self.actionPickupObject(objToPickUp = self.curSelectedArgument1Obj)            
+            return (True, self.actionPickupObject(objToPickUp = self.curSelectedArgument1Obj)            )
 
         # Drop an inventory item in arg1 slot at the agents current location
         elif (keys[pygame.K_d]):        
             checkArgSuccess = self._checkArgs(actionName = "drop item", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return False
+                return (False, False)
 
-            return self.actionDropObject(objToDrop = self.curSelectedArgument1Obj)
+            return (True, self.actionDropObject(objToDrop = self.curSelectedArgument1Obj))
 
         # Put an item (arg1) in a specific container (arg2)
         elif (keys[pygame.K_p]):            
             checkArgSuccess = self._checkArgs(actionName = "put item in container", arg1 = True, arg2 = True)
             if (checkArgSuccess == False):
-                return False
+                return (False, False)
 
-            return self.actionPutObjectInContainer(objToPut = self.curSelectedArgument1Obj, container = self.curSelectedArgument2Obj)            
+            return (True, self.actionPutObjectInContainer(objToPut = self.curSelectedArgument1Obj, container = self.curSelectedArgument2Obj))
 
         # Open a container or passage (arg1) 
         elif (keys[pygame.K_o]):
             checkArgSuccess = self._checkArgs(actionName = "open", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return False
+                return (False, False)
 
-            return self.actionOpenObject(objToOpen = self.curSelectedArgument1Obj)
+            return (True, self.actionOpenObject(objToOpen = self.curSelectedArgument1Obj))
         
         # Close a container or passage (arg1)
         elif (keys[pygame.K_c]):
             checkArgSuccess = self._checkArgs(actionName = "close", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return False
+                return (False, False)
 
-            return self.actionCloseObject(objToClose = self.curSelectedArgument1Obj)
+            return (True, self.actionCloseObject(objToClose = self.curSelectedArgument1Obj))
         
         # Activate an object (arg1) 
         elif (keys[pygame.K_a]):
             checkArgSuccess = self._checkArgs(actionName = "activate", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return False
+                return (False, False)
 
-            return self.actionActivateObject(objToActivate = self.curSelectedArgument1Obj)
+            return (True, self.actionActivateObject(objToActivate = self.curSelectedArgument1Obj))
             
         # For some read K_d doesn't work. 
         # Should be D key here
@@ -553,39 +553,39 @@ class UserInterface:
         elif (keys[pygame.K_s]):            
             checkArgSuccess = self._checkArgs(actionName = "deactivate", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return False
+                return (False, False)
 
-            return self.actionDeactivateObject(objToDeactivate = self.curSelectedArgument1Obj)
+            return (True, self.actionDeactivateObject(objToDeactivate = self.curSelectedArgument1Obj))
             
         # Dialog/talk with agent specified in arg1
         elif (keys[pygame.K_t]):
             checkArgSuccess = self._checkArgs(actionName = "talk", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return False
+                return (False, False)
 
-            return self.actionTalk(agentToTalkTo = self.curSelectedArgument1Obj)
+            return (True, self.actionTalk(agentToTalkTo = self.curSelectedArgument1Obj))
 
         # Eat arg1
         elif (keys[pygame.K_e]):
             checkArgSuccess = self._checkArgs(actionName = "eat", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return False
+                return (False, False)
 
-            return self.actionEat(objToEat = self.curSelectedArgument1Obj)
+            return (True, self.actionEat(objToEat = self.curSelectedArgument1Obj))
 
         # Read arg1
         elif (keys[pygame.K_r]):
             checkArgSuccess = self._checkArgs(actionName = "read", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return False
+                return (False, False)
 
-            return self.actionRead(objToRead = self.curSelectedArgument1Obj)
+            return (True, self.actionRead(objToRead = self.curSelectedArgument1Obj))
 
         # Use action (use arg1 with arg2)
         elif (keys[pygame.K_u]):
             checkArgSuccess = self._checkArgs(actionName = "use object", arg1 = True, arg2 = True)
             if (checkArgSuccess == False):
-                return False
+                return (False, False)
 
             result = self.actionUse(objToUse = self.curSelectedArgument1Obj, objToUseWith = self.curSelectedArgument2Obj)
 
@@ -594,29 +594,29 @@ class UserInterface:
                 for item in result.data['generatedItems']:
                     self.currentAgent.addObject(item)
 
-            return result
+            return (True, result)
 
 
         # UI element (incrementing argument boxes with [, ], ;, and ')
         elif (keys[pygame.K_LEFTBRACKET]):
             self.changeArgumentBox(delta=-1, whichBox=1)
-            return ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name))
+            return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
             
         elif (keys[pygame.K_RIGHTBRACKET]):
             self.changeArgumentBox(delta=1, whichBox=1)
-            return ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name))
+            return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
             
         elif (keys[pygame.K_SEMICOLON]):
             self.changeArgumentBox(delta=-1, whichBox=2)
-            return ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name))
+            return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
             
         elif (keys[pygame.K_QUOTE]):
             self.changeArgumentBox(delta=1, whichBox=2)
-            return ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name))
+            return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
             
 
         # If we reach here, then no known key was pressed
-        return None
+        return (False, None)
 
 
     # Check the arguments for the current action, to make sure they're valid. 

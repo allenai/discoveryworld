@@ -399,6 +399,10 @@ def main():
     npcChef = NPCChef1(world, "Chef", tables=tables, pot=pot)
     world.addObject(20, 21, Layer.AGENT, npcChef)
 
+    # Add the NPC Farmer
+    npcFarmer = NPCFarmer1(world, "Farmer", mushroomsAdded)
+    world.addObject(11, 12, Layer.AGENT, npcFarmer)
+
     # Add another NPC colonist
     #npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickup=None)
     ##npcColonist1 = NPCColonist1(world, "Colonist 1", thingsToPickup=mushroomsAdded, whereToPlace=pot)
@@ -436,8 +440,9 @@ def main():
     lastMove = time.time()        # Time of last move (in seconds since start of game)
     while running:        
         #print("Frame: " + str(frames))
-        curTime = time.time()
+        exportFrame = False
 
+        curTime = time.time()
         clock.tick(gameParams["fps"])
 
         # Check for a quit event
@@ -463,11 +468,15 @@ def main():
                 running = False    
 
             # Parse any action keys
-            success = ui.parseKeys(keys)
+            (doTick, success) = ui.parseKeys(keys)
 
             if (success != None):
+                # Export the frame, regardless of whether the action was successful, or whether it was a non-tick (e.g. UI) action
+                exportFrame = True 
+
                 # Action was performed
-                doNextTurn = True
+                if (doTick):
+                    doNextTurn = True
 
                 # Update the UI with the message (for the bottom of the screen)
                 ui.updateLastActionMessage(success.message)
@@ -498,6 +507,13 @@ def main():
                     # Change the Chef NPC external signal
                     print("Sending 'serveSignal' to chef NPC")
                     npcChef.attributes['states'].add("serveSignal")
+
+                    doNextTurn = True
+
+                elif (keys[pygame.K_4]):
+                    # Change the Farmer's external signal
+                    print("Sending 'plantSignal' to Farmer NPC")
+                    npcFarmer.attributes['states'].add("plantSignal")
 
                     doNextTurn = True
 
@@ -536,8 +552,7 @@ def main():
         window.fill((0, 0, 0))
 
         # Update the world
-        # If the agent has taken their turn, then update the world
-        exportFrame = False
+        # If the agent has taken their turn, then update the world        
         if (doNextTurn) or (autoRunCycles > 0):
             world.tick()
             frames += 1
@@ -547,9 +562,7 @@ def main():
             else:
                 print("Step: " + str(frames))
             print("############################################################################################\n")                
-            #time.sleep(0.25)
-            
-            time.sleep(0.10)
+            #time.sleep(0.25)            
 
             if (autoRunCycles > 0):
                 autoRunCycles -= 1
@@ -593,7 +606,7 @@ def main():
         if (exportFrame):
             frameFilename = FRAME_DIR + "/frame_" + str(frames) + ".png"
             pygame.image.save(window, frameFilename)
-
+            time.sleep(0.10)
 
         # Display the sprite
         #world.spriteLibrary.renderSprite(window, "house1_wall1", 100, 100)
