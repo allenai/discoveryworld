@@ -1822,14 +1822,16 @@ class NPCFarmer1(NPC):
             farmHeight = 5+5
             objectTypes = ["shovel"]
             container = self            
-            self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, priority=5) )
+            self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, maxToTake=1, priority=5) )
             #self.addAutopilotActionToQueue( AutopilotAction_PickupObj(self.pot, priority=5) )
 
             # Then, pick up some seeds
             objectTypes = ["seed"]
-            self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, priority=5) )
+            self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, maxToTake=5, priority=5) )
 
             # Then, pick 5 unoccupied spots in the field 
+            tileTypesToFind = ["soil"]
+            self.addAutopilotActionToQueue( AutopilotAction_LocateBlankTileInArea(farmX, farmY, farmWidth, farmHeight, tileTypesToFind, priority=5) )
 
             # Then, go to each spot, dig the hole, plant the seed, and put dirt back in the hole
 

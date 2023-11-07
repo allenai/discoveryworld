@@ -100,6 +100,8 @@ class Pathfinder():
             result = self.runPlaceObjInContainer(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.FIND_OBJS_AREA_PLACE):
             result = self.runFindObjsInAreaThenPlace(autopilotAction, autopilotAction.args, agent, world)
+        elif (actionType == AutopilotActionType.LOCATE_BLANK_TILE_IN_AREA):
+            result = self.runBlankTileInAreaThenMove(autopilotAction.args, agent, world)            
         elif (actionType == AutopilotActionType.WANDER):
             result = self.runWander(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.WAIT):
@@ -129,17 +131,40 @@ class Pathfinder():
     
 
     def runGotoXY(self, args:dict, agent, world):
-        # First, check if we're already at the destination
-        agentLocation = agent.getWorldLocation()
-        if (agentLocation[0] == args['destinationX']) and (agentLocation[1] == args['destinationY']):
-            # We're already there
-            return ActionResult.COMPLETED
+        # Check whether we should go to the location, or just go beside it then face it
+        goBesideAndFace = args['goBesideAndFace']
 
-        # Otherwise, find the next step in the path
-        result = self._doNPCAutonavigation(agent, world, args['destinationX'], args['destinationY'], besideIsOK=True)
-        print("runGotoXY: _doNPCAutonavigation returned: " + str(result))
+        if (goBesideAndFace == False):
+            # First, check if we're already at the destination
+            agentLocation = agent.getWorldLocation()
+            if (agentLocation[0] == args['destinationX']) and (agentLocation[1] == args['destinationY']):
+                # We're already there
+                return ActionResult.COMPLETED
 
-        return result
+            # Otherwise, find the next step in the path
+            result = self._doNPCAutonavigation(agent, world, args['destinationX'], args['destinationY'], besideIsOK=True)
+            print("runGotoXY: _doNPCAutonavigation returned: " + str(result))
+        
+        else:
+            # Check if we are directly left, right, up, or down from the object
+            agentLocation = agent.getWorldLocation()
+            isBeside, besideDir = self._isAgentDirectlyAdjacentToDestination(agentLocation[0], agentLocation[1], args['destinationX'], args['destinationY'])
+
+            if (isBeside):
+                print("runGotoXY: We are beside the object (it is to our " + str(besideDir) + ")")
+
+                # We're directly beside the object.  Is the agent facing the object?
+                if (agent.attributes["faceDirection"] != besideDir) and (besideDir != "identical"):
+                    # We're not facing the object.  Rotate.
+                    print("runPickupObj: We're not facing the object.  Rotating to face it.")
+                    success = agent.rotateToFaceDirection(besideDir)
+                    return ActionResult.SUCCESS
+
+                # We're facing the object.  We're done.
+                return ActionResult.COMPLETED
+
+        # If we reach here, it's running
+        return ActionResult.SUCCESS
         
 
     # Eat an object in the agent's inventory
@@ -248,6 +273,43 @@ class Pathfinder():
         # If we reach here, we didn't find any objects of the specified type
         return None
                 
+    # Helper: Find a list of tiles meeting a given type, that doesn't have any objects on top of it.
+    def _findBlankTilesOfType(self, args:dict, agent, world):
+        startX = args['x']
+        startY = args['y']
+        endX = args['x'] + args['width']
+        endY = args['y'] + args['height']
+        objectTypes = args['objectTypes']
+
+        # doesTileHaveObjectsOnIt(self, x, y):
+        agentInventory = []
+        excludeObjectsOnAgent = True
+        if (excludeObjectsOnAgent):
+            agentInventory = agent.getAllContainedObjectsRecursive(respectContainerStatus=False)
+
+        matches = []
+        for tileX in range(startX, endX):
+            for tileY in range(startY, endY):
+                # First, check if there are any objects on this tile (i.e. not blank)
+                objsOnTile = world.doesTileHaveObjectsOnIt(tileX, tileY)
+                if (objsOnTile):
+                    # There are objects on this tile.  Skip it.
+                    continue
+
+                # Then, check if the tile is of the specified type
+                objectsAtTile = world.getObjectsAt(tileX, tileY, respectContainerStatus=True)
+                for obj in objectsAtTile:
+                    if (obj.type in objectTypes):
+                        # We found an object that matches one of the types we're looking for.  Place it in the container.
+                        # But, first check that the object isn't in the agents inventory (if we're supposed to exclude objects on the agent)                        
+                        if (excludeObjectsOnAgent):
+                            if (obj not in agentInventory):
+                                matches.append(obj)
+                        else:
+                            matches.append(obj)
+        
+        # Return any matches we found
+        return matches
 
 
     def runFindObjsInAreaThenPlace(self, originalAction, args:dict, agent, world):
@@ -305,6 +367,35 @@ class Pathfinder():
         # Suspend the current action, so the 'placeObjInContainer' action can run
         return ActionResult.SUSPEND
 
+
+    # Find a tile (of one of the types listed in 'objectTypes') that doesn't have any objects on top of it, and go beside it.
+    def runBlankTileInAreaThenMove(self, args:dict, agent, world):
+        # Step 1: Find if there's an object in the area that matches the object type(s) we're looking for (if not, we're done)
+        blankTiles = self._findBlankTilesOfType(args, agent, world)
+
+        print("##### runFindObjsInAreaThenPlace: Found " + str(len(blankTiles)) + " blank tiles of type(s): " + str(args['objectTypes']))        
+        # If there are no objects to find, we're done
+        if (len(blankTiles) == 0):            
+            # TODO: Should this be an error?
+            return ActionResult.COMPLETED
+
+        # If we're beside and facing one of the tiles, then we're done            
+        objsAgentFacing = agent.getObjectsAgentFacing(respectContainerStatus=True)
+        for blankTile in blankTiles:
+            if (blankTile in objsAgentFacing):            
+                return ActionResult.COMPLETED
+
+        # If not, then randomly pick one tile
+        tileObj = random.choice(blankTiles)
+        tileLocation = tileObj.getWorldLocation()
+
+        # Move to that spot
+        actionGoto = AutopilotAction_GotoXY(tileLocation[0], tileLocation[1], goBesideAndFace=True, priority=args['priority']+1)
+        agent.addAutopilotActionToQueue( actionGoto )
+        print("##### Added action to queue " + str(actionGoto) )
+        
+        # Suspend the current action, so the 'AutopilotAction_GotoXY' action can run
+        return ActionResult.SUSPEND
 
 
 
@@ -559,11 +650,12 @@ class AutopilotAction():
 # Specific action types
 class AutopilotAction_GotoXY(AutopilotAction):
     # Constructor
-    def __init__(self, x, y, priority=2):
+    def __init__(self, x, y, goBesideAndFace:bool = False, priority=2):
         self.actionType = AutopilotActionType.GOTO_XY
         self.args = {}
         self.args['destinationX'] = x
         self.args['destinationY'] = y        
+        self.args['goBesideAndFace'] = goBesideAndFace      # Should we go to the location, or just beside the location and face in its direction?
         self.args['priority'] = priority                
 
 class AutopilotAction_PickupObj(AutopilotAction):
@@ -604,6 +696,19 @@ class AutopilotAction_PickupObjectsInArea(AutopilotAction):
         self.args['priority'] = priority                
 
 
+class AutopilotAction_LocateBlankTileInArea(AutopilotAction):
+    # Constructor
+    def __init__(self, x, y, width, height, objectTypes:list, priority=4):
+        self.actionType = AutopilotActionType.LOCATE_BLANK_TILE_IN_AREA
+        self.args = {}
+        self.args['x'] = x
+        self.args['y'] = y
+        self.args['width'] = width
+        self.args['height'] = height
+        self.args['objectTypes'] = objectTypes
+        self.args['numFound'] = 0
+        self.args['priority'] = priority 
+
 class AutopilotAction_EatObjectInInventory(AutopilotAction):
     # Constructor
     def __init__(self, objectNamesOrTypesToEat, callback=None, callbackArgs=None, priority=3):
@@ -636,6 +741,7 @@ class AutopilotActionType(Enum):
     PLACE_OBJ_IN_CONTAINER  = 2
     WANDER                  = 3
     WAIT                    = 4
-    FIND_OBJS_AREA_PLACE    = 5
+    FIND_OBJS_AREA_PLACE    = 5    
     EAT_OBJ_IN_INVENTORY    = 6
+    LOCATE_BLANK_TILE_IN_AREA = 7
 

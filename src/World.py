@@ -146,6 +146,27 @@ class World:
         return self.objectMaker.createObject(objectReferenceName)
 
 
+    #
+    #   Helpers for quickly checking world contents
+    #
+
+    # Returns true if the given location has a non-zero number of objects in layers: building, furniture, objects, agent
+    def doesTileHaveObjectsOnIt(self, x, y):
+        checkLayers = [Layer.BUILDING, Layer.FURNITURE, Layer.OBJECTS, Layer.AGENT]
+
+        # Bound checking: Make sure the object is within the world bounds
+        if x < 0 or x >= self.sizeX or y < 0 or y >= self.sizeY:
+            print("Error: Object out of bounds: " + str(x) + ", " + str(y))
+            return False
+                
+        # Check if the tile has any objects
+        for layer in checkLayers:
+            if len(self.grid[x][y]["layers"][layer]) > 0:
+                return True
+
+        # If we reach here, the tile has no objects
+        return False
+        
 
     #
     #   Traversability
@@ -159,7 +180,7 @@ class World:
         # Bound checking: Make sure the object is within the world bounds
         if x < 0 or x >= self.sizeX or y < 0 or y >= self.sizeY:
             #print("Error: Object out of bounds: " + str(x) + ", " + str(y))
-            return False
+            return (False, None)
 
         # Check if the tile is passable
         # Collect all the objects across all layers
