@@ -1531,9 +1531,9 @@ class Mushroom(Object):
         # Poison/health attributes
         self.attributes['isPoisonous'] = False                     # Is it poisonous?
         # Make red mushrooms poisonous
-        if (self.attributes["color"] == "red"):
-            self.attributes['isPoisonous'] = True
-
+        #if (self.attributes["color"] == "red"):
+        #    self.attributes['isPoisonous'] = True
+        
     
     def tick(self):
         # Call superclass
@@ -1728,7 +1728,18 @@ class Seed(Object):
             if (self.attributes["sproutTime"] == 0):
                 #print("Turn into plant")
                 # Turn into plant
-                plant = self.world.createObject("Mushroom")
+                plant = None
+                # Randomly choose one of 4 plants to turn into
+                rand = random.randint(0, 3)
+                if (rand == 0):
+                    plant = self.world.createObject("mushroom1")
+                elif (rand == 1):
+                    plant = self.world.createObject("mushroom2")
+                elif (rand == 2):
+                    plant = self.world.createObject("mushroom3")
+                elif (rand == 3):
+                    plant = self.world.createObject("mushroom4")
+                
                 # Replace self with the plant
                 #self.replaceSelfWithObject(plant)
                 # Return, since this object is no longer valid
