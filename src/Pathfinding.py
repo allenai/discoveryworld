@@ -231,12 +231,9 @@ class Pathfinder():
         actionDig = AutopilotAction_DigInFrontOfAgent(objectNamesOrTypesToDig, priority=args['priority']+1)
         agent.addAutopilotActionToQueue( actionDig )
         print("Added actionDig to queue: " + str(actionDig))
-
         ### TODO: WHY DOES THIS NEED TO HAPPEN TWICE?  WHY DOES THE ACTION DISAPPEAR THE FIRST TIME?
         ### ALSO: DIGS ALL 5 TIMES.  POTENTIALLY SOMETHING TO DO WITH THAT??? (e.g. an action unintentionally repeating for all seeds in inventory)
-        actionDig = AutopilotAction_DigInFrontOfAgent(objectNamesOrTypesToDig, priority=args['priority']+1)
-        agent.addAutopilotActionToQueue( actionDig )
-        print("Added actionDig to queue: " + str(actionDig))
+
 
         # Then, try to put the object in the hole
         #class AutopilotAction_PlaceObjInContainer(AutopilotAction):    
@@ -251,6 +248,7 @@ class Pathfinder():
         print ("Added actionPlaceDirt to queue: " + str(actionPlaceDirt))
 
         # Complete this action, so we can start the above sequence
+        print("runBuryInFrontOfAgent: Returning COMPLETED.")
         return ActionResult.COMPLETED
 
 

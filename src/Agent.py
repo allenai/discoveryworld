@@ -1398,15 +1398,15 @@ class NPCColonist1(NPC):
 
             # If the result is "COMPLETED", then remove the action from the queue
             if (result == ActionResult.COMPLETED):
-                self.autopilotActionQueue.pop(0)
+                self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
             # If the result is "FAILURE", then remove the action from the queue
             elif (result == ActionResult.FAILURE):
-                self.autopilotActionQueue.pop(0)
+                self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
             # If the result is "INVALID", then remove the action from the queue
             elif (result == ActionResult.INVALID):
-                self.autopilotActionQueue.pop(0)
+                self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
             
             # If the result is "success", then do nothing -- the action is still in progress.
@@ -1562,15 +1562,15 @@ class NPCChef1(NPC):
 
             # If the result is "COMPLETED", then remove the action from the queue
             if (result == ActionResult.COMPLETED):
-                self.autopilotActionQueue.pop(0)
+                self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
             # If the result is "FAILURE", then remove the action from the queue
             elif (result == ActionResult.FAILURE):
-                self.autopilotActionQueue.pop(0)
+                self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
             # If the result is "INVALID", then remove the action from the queue
             elif (result == ActionResult.INVALID):
-                self.autopilotActionQueue.pop(0)
+                self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
             
             # If the result is "success", then do nothing -- the action is still in progress.
@@ -1710,15 +1710,15 @@ class NPCColonistAuto2(NPC):
 
             # If the result is "COMPLETED", then remove the action from the queue
             if (result == ActionResult.COMPLETED):
-                self.autopilotActionQueue.pop(0)
+                self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
             # If the result is "FAILURE", then remove the action from the queue
             elif (result == ActionResult.FAILURE):
-                self.autopilotActionQueue.pop(0)
+                self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
             # If the result is "INVALID", then remove the action from the queue
             elif (result == ActionResult.INVALID):
-                self.autopilotActionQueue.pop(0)
+                self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
             
             # If the result is "success", then do nothing -- the action is still in progress.
@@ -1903,15 +1903,15 @@ class NPCFarmer1(NPC):
 
             # If the result is "COMPLETED", then remove the action from the queue
             if (result == ActionResult.COMPLETED):
-                self.autopilotActionQueue.pop(0)
+                self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
             # If the result is "FAILURE", then remove the action from the queue
             elif (result == ActionResult.FAILURE):
-                self.autopilotActionQueue.pop(0)
+                self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
             # If the result is "INVALID", then remove the action from the queue
             elif (result == ActionResult.INVALID):
-                self.autopilotActionQueue.pop(0)
+                self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
             
             # If the result is "success", then do nothing -- the action is still in progress.
