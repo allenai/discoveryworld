@@ -163,12 +163,19 @@ class DialogMaker():
 
         # Collect food node
         collectFoodNode = DialogNode("collectFoodNode", "I will go collect food from the farm, and place it in the pot.", statesToAdd = ["collectSignal"], statesToRemove = [])
+        collectFoodNode.addDialogOption("OK", "endNode")
         tree.addNode(collectFoodNode)
+        
 
         # Serve food node 
         serveFoodNode = DialogNode("serveFoodNode", "I will serve food from the pot.", statesToAdd = ["serveSignal"], statesToRemove = [])
+        serveFoodNode.addDialogOption("OK", "endNode")
         tree.addNode(serveFoodNode)
         
+        # End node
+        endNode = DialogNode("endNode", "Goodbye.", statesToAdd = [], statesToRemove = [])
+        tree.addNode(endNode)
+
         # Store dialog tree in agent
         agent.setDialogTree(tree)
 
