@@ -655,11 +655,39 @@ class Agent(Object):
         if (agentToTalkTo.dialogTree == None):
             return ActionSuccess(False, "That agent (" + agentToTalkTo.name + ") has no dialog tree set.")
 
-
         # Otherwise, start the dialog
 
+        # First, check if we're currently talking to that agent/in the middle of a dialog
+        if (agentToTalkTo.dialogTree.getAgentTalkingTo() == self):
+            # We're currently in the middle of a dialog -- send the dialogStrToSay. 
+            success = agentToTalkTo.dialogTree.say(thingToSay=dialogStrToSay, agentEngaging=self)
+            if (success == False):
+                return ActionSuccess(False, "Something went wrong in the dialog -- the response was unexpected.", MessageImportance.HIGH)
+
+            # Get the NPC's response, and our possible next dialog options
+            npcResponse, nextDialogOptions = agentToTalkTo.dialogTree.getCurrentDialog()
+
+            # Return the NPC's response
+            return ActionSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse) + "\n\n" + str(nextDialogOptions), MessageImportance.HIGH)
+
+        else: 
+            # We're not currently talking to the agent.  Try to initiate conversation.
+            if (agentToTalkTo.dialogTree.isBusy() == True):
+                # The NPC is busy talking to another agent
+                return ActionSuccess(False, "That agent (" + agentToTalkTo.name + ") is busy talking to (" + str(agentToTalkTo.dialogTree.getAgentTalkingTo().name) + ").")
+            else:
+                # The agent is not busy, initiate conversation
+                agentToTalkTo.dialogTree.initiateDialog(self)
+
+                # Get the NPC's response, and our possible next dialog options
+                npcResponse, nextDialogOptions = agentToTalkTo.dialogTree.getCurrentDialog()
+
+                # Return the NPC's response
+                return ActionSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse) + "\n\n" + str(nextDialogOptions), MessageImportance.HIGH)
+            
+
         # Return a dialog placeholder
-        return ActionSuccess(True, "We are talking.  You said: " + str(dialogStrToSay), MessageImportance.HIGH)
+        #return ActionSuccess(True, "We are talking.  You said: " + str(dialogStrToSay), MessageImportance.HIGH)
                 
 
     #

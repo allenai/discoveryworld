@@ -47,6 +47,10 @@ class DialogTree():
             # Someone is already talking to this dialog tree -- return True
             return True
 
+    # Get what agent this NPC is talking to
+    def getAgentTalkingTo(self):
+        return self.engagingWithAgent
+
     # Start dialog with an agent
     def initiateDialog(self, agent):
         self.reset()
@@ -151,7 +155,7 @@ class DialogMaker():
         tree = DialogTree(agent)        
 
         # Root node (introduce the chef, give options to ask to collect food, or distribute food)
-        rootNode = DialogNode("rootNode", "Hello, I am the chef. I can collect food from the warm, or serve food from the pot.", statesToAdd = [], statesToRemove = [])
+        rootNode = DialogNode("rootNode", "Hello, I am the chef. I can collect food from the farm, or serve food from the pot.", statesToAdd = [], statesToRemove = [])
         rootNode.addDialogOption("Can you collect food?", "collectFoodNode")
         rootNode.addDialogOption("Can you serve food?", "serveFoodNode")
         tree.addNode(rootNode)
