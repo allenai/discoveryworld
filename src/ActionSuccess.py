@@ -46,3 +46,14 @@ class UseWithSuccess(ActionSuccess):
     def __str__(self):
         return "UseWithSuccess(" + str(self.success) + ", " + str(self.importance) + ", " + str(self.message) + ", " + str(self.data['generatedItems']) + ")"
 
+
+# Storage class for the result of a dialog action
+class DialogSuccess(ActionSuccess):
+    # Constructor
+    def __init__(self, success, message, dialogOptions = [], importance = MessageImportance.NORMAL):
+        ActionSuccess.__init__(self, success, message, importance)
+        self.data['dialogOptions'] = dialogOptions
+    
+    # String method
+    def __str__(self):
+        return "DialogSuccess(" + str(self.success) + ", " + str(self.importance) + ", " + str(self.message) + ", " + str(self.data['dialogOptions']) + ")"

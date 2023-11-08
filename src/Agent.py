@@ -668,7 +668,7 @@ class Agent(Object):
             npcResponse, nextDialogOptions = agentToTalkTo.dialogTree.getCurrentDialog()
 
             # Return the NPC's response
-            return ActionSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse) + "\n\n" + str(nextDialogOptions), MessageImportance.HIGH)
+            return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions, MessageImportance.HIGH)
 
         else: 
             # We're not currently talking to the agent.  Try to initiate conversation.
@@ -683,7 +683,7 @@ class Agent(Object):
                 npcResponse, nextDialogOptions = agentToTalkTo.dialogTree.getCurrentDialog()
 
                 # Return the NPC's response
-                return ActionSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse) + "\n\n" + str(nextDialogOptions), MessageImportance.HIGH)
+                return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions, MessageImportance.HIGH)
             
 
         # Return a dialog placeholder
