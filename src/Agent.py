@@ -1821,6 +1821,8 @@ class NPCFarmer1(NPC):
             # First, remove the collect signal
             self.attributes['states'].remove("plantSignal")
 
+            numSeedsToPlant = 5
+
             # First, pick up a shovel
             farmX = 10
             farmY = 8
@@ -1833,20 +1835,23 @@ class NPCFarmer1(NPC):
 
             # Then, pick up some seeds
             objectTypes = ["seed"]
-            self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, maxToTake=5, priority=5) )
+            self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, maxToTake=numSeedsToPlant, priority=5) )
 
             # Then, pick 5 unoccupied spots in the field 
-            tileTypesToFind = ["soil"]
-            self.addAutopilotActionToQueue( AutopilotAction_LocateBlankTileInArea(farmX, farmY, farmWidth, farmHeight, tileTypesToFind, priority=5) )
-
             # Then, go to each spot, dig the hole, plant the seed, and put dirt back in the hole
-            #class AutoPilotAction_BuryInFrontOfAgent(AutopilotAction):    
-            #def __init__(self, objectNamesOrTypesToDig, objectNamesOrTypesToBury, callback=None, callbackArgs=None, priority=3):
-            self.addAutopilotActionToQueue( AutoPilotAction_BuryInFrontOfAgent(objectNamesOrTypesToDig=["soil"], objectNamesOrTypesToBury=["seed"], priority=5) )
+            tileTypesToFind = ["soil"]
+            allowedContentTypes = ["dirt"]    
+            for i in range(numSeedsToPlant):
+                self.addAutopilotActionToQueue( AutopilotAction_LocateBlankTileInArea(farmX, farmY, farmWidth, farmHeight, tileTypesToFind, allowedContentTypes, priority=5) )
+                self.addAutopilotActionToQueue( AutoPilotAction_BuryInFrontOfAgent(objectNamesOrTypesToDig=["soil"], objectNamesOrTypesToBury=["seed"], priority=5) )            
 
             # Then, return any remaining seeds to the container
+            # TODO
 
             # Then, put the shovel back down
+            self.addAutopilotActionToQueue( AutopilotAction_DropObjAtLocation(objectToPlace=None, dropX=12, dropY=9, objectNamesOrTypes=["shovel"], priority=5) )
+
+
 
             # Then, travel back to your starting location
 

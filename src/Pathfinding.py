@@ -98,6 +98,8 @@ class Pathfinder():
             result = self.runPickupObj(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.PLACE_OBJ_IN_CONTAINER):
             result = self.runPlaceObjInContainer(autopilotAction.args, agent, world)
+        elif (actionType == AutopilotActionType.DROP_OBJ_AT_LOCATION):
+            result = self.runDropObjAtLocation(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.FIND_OBJS_AREA_PLACE):
             result = self.runFindObjsInAreaThenPlace(autopilotAction, autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.LOCATE_BLANK_TILE_IN_AREA):
@@ -384,6 +386,7 @@ class Pathfinder():
         endX = args['x'] + args['width']
         endY = args['y'] + args['height']
         objectTypes = args['objectTypes']
+        allowedContentTypes = args['allowedContentTypes']
 
         # doesTileHaveObjectsOnIt(self, x, y):
         agentInventory = []
@@ -404,13 +407,23 @@ class Pathfinder():
                 objectsAtTile = world.getObjectsAt(tileX, tileY, respectContainerStatus=True)
                 for obj in objectsAtTile:
                     if (obj.type in objectTypes):
-                        # We found an object that matches one of the types we're looking for.  Place it in the container.
-                        # But, first check that the object isn't in the agents inventory (if we're supposed to exclude objects on the agent)                        
-                        if (excludeObjectsOnAgent):
-                            if (obj not in agentInventory):
+                        # We found an object that matches one of the types we're looking for.
+                        
+                        # Check that the object doesn't contain anything except whatever the allowed contents are
+                        containsOnlyAllowedContents = True
+                        if (allowedContentTypes != None):
+                            for cObj in obj.contents:
+                                if (cObj.type not in allowedContentTypes):
+                                    containsOnlyAllowedContents = False
+                                    break
+                                        
+                        if (containsOnlyAllowedContents):                            
+                            # But, first check that the object isn't in the agents inventory (if we're supposed to exclude objects on the agent)                        
+                            if (excludeObjectsOnAgent):
+                                if (obj not in agentInventory):
+                                    matches.append(obj)
+                            else:
                                 matches.append(obj)
-                        else:
-                            matches.append(obj)
         
         # Return any matches we found
         return matches
@@ -592,6 +605,50 @@ class Pathfinder():
             # We're not close enough to pick up the object. Navigate to it.
             result = self._doNPCAutonavigation(agent, world, containerLocation[0], containerLocation[1], besideIsOK=True)
             print("runPlaceObjInContainer: _doNPCAutonavigation returned: " + str(result))
+
+            return result
+
+
+    def runDropObjAtLocation(self, args:dict, agent, world):
+        # Object to place
+        objectToPlace = args['objectToPlace']
+        objectNamesOrTypes = args['objectNamesOrTypes']
+        # If objectToPlace is None and objectNames is a list, then we need to find the object in the agents inventory, or directly in front of the agent
+        if (objectToPlace == None and objectNamesOrTypes != None):
+            # First, check inventory
+            objsAgentInventory = agent.getInventory()            
+            for objAgentInventory in objsAgentInventory:
+                if (objAgentInventory.name in objectNamesOrTypes or objAgentInventory.type in objectNamesOrTypes):
+                    objectToPlace = objAgentInventory
+                    break
+            # If we still haven't found it, then we're done
+            if (objectToPlace == None):
+                print("runDropObjAtLocation: ERROR: Couldn't find object (" + str(objectNamesOrTypes) + " to place in agent's inventory.  Exiting.")
+                return ActionResult.FAILURE
+
+        # Drop location
+        dropLocation = args['dropLocation']
+
+        # Check if we have the object in our inventory.  If not, something unexpected has happened, so return an error.
+        agentInventory = agent.getAllContainedObjectsRecursive(respectContainerStatus=True)        
+        # TODO: Handle case where the object is in a closed container, and we need to open the container to get it
+        if (objectToPlace not in agentInventory):
+            print("runDropObjAtLocation: ERROR: I can't seem to find the object I need to place (" + objectToPlace.name + ") in the agent inventory. Stopping place action.")
+            return ActionResult.FAILURE
+
+        # Check if we are at the location
+        agentLocation = agent.getWorldLocation()
+        if (agentLocation[0] == dropLocation[0] and agentLocation[1] == dropLocation[1]):
+            # We're at the location.  Drop the object.
+            print("runDropObjAtLocation: We are at the drop location.  Dropping object.")
+            success = agent.actionDrop(objToDrop=objectToPlace)
+            print("runDropObjAtLocation: actionDrop returned: " + str(success))
+            return ActionResult.COMPLETED
+
+        else:
+            # We're not at the location to drop the object. Navigate to it.
+            result = self._doNPCAutonavigation(agent, world, dropLocation[0], dropLocation[1], besideIsOK=False)
+            print("runDropObjAtLocation: _doNPCAutonavigation returned: " + str(result))
 
             return result
 
@@ -819,6 +876,18 @@ class AutopilotAction_PlaceObjInContainer(AutopilotAction):
         self.args['callback'] = callback            
         self.args['callbackArgs'] = callbackArgs
 
+class AutopilotAction_DropObjAtLocation(AutopilotAction):
+    # Constructor
+    def __init__(self, objectToPlace, dropX, dropY, objectNamesOrTypes=None, callback=None, callbackArgs=None, priority=3):
+        self.actionType = AutopilotActionType.DROP_OBJ_AT_LOCATION
+        self.args = {}
+        self.args['objectToPlace'] = objectToPlace        
+        self.args['objectNamesOrTypes'] = objectNamesOrTypes        
+        self.args['dropLocation'] = [dropX, dropY]
+        self.args['priority'] = priority
+        self.args['callback'] = callback            
+        self.args['callbackArgs'] = callbackArgs
+
 class AutopilotAction_PickupObjectsInArea(AutopilotAction):
     # Constructor
     def __init__(self, x, y, width, height, objectTypes:list, container, excludeObjectsOnAgent=True, maxToTake=-1, priority=4):
@@ -838,7 +907,8 @@ class AutopilotAction_PickupObjectsInArea(AutopilotAction):
 
 class AutopilotAction_LocateBlankTileInArea(AutopilotAction):
     # Constructor
-    def __init__(self, x, y, width, height, objectTypes:list, priority=4):
+    # If 'allowedContentTypes' is None, then any object type is allowed
+    def __init__(self, x, y, width, height, objectTypes:list, allowedContentTypes:list, priority=4):
         self.actionType = AutopilotActionType.LOCATE_BLANK_TILE_IN_AREA
         self.args = {}
         self.args['x'] = x
@@ -846,6 +916,7 @@ class AutopilotAction_LocateBlankTileInArea(AutopilotAction):
         self.args['width'] = width
         self.args['height'] = height
         self.args['objectTypes'] = objectTypes
+        self.args['allowedContentTypes'] = allowedContentTypes
         self.args['numFound'] = 0
         self.args['priority'] = priority 
 
@@ -911,4 +982,5 @@ class AutopilotActionType(Enum):
     LOCATE_BLANK_TILE_IN_AREA = 7
     DIG_IN_FRONT_OF_AGENT   = 8
     BURY_IN_FRONT_OF_AGENT  = 9
+    DROP_OBJ_AT_LOCATION    = 10
 
