@@ -16,6 +16,7 @@ from ObjectModel import *
 from Agent import *
 from ActionSuccess import *
 from UserInterface import UserInterface
+from DialogTree import DialogMaker
 
 
 
@@ -384,9 +385,13 @@ def main():
                 plantCount += 1                
 
 
+    # DialogMaker
+    dialogMaker = DialogMaker()
+
     # Add an agent
     currentAgent = Agent(world)
-    world.addObject(10, 10, Layer.AGENT, currentAgent)
+    #world.addObject(10, 10, Layer.AGENT, currentAgent)
+    world.addObject(20, 22, Layer.AGENT, currentAgent)
 
     # Add tools for agent
     currentAgent.addObject(world.createObject("Shovel"))
@@ -399,6 +404,7 @@ def main():
     # Add the NPC Chef
     npcChef = NPCChef1(world, "Chef", tables=tables, pot=pot)
     world.addObject(20, 21, Layer.AGENT, npcChef)
+    dialogMaker.mkDialogChef(npcChef)
 
     # Add the NPC Farmer
     npcFarmer = NPCFarmer1(world, "Farmer", mushroomsAdded)

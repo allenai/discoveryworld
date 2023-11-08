@@ -453,7 +453,7 @@ class UserInterface:
     # Talk/Dialog
     def actionTalk(self, agentToTalkTo):
         # TODO: Add checks to make sure agentToTalkTo is an agent (and not just an object)
-        success = agentToTalkTo.actionDialog(agentDoingTalking = self.currentAgent, dialogStrToSay = "Hello!")
+        success = self.currentAgent.actionDialog(agentToTalkTo = agentToTalkTo, dialogStrToSay = "Hello!")
         return success
 
     # Eat an object

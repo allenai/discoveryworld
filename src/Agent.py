@@ -39,6 +39,7 @@ class Agent(Object):
 
         # Dialog attributes
         self.attributes['isDialogable'] = True                     # Can it be dialoged with?
+        self.dialogTree = None                                     # Dialog tree for this agent
 
         # Door opening/closing for NPCs
         self.attributes["doorNeedsToBeClosed"] = None              # Whether a door was recently opened that needs to be closed
@@ -641,8 +642,25 @@ class Agent(Object):
     #
     #   Dialog Actions
     #
-    def actionDialog(self, agentDoingTalking, dialogStrToSay):
-        return "Dialog placeholder"
+    def setDialogTree(self, dialogTree):
+        self.dialogTree = dialogTree
+
+
+    def actionDialog(self, agentToTalkTo, dialogStrToSay):
+        # Check if dialogable
+        if ('isDialogable' in agentToTalkTo.attributes) and (agentToTalkTo.attributes["isDialogable"] == False):
+            return ActionSuccess(False, "You can't talk to that (" + agentToTalkTo.name + ").")
+
+        # Make sure the agent to talk to has a dialog tree
+        if (agentToTalkTo.dialogTree == None):
+            return ActionSuccess(False, "That agent (" + agentToTalkTo.name + ") has no dialog tree set.")
+
+
+        # Otherwise, start the dialog
+
+        # Return a dialog placeholder
+        return ActionSuccess(True, "We are talking.  You said: " + str(dialogStrToSay), MessageImportance.HIGH)
+                
 
     #
     # Sprite
@@ -709,18 +727,18 @@ class NPC(Agent):
     #
     #   Dialog Actions
     #
-    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
 
-        # Step 1: Check if the agent has already spoken with this NPC
-        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-            # Agent has already spoken with this NPC
-            return "I've already spoken with you."
+    #     # Step 1: Check if the agent has already spoken with this NPC
+    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+    #         # Agent has already spoken with this NPC
+    #         return "I've already spoken with you."
 
-        # Add the agent to the list of agents that this NPC has spoken with
-        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+    #     # Add the agent to the list of agents that this NPC has spoken with
+    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
 
-        # If we reach here, the agent has not spoken with this NPC yet
-        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
+    #     # If we reach here, the agent has not spoken with this NPC yet
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
 
 
     #
@@ -814,18 +832,18 @@ class NPCChef(NPC):
     #
     #   Dialog Actions
     #
-    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
 
-        # Step 1: Check if the agent has already spoken with this NPC
-        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-            # Agent has already spoken with this NPC
-            return "I've already spoken with you."
+    #     # Step 1: Check if the agent has already spoken with this NPC
+    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+    #         # Agent has already spoken with this NPC
+    #         return "I've already spoken with you."
 
-        # Add the agent to the list of agents that this NPC has spoken with
-        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+    #     # Add the agent to the list of agents that this NPC has spoken with
+    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
 
-        # If we reach here, the agent has not spoken with this NPC yet
-        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
+    #     # If we reach here, the agent has not spoken with this NPC yet
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
 
 
     #
@@ -1137,18 +1155,18 @@ class NPCColonist(NPC):
     #
     #   Dialog Actions
     #
-    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
 
-        # Step 1: Check if the agent has already spoken with this NPC
-        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-            # Agent has already spoken with this NPC
-            return "I've already spoken with you."
+    #     # Step 1: Check if the agent has already spoken with this NPC
+    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+    #         # Agent has already spoken with this NPC
+    #         return "I've already spoken with you."
 
-        # Add the agent to the list of agents that this NPC has spoken with
-        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+    #     # Add the agent to the list of agents that this NPC has spoken with
+    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
 
-        # If we reach here, the agent has not spoken with this NPC yet
-        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+    #     # If we reach here, the agent has not spoken with this NPC yet
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
 
     
     #
@@ -1323,18 +1341,18 @@ class NPCColonist1(NPC):
     #
     #   Dialog Actions
     #
-    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
 
-        # Step 1: Check if the agent has already spoken with this NPC
-        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-            # Agent has already spoken with this NPC
-            return "I've already spoken with you."
+    #     # Step 1: Check if the agent has already spoken with this NPC
+    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+    #         # Agent has already spoken with this NPC
+    #         return "I've already spoken with you."
 
-        # Add the agent to the list of agents that this NPC has spoken with
-        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+    #     # Add the agent to the list of agents that this NPC has spoken with
+    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
 
-        # If we reach here, the agent has not spoken with this NPC yet
-        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+    #     # If we reach here, the agent has not spoken with this NPC yet
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
 
     
     #
@@ -1438,18 +1456,18 @@ class NPCChef1(NPC):
     #
     #   Dialog Actions
     #
-    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
 
-        # Step 1: Check if the agent has already spoken with this NPC
-        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-            # Agent has already spoken with this NPC
-            return "I've already spoken with you."
+    #     # Step 1: Check if the agent has already spoken with this NPC
+    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+    #         # Agent has already spoken with this NPC
+    #         return "I've already spoken with you."
 
-        # Add the agent to the list of agents that this NPC has spoken with
-        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+    #     # Add the agent to the list of agents that this NPC has spoken with
+    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
 
-        # If we reach here, the agent has not spoken with this NPC yet
-        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+    #     # If we reach here, the agent has not spoken with this NPC yet
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
 
     
     #
@@ -1604,18 +1622,18 @@ class NPCColonistAuto2(NPC):
     #
     #   Dialog Actions
     #
-    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
 
-        # Step 1: Check if the agent has already spoken with this NPC
-        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-            # Agent has already spoken with this NPC
-            return "I've already spoken with you."
+    #     # Step 1: Check if the agent has already spoken with this NPC
+    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+    #         # Agent has already spoken with this NPC
+    #         return "I've already spoken with you."
 
-        # Add the agent to the list of agents that this NPC has spoken with
-        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+    #     # Add the agent to the list of agents that this NPC has spoken with
+    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
 
-        # If we reach here, the agent has not spoken with this NPC yet
-        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+    #     # If we reach here, the agent has not spoken with this NPC yet
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
 
     
     #
@@ -1755,18 +1773,18 @@ class NPCFarmer1(NPC):
     #
     #   Dialog Actions
     #
-    def actionDialog(self, agentDoingTalking, dialogStrToSay):
+    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
 
-        # Step 1: Check if the agent has already spoken with this NPC
-        if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-            # Agent has already spoken with this NPC
-            return "I've already spoken with you."
+    #     # Step 1: Check if the agent has already spoken with this NPC
+    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+    #         # Agent has already spoken with this NPC
+    #         return "I've already spoken with you."
 
-        # Add the agent to the list of agents that this NPC has spoken with
-        self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+    #     # Add the agent to the list of agents that this NPC has spoken with
+    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
 
-        # If we reach here, the agent has not spoken with this NPC yet
-        return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+    #     # If we reach here, the agent has not spoken with this NPC yet
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
 
     
     #

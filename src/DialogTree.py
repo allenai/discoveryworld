@@ -116,7 +116,7 @@ class DialogTree():
         return "DialogTree(" + str(self.root) + ")"
 
 
-
+# Storage class for one turn of dialog (a think the NPC says, and a set of allowable responses ('dialogOptions') from the user)
 class DialogNode():
     def __init__(self, name, currentNodeText, statesToAdd = [], statesToRemove = []):
         self.name = name
@@ -147,8 +147,8 @@ class DialogMaker():
     def __init__(self):
         pass
 
-    def mkDialogChef():
-        tree = DialogTree()
+    def mkDialogChef(self, agent):
+        tree = DialogTree(agent)        
 
         # Root node (introduce the chef, give options to ask to collect food, or distribute food)
         rootNode = DialogNode("rootNode", "Hello, I am the chef. I can collect food from the warm, or serve food from the pot.", statesToAdd = [], statesToRemove = [])
@@ -163,5 +163,7 @@ class DialogMaker():
         # Serve food node 
         serveFoodNode = DialogNode("serveFoodNode", "I will serve food from the pot.", statesToAdd = ["serveSignal"], statesToRemove = [])
 
-        return tree
+        
+        # Store dialog tree in agent
+        agent.setDialogTree(tree)
 
