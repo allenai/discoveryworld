@@ -410,9 +410,9 @@ def main():
 
     # Add another NPC colonist
     npcColonists = []
-    # for i in range(0, 5):
-    #     npcColonists.append(NPCColonistAuto2(world, "Colonist " + str(i)))
-    #     world.addObject(13+i, 20, Layer.AGENT, npcColonists[i])
+    for i in range(0, 5):
+        npcColonists.append(NPCColonistAuto2(world, "Colonist " + str(i)))
+        world.addObject(13+i, 20, Layer.AGENT, npcColonists[i])
 
     # Initial world tick
     world.tick()
