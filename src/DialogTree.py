@@ -63,9 +63,9 @@ class DialogTree():
         # Add and remove states associated with this node
         currentNode = self.getCurrentNode(nodeName)
         for stateToAdd in currentNode.statesToAdd:
-            self.agent.addState(stateToAdd)
+            self.agent.attributes['states'].add(stateToAdd)
         for stateToRemove in currentNode.statesToRemove:
-            self.agent.removeState(stateToRemove)
+            self.agent.attributes['states'].remove(stateToRemove)            
 
 
     # Get the current node in the dialog tree
@@ -163,10 +163,11 @@ class DialogMaker():
 
         # Collect food node
         collectFoodNode = DialogNode("collectFoodNode", "I will go collect food from the farm, and place it in the pot.", statesToAdd = ["collectSignal"], statesToRemove = [])
+        tree.addNode(collectFoodNode)
 
         # Serve food node 
         serveFoodNode = DialogNode("serveFoodNode", "I will serve food from the pot.", statesToAdd = ["serveSignal"], statesToRemove = [])
-
+        tree.addNode(serveFoodNode)
         
         # Store dialog tree in agent
         agent.setDialogTree(tree)

@@ -39,6 +39,7 @@ class Agent(Object):
 
         # Dialog attributes
         self.attributes['isDialogable'] = True                     # Can it be dialoged with?
+        self.attributes['inDialogWith'] = None                     # Who is it in dialog with at this current moment?
         self.dialogTree = None                                     # Dialog tree for this agent
 
         # Door opening/closing for NPCs
@@ -645,8 +646,31 @@ class Agent(Object):
     def setDialogTree(self, dialogTree):
         self.dialogTree = dialogTree
 
+    def setInDialogWith(self, agent):
+        self.attributes['inDialogWith'] = agent
 
-    def actionDialog(self, agentToTalkTo, dialogStrToSay):
+    def setNotInDialog(self):
+        self.attributes['inDialogWith'] = None
+
+    # Is this agent currently in dialog?
+    def isInDialog(self):
+        return ('inDialogWith' in self.attributes) and (self.attributes['inDialogWith'] != None)        
+
+    def getAgentInDialogWith(self):
+        return self.attributes['inDialogWith']
+
+    # Exit whatever dialog we're in 
+    def exitDialog(self):
+        # If we're in dialog, then exit it
+        if (self.isInDialog()):
+            self.attributes['inDialogWith'].dialogTree.endDialog()
+        self.setNotInDialog()
+                
+
+        
+
+    # If 'dialogStrToSay' is None, then it will stop the dialog with 'agentToTalkTo'
+    def actionDialog(self, agentToTalkTo, dialogStrToSay=None):
         # Check if dialogable
         if ('isDialogable' in agentToTalkTo.attributes) and (agentToTalkTo.attributes["isDialogable"] == False):
             return ActionSuccess(False, "You can't talk to that (" + agentToTalkTo.name + ").")
@@ -659,23 +683,40 @@ class Agent(Object):
 
         # First, check if we're currently talking to that agent/in the middle of a dialog
         if (agentToTalkTo.dialogTree.getAgentTalkingTo() == self):
+            # Check if te action is to stop the dialog
+            if (dialogStrToSay == None):
+                # Stop the dialog
+                agentToTalkTo.dialogTree.endDialog()
+                self.setNotInDialog()
+                return ActionSuccess(True, "Finished talking to " + str(agentToTalkTo.name) + ".")
+
             # We're currently in the middle of a dialog -- send the dialogStrToSay. 
             success = agentToTalkTo.dialogTree.say(thingToSay=dialogStrToSay, agentEngaging=self)
             if (success == False):
+                self.setNotInDialog()
                 return ActionSuccess(False, "Something went wrong in the dialog -- the response was unexpected.", MessageImportance.HIGH)
 
             # Get the NPC's response, and our possible next dialog options
             npcResponse, nextDialogOptions = agentToTalkTo.dialogTree.getCurrentDialog()
 
             # Return the NPC's response
+            self.setInDialogWith(agentToTalkTo)
             return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions, MessageImportance.HIGH)
 
         else: 
             # We're not currently talking to the agent.  Try to initiate conversation.
             if (agentToTalkTo.dialogTree.isBusy() == True):
                 # The NPC is busy talking to another agent
+                self.setNotInDialog()
                 return ActionSuccess(False, "That agent (" + agentToTalkTo.name + ") is busy talking to (" + str(agentToTalkTo.dialogTree.getAgentTalkingTo().name) + ").")
             else:
+                # Check if te action is to stop the dialog
+                if (dialogStrToSay == None):
+                    # Stop the dialog
+                    agentToTalkTo.dialogTree.endDialog()
+                    self.setNotInDialog()
+                    return ActionSuccess(True, "Finished talking to " + str(agentToTalkTo.name) + ".")
+
                 # The agent is not busy, initiate conversation
                 agentToTalkTo.dialogTree.initiateDialog(self)
 
@@ -683,6 +724,7 @@ class Agent(Object):
                 npcResponse, nextDialogOptions = agentToTalkTo.dialogTree.getCurrentDialog()
 
                 # Return the NPC's response
+                self.setInDialogWith(agentToTalkTo)
                 return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions, MessageImportance.HIGH)
             
 

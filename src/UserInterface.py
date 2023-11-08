@@ -477,10 +477,74 @@ class UserInterface:
     #   Action Parser (keys)
     #
 
+    def _parseDialogKeys(self, keys):
+        # If we're in the middle of a dialog, we need to parse the dialog keys
+        # Valid keys are 0-9. 
+        # 0-9: Select the corresponding dialog option
+        # ESC: Cancel the dialog
+        
+        # If the agent is not in a dialog, then return
+        if (self.currentAgent.isInDialog() == False):
+            return ActionSuccess(success=False, message="Agent is not in a dialog.")
+
+        # First, get an integer representing which key was pressed (0-9).  If it wasn't in that range, then set to -1
+        key = -1
+        if (keys[pygame.K_0]):
+            key = 0
+        elif (keys[pygame.K_1]):
+            key = 1
+        elif (keys[pygame.K_2]):
+            key = 2
+        elif (keys[pygame.K_3]):
+            key = 3
+        elif (keys[pygame.K_4]):
+            key = 4
+        elif (keys[pygame.K_5]):
+            key = 5
+        elif (keys[pygame.K_6]):
+            key = 6
+        elif (keys[pygame.K_7]):
+            key = 7
+        elif (keys[pygame.K_8]):
+            key = 8
+        elif (keys[pygame.K_9]):
+            key = 9
+        elif (keys[pygame.K_ESCAPE]):
+            # Exit the dialog
+            self.currentAgent.exitDialog()
+
+        # Get the current dialog options from the dialog tree
+        agentInDialogWith = self.currentAgent.getAgentInDialogWith()
+        # Get current node in dialog tree
+        npcResponse, nextDialogOptions = agentInDialogWith.dialogTree.getCurrentDialog()
+
+        # If the key is not in range, do nothing
+        if (key < 1 or key > len(nextDialogOptions)):
+            return (False, ActionSuccess(success=False, message="Unknown dialog option."))
+
+        # If the key is in range, then select that dialog option
+        selectedDialogOption = nextDialogOptions[key-1]
+
+        # Say that response back to the NPC
+        actionResult = self.currentAgent.actionDialog(agentToTalkTo = agentInDialogWith, dialogStrToSay = selectedDialogOption)
+
+        # Also note that if the new dialog tree state has no options, then we need to exit the dialog. 
+        npcResponse, nextDialogOptions = agentInDialogWith.dialogTree.getCurrentDialog()
+        if (len(nextDialogOptions) == 0):
+            self.currentAgent.exitDialog()
+
+        return (True, actionResult)
+
+
         
 
     # returns (doTick, success)
     def parseKeys(self, keys):
+        # First, check if we're in the middle of a dialog
+        if (self.currentAgent.isInDialog()):
+            # If so, we need to parse the dialog keys
+            print("### IS IN DIALOG")
+            return self._parseDialogKeys(keys)
         
         # Move the agent forward
         if (keys[pygame.K_UP]):            
