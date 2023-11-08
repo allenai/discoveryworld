@@ -583,6 +583,7 @@ class Pathfinder():
                 print("runPlaceObjInContainer: Putting object (" + objectToPlace.name + ") in container (" + container.name + ")")
                 success = agent.actionPut(objToPut=objectToPlace, newContainer=container)
                 print("runPlaceObjInContainer: actionPut returned: " + str(success))
+                print("runPlaceObjInContainer: " + str(container.attributes))
                 
                 # TODO: Check for success
                 return ActionResult.COMPLETED
@@ -733,13 +734,15 @@ class Pathfinder():
             return (True, "north")
         # Check east
         if (queryX == destinationX + 1) and (queryY == destinationY):
-            return (True, "east")
+            #return (True, "east")
+            return (True, "west")
         # Check south
         if (queryX == destinationX) and (queryY == destinationY - 1):
             return (True, "south")
         # Check west
         if (queryX == destinationX - 1) and (queryY == destinationY):
-            return (True, "west")
+            #return (True, "west")
+            return (True, "east")
 
         # Default return
         return (False, None)
