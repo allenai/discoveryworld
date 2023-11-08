@@ -694,14 +694,14 @@ class Agent(Object):
             success = agentToTalkTo.dialogTree.say(thingToSay=dialogStrToSay, agentEngaging=self)
             if (success == False):
                 self.setNotInDialog()
-                return ActionSuccess(False, "Something went wrong in the dialog -- the response was unexpected.", MessageImportance.HIGH)
+                return ActionSuccess(False, "Something went wrong in the dialog -- the response was unexpected.")
 
             # Get the NPC's response, and our possible next dialog options
             npcResponse, nextDialogOptions = agentToTalkTo.dialogTree.getCurrentDialog()
 
             # Return the NPC's response
             self.setInDialogWith(agentToTalkTo)
-            return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions, MessageImportance.HIGH)
+            return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
 
         else: 
             # We're not currently talking to the agent.  Try to initiate conversation.
@@ -725,7 +725,7 @@ class Agent(Object):
 
                 # Return the NPC's response
                 self.setInDialogWith(agentToTalkTo)
-                return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions, MessageImportance.HIGH)
+                return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
             
 
         # Return a dialog placeholder
