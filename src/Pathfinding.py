@@ -138,14 +138,35 @@ class Pathfinder():
 
     def runGotoXY(self, args:dict, agent, world):
         # Check whether we should go to the location, or just go beside it then face it
-        goBesideAndFace = args['goBesideAndFace']
+        goBesideAndFace = args['goBesideAndFace']       # Only one of 'goBesideAndFace' or 'finalDirection' should be specified
+        finalDirection = args['finalDirection']
 
         if (goBesideAndFace == False):
             # First, check if we're already at the destination
             agentLocation = agent.getWorldLocation()
             if (agentLocation[0] == args['destinationX']) and (agentLocation[1] == args['destinationY']):
                 # We're already there
-                return ActionResult.COMPLETED
+
+                # Check to see if we need to face a specific direction
+                if (finalDirection == None):
+                    # No direction specified, so just return
+                    return ActionResult.COMPLETED
+
+                else:
+                    validDirections = ["north", "east", "south", "west"]
+                    if (finalDirection not in validDirections):
+                        print("ERROR: Invalid direction specified: " + str(finalDirection))
+                        return ActionResult.FAILURE
+
+                    # Check to see if we're already facing the correct direction
+                    if (agent.attributes["faceDirection"] == finalDirection):
+                        # We're already facing the correct direction
+                        return ActionResult.COMPLETED
+                    else:
+                        # We're not facing the final direction, so start rotating
+                        success = agent.rotateToFaceDirection(finalDirection)
+                        return ActionResult.SUCCESS                
+
 
             # Otherwise, find the next step in the path
             result = self._doNPCAutonavigation(agent, world, args['destinationX'], args['destinationY'], besideIsOK=True)
@@ -845,12 +866,14 @@ class AutopilotAction():
 # Specific action types
 class AutopilotAction_GotoXY(AutopilotAction):
     # Constructor
-    def __init__(self, x, y, goBesideAndFace:bool = False, priority=2):
+    # Final direction must be one of "north", "east", "south", or "west"
+    def __init__(self, x, y, goBesideAndFace:bool = False, finalDirection=None, priority=2):
         self.actionType = AutopilotActionType.GOTO_XY
         self.args = {}
         self.args['destinationX'] = x
         self.args['destinationY'] = y        
         self.args['goBesideAndFace'] = goBesideAndFace      # Should we go to the location, or just beside the location and face in its direction?
+        self.args['finalDirection'] = finalDirection
         self.args['priority'] = priority                
 
 class AutopilotAction_PickupObj(AutopilotAction):

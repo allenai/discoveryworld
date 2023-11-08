@@ -190,9 +190,10 @@ def mkFarm(x, y, world, buildingMaker):
                 # Randomly set the 'hasHole' attribute to True for some of the soil tiles
                 #if (random.randint(0, 2) == 0):
                 #    soilTile.attributes['hasHole'] = True
-                # Randomly add seeds to some of the soil tiles
-                if (random.randint(0, 2) == 0):
-                    soilTile.addObject(world.createObject("Seed"), force=True)
+
+                # # Randomly add seeds to some of the soil tiles                
+                # if (random.randint(0, 2) == 0):
+                #     soilTile.addObject(world.createObject("Seed"), force=True)
 
                 world.addObject(x+i, y+j + houseSizeX + 1, Layer.WORLD, soilTile)
 

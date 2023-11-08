@@ -1867,7 +1867,7 @@ class NPCFarmer1(NPC):
             # self.addAutopilotActionToQueue( AutopilotAction_PlaceObjInContainer(self.pot, potContainer, priority=5) )
 
             # Then, travel back to your starting location
-            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=11, y=12, priority=5) )
+            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=11, y=12, finalDirection="south", priority=5) )
 
         
         elif ("serveSignal" in self.attributes['states']):
