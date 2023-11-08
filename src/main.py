@@ -409,6 +409,7 @@ def main():
     # Add the NPC Farmer
     npcFarmer = NPCFarmer1(world, "Farmer", mushroomsAdded)
     world.addObject(11, 12, Layer.AGENT, npcFarmer)
+    dialogMaker.mkDialogFarmer(npcFarmer)
 
     # Add another NPC colonist
     #npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickup=None)
