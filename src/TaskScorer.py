@@ -24,6 +24,22 @@ class TaskScorer():
 
 
 #
+#   Task Maker
+#   A generator for going from task name to a specific Task object
+#
+class TaskMaker():
+    # Constructor
+    def __init__(self, world):
+        self.world = world
+
+    # Make a task
+    def makeTask(self, taskName:str):
+        if taskName == "EatMushroomTask":
+            return EatMushroomTask(self.world)
+        else:
+            return None
+
+#
 #   Abstract class template for a specific task
 #
 class Task():
