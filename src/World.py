@@ -47,6 +47,13 @@ class World:
     def addAgent(self, agent):
         self.agents.append(agent)
 
+    def getAgentByName(self, agentName):
+        for agent in self.agents:
+            if agent.name == agentName:
+                return agent
+
+        return None
+
     def addTaskByName(self, taskName):
         task = self.taskMaker.makeTask(taskName)
         if task != None:

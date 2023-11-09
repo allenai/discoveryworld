@@ -56,6 +56,7 @@ class Agent(Object):
 
         # Health attributes
         self.attributes["poisonedCounter"] = -1                    # Poisoned counter (if >= 0, then the agent is poisoned)
+        self.attributes['isPoisoned'] = False                      # Is the agent currently poisoned?
 
         # Object visibility for agents (i.e. the last object(s) they interacted with)
         self.attributes["objectToShow"] = None                     # The object to show the agent carrying
@@ -138,6 +139,7 @@ class Agent(Object):
             # Poisoning is initially silent, and only starts to affect the agent when the poisonedCounter reaches -50. 
             if (self.attributes['poisonedCounter'] < -POISON_INCUBATION_PERIOD):
                 self.attributes['poisonedCounter'] = POISON_DURATION     # Duration of poison
+                self.attributes['isPoisoned'] = True
             elif (self.attributes['poisonedCounter'] > -1):
                 # Poisoned and actively affecting the agent
                 self.attributes['states'].add('poisoned')
@@ -146,6 +148,7 @@ class Agent(Object):
             # Remove state of 'poisoned' from the agent
             if ('poisoned' in self.attributes['states']):
                 self.attributes['states'].remove('poisoned')
+            self.attributes['isPoisoned'] = False
 
 
 
@@ -1430,7 +1433,7 @@ class NPCColonist(NPC):
             if ("wandering" in self.attributes['states']):
                 self.attributes['states'].remove("wandering")
             # Head to the cafeteria
-            self.attributes["goalLocation"] = (23, 24)
+            self.attributes["goalLocation"] = (23, 23)
             # remove "eatSignal" from external signals
             self.attributes['states'].remove("eatSignal")
             # Add "movingToCafeteria" to external signals

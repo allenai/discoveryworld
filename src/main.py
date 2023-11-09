@@ -96,6 +96,7 @@ def mkCafeteria(x, y, world, buildingMaker):
         tableToAdd = world.createObject("Table")
         #if (i == 2):
         #    tableToAdd.addObject(Mushroom(world, "red"))
+        tableToAdd.addObject(world.createObject("mushroom3"))
         world.addObject(x+i+2, y+3, Layer.FURNITURE, tableToAdd)
         tables.append(tableToAdd)
 

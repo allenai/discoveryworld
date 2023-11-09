@@ -115,7 +115,7 @@ class UserInterface:
         # Update the agent 'objectToShow' based on arg1
         if (self.currentAgent != None):
             self.currentAgent.updateLastInteractedObject([self.curSelectedArgument1Obj])
-            
+
         
     #
     #   Rendering
@@ -183,6 +183,16 @@ class UserInterface:
         # Render the last action message
         self.renderLastActionMessage()
 
+        # Render the task progress
+        if (self.currentAgent != None):
+            taskList = self.currentAgent.world.taskScorer.tasks
+            for idx, task in enumerate(taskList):
+                # x should be 200 from the right
+                # y should start 100 from the bottom
+                x = self.window.get_width() - 200
+                y = self.window.get_height() - 100
+                self.renderTaskProgress(x, y, task)
+                                
         pass
 
 
@@ -191,6 +201,33 @@ class UserInterface:
     #   User interface elements
     #
     
+    def renderTaskProgress(self, x, y, task):
+        # Write the task name and normalized score (0-1).
+        # The background color is based on the task score -- red for 0, green for 1, and a gradient in between.
+        taskName = task.taskName
+        taskScore = task.getScoreNormalized()
+
+        # Draw the background
+        # First, get the color
+        color = (0, 0, 0)
+        if (taskScore == 0):
+            color = (255, 0, 0)
+        elif (taskScore == 1):
+            color = (0, 255, 0)
+        else:
+            color = (int(255 * taskScore), int(255 * (1 - taskScore)), 0)
+        # Then, draw the background
+        pygame.draw.rect(self.window, color, (x, y, 200, 20))
+
+        # Draw the text
+        # First, get the text
+        text = taskName + ": " + str(taskScore)
+        # Then, render the text
+        textSurface = self.font.render(text, True, (0, 0, 0))
+        self.window.blit(textSurface, (x, y))
+
+
+
     # Render a long section of boxes at the bottom of the screen that show items in the agent's inventory
     def renderInventory(self):
         offsetX = 32        
