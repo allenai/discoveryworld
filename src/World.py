@@ -4,6 +4,7 @@ import SpriteLibrary
 from ObjectMaker import ObjectMaker
 from Layer import Layer
 from ObjectModel import Object
+from TaskScorer import *
 import pygame
 
 # Storage class for the world (including the full environment grid)
@@ -23,10 +24,38 @@ class World:
         # Initialize grid
         self.grid = [[self.mkBlankGridTile() for x in range(self.sizeX)] for y in range(self.sizeY)]
 
+        # Initialize agent array
+        self.agents = []
+
+        # Initialize task generator and scorer
+        self.taskMaker = TaskMaker(world=self)
+        self.taskScorer = TaskScorer(world=self)
+
         # Load world data
         # TODO
 
         self.font = pygame.font.SysFont("Arial", 8)
+
+
+    #
+    #   Initialization (agents, tasks)
+    #
+    def addAgent(self, agent):
+        self.agents.append(agent)
+
+    def addTaskByName(self, taskName):
+        task = self.taskMaker.makeTask(taskName)
+        if task != None:
+            self.taskScorer.addTask(task)
+            task.taskSetup()
+            return True
+        else:
+            print("Error: Task name not recognized: " + taskName)
+            return False
+    
+    def taskScorerTick(self):
+        self.taskScorer.updateTick()
+
 
     #
     #   Grid

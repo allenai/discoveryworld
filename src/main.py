@@ -392,24 +392,27 @@ def main():
     currentAgent = Agent(world)
     #world.addObject(10, 10, Layer.AGENT, currentAgent)
     world.addObject(20, 22, Layer.AGENT, currentAgent)
-
     # Add tools for agent
     currentAgent.addObject(world.createObject("Shovel"))
     currentAgent.addObject(world.createObject("Seed"))
+    world.addAgent(currentAgent)
 
     # Add an NPC
     npcColonist = NPCColonist(world, "Example NPC")
     world.addObject(18, 25, Layer.AGENT, npcColonist)
+    world.addAgent(npcColonist)
 
     # Add the NPC Chef
     npcChef = NPCChef1(world, "Chef", tables=tables, pot=pot)
     world.addObject(20, 21, Layer.AGENT, npcChef)
     dialogMaker.mkDialogChef(npcChef)
+    world.addAgent(npcChef)
 
     # Add the NPC Farmer
     npcFarmer = NPCFarmer1(world, "Farmer", mushroomsAdded)
     world.addObject(11, 12, Layer.AGENT, npcFarmer)
     dialogMaker.mkDialogFarmer(npcFarmer)
+    world.addAgent(npcFarmer)
 
     # Add another NPC colonist
     #npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickup=None)
@@ -418,9 +421,11 @@ def main():
 
     # Add another NPC colonist
     npcColonists = []
-    # for i in range(0, 5):
-    #     npcColonists.append(NPCColonistAuto2(world, "Colonist " + str(i)))
-    #     world.addObject(13+i, 20, Layer.AGENT, npcColonists[i])
+    for i in range(0, 5):
+        npcColonists.append(NPCColonistAuto2(world, "Colonist " + str(i)))
+        world.addObject(13+i, 20, Layer.AGENT, npcColonists[i])
+        world.addAgent(npcColonists[i])
+    
 
     # Initial world tick
     world.tick()
