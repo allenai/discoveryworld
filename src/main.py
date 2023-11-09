@@ -425,7 +425,10 @@ def main():
         npcColonists.append(NPCColonistAuto2(world, "Colonist " + str(i)))
         world.addObject(13+i, 20, Layer.AGENT, npcColonists[i])
         world.addAgent(npcColonists[i])
-    
+
+
+    # Add tasks
+    world.addTaskByName("EatMushroomTask")
 
     # Initial world tick
     world.tick()
@@ -567,7 +570,15 @@ def main():
         # Update the world
         # If the agent has taken their turn, then update the world        
         if (doNextTurn) or (autoRunCycles > 0):
+            # Update the world
             world.tick()
+
+            # Report task progress
+            print( world.taskScorer.taskProgressStr() )
+
+
+
+
             frames += 1
             print("\n\n############################################################################################")
             if (autoRunCycles > 0):
@@ -637,6 +648,10 @@ def main():
     #subprocess.call(["./ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
     subprocess.call(["ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
 
+
+    # Print the action history of the farmer agent
+    print("Farmer agent action history:")
+    print(npcFarmer.actionHistory)
 
 # Main
 if __name__ == "__main__":

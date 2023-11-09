@@ -874,7 +874,7 @@ class Stove(Object):
 class Sink(Object):
     # Constructor
     def __init__(self, world):
-        Object.__init__(self, world, "stove", "stove", defaultSpriteName = "house1_sink_off")
+        Object.__init__(self, world, "sink", "sink", defaultSpriteName = "house1_sink_off")
 
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?

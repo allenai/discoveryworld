@@ -1,5 +1,5 @@
 # TaskScorer.py
-
+from ActionHistory import *
 
 #
 #   Task Scorer
@@ -21,6 +21,16 @@ class TaskScorer():
     def updateTick(self):
         for task in self.tasks:
             task.updateTick()
+
+
+    # String representing task progress
+    def taskProgressStr(self):
+        outStr = "Task Progress:\n"
+        for idx, task in enumerate(self.tasks):
+            outStr += str(idx) + ": " + task.taskProgressStr() + "\n"
+        
+        return outStr
+        
 
 
 #
@@ -47,14 +57,34 @@ class Task():
     def __init__(self, taskName:str, world):
         self.taskName = taskName
         self.world = world
+        self.score = 0                          # Current task score
+        self.completed = False                # Is this task over?
+        self.completedSuccessfully = False      # Did the task complete successfully?
+
 
     # Task setup: Add any necessary objects to the world to perform the task. 
     def taskSetup(self):
         pass
 
+    def getScore(self):
+        return self.score
+
+    def isCompleted(self):
+        return self.completed
+
+    def isCompletedSuccessfully(self):
+        return self.completedSuccessfully
+
     # Update the task progress
     def updateTick(self):
         pass
+
+    # String representing task progress
+    def taskProgressStr(self):
+        outStr = ""
+        outStr += "Task Progress (" + self.taskName + "):  Score: " + str(self.score) + ", Completed: " + str(self.completed) + ", Completed Successfully: " + str(self.completedSuccessfully)
+        return outStr
+
 
 
 
@@ -64,9 +94,8 @@ class Task():
 class EatMushroomTask(Task):
     # Constructor
     def __init__(self, world):
-        Task.__init__(self, "EatMushroomTask", world)
-        
-        self.mushroomEaten = False
+        Task.__init__(self, "EatMushroomTask", world)            
+        self.score = 0
 
 
     # Task setup: Add any necessary objects to the world to perform the task.
@@ -76,4 +105,24 @@ class EatMushroomTask(Task):
 
     # Update the task progress
     def updateTick(self):
-        pass
+        # List of names of agents to monitor
+        agentsToMonitor = []
+        for i in range (0, 5):
+            agentsToMonitor.append("Colonist " + str(i))
+
+        for agent in self.world.agents:
+            if agent.name in agentsToMonitor:
+                # Check if they have eaten a mushroom
+
+                # Check if they successfully ate something on the last tick
+                lastAction = agent.actionHistory.getLastStepAction()                
+                if (lastAction != None) and (lastAction['actionType'] == ActionType.EAT) and (lastAction['success'] == True):
+                    # Check if it was a mushroom
+                    if (lastAction['arg1'].name == "mushroom"):
+                        self.score += 1
+
+
+        if (self.score >= 10):
+            self.completed = True
+            self.completedSuccessfully = True
+            print("Task completed successfully: " + self.taskName)

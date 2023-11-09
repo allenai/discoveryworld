@@ -34,6 +34,10 @@ class World:
         # Load world data
         # TODO
 
+        # Step number (i.e. number of ticks that have passed)
+        self.step = 0
+
+        # Font
         self.font = pygame.font.SysFont("Arial", 8)
 
 
@@ -52,9 +56,11 @@ class World:
         else:
             print("Error: Task name not recognized: " + taskName)
             return False
-    
-    def taskScorerTick(self):
-        self.taskScorer.updateTick()
+            
+
+    # Get the current step number.  Starts at 0, increments 1 per call to the world.tick().
+    def getStepCounter(self):
+        return self.step
 
 
     #
@@ -252,6 +258,12 @@ class World:
                     for object in self.grid[x][y]["layers"][layer]:
                         object.tick()
 
+
+        # Also do a tick of the task scorer, to measure task progress
+        self.taskScorer.updateTick()
+
+        # Increment step counter
+        self.step += 1
 
     #
     #   Rendering

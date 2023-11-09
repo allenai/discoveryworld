@@ -6,6 +6,7 @@ from ObjectModel import *
 from Layer import * 
 from ActionSuccess import *
 from Pathfinding import *
+from ActionHistory import *
 
 import time
 
@@ -21,6 +22,9 @@ class Agent(Object):
         # Rendering
         self.attributes["faceDirection"] = "south"        
         self.spriteCharacterPrefix = "character18_"                 # Prefix for the sprite character name (e.g. "character18_")
+
+        # Agent action history
+        self.actionHistory = ActionHistory(self.world)
 
         # Autopilot action queue and pathfinder
         self.autopilotActionQueue = []                              # Queue of autopilot actions        
@@ -150,43 +154,44 @@ class Agent(Object):
     #
 
     # Attempt to move the agent in a particular direction.  deltaX and deltaY are in world coordinates, and should nominally be (-1, 0, 1)
-    def actionMoveAgent(self, deltaX:int, deltaY:int):
-        # Get the current location
-        newX = self.attributes["gridX"] + deltaX
-        newY = self.attributes["gridY"] + deltaY
+    # TODO: DEPRECATED
+    # def actionMoveAgent(self, deltaX:int, deltaY:int):
+    #     # Get the current location
+    #     newX = self.attributes["gridX"] + deltaX
+    #     newY = self.attributes["gridY"] + deltaY
 
-        # Update the last direction the agent was facing (we do this even if the move wasn't valid, to give some visual feedback to the user)
-        if (deltaX < 0):
-            self.attributes["faceDirection"] = "west"
-        elif (deltaX > 0):
-            self.attributes["faceDirection"] = "east"
-        elif (deltaY < 0):
-            self.attributes["faceDirection"] = "north"
-        elif (deltaY > 0):
-            self.attributes["faceDirection"] = "south"
-        else:
-            # This should generally not happen -- the agent is not moving.  Still, default to south.
-            self.attributes["faceDirection"] = "south"
+    #     # Update the last direction the agent was facing (we do this even if the move wasn't valid, to give some visual feedback to the user)
+    #     if (deltaX < 0):
+    #         self.attributes["faceDirection"] = "west"
+    #     elif (deltaX > 0):
+    #         self.attributes["faceDirection"] = "east"
+    #     elif (deltaY < 0):
+    #         self.attributes["faceDirection"] = "north"
+    #     elif (deltaY > 0):
+    #         self.attributes["faceDirection"] = "south"
+    #     else:
+    #         # This should generally not happen -- the agent is not moving.  Still, default to south.
+    #         self.attributes["faceDirection"] = "south"
 
-        # Invalidate the sprite name
-        self.needsSpriteNameUpdate = True
+    #     # Invalidate the sprite name
+    #     self.needsSpriteNameUpdate = True
 
-        # Check if the new location is valid
-        # Check 1: Is the new location within the bounds of the world?        
-        if (newX < 0 or newX >= self.world.sizeX or newY < 0 or newY >= self.world.sizeY):
-            # Invalid location
-            return ActionSuccess(False, "That would take me beyond the edge of the world.")
+    #     # Check if the new location is valid
+    #     # Check 1: Is the new location within the bounds of the world?        
+    #     if (newX < 0 or newX >= self.world.sizeX or newY < 0 or newY >= self.world.sizeY):
+    #         # Invalid location
+    #         return ActionSuccess(False, "That would take me beyond the edge of the world.")
 
-        # Check 2: Check if the new location is passable
-        isPassable, blockingObject = self.world.isPassable(newX, newY)
-        if (not isPassable):            
-            return ActionSuccess(False, "I can't move there. There is something in the way (" + blockingObject.name + ").")
+    #     # Check 2: Check if the new location is passable
+    #     isPassable, blockingObject = self.world.isPassable(newX, newY)
+    #     if (not isPassable):            
+    #         return ActionSuccess(False, "I can't move there. There is something in the way (" + blockingObject.name + ").")
 
-        # If we reach here, the new location is valid. Update the agent's location to the new location
-        self.world.removeObject(self)                           # First, remove the object from it's current location in the world grid
-        self.world.addObject(newX, newY, Layer.AGENT, self)     # Then, add the object to the new location in the world grid
+    #     # If we reach here, the new location is valid. Update the agent's location to the new location
+    #     self.world.removeObject(self)                           # First, remove the object from it's current location in the world grid
+    #     self.world.addObject(newX, newY, Layer.AGENT, self)     # Then, add the object to the new location in the world grid
 
-        return ActionSuccess(True, "I moved to (" + str(newX) + ", " + str(newY) + ").")
+    #     return ActionSuccess(True, "I moved to (" + str(newX) + ", " + str(newY) + ").")
 
     # Rotate the direction the agent is facing
     # Direction: +1 = clockwise, -1 = counterclockwise
@@ -220,13 +225,18 @@ class Agent(Object):
         # Invalidate the sprite name
         self.needsSpriteNameUpdate = True
 
-        return ActionSuccess(True, "I rotated to face " + newDirection + ".")
+        # Result
+        result = ActionSuccess(True, "I rotated to face " + newDirection + ".")
+        actionType = ActionType.ROTATE_CW if (direction == +1) else ActionType.ROTATE_CCW
+        self.actionHistory.add(actionType=actionType, arg1=None, arg2=None, result=result)
+        return result
 
     # Move forward (or backward) in the direction the agent is facing
     # Direction: +1 = forward, -1 = backward
     def actionMoveAgentForwardBackward(self, direction=+1):
+        actionType = ActionType.MOVE_FORWARD if (direction == +1) else ActionType.MOVE_BACKWARD
         # Get the current direction
-        currentDirection = self.attributes["faceDirection"]
+        currentDirection = self.attributes["faceDirection"]        
 
         # Get the new location
         if (direction == +1):
@@ -260,12 +270,17 @@ class Agent(Object):
         # Check 1: Is the new location within the bounds of the world?
         if (newX < 0 or newX >= self.world.sizeX or newY < 0 or newY >= self.world.sizeY):
             # Invalid location
-            return ActionSuccess(False, "That would take me beyond the edge of the world.")
+            result = ActionSuccess(False, "That would take me beyond the edge of the world.")
+            self.actionHistory.add(actionType=actionType, arg1=None, arg2=None, result=result)
+            return result
         
         # Check 2: Check if the new location is passable
         isPassable, blockingObject = self.world.isPassable(newX, newY)
         if (not isPassable):
-            return ActionSuccess(False, "I can't move there. There is something in the way (" + blockingObject.name + ").")
+            result = ActionSuccess(False, "I can't move there. There is something in the way (" + blockingObject.name + ").")
+            self.actionHistory.add(actionType=actionType, arg1=None, arg2=None, result=result)
+            return result
+
 
         # If we reach here, the new location is valid. Update the agent's location to the new location
         self.world.removeObject(self)                           # First, remove the object from it's current location in the world grid
@@ -274,7 +289,10 @@ class Agent(Object):
         # Invalidate sprite name
         self.needsSpriteNameUpdate = True
 
-        return ActionSuccess(True, "I moved to (" + str(newX) + ", " + str(newY) + ").")
+        result = ActionSuccess(True, "I moved to (" + str(newX) + ", " + str(newY) + ").")
+        self.actionHistory.add(actionType=actionType, arg1=None, arg2=None, result=result)
+        return result
+
 
 
 
@@ -283,15 +301,18 @@ class Agent(Object):
         # First, check if the object is movable
         if (not objToPickUp.attributes["isMovable"]):
             # Object is not movable
-            return ActionSuccess(False, "That object (" + objToPickUp.name + ") is not movable.")
+            result = ActionSuccess(False, "That object (" + objToPickUp.name + ") is not movable.")
+            self.actionHistory.add(actionType=ActionType.PICKUP, arg1=objToPickUp, arg2=None, result=result)
+            return result
 
         # Next, check if the object is within reach (i.e. +/- 1 grid location)
         distX = abs(objToPickUp.attributes["gridX"] - self.attributes["gridX"])
         distY = abs(objToPickUp.attributes["gridY"] - self.attributes["gridY"])
         if (distX > 1 or distY > 1):
             # Object is not within reach
-            return ActionSuccess(False, "That object (" + objToPickUp.name + ") is not within reach. I can only pick up objects that are within +/- 1 grid location.")
-
+            result = ActionSuccess(False, "That object (" + objToPickUp.name + ") is not within reach. I can only pick up objects that are within +/- 1 grid location.")            
+            self.actionHistory.add(actionType=ActionType.PICKUP, arg1=objToPickUp, arg2=None, result=result)
+            return result
 
         # If we reach here, the object is movable and within reach.  Pick it up.
         objToPickUp.invalidateSpritesThisWorldTile()            # Invalidate the sprites at the object's current location
@@ -301,7 +322,10 @@ class Agent(Object):
         # Update to show the agent holding the object it just picked up
         self.updateLastInteractedObject([objToPickUp])
 
-        return ActionSuccess(True, "I picked up the " + objToPickUp.name + ".")
+        result = ActionSuccess(True, "I picked up the " + objToPickUp.name + ".")
+        self.actionHistory.add(actionType=ActionType.PICKUP, arg1=objToPickUp, arg2=None, result=result)
+        return result
+
 
 
     # Drop an object from the agent's inventory at the agent's current location
@@ -311,7 +335,9 @@ class Agent(Object):
         print("OBJECTS IN INVENTORY: " + str(objectsInInventory))
         if (not objToDrop in objectsInInventory):
             # Object is not in the agent's inventory
-            return ActionSuccess(False, "That object (" + objToDrop.name + ") is not in my inventory.")
+            result = ActionSuccess(False, "That object (" + objToDrop.name + ") is not in my inventory.")
+            self.actionHistory.add(actionType=ActionType.DROP, arg1=objToDrop, arg2=None, result=result)
+            return result
 
         # Next, drop the object at the agent's current location.
         # (Note: adding the item to a specific location should remove it from the agent's inventory)
@@ -320,31 +346,43 @@ class Agent(Object):
         # Invalidate the sprites at the object's new location
         objToDrop.invalidateSpritesThisWorldTile()
 
-        return ActionSuccess(True, "I dropped the " + objToDrop.name + ".")
+        result = ActionSuccess(True, "I dropped the " + objToDrop.name + ".")
+        self.actionHistory.add(actionType=ActionType.DROP, arg1=objToDrop, arg2=None, result=result)
+        return result
+
 
     def actionPut(self, objToPut, newContainer):
         # First, check if the object is in the agent's inventory
         objectsInInventory = self.getAllContainedObjectsRecursive(respectContainerStatus=True)
         if (not objToPut in objectsInInventory):
             # Object is not in the agent's inventory
-            return ActionSuccess(False, "That object (" + objToPut.name + ") is not in my inventory.")
+            result = ActionSuccess(False, "That object (" + objToPut.name + ") is not in my inventory.")
+            self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
+            return result
 
         # Next, check if the new container is within reach (i.e. +/- 1 grid location)
         distX = abs(newContainer.attributes["gridX"] - self.attributes["gridX"])
         distY = abs(newContainer.attributes["gridY"] - self.attributes["gridY"])
         if (distX > 1 or distY > 1):
             # Container is not within reach
-            return ActionSuccess(False, "That container (" + newContainer.name + ") is not within reach. I can only put objects into containers that are within +/- 1 grid location.")
+            result = ActionSuccess(False, "That container (" + newContainer.name + ") is not within reach. I can only put objects into containers that are within +/- 1 grid location.")
+            self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
+            return result
 
         # Next, check to see if the container is a container
         if (not newContainer.attributes["isContainer"]):
-            # Container is not a container
-            return ActionSuccess(False, "That object (" + newContainer.name + ") is not a container.")
+            # Container is not a container            
+            result = ActionSuccess(False, "That object (" + newContainer.name + ") is not a container.")
+            self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
+            return result
 
         # Next, check to see if the container is open
         if (not newContainer.attributes["isOpenContainer"]):
             # Container is not open
-            return ActionSuccess(False, "That container (" + newContainer.name + ") is not open.")
+            result = ActionSuccess(False, "That container (" + newContainer.name + ") is not open.")
+            self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
+            return result
+
 
         # If we reach here, the object is in the agent's inventory, the container is within reach, and the container is open.
         # Put the object into the container.
@@ -357,22 +395,30 @@ class Agent(Object):
         # Update to show the agent holding the container it put something in (if the container is in its inventory)
         self.updateLastInteractedObject([newContainer])
 
-        return ActionSuccess(True, "I put the " + objToPut.name + " into the " + newContainer.name + ".")
+        result = ActionSuccess(True, "I put the " + objToPut.name + " into the " + newContainer.name + ".")
+        self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
+        return result
+
 
     # Open or close an object
     # 'whichAction' should be "open" or "close"
     def actionOpenClose(self, objToOpenOrClose, whichAction="open"):
+        actionType = ActionType.OPEN if whichAction == "open" else ActionType.CLOSE
         # First, check if the object is within reach (i.e. +/- 1 grid location)
         distX = abs(objToOpenOrClose.attributes["gridX"] - self.attributes["gridX"])
         distY = abs(objToOpenOrClose.attributes["gridY"] - self.attributes["gridY"])
         if (distX > 1 or distY > 1):
             # Object is not within reach
-            return ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is not within reach. I can only open/close objects that are within +/- 1 grid location.")
+            result = ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is not within reach. I can only open/close objects that are within +/- 1 grid location.")
+            self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+            return result
 
         # Next, check if the object is openable
         if (not objToOpenOrClose.attributes["isOpenable"]):
             # Object is not openable
-            return ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is not openable/closeable.")
+            result = ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is not openable/closeable.")
+            self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+            return result
         
         # Next, check to see whether we're dealing with a container or a passage
         if (objToOpenOrClose.attributes["isContainer"]):
@@ -380,78 +426,116 @@ class Agent(Object):
             # Next, check if the object is already in the desired state
             if (whichAction == "open" and objToOpenOrClose.attributes["isOpenContainer"]):
                 # Object is already open
-                return ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is already open.")
+                result = ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is already open.")
+                self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+                return result
+
             elif (whichAction == "close" and not objToOpenOrClose.attributes["isOpenContainer"]):
                 # Object is already closed
-                return ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is already closed.")
+                result = ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is already closed.")
+                self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+                return result
 
             # If we reach here, the object is within reach and is openable.  Open/close it.
             if (whichAction == "open"):
                 objToOpenOrClose.attributes["isOpenContainer"] = True
                 objToOpenOrClose.invalidateSpritesThisWorldTile()
                 self.updateLastInteractedObject([objToOpenOrClose])
-                return ActionSuccess(True, "I opened the " + objToOpenOrClose.name + ".")
+                result = ActionSuccess(True, "I opened the " + objToOpenOrClose.name + ".")
+                self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+                return result
+
             else:
                 objToOpenOrClose.attributes["isOpenContainer"] = False
                 objToOpenOrClose.invalidateSpritesThisWorldTile()
                 self.updateLastInteractedObject([objToOpenOrClose])
-                return ActionSuccess(True, "I closed the " + objToOpenOrClose.name + ".")
+                result = ActionSuccess(True, "I closed the " + objToOpenOrClose.name + ".")
+                self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+                return result
+
 
         elif (objToOpenOrClose.attributes["isPassage"]):
             # Open a passage
             # Next, check if the object is already in the desired state
             if (whichAction == "open" and objToOpenOrClose.attributes["isOpenPassage"]):
                 # Object is already open
-                return ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is already open.")
+                result = ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is already open.")
+                self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+                return result
+
             elif (whichAction == "close" and not objToOpenOrClose.attributes["isOpenPassage"]):
                 # Object is already closed
-                return ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is already closed.")
+                result = ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is already closed.")
+                self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+                return result
 
             # If we reach here, the object is within reach and is openable.  Open/close it.
             if (whichAction == "open"):
                 objToOpenOrClose.attributes["isOpenPassage"] = True
                 objToOpenOrClose.invalidateSpritesThisWorldTile()
-                return ActionSuccess(True, "I opened the " + objToOpenOrClose.name + ".")
+                result = ActionSuccess(True, "I opened the " + objToOpenOrClose.name + ".")
+                self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+                return result
+
             else:
                 objToOpenOrClose.attributes["isOpenPassage"] = False
                 objToOpenOrClose.invalidateSpritesThisWorldTile()
-                return ActionSuccess(True, "I closed the " + objToOpenOrClose.name + ".")
+                result = ActionSuccess(True, "I closed the " + objToOpenOrClose.name + ".")
+                self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+                return result
+
 
 
     # Activate/Deactivate an object
     # 'whichAction' should be "activate" or "deactivate"
     def actionActivateDeactivate(self, objToActivateOrDeactivate, whichAction="activate"):
+        actionType = ActionType.ACTIVATE if whichAction == "activate" else ActionType.DEACTIVATE
         # First, check if the object is within reach (i.e. +/- 1 grid location)
         distX = abs(objToActivateOrDeactivate.attributes["gridX"] - self.attributes["gridX"])
         distY = abs(objToActivateOrDeactivate.attributes["gridY"] - self.attributes["gridY"])
         if (distX > 1 or distY > 1):
             # Object is not within reach
-            return ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is not within reach. I can only activate/deactivate objects that are within +/- 1 grid location.")
+            result = ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is not within reach. I can only activate/deactivate objects that are within +/- 1 grid location.")
+            self.actionHistory.add(actionType=actionType, arg1=objToActivateOrDeactivate, arg2=None, result=result)
+            return result
 
         # Next, check if the object is activatable
         if (not objToActivateOrDeactivate.attributes["isActivatable"]):
             # Object is not activatable
-            return ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is not activatable/deactivatable.")
+            result = ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is not activatable/deactivatable.")
+            self.actionHistory.add(actionType=actionType, arg1=objToActivateOrDeactivate, arg2=None, result=result)
+            return result
                 
         # Next, check if the object is already in the desired state
         if (whichAction == "activate" and objToActivateOrDeactivate.attributes["isActivated"]):
             # Object is already activated
-            return ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is already activated.")
+            result = ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is already activated.")
+            self.actionHistory.add(actionType=actionType, arg1=objToActivateOrDeactivate, arg2=None, result=result)
+            return result
+
         elif (whichAction == "deactivate" and not objToActivateOrDeactivate.attributes["isActivated"]):
             # Object is already deactivated
-            return ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is already deactivated.")
+            result = ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is already deactivated.")
+            self.actionHistory.add(actionType=actionType, arg1=objToActivateOrDeactivate, arg2=None, result=result)
+            return result
         
         # If we reach here, the object is within reach and is activatable.  Activate/deactivate it.
         if (whichAction == "activate"):
             objToActivateOrDeactivate.attributes["isActivated"] = True
             objToActivateOrDeactivate.invalidateSpritesThisWorldTile()
             self.updateLastInteractedObject([objToActivateOrDeactivate])
-            return ActionSuccess(True, "I activated the " + objToActivateOrDeactivate.name + ".")
+            result = ActionSuccess(True, "I activated the " + objToActivateOrDeactivate.name + ".")
+            self.actionHistory.add(actionType=actionType, arg1=objToActivateOrDeactivate, arg2=None, result=result)
+            return result
+
         else:
             objToActivateOrDeactivate.attributes["isActivated"] = False
             objToActivateOrDeactivate.invalidateSpritesThisWorldTile()
             self.updateLastInteractedObject([objToActivateOrDeactivate])
-            return ActionSuccess(True, "I deactivated the " + objToActivateOrDeactivate.name + ".")
+            result = ActionSuccess(True, "I deactivated the " + objToActivateOrDeactivate.name + ".")
+            self.actionHistory.add(actionType=actionType, arg1=objToActivateOrDeactivate, arg2=None, result=result)
+            return result
+
             
 
     # Eat an object
@@ -459,15 +543,18 @@ class Agent(Object):
         # First, check if the object is edible
         if (not objToEat.attributes["isEdible"]):
             # Object is not movable
-            return ActionSuccess(False, "That object (" + objToEat.name + ") is not edible.")
+            result = ActionSuccess(False, "That object (" + objToEat.name + ") is not edible.")
+            self.actionHistory.add(actionType=ActionType.EAT, arg1=objToEat, arg2=None, result=result)
+            return result
 
         # Next, check if the object is within reach (i.e. +/- 1 grid location)
         distX = abs(objToEat.attributes["gridX"] - self.attributes["gridX"])
         distY = abs(objToEat.attributes["gridY"] - self.attributes["gridY"])
         if (distX > 1 or distY > 1):
             # Object is not within reach
-            return ActionSuccess(False, "That object (" + objToEat.name + ") is not within reach. I can only eat objects that are within +/- 1 grid location.")
-
+            result = ActionSuccess(False, "That object (" + objToEat.name + ") is not within reach. I can only eat objects that are within +/- 1 grid location.")
+            self.actionHistory.add(actionType=ActionType.EAT, arg1=objToEat, arg2=None, result=result)
+            return result
 
         # If we reach here, the object is edible and within reach.  Eat it.
         objToEat.invalidateSpritesThisWorldTile()            # Invalidate the sprites at the object's current location
@@ -497,9 +584,10 @@ class Agent(Object):
                 print("DEBUG: POISONED! (from " + eatenObj.name + ")")
                 self.attributes["poisonedCounter"] = random.randint(-20, -2)
         
+        result = ActionSuccess(True, "I ate the " + objToEat.name + ".")
+        self.actionHistory.add(actionType=ActionType.EAT, arg1=objToEat, arg2=None, result=result)
+        return result
 
-
-        return ActionSuccess(True, "I ate the " + objToEat.name + ".")
 
 
     # Read an object
@@ -509,22 +597,32 @@ class Agent(Object):
         distY = abs(objToRead.attributes["gridY"] - self.attributes["gridY"])
         if (distX > 1 or distY > 1):
             # Object is not within reach
-            return ActionSuccess(False, "That object (" + objToRead.name + ") is not within reach. I can only read objects that are within +/- 1 grid location.")
-
+            result = ActionSuccess(False, "That object (" + objToRead.name + ") is not within reach. I can only read objects that are within +/- 1 grid location.")
+            self.actionHistory.add(actionType=ActionType.READ, arg1=objToRead, arg2=None, result=result)
+            return result
+            
         # Next, check if the object to read is readable
         if (not objToRead.attributes["isReadable"]):
             # Object is not readable
-            return ActionSuccess(False, "That object (" + objToRead.name + ") is not readable.")
+            result = ActionSuccess(False, "That object (" + objToRead.name + ") is not readable.")
+            self.actionHistory.add(actionType=ActionType.READ, arg1=objToRead, arg2=None, result=result)
+            return result
 
         # If we reach here, the object is within reach and is readable.  Read it.
         # Check if the object is blank (i.e. document length is zero)
         if (len(objToRead.attributes["document"].strip()) == 0):
             # Object is blank
-            return ActionSuccess(False, "The " + objToRead.name + " appears blank. There is nothing to read.", MessageImportance.HIGH)
+            result = ActionSuccess(False, "The " + objToRead.name + " appears blank. There is nothing to read.", MessageImportance.HIGH)
+            self.actionHistory.add(actionType=ActionType.READ, arg1=objToRead, arg2=None, result=result)
+            return result
+
         else:
             # Object is not blank
             self.updateLastInteractedObject([objToRead])
-            return ActionSuccess(True, "The " + objToRead.name + " reads:\n" + objToRead.attributes["document"], MessageImportance.HIGH)
+            result = ActionSuccess(True, "The " + objToRead.name + " reads:\n" + objToRead.attributes["document"], MessageImportance.HIGH)
+            self.actionHistory.add(actionType=ActionType.READ, arg1=objToRead, arg2=None, result=result)
+            return result
+
 
 
     # Use an object on another object
@@ -534,19 +632,25 @@ class Agent(Object):
         distY = abs(objToUse.attributes["gridY"] - self.attributes["gridY"])
         if (distX > 1 or distY > 1):
             # Object is not within reach
-            return ActionSuccess(False, "That object (" + objToUse.name + ") is not within reach. I can only use objects that are within +/- 1 grid location.")
+            result = ActionSuccess(False, "That object (" + objToUse.name + ") is not within reach. I can only use objects that are within +/- 1 grid location.")
+            self.actionHistory.add(actionType=ActionType.USE, arg1=objToUse, arg2=objToUseOn, result=result)        
+            return result
 
         # Next, check if the object to use is usable
         if (not objToUse.attributes["isUsable"]):
             # Object is not usable
-            return ActionSuccess(False, "That object (" + objToUse.name + ") is not usable.")
+            result = ActionSuccess(False, "That object (" + objToUse.name + ") is not usable.")
+            self.actionHistory.add(actionType=ActionType.USE, arg1=objToUse, arg2=objToUseOn, result=result)        
+            return result
 
         # Next, check if the patient object is within reach (i.e. +/- 1 grid location)
         distX = abs(objToUseOn.attributes["gridX"] - self.attributes["gridX"])
         distY = abs(objToUseOn.attributes["gridY"] - self.attributes["gridY"])
         if (distX > 1 or distY > 1):
             # Object is not within reach
-            return ActionSuccess(False, "That object (" + objToUseOn.name + ") is not within reach. I can only use objects on other objects that are within +/- 1 grid location.")
+            result = ActionSuccess(False, "That object (" + objToUseOn.name + ") is not within reach. I can only use objects on other objects that are within +/- 1 grid location.")
+            self.actionHistory.add(actionType=ActionType.USE, arg1=objToUse, arg2=objToUseOn, result=result)        
+            return result
 
         # If we reach here, the object is usable, and both the device and patient object are within reach. Use it. 
         result = objToUse.actionUseWith(objToUseOn)
@@ -563,6 +667,7 @@ class Agent(Object):
         self.updateLastInteractedObject([objToUse, objToUseOn])
 
         # Return result
+        self.actionHistory.add(actionType=ActionType.USE, arg1=objToUse, arg2=objToUseOn, result=result)        
         return result
 
 
