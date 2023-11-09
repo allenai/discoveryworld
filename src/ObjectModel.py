@@ -407,6 +407,26 @@ class Object:
                         # Add any sprite modifiers
                         spriteList.extend(obj.curSpriteModifiers)
 
+            # If the object has the 'objectToShow' attribute, like for agents showing the last object they interacted with, then add that object's sprite name
+            if ('objectToShow' in self.attributes) and (self.attributes['objectToShow'] != None):
+                # Get the object to show
+                obj = self.attributes['objectToShow']                
+
+                # Make sure that object's parent container is this object, otherwise discontinue
+                if (obj.parentContainer == self):
+                    # Check if this sprite is invalidated and needs to be updated
+                    if (obj.needsSpriteNameUpdate):
+                        # If so, then update it
+                        obj.inferSpriteName()
+                        obj.needsSpriteNameUpdate = False
+
+                    # Add the sprite name of the object
+                    spriteNameObj = obj.getSpriteName()
+                    if (spriteNameObj != None):
+                        spriteList.append(spriteNameObj) 
+                        # Add any sprite modifiers
+                        spriteList.extend(obj.curSpriteModifiers)
+
 
         # Return the sprite list
         return spriteList

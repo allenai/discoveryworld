@@ -37,7 +37,7 @@ class Agent(Object):
         self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
         self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
-        
+
         # Dialog attributes
         self.attributes['isDialogable'] = True                     # Can it be dialoged with?
         self.attributes['inDialogWith'] = None                     # Who is it in dialog with at this current moment?
@@ -52,6 +52,9 @@ class Agent(Object):
 
         # Health attributes
         self.attributes["poisonedCounter"] = -1                    # Poisoned counter (if >= 0, then the agent is poisoned)
+
+        # Object visibility for agents (i.e. the last object(s) they interacted with)
+        self.attributes["objectToShow"] = None                     # The object to show the agent carrying
         
 
     #   
@@ -295,6 +298,9 @@ class Agent(Object):
         self.world.removeObject(objToPickUp)                    # Remove the object from the world
         self.addObject(objToPickUp)                             # Add the object to the agent's inventory
 
+        # Update to show the agent holding the object it just picked up
+        self.updateLastInteractedObject([objToPickUp])
+
         return ActionSuccess(True, "I picked up the " + objToPickUp.name + ".")
 
 
@@ -348,6 +354,9 @@ class Agent(Object):
         objToPut.invalidateSpritesThisWorldTile()
         newContainer.invalidateSpritesThisWorldTile()
 
+        # Update to show the agent holding the container it put something in (if the container is in its inventory)
+        self.updateLastInteractedObject([newContainer])
+
         return ActionSuccess(True, "I put the " + objToPut.name + " into the " + newContainer.name + ".")
 
     # Open or close an object
@@ -380,10 +389,12 @@ class Agent(Object):
             if (whichAction == "open"):
                 objToOpenOrClose.attributes["isOpenContainer"] = True
                 objToOpenOrClose.invalidateSpritesThisWorldTile()
+                self.updateLastInteractedObject([objToOpenOrClose])
                 return ActionSuccess(True, "I opened the " + objToOpenOrClose.name + ".")
             else:
                 objToOpenOrClose.attributes["isOpenContainer"] = False
                 objToOpenOrClose.invalidateSpritesThisWorldTile()
+                self.updateLastInteractedObject([objToOpenOrClose])
                 return ActionSuccess(True, "I closed the " + objToOpenOrClose.name + ".")
 
         elif (objToOpenOrClose.attributes["isPassage"]):
@@ -434,10 +445,12 @@ class Agent(Object):
         if (whichAction == "activate"):
             objToActivateOrDeactivate.attributes["isActivated"] = True
             objToActivateOrDeactivate.invalidateSpritesThisWorldTile()
+            self.updateLastInteractedObject([objToActivateOrDeactivate])
             return ActionSuccess(True, "I activated the " + objToActivateOrDeactivate.name + ".")
         else:
             objToActivateOrDeactivate.attributes["isActivated"] = False
             objToActivateOrDeactivate.invalidateSpritesThisWorldTile()
+            self.updateLastInteractedObject([objToActivateOrDeactivate])
             return ActionSuccess(True, "I deactivated the " + objToActivateOrDeactivate.name + ".")
             
 
@@ -510,6 +523,7 @@ class Agent(Object):
             return ActionSuccess(False, "The " + objToRead.name + " appears blank. There is nothing to read.", MessageImportance.HIGH)
         else:
             # Object is not blank
+            self.updateLastInteractedObject([objToRead])
             return ActionSuccess(True, "The " + objToRead.name + " reads:\n" + objToRead.attributes["document"], MessageImportance.HIGH)
 
 
@@ -542,10 +556,11 @@ class Agent(Object):
             for item in result.data['generatedItems']:
                 self.addObject(item)
 
-
         # Invalidate the sprites of all objects at these locations. 
         objToUse.invalidateSpritesThisWorldTile()
         objToUseOn.invalidateSpritesThisWorldTile()
+
+        self.updateLastInteractedObject([objToUse, objToUseOn])
 
         # Return result
         return result
@@ -736,6 +751,33 @@ class Agent(Object):
     #
     # Sprite
     #
+
+    # This function updates what object the agent should be shown "holding". 
+    # It takes a list of objects (nominally from the last action the agent took), and will pick one that the agent is currently carying. 
+    # If the agent is not carrying any, then it will set 'objectToShow' to None.
+    # If the agent is carrying more than one, it will show the first one it finds. 
+    def updateLastInteractedObject(self, objList:list):
+        self.attributes["objectToShow"] = None                     # The object to show the agent carrying
+        
+        # Filter the list of objects to show only those that are in the agent's inventory
+        accessibleInventoryObjects = self.getAllContainedObjectsRecursive(respectContainerStatus=True)
+        
+        filteredInInventory = []
+        for obj in objList:
+            if (obj in accessibleInventoryObjects):
+                filteredInInventory.append(obj)
+
+        # If there are no objects in the list, then we're done
+        if (len(filteredInInventory) == 0):
+            return
+
+        # Otherwise, take the first object
+        self.attributes["objectToShow"] = filteredInInventory[0]
+
+
+    def clearLastInteractedObject(self):
+        self.attributes["objectToShow"] = None
+        
 
     # Updates the current sprite name based on the current state of the object
     def inferSpriteName(self, force:bool=False):

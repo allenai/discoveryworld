@@ -112,7 +112,10 @@ class UserInterface:
         else:
             self.curSelectedArgument2Obj = None
 
-        
+        # Update the agent 'objectToShow' based on arg1
+        if (self.currentAgent != None):
+            self.currentAgent.updateLastInteractedObject([self.curSelectedArgument1Obj])
+            
         
     #
     #   Rendering
