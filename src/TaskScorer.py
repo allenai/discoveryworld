@@ -45,7 +45,7 @@ class Task():
 #
 #   Specific Task: Agents eating space mushrooms without getting sick
 #
-def EatMushroomTask(Task):
+class EatMushroomTask(Task):
     # Constructor
     def __init__(self, world):
         Task.__init__(self, "EatMushroomTask", world)
