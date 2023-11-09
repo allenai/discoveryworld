@@ -56,6 +56,7 @@ class Object:
         self.attributes['isOpenContainer'] = False                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = ""                     # Container prefix (e.g. "in" or "on")            
         self.attributes['isOpen'] = False                           # Closed by default
+        self.attributes['contentsVisible2D'] = True                 # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
         self.contents = []                                          # Contents of the container (other objects)
 
         # Parts (for composite objects -- similar to containers)
@@ -388,21 +389,23 @@ class Object:
         # Then, add the name of any visible contents
         # First, check if this is a container (and it's open)
         if (self.attributes['isContainer'] and self.attributes['isOpenContainer']):
-            # If so, then add the contents
-            for obj in self.contents:
-                # Check if this sprite is invalidated and needs to be updated
-                if (obj.needsSpriteNameUpdate):
-                    # If so, then update it
-                    obj.inferSpriteName()
-                    obj.needsSpriteNameUpdate = False
+            # Make sure that the sprites for the contents should be displayed, and that this isn't handled by the sprite function rendering different sprites for full vs empty objects
+            if (self.attributes['contentsVisible2D']):
+                # If so, then add the contents
+                for obj in self.contents:
+                    # Check if this sprite is invalidated and needs to be updated
+                    if (obj.needsSpriteNameUpdate):
+                        # If so, then update it
+                        obj.inferSpriteName()
+                        obj.needsSpriteNameUpdate = False
 
-                # Add the sprite name of the object
-                spriteNameObj = obj.getSpriteName()
-                #print("Object name: " + obj.name + "  sprite name: " + str(spriteNameObj))
-                if (spriteNameObj != None):
-                    spriteList.append(spriteNameObj) 
-                    # Add any sprite modifiers
-                    spriteList.extend(obj.curSpriteModifiers)
+                    # Add the sprite name of the object
+                    spriteNameObj = obj.getSpriteName()
+                    #print("Object name: " + obj.name + "  sprite name: " + str(spriteNameObj))
+                    if (spriteNameObj != None):
+                        spriteList.append(spriteNameObj) 
+                        # Add any sprite modifiers
+                        spriteList.extend(obj.curSpriteModifiers)
 
 
         # Return the sprite list
@@ -1581,6 +1584,7 @@ class Pot(Object):
         self.attributes['isOpenable'] = False                      # Can not be opened (things are stored in the open pot)
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+        self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)        
 
     def tick(self):
         # Call superclass
@@ -1623,6 +1627,7 @@ class Jar(Object):
         self.attributes['isOpenable'] = False                      # Can not be opened (things are stored in the open pot)
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+        self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
 
     def tick(self):
         # Call superclass

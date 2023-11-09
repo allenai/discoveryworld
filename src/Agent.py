@@ -36,7 +36,8 @@ class Agent(Object):
         self.attributes['isOpenable'] = False                      # Can be opened
         self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
-
+        self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
+        
         # Dialog attributes
         self.attributes['isDialogable'] = True                     # Can it be dialoged with?
         self.attributes['inDialogWith'] = None                     # Who is it in dialog with at this current moment?
