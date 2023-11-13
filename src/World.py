@@ -7,6 +7,7 @@ from ObjectModel import Object
 from TaskScorer import *
 from UUIDGenerator import *
 import pygame
+import time
 
 # Storage class for the world (including the full environment grid)
 class World:
@@ -43,6 +44,9 @@ class World:
 
         # Font
         self.font = pygame.font.SysFont("Arial", 8)
+
+        # World history
+        self.worldHistory = []
 
 
     #
@@ -273,8 +277,52 @@ class World:
         # Also do a tick of the task scorer, to measure task progress
         self.taskScorer.updateTick()
 
+        # Also save the world history
+        self.saveWorldHistory()
+
         # Increment step counter
         self.step += 1
+
+
+    #
+    #   Saving a world history
+    #
+    def saveWorldHistory(self):
+        print("Saving world history...")
+
+        # Keep track of time
+        startTime = time.time()
+
+        # First, create a new world history dictionary. 
+        packed = {
+            "step": self.step,
+            "sizeX": self.sizeX,
+            "sizeY": self.sizeY,
+            "grid": [],
+        }
+
+        # Clone everything in the grid into this record
+        for x in range(self.sizeX):
+            packed["grid"].append([])
+            for y in range(self.sizeY):                
+                allObjs = []
+                for layer in Layer:                    
+                    for object in self.grid[x][y]["layers"][layer]:
+                        #packed["grid"][x][y]["layers"][layer].append(object.pack())
+                        # Pack using the to_json() method
+                        allObjs.append(object.to_json())
+
+                packed["grid"][x].append(allObjs)
+
+        # Save the history
+        self.worldHistory.append(packed)
+
+        # delta time
+        deltaTime = time.time() - startTime
+        print("World history saved in " + str(deltaTime) + " seconds.")
+
+
+
 
     #
     #   Rendering

@@ -5,6 +5,7 @@ import json
 import random
 import time
 import subprocess
+import psutil
 
 # Sprite library
 import SpriteLibrary
@@ -17,6 +18,17 @@ from Agent import *
 from ActionSuccess import *
 from UserInterface import UserInterface
 from DialogTree import DialogMaker
+
+
+
+class CustomJSONObjectEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        if isinstance(obj, Object):
+            return {"objUUID": obj.uuid}
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
 
 
@@ -455,6 +467,7 @@ def main():
     frames = 0
     autoRunCycles = 0
     lastMove = time.time()        # Time of last move (in seconds since start of game)
+    lastSize = 0
     while running:        
         #print("Frame: " + str(frames))
         exportFrame = False
@@ -586,6 +599,18 @@ def main():
                 print("Step: " + str(frames) + " (autorun)")
             else:
                 print("Step: " + str(frames))
+            
+            # Print current memory usage
+            curSize = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
+            delta = curSize - lastSize
+            print("Current memory usage: " + str( curSize ) + " MB      (delta: " + str(delta) + " MB)")
+            lastSize = curSize
+
+            # Dump the world history to a JSON file
+            filenameOut = "worldHistory.json"
+            with open(filenameOut, 'w') as outfile:
+                #json.dump(world.worldHistory, outfile, indent=4)
+                json.dump(world.worldHistory, outfile, indent=4, cls=CustomJSONObjectEncoder)
             print("############################################################################################\n")                
             #time.sleep(0.25)            
 

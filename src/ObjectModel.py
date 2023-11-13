@@ -4,6 +4,7 @@ import SpriteLibrary
 from Layer import Layer
 from ActionSuccess import *
 import random
+import json
 
 
 # Storage class for a single object
@@ -431,6 +432,46 @@ class Object:
 
         # Return the sprite list
         return spriteList
+
+
+    #
+    #   Serialize to JSON (for saving histories, but potentially lossy -- not all object member variables are saved)    
+    #
+    def to_json(self):
+        # Serialize to JSON
+        # Note: This is lossy, and does not save all member variables
+        packed = {
+            "uuid": self.uuid,
+            "name": self.name,
+            "type": self.type,
+            "contents": [],
+            "attributes": {}
+        }
+
+        # Serialize contents
+        for obj in self.contents:
+            packed["contents"].append( {"objUUID": obj.uuid} )
+
+        # Serialize attributes
+        for key in self.attributes:
+            value = self.attributes[key]
+            if (type(value) != str) and (type(value) != int) and (type(value) != float) and (type(value) != bool):
+                # Skip any non-primitive types
+                continue
+            if (value != None) and (value != False) and (value != ""):
+                packed["attributes"][key] = value
+
+
+        # Return JSON
+        #return json.dumps(packed)
+        # Add special handler to take care of sets, etc. 
+        #return json.dumps(packed, cls=CustomJSONObjectEncoder)
+        return packed
+
+
+
+
+
 
 
 #
