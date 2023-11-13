@@ -5,6 +5,7 @@ from ObjectMaker import ObjectMaker
 from Layer import Layer
 from ObjectModel import Object
 from TaskScorer import *
+from UUIDGenerator import *
 import pygame
 
 # Storage class for the world (including the full environment grid)
@@ -14,6 +15,9 @@ class World:
         # World size (in tiles)
         self.sizeX = 32
         self.sizeY = 32
+
+        # UUID Generator
+        self.uuidGenerator = UUIDGenerator()
 
         # Load sprites
         self.spriteLibrary = SpriteLibrary.SpriteLibrary(assetPath, filenameSpriteIndex)

@@ -14,6 +14,7 @@ class Object:
         self.type = objectType
         self.name = objectName
         self.defaultSpriteName = defaultSpriteName
+        self.uuid = world.uuidGenerator.generateUUID()          # Generate a unique integer to represent this object
 
         # Whether the agent has had tick() called already this past update
         self.tickCompleted = False
