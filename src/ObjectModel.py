@@ -5,6 +5,7 @@ from Layer import Layer
 from ActionSuccess import *
 import random
 import json
+import copy
 
 
 # Storage class for a single object
@@ -421,7 +422,6 @@ class Object:
                         # If so, then update it
                         obj.inferSpriteName()
                         obj.needsSpriteNameUpdate = False
-
                     # Add the sprite name of the object
                     spriteNameObj = obj.getSpriteName()
                     if (spriteNameObj != None):
@@ -445,7 +445,8 @@ class Object:
             "name": self.name,
             "type": self.type,
             "contents": [],
-            "attributes": {}
+            "attributes": {},
+            "spriteNames": self.getSpriteNamesWithContents()
         }
 
         # Serialize contents
@@ -457,20 +458,10 @@ class Object:
             value = self.attributes[key]
             if (type(value) != str) and (type(value) != int) and (type(value) != float) and (type(value) != bool):
                 # Skip any non-primitive types
-                continue
-            if (value != None) and (value != False) and (value != ""):
-                packed["attributes"][key] = value
-
-
-        # Return JSON
-        #return json.dumps(packed)
-        # Add special handler to take care of sets, etc. 
-        #return json.dumps(packed, cls=CustomJSONObjectEncoder)
+                continue            
+            packed["attributes"][key] = value            
+        
         return packed
-
-
-
-
 
 
 

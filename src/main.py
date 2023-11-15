@@ -19,17 +19,7 @@ from ActionSuccess import *
 from UserInterface import UserInterface
 from DialogTree import DialogMaker
 
-
-
-class CustomJSONObjectEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, set):
-            return list(obj)
-        if isinstance(obj, Object):
-            return {"objUUID": obj.uuid}
-        # Let the base class default method raise the TypeError
-        return json.JSONEncoder.default(self, obj)
-
+from JSONEncoder import CustomJSONEncoder
 
 
 def mkHouse(x, y, world, buildingMaker):
@@ -607,10 +597,13 @@ def main():
             lastSize = curSize
 
             # Dump the world history to a JSON file
-            filenameOut = "worldHistory.json"
-            with open(filenameOut, 'w') as outfile:
-                #json.dump(world.worldHistory, outfile, indent=4)
-                json.dump(world.worldHistory, outfile, indent=4, cls=CustomJSONObjectEncoder)
+            # prevStep = world.step - 1
+            # filenameOut = "history/worldHistory." + str(prevStep) + ".json"            
+            # with open(filenameOut, 'w') as outfile:
+            #     # Get the last step of the world history (requires decompressing)                
+            #     lastHistoryStep= world.getWorldHistoryAtStep(world.step-1)
+            #     if (lastHistoryStep != None):
+            #         json.dump(lastHistoryStep, outfile, indent=4, cls=CustomJSONEncoder)
             print("############################################################################################\n")                
             #time.sleep(0.25)            
 

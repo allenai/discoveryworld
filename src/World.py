@@ -8,6 +8,9 @@ from TaskScorer import *
 from UUIDGenerator import *
 import pygame
 import time
+import zlib
+import pickle
+
 
 # Storage class for the world (including the full environment grid)
 class World:
@@ -298,29 +301,56 @@ class World:
             "step": self.step,
             "sizeX": self.sizeX,
             "sizeY": self.sizeY,
-            "grid": [],
+            "grid": [],            
         }
 
         # Clone everything in the grid into this record
+        totalObjects = 0        
         for x in range(self.sizeX):
             packed["grid"].append([])
             for y in range(self.sizeY):                
+                # Add all objects in this tile
                 allObjs = []
                 for layer in Layer:                    
                     for object in self.grid[x][y]["layers"][layer]:
-                        #packed["grid"][x][y]["layers"][layer].append(object.pack())
-                        # Pack using the to_json() method
-                        allObjs.append(object.to_json())
-
+                        # Pack to dict using the to_json() method
+                        allObjs.append( object.to_json() )                        
+                        totalObjects += 1            
                 packed["grid"][x].append(allObjs)
 
         # Save the history
-        self.worldHistory.append(packed)
+        #packed["objects"] = allObjs
+
+        # Compress the world history using zlib and pickle (saves almost 99% of space!)
+        packedCompressed = zlib.compress(pickle.dumps(packed))
+
+        self.worldHistory.append(packedCompressed)
+
+        print("Number of items in world history:" + str(len(self.worldHistory)))
+        print("Size of most recent item: " + str(len(packedCompressed)) + " bytes " + str(len(packedCompressed) / 1024) + " KB")
 
         # delta time
-        deltaTime = time.time() - startTime
+        deltaTime = time.time() - startTime        
+        print("World history includes " + str(totalObjects) + " objects.")
         print("World history saved in " + str(deltaTime) + " seconds.")
 
+
+    def getWorldHistoryAtStep(self, step):
+        # Return the world history at the specified step
+        # Since the world history is pickled then compressed, this will require uncompressing then unpickling
+        if (step < 0 or step >= len(self.worldHistory)):
+            return None
+
+        # Get compressed history for a given step
+        compressedPickled = self.worldHistory[step]
+
+        # Uncompress the history
+        pickled = zlib.decompress(compressedPickled)
+        # Unpickle the history
+        history = pickle.loads(pickled)
+
+        return history
+        
 
 
 
