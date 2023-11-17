@@ -46,7 +46,11 @@ class ObjectReference():
         # Parse object UUID, name, or type from the dictionary (but, should have only one)
         refCount = 0
         if ('objectUUID' in dictIn):
-            self.objectUUID = dictIn['objectUUID']
+            self.objectUUID = dictIn['objectUUID']  
+            # The type of the UUID should be an int, not a string. 
+            if (type(self.objectUUID) is not int):
+                self.errors.append("Object UUID must be an integer")
+
             refCount += 1
         if ('objectName' in dictIn):
             self.objectName = dictIn['objectName']
@@ -74,6 +78,70 @@ class ObjectReference():
 
         # Validate (TODO, make this more robust)
         self.isValid = True if (len(self.errors) == 0) else False
+
+
+    # Get the list of object(s) meeting this criteria from a given step in the world history
+    def findInWorldHistoryStep(worldHistoryStep):
+        # Keys: 'step', 'sizeX', 'sizeY', 'grid'.  Grid is a 2D array, with each element being a list of objects at that location
+        out = []
+        
+        # Iterate through the 2D grid
+        for x in range(worldHistoryStep['sizeX']):
+            for y in range(worldHistoryStep['sizeY']):            
+                # Get the list of objects at this location
+                objList = worldHistoryStep['grid'][x][y]
+                # Filter the list of objects by the criteria in this object reference
+                objListFiltered = self._filterObjsByCriteria(objList)
+                # Add the filtered list to the output
+                out.extend(objListFiltered)
+
+        return out
+
+    # Get any objects meeting the criteria defined in this object, from a list of input objects    
+    def _filterObjsByCriteria(self, objListIn):
+        out = []
+
+        # Step 1: Initial filtering: The object can be referenced by either UUID, name, or type
+        candidateObjects = []
+        if (self.objectUUID is not None):
+            # Find the object with this UUID
+            for obj in objListIn:
+                if (obj.uuid == self.objectUUID):
+                    candidateObjects.append(obj)
+        elif (self.objectName is not None):
+            # Find the object(s) with this name
+            nameSanitized = self.objectName.lower().strip()
+            for obj in objListIn:
+                if (obj.name.lower().strip() == nameSanitized):
+                    candidateObjects.append(obj)
+        elif (self.objectType is not None):
+            # Find the object(s) with this type
+            typeSanitized = self.objectType.lower().strip()
+            for obj in objListIn:
+                if (obj.type.lower().strip() == typeSanitized):
+                    candidateObjects.append(obj)
+        
+
+        # Step 2: Now filter the candidate list by any properties that were supplied in the scope
+        # If there are no scoping properties, then we're done
+        if (len(self.properties) == 0):
+            return candidateObjects
+
+        # Iterate through the candidate objects, and only keep the ones that meet the criteria        
+        for obj in candidateObjects:
+            meetsCriteria = True
+            for property in self.properties:
+                result = property.checkObjectMeetsPropertyCriteria(obj)
+                if (result == False):
+                    # At least one of the property criteria doesn't match, so filter out this object
+                    meetsCriteria = False
+                    break
+
+            # If we reach here and the object meets all criteria, then add it to the output list
+            if (meetsCriteria):
+                out.append(obj)
+
+        return out
 
 
     # String method
@@ -105,8 +173,68 @@ class ObjectProperty():
         self.propertyOperator = _parsePropertyOperator(propertyOperatorStr, self.errors)
         self.propertyValue = _parseDictValue(dictIn, 'propertyValue', self.errors)        
         
+        # Secondary checks
+        # If the operator is CONTAINS_LIST, then the property value must be a list
+        if (self.propertyOperator == PropertyOperator.CONTAINS_LIST):
+            if (type(self.propertyValue) is not list):
+                self.errors.append("Property operator is CONTAINS_LIST, but property value is not a list (instead it is '" + str(type(self.propertyValue)) + "')")
+
         # Validate (TODO, make this more robust)
         self.isValid = True if (len(self.errors) == 0) else False
+
+    
+    # Check if a specific object meets the criteria defined in this property
+    def checkObjectMeetsPropertyCriteria(self, objIn:object):
+        # Check if the object has this property
+        if (self.propertyName not in objIn.attributes):
+            # The object doesn't have this property, so it can't meet the criteria
+            return False
+
+        # Get the property value from the object            
+        propValue = objIn.attributes[self.propertyName]
+
+        # Check if the property value matches the criteria, based on the operator
+        if (self.propertyOperator == PropertyOperator.EQUALS):
+            if (propValue == self.propertyValue):
+                return True
+            else:
+                return False
+        elif (self.propertyOperator == PropertyOperator.LESS_THAN):
+            if (propValue < self.propertyValue):
+                return True
+            else:
+                return False
+        elif (self.propertyOperator == PropertyOperator.GREATER_THAN):
+            if (propValue > self.propertyValue):
+                return True
+            else:
+                return False
+        elif (self.propertyOperator == PropertyOperator.LESS_THAN_OR_EQUAL):
+            if (propValue <= self.propertyValue):
+                return True
+            else:
+                return False
+        elif (self.propertyOperator == PropertyOperator.GREATER_THAN_OR_EQUAL):
+            if (propValue >= self.propertyValue):
+                return True
+            else:
+                return False
+        elif (self.propertyOperator == PropertyOperator.NOT_EQUAL):
+            if (propValue != self.propertyValue):
+                return True
+            else:
+                return False
+        elif (self.propertyOperator == PropertyOperator.CONTAINS_LIST):
+            # To meet this criteria, the property value must be one of the elements in the list.             
+            if (propValue in self.propertyValue):
+                return True
+            else:
+                return False
+            
+        # If we reach here, then there is an unknown operator
+        print("ERROR: ObjectProperty.checkObjectMeetsProperty(): Unknown operator (" + str(self.propertyOperator) + ")")
+        return False
+        
 
 
     # String method
@@ -114,11 +242,22 @@ class ObjectProperty():
         return "(" + str(self.propertyName) + ", " + str(self.propertyOperator) + ", " + str(self.propertyValue) + ")"
 
 
+
+
+
+#
+#   Storage classes for specific kinds of knowledge
+#
+
 # Storage class for a measurement, which contains an object reference, and a property
 class Measurement():
-    def __init__(self, dictIn:dict):
+    def __init__(self, dictIn:dict, step:int=None):
         # Keep track of any errors
         self.errors = []
+
+        # Set the step that this knowledge was generated at
+        self.step = step
+
 
         # Parse
 
@@ -138,7 +277,7 @@ class Measurement():
 
     # String method
     def __str__(self):
-        return "Measurement(" + str(self.objectReference) + ", PropertyMeasurement: " + str(self.propertyMeasurement) + ")"
+        return "Measurement(" + str(self.objectReference) + ", PropertyMeasurement: " + str(self.propertyMeasurement) + "), Step: " + str(self.step) + ")"
 
 
 
@@ -182,8 +321,10 @@ def _parsePropertyOperator(strIn:str, errors:list):
 
 
 
-# Stores the action history for one agent
-class KnowledgeRecorder:
+#
+#   Knowledge scorer
+#
+class KnowledgeScorer:
     # Constructor
     def __init__(self, world):
         
@@ -196,6 +337,32 @@ class KnowledgeRecorder:
         self.models = []
 
         self.world = world
+
+
+    # Add knowledge: a measurement
+    def addMeasurement(self, measurement:Measurement):
+        self.measurements.append(measurement)
+
+
+    # Evaluate whether a measurement is correct or incorrect, based on the world history. 
+    def evaluateMeasurement(self, measurement:Measurement):        
+        # Step 0: First, make sure that the measurement is valid (and has no errors)
+        if (not measurement.isValid):
+            return None
+
+        # Step 1: Get the step that the measurement is referencing
+        measurementStep = measurement.step
+
+        # Step 2: Get the world state at that step
+        worldState = self.world.getWorldHistoryAtStep(measurementStep)
+        if (worldState == None):
+            return None
+
+        # Collect the object(s) that the measurement is referring to
+        objectReference = measurement.objectReference
+        objs = objectReference.findInWorldHistoryStep(worldState)
+
+        return 0
 
     # Add an action to the history
     # def add(self, actionType:ActionType, arg1, arg2, result:ActionSuccess):
