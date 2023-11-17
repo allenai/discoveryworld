@@ -81,7 +81,7 @@ class ObjectReference():
 
 
     # Get the list of object(s) meeting this criteria from a given step in the world history
-    def findInWorldHistoryStep(worldHistoryStep):
+    def findInWorldHistoryStep(self, worldHistoryStep):
         # Keys: 'step', 'sizeX', 'sizeY', 'grid'.  Grid is a 2D array, with each element being a list of objects at that location
         out = []
         
@@ -105,20 +105,20 @@ class ObjectReference():
         candidateObjects = []
         if (self.objectUUID is not None):
             # Find the object with this UUID
-            for obj in objListIn:
-                if (obj.uuid == self.objectUUID):
+            for obj in objListIn:                
+                if (obj['uuid'] == self.objectUUID):
                     candidateObjects.append(obj)
         elif (self.objectName is not None):
             # Find the object(s) with this name
             nameSanitized = self.objectName.lower().strip()
             for obj in objListIn:
-                if (obj.name.lower().strip() == nameSanitized):
+                if (obj['name'].lower().strip() == nameSanitized):
                     candidateObjects.append(obj)
         elif (self.objectType is not None):
             # Find the object(s) with this type
             typeSanitized = self.objectType.lower().strip()
             for obj in objListIn:
-                if (obj.type.lower().strip() == typeSanitized):
+                if (obj['type'].lower().strip() == typeSanitized):
                     candidateObjects.append(obj)
         
 
@@ -148,7 +148,7 @@ class ObjectReference():
     def __str__(self):
         strOut = "ObjectReference("
         if (self.objectUUID is not None):
-            strOut += "UUID: " + self.objectUUID + ", "
+            strOut += "UUID: " + str(self.objectUUID) + ", "
         if (self.objectName is not None):
             strOut += "Name: " + self.objectName + ", "
         if (self.objectType is not None):
@@ -186,12 +186,12 @@ class ObjectProperty():
     # Check if a specific object meets the criteria defined in this property
     def checkObjectMeetsPropertyCriteria(self, objIn:object):
         # Check if the object has this property
-        if (self.propertyName not in objIn.attributes):
+        if (self.propertyName not in objIn['attributes']):
             # The object doesn't have this property, so it can't meet the criteria
             return False
 
         # Get the property value from the object            
-        propValue = objIn.attributes[self.propertyName]
+        propValue = objIn['attributes'][self.propertyName]
 
         # Check if the property value matches the criteria, based on the operator
         if (self.propertyOperator == PropertyOperator.EQUALS):
@@ -260,6 +260,7 @@ class Measurement():
 
         # Set the score
         self.score = None
+        self.scoreJustification = []
 
         # Parse
 
@@ -279,11 +280,16 @@ class Measurement():
 
     # Score whether this measurement is true or not, based on the objects in the world history step
     def evaluate(self, worldHistoryStep:list):
+        # Clear the score and justification
+        self.score = None
+        self.scoreJustification = []
+
         # First, filter the objectsIn to only those that match the object reference
         objectsMatchingObjectReference = self.objectReference.findInWorldHistoryStep(worldHistoryStep)
         # If the list is empty, then the measurement is false
         if (len(objectsMatchingObjectReference) == 0):
             self.score = 0
+            self.scoreJustification.append("Could not find any objects in the world at step (" + str(self.step) + ") that match the object reference uuid/name/type, and/or scope criteria.")
             return self.score
 
         # Next, filter the objects to only those that match the property
@@ -294,6 +300,7 @@ class Measurement():
 
         # Set the score to be the proportion of objects that match the property, out of the objects that match the object reference
         self.score = len(objectsMatchingProperty) / len(objectsMatchingObjectReference)
+        self.scoreJustification.append("Found " + str(len(objectsMatchingProperty)) + " objects that match the property criteria, out of " + str(len(objectsMatchingObjectReference)) + " objects that match the object reference criteria (total proportion: " + str(self.score) + ")")
         return self.score        
 
 

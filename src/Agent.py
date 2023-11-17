@@ -7,6 +7,7 @@ from Layer import *
 from ActionSuccess import *
 from Pathfinding import *
 from ActionHistory import *
+from KnowledgeScorer import KnowledgeScorer
 
 import time
 
@@ -25,6 +26,9 @@ class Agent(Object):
 
         # Agent action history
         self.actionHistory = ActionHistory(self.world)
+
+        # Agent knowledge scorer
+        self.knowledgeScorer = KnowledgeScorer(self.world)
 
         # Autopilot action queue and pathfinder
         self.autopilotActionQueue = []                              # Queue of autopilot actions        

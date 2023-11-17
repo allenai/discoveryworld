@@ -18,6 +18,7 @@ from Agent import *
 from ActionSuccess import *
 from UserInterface import UserInterface
 from DialogTree import DialogMaker
+from KnowledgeScorer import *
 
 from JSONEncoder import CustomJSONEncoder
 
@@ -604,6 +605,36 @@ def main():
             #     lastHistoryStep= world.getWorldHistoryAtStep(world.step-1)
             #     if (lastHistoryStep != None):
             #         json.dump(lastHistoryStep, outfile, indent=4, cls=CustomJSONEncoder)
+
+            # Test out the knowledge scorer
+            print("--------------------")
+
+            knowledgeScorer = currentAgent.knowledgeScorer
+            # Create a measurement
+    #         jsonStr = """
+    # {
+    #     "object": {"objectUUID": 1234, "scope":[{"propertyName":"color", "propertyOperator":"equals", "propertyValue":"red"}, {"propertyName":"size", "propertyOperator":"less_than", "propertyValue":5}]},
+    #     "property": {"propertyName":"color", "propertyOperator":"equals", "propertyValue":"blue"}
+    # }
+    #     """    
+            jsonStr = """
+    {
+        "object": {"objectType": "mushroom", "scope":[]},
+        "property": {"propertyName":"color", "propertyOperator":"equals", "propertyValue":"red"}
+    }
+        """    
+
+            # Convert to a dictionary
+            dictIn = json.loads(jsonStr)
+            # Create a Measurement
+            measurement = Measurement(dictIn, step=world.step-1)
+            print(measurement.errors)
+            print(measurement)
+            # Score the measurement
+            score = knowledgeScorer.evaluateMeasurement(measurement)
+            print("Score: " + str(score))
+            print("Score justification: " + str(measurement.scoreJustification))
+
             print("############################################################################################\n")                
             #time.sleep(0.25)            
 
