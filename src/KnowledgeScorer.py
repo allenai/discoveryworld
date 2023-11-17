@@ -258,6 +258,8 @@ class Measurement():
         # Set the step that this knowledge was generated at
         self.step = step
 
+        # Set the score
+        self.score = None
 
         # Parse
 
@@ -273,6 +275,26 @@ class Measurement():
 
         # Validate (TODO, make this more robust)
         self.isValid = True if (len(self.errors) == 0) else False
+
+
+    # Score whether this measurement is true or not, based on the objects in the world history step
+    def evaluate(self, worldHistoryStep:list):
+        # First, filter the objectsIn to only those that match the object reference
+        objectsMatchingObjectReference = self.objectReference.findInWorldHistoryStep(worldHistoryStep)
+        # If the list is empty, then the measurement is false
+        if (len(objectsMatchingObjectReference) == 0):
+            self.score = 0
+            return self.score
+
+        # Next, filter the objects to only those that match the property
+        objectsMatchingProperty = []
+        for obj in objectsMatchingObjectReference:
+            if (self.propertyMeasurement.checkObjectMeetsPropertyCriteria(obj)):
+                objectsMatchingProperty.append(obj)
+
+        # Set the score to be the proportion of objects that match the property, out of the objects that match the object reference
+        self.score = len(objectsMatchingProperty) / len(objectsMatchingObjectReference)
+        return self.score        
 
 
     # String method
@@ -358,25 +380,8 @@ class KnowledgeScorer:
         if (worldState == None):
             return None
 
-        # Collect the object(s) that the measurement is referring to
-        objectReference = measurement.objectReference
-        objs = objectReference.findInWorldHistoryStep(worldState)
-
-        return 0
-
-    # Add an action to the history
-    # def add(self, actionType:ActionType, arg1, arg2, result:ActionSuccess):
-    #     packed = {
-    #         'actionType': actionType,
-    #         'arg1': arg1,
-    #         'arg2': arg2,            
-    #         'success': result.success,
-    #         'step': self.world.getStepCounter(),
-    #         'result': result
-    #     }
-
-    #     return self.history.append(packed)
-
+        # Perform the scoring, return the score
+        return measurement.evaluate(worldState)
 
 
 
