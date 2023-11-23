@@ -65,6 +65,11 @@ class KnowledgeEvaluationTemplate():
 
 
 
+    #
+    #   Functions for testing whether the hypothesis assertion (i.e. it's THEN statement) is true    
+    #
+    def testHypothesisAssertion(self, hypothesisAssertion):
+        pass
 
     #
     #   The hypothesis itself
@@ -73,8 +78,15 @@ class KnowledgeEvaluationTemplate():
         pass
 
 
-    def exampleHypothesis(self):
-        
+    def exampleHypothesis1(self):
+        # If a mushroom exists, and it is either red or pink, then it is poisonous
+        pass
+
+    def exampleHypothesis2(self):
+        # If an agent eats a mushroom, then it will become sick within 50 steps in the future. 
+        pass
+
+
 
 #
 #   Main
@@ -90,6 +102,7 @@ if __name__ == "__main__":
     knowledgeEvaluationTemplate = KnowledgeEvaluationTemplate()
 
     # Step 2: Run the hypothesis
+    # TODO
 
     # Step 3: Export the results (use command line argument to specify filename)
     knowledgeEvaluationTemplate.exportEvaluationResults(args.exportFilename)
