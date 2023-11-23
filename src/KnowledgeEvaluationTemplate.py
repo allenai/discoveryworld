@@ -5,9 +5,24 @@ import pickle
 import zlib
 import json
 
+
 #
-#   Load world history
+#   Storage class for an object
 #
+class KEObject():
+    # Constructor
+    def __init__(self, initDict:dict):
+        self.uuid = initDict['uuid']
+        self.name = initDict['name']
+        self.type = initDict['type']
+        self.contents = initDict['contents']
+        self.attributes = initDict['attributes']
+
+
+
+#
+#   Knowledge Evaluation Template
+# 
 class KnowledgeEvaluationTemplate():
     # Constructor
     def __init__(self):
@@ -25,16 +40,17 @@ class KnowledgeEvaluationTemplate():
     def loadWorldHistory(self, filename):
         print("Importing world history from file: " + filename + "...")
         f = open(filename, "rb")
-        self.worldHistory = pickle.loads(f.read())
-        f.close()
+        worldHistory = pickle.loads(f.read())
+        f.close()        
         print("Import complete.")
+        return worldHistory
 
     # Export the results of the evaluation
     def exportEvaluationResults(self, filename):
         print("Exporting evaluation results to file: " + filename + "...")
         f = open(filename, "w")
         f.write(json.dumps(self.evaluationResults))
-        f.close()
+        f.close()        
         print("Export complete.")
 
 
@@ -44,6 +60,7 @@ class KnowledgeEvaluationTemplate():
     def getWorldHistoryAtStep(self, step):
         # Return the world history at the specified step
         # Since the world history is pickled then compressed, this will require uncompressing then unpickling
+        print( type(self.worldHistory) )
         if (step < 0 or step >= len(self.worldHistory)):
             return None
 
@@ -55,7 +72,19 @@ class KnowledgeEvaluationTemplate():
         # Unpickle the history
         history = pickle.loads(pickled)
 
-        return history
+        # Convert the history to just a list of all objects at that step
+        allObjects = []
+        allObjectsByUUID = {}
+        # Traverse grid, adding all objects to the list
+        grid = history['grid']
+        for row in grid:
+            for cell in row:                
+                for obj in cell:
+                    convertedObj = KEObject(obj)
+                    allObjects.append(convertedObj)
+                    allObjectsByUUID[convertedObj.uuid] = convertedObj
+
+        return allObjects, allObjectsByUUID
 
 
 
@@ -63,6 +92,10 @@ class KnowledgeEvaluationTemplate():
     #   Functions for building the hypothesis queries
     #
 
+    def getProperty(self, obj, property):
+        # Return the value of the property of the object
+
+        pass
 
 
     #
@@ -78,8 +111,12 @@ class KnowledgeEvaluationTemplate():
         pass
 
 
-    def exampleHypothesis1(self):
+    def exampleHypothesis1(self, obj1):
         # If a mushroom exists, and it is either red or pink, then it is poisonous
+        if (obj1.type == "mushroom") and (obj1.color == "red" or obj1.color == "pink"):
+            self.testHypothesisAssertion(obj1.poisonous == True)
+            return obj1.poisonous
+
         pass
 
     def exampleHypothesis2(self):
@@ -103,6 +140,8 @@ if __name__ == "__main__":
 
     # Step 2: Run the hypothesis
     # TODO
+    allObjects, allObjectsByUUID = knowledgeEvaluationTemplate.getWorldHistoryAtStep(0)
+    print(allObjectsByUUID)
 
     # Step 3: Export the results (use command line argument to specify filename)
     knowledgeEvaluationTemplate.exportEvaluationResults(args.exportFilename)
