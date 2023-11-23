@@ -8,11 +8,18 @@ class SandboxPython():
     # Constructor
     def __init__(self, world):
         self.world = world
-        
 
+        # Paths/Filenames        
+        self.pathSandbox = "sandbox/"                               # Sandbox path out
+        self.worldStateHistoryFilename = "worldStateHistory.json"   # Filename of the world history to export
+
+        self.evaluationTemplateFilename = "evaluationTemplate.py"   # Filename of the evaluation template
+        
     
-    def testHypothesis(hypothesisPythonStr:str):
+    def testHypothesis(self, hypothesisPythonStr:str):
         # Step 1: Export the world state history to a JSON file
+        exportFilename = self.pathSandbox + self.worldStateHistoryFilename
+        self.world.exportWorldStateHistory(exportFilename)
 
         # Step 2: Export the hypothesis to a Python file
 

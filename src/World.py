@@ -351,8 +351,13 @@ class World:
 
         return history
         
-
-
+    # Export the world history to a (pickled)
+    def exportWorldHistory(self, filename):        
+        print("Exporting world history to file: " + filename + "...")
+        f = open(filename, "wb")
+        f.write(pickle.dumps(self.worldHistory))
+        f.close()
+        print("Export complete.")
 
     #
     #   Rendering
