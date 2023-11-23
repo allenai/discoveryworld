@@ -18,6 +18,23 @@ class KEObject():
         self.contents = initDict['contents']
         self.attributes = initDict['attributes']
 
+    # Override __getattr__ to allow any 'attribute' to be accessed as a direct attribute. 
+    # If the attribute does not exist, return None
+    def __getattr__(self, item):
+        # Check if the attribute exists in self.attributes
+        value = self.attributes.get(item, None)
+        if (value != None):
+            return value
+
+        # Check if the attribute exists in self.materials (which is a list of materials)
+        for material in self.materials:
+            value = material.get(item, None)
+            if (value != None):
+                return value
+
+        # Otherwise, return None
+        return None
+
 
 
 #
@@ -84,6 +101,10 @@ class KnowledgeEvaluationTemplate():
                     allObjects.append(convertedObj)
                     allObjectsByUUID[convertedObj.uuid] = convertedObj
 
+                    if (convertedObj.type == "agent"):
+                        print(obj)
+                        print("\n\n")
+
         return allObjects, allObjectsByUUID
 
 
@@ -113,11 +134,14 @@ class KnowledgeEvaluationTemplate():
 
     def exampleHypothesis1(self, obj1):
         # If a mushroom exists, and it is either red or pink, then it is poisonous
-        if (obj1.type == "mushroom") and (obj1.color == "red" or obj1.color == "pink"):
-            self.testHypothesisAssertion(obj1.poisonous == True)
-            return obj1.poisonous
+        #if (obj1.type == "mushroom") and (obj1.color == "red" or obj1.color == "pink"):
+        if (obj1.name == "mushroom"):
+            if (obj1.MaterialName == "plant matter"):
+            #self.testHypothesisAssertion(obj1.poisonous == True)
+            #if (obj1.isPoisonous == True):
+                return True
 
-        pass
+        return False        
 
     def exampleHypothesis2(self):
         # If an agent eats a mushroom, then it will become sick within 50 steps in the future. 
@@ -140,8 +164,20 @@ if __name__ == "__main__":
 
     # Step 2: Run the hypothesis
     # TODO
-    allObjects, allObjectsByUUID = knowledgeEvaluationTemplate.getWorldHistoryAtStep(0)
-    print(allObjectsByUUID)
+    allObjects, allObjectsByUUID = knowledgeEvaluationTemplate.getWorldHistoryAtStep(5)
+    #print(allObjectsByUUID)
+
+    print("")
+    print("\n------------------\n")
+    print("Evaluating Hypothesis 1...")
+    for obj in allObjects:
+        result = knowledgeEvaluationTemplate.exampleHypothesis1(obj)
+        if (result == True):
+            print("Hypothesis 1 is true for object: " + obj.name)
+            print(str(obj.attributes))
+    
+    print("")
+    print("\n------------------\n")
 
     # Step 3: Export the results (use command line argument to specify filename)
     knowledgeEvaluationTemplate.exportEvaluationResults(args.exportFilename)

@@ -313,8 +313,8 @@ class World:
                 allObjs = []
                 for layer in Layer:                    
                     for object in self.grid[x][y]["layers"][layer]:
-                        # Pack to dict using the to_json() method
-                        allObjs.append( object.to_json() )                        
+                        # Pack to dict using the to_dict() method
+                        allObjs.append( object.to_dict() )                        
                         totalObjects += 1            
                 packed["grid"][x].append(allObjs)
 
@@ -328,7 +328,7 @@ class World:
 
         print("Number of items in world history:" + str(len(self.worldHistory)))
         print("Size of most recent item: " + str(len(packedCompressed)) + " bytes " + str(len(packedCompressed) / 1024) + " KB")
-
+                    
         # delta time
         deltaTime = time.time() - startTime        
         print("World history includes " + str(totalObjects) + " objects.")

@@ -55,6 +55,26 @@ class ActionHistory:
         return None
 
 
+    # Export the action history to a list that can be converted to JSON
+    def exportToJSONAbleList(self):
+        out = []
+        for action in self.history:            
+            packed = {
+                'actionType': action['actionType'].name,
+                'arg1': None,
+                'arg2': None,
+                'success': action['success'],
+                'step': action['step']
+                #'result': not saved here
+            }
+            if (action['arg1'] != None):
+                packed['arg1'] = {"objUUID": action['arg1'].uuid}
+            if (action['arg2'] != None):
+                packed['arg2'] = {"objUUID": action['arg2'].uuid}
+
+            out.append(packed)
+
+        return out
     
     def __str__(self):
         strOut = ""

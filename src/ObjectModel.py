@@ -45,6 +45,9 @@ class Object:
         if ("gridY" not in self.attributes):
             self.attributes["gridY"] = -1
 
+        # Agent action history (if applicable)
+        self.actionHistory = None
+
         # Default attributes
         self.attributes["isMovable"] = True                         # Can it be moved?
         self.attributes["isPassable"] = True                        # Can an agent walk over this?
@@ -437,15 +440,17 @@ class Object:
     #
     #   Serialize to JSON (for saving histories, but potentially lossy -- not all object member variables are saved)    
     #
-    def to_json(self):
-        # Serialize to JSON
+    def to_dict(self):
+        # Serialize to a dictionary suitable for saving to JSON
         # Note: This is lossy, and does not save all member variables
         packed = {
             "uuid": self.uuid,
             "name": self.name,
             "type": self.type,
             "contents": [],
+            "parts": [],
             "attributes": {},
+            "actionHistory": None,
             "spriteNames": self.getSpriteNamesWithContents()
         }
 
@@ -453,14 +458,23 @@ class Object:
         for obj in self.contents:
             packed["contents"].append( {"objUUID": obj.uuid} )
 
+        # Serialize parts
+        for obj in self.parts:
+            packed["parts"].append( {"objUUID": obj.uuid} )
+
         # Serialize attributes
         for key in self.attributes:
             value = self.attributes[key]
-            if (type(value) != str) and (type(value) != int) and (type(value) != float) and (type(value) != bool):
-                # Skip any non-primitive types
+            # Skip any non-primitive types (but allow lists and dicts)
+            if (type(value) != str) and (type(value) != int) and (type(value) != float) and (type(value) != bool) and (type(value) != list) and (type(value) != dict):                
                 continue            
             packed["attributes"][key] = value            
         
+
+        # Serialize action history, if applicable        
+        if (self.actionHistory != None):
+            packed["actionHistory"] = self.actionHistory.exportToJSONAbleList()                        
+
         return packed
 
 
