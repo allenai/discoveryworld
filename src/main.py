@@ -606,6 +606,10 @@ def main():
             #     if (lastHistoryStep != None):
             #         json.dump(lastHistoryStep, outfile, indent=4, cls=CustomJSONEncoder)
 
+            ## Debug: dump the world history to a JSON file
+            #filenameWorldHistoryOut = "sandbox/worldHistory.pickle"
+            #world.exportWorldHistory(filenameWorldHistoryOut)
+
             # Test out the knowledge scorer
             print("--------------------")
 

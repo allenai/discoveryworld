@@ -13,8 +13,8 @@ class SandboxPython():
         self.pathSandbox = "sandbox/"                               # Sandbox path out
         self.worldStateHistoryFilename = "worldStateHistory.json"   # Filename of the world history to export
 
-        self.evaluationTemplateFilename = "evaluationTemplate.py"   # Filename of the evaluation template
-        
+        self.evaluationTemplateFilename = "src/KnowledgeEvaluationTemplate.py"   # Filename of the evaluation template
+
     
     def testHypothesis(self, hypothesisPythonStr:str):
         # Step 1: Export the world state history to a JSON file
@@ -29,3 +29,22 @@ class SandboxPython():
 
 
         return 0.0    
+
+    
+    #
+    #   Helper functions
+    #
+
+    def __exportHypothesisWithTemplate(self, hypothesisPythonStr:str, exportFilename:str):
+        # Export the hypothesis to a Python file, using the evaluation template
+        pass
+
+    def __runSandbox(self, sandboxFilename:str):
+        # Run the sandboxed Python file
+        pass
+        
+    def __readEvaluationResults(self, evaluationFilename:str):
+        # Read the results of the evaluation
+        pass
+
+
