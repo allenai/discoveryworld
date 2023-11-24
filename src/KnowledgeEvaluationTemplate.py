@@ -107,7 +107,12 @@ class KnowledgeEvaluationTemplate():
         self.worldHistoryFilename = "sandbox/worldHistory.pickle"
         self.worldHistory = self.loadWorldHistory(self.worldHistoryFilename)
 
-        self.evaluationResults = {}
+        self.evaluationResults = {
+            "conditionMetCount": 0,
+            "assertionMetCount": 0,
+        }
+
+        self.curStep = 0    # The current step being checked
 
     #
     #   Import/Export
@@ -200,25 +205,91 @@ class KnowledgeEvaluationTemplate():
 
     def exampleHypothesis1(self, obj1):
         # If a mushroom exists, and it is either red or pink, then it is poisonous
+        def exampleAssertion(self, obj1):
+            # Check that 'obj1' has 'isPoisonous' = true            
+            if (obj1.color == "pink"):                
+                return True
+            else:
+                return False
+
         #if (obj1.type == "mushroom") and (obj1.color == "red" or obj1.color == "pink"):
         if (obj1.name == "mushroom"):
-            if (obj1.MaterialName == "plant matter"):
-            #self.testHypothesisAssertion(obj1.poisonous == True)
-            #if (obj1.isPoisonous == True):
-                return True
+            print("HYPOTHESIS 1 CONDITION MET")
+            #print("\t" + obj1.color)
+            return self.testAssertion(exampleAssertion, [obj1])
 
         return False        
 
-    def exampleHypothesis2(self, agent, obj1):
-        # If an agent eats a mushroom, then it will become sick within 50 steps in the future. 
 
+    def exampleHypothesis2(self, agent, obj1):
+        # If an agent eats a mushroom, then it will become sick within the future. 
+        def exampleAssertion(self, agent, obj1):
+            # Check that 'agent' has 'isPoisoned' = true
+            if (agent.isPoisoned == True):
+                return True
+            else:
+                return False
+                
         #if (obj1.name == "mushroom") and (agent.tookAction("EAT", obj1)):
         if (agent.tookAction("EAT", obj1)):
             #self.testHypothesisAssertion(agent.willBecomeSickWithin(50) == True)
-            return True
+            #return True
+            print("HYPOTHESIS 2 CONDITION MET")
+            return self.testAssertion(exampleAssertion, [agent, obj1])
+
+        
 
         return False        
 
+
+    # Assertions
+    # Takes a function pointer to the assertion function, and the arguments to pass to the assertion function
+    def testAssertion(self, assertionFunction, args):
+        self.evaluationResults['conditionMetCount'] += 1
+
+        #print("TESTING ASSERTION... (assertionFunction = " + str(assertionFunction) + ")")
+
+        # Get the starting step
+        startStep = self.curStep 
+
+        # Get the ending step (the length of the world history)
+        endStep = self.getWorldHistoryLength()
+
+        # Iterate from the current step to the last step
+        for step in range(startStep, endStep):
+            # Get the world history at the current step
+            allObjects, allObjectsByUUID = self.getWorldHistoryAtStep(step)
+            # Get the objects with the same UUIDs as the arguments, but at the current time step
+            argsAtStep = [self]
+            for arg in args:
+                if (arg.uuid in allObjectsByUUID):
+                    argAtStep = allObjectsByUUID[arg.uuid]                
+                    argsAtStep.append(argAtStep)
+                else:
+                    argsAtStep.append(None)
+                    # TODO: Should we just stop here and return False, if the object has disappeared?  (Or do some other graceful error handling? But tricky -- e.g. the object might have been eaten, and isn't relevant any more)
+            # Run the assertion function with the arguments
+            assertionResult = False
+            try:                
+                #print("Running assertion function...")
+                assertionResult = assertionFunction(*argsAtStep)
+                #print("Assertion result = " + str(assertionResult) + " at step " + str(step) + " (of " + str(endStep) + ")")
+            except KeyboardInterrupt:
+                print("Keyboard interrupt")
+                exit(1)
+            except Exception as e:
+                #print("Exception occurred: " + str(e))
+                assertionResult = False
+
+            # If the assertion is true, then return True
+            if (assertionResult == True):
+                self.evaluationResults['assertionMetCount'] += 1
+                return True
+            
+            # Otherwise, continue looking for one or more cases where the assertion is true.
+            
+        # If we get here, then the assertion was never found to be true, so return False
+        return False
 
 
 #
@@ -267,12 +338,12 @@ if __name__ == "__main__":
                 
         #allObjects, allObjectsByUUID = knowledgeEvaluationTemplate.getWorldHistoryAtStep(5)
         
-        print("Evaluating Hypothesis 1...")
-        for obj in allObjects:
-            result = knowledgeEvaluationTemplate.exampleHypothesis1(obj)
-            if (result == True):
-                print("\tHypothesis 1 is true for object: " + obj.name)
-                #print(str(obj.attributes))
+        # print("Evaluating Hypothesis 1...")
+        # for obj in allObjects:
+        #     result = knowledgeEvaluationTemplate.exampleHypothesis1(obj)
+        #     if (result == True):
+        #         print("\tHypothesis 1 is true for object: " + obj.name)
+        #         #print(str(obj.attributes))
         
 
         print("Evaluating Hypothesis 2...")
@@ -294,5 +365,11 @@ if __name__ == "__main__":
 #        print("")
 #        print("\n------------------\n")
 
+        print("Evaluation results: " + str(knowledgeEvaluationTemplate.evaluationResults))
+
+
     # Step 3: Export the results (use command line argument to specify filename)
     knowledgeEvaluationTemplate.exportEvaluationResults(args.exportFilename)
+    # Print the evaluation results to the console
+    print("Evaluation results:")
+    print(knowledgeEvaluationTemplate.evaluationResults)
