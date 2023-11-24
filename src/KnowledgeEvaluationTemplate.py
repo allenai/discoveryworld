@@ -16,7 +16,9 @@ class KEObject():
         self.name = initDict['name']
         self.type = initDict['type']
         self.contents = initDict['contents']
+        self.parts = initDict['parts']
         self.attributes = initDict['attributes']
+        self.actionHistory = initDict['actionHistory']
 
     # Override __getattr__ to allow any 'attribute' to be accessed as a direct attribute. 
     # If the attribute does not exist, return None
@@ -34,6 +36,64 @@ class KEObject():
 
         # Otherwise, return None
         return None
+
+    
+    # This sets the specific step in the action history that will be checked with the `tookAction` method
+    def setStepToCheck(self, step:int):
+        self.actionHistoryStep = step
+
+    # Check to see if (a) this is an agent, and (b) the action provided in the argument is in the agent's action list    
+    def tookAction(self, actionTypeStr, arg1=None, arg2=None):        
+        # First, check to see if this object has a populated action history
+        if (self.actionHistory == None) or (len(self.actionHistory) == 0):
+            return False
+
+        #print("Started for object: " + self.name + " (" + str(self.uuid) + ")")
+
+        # Next, check the action history to see if an action was taken at step `self.actionHistoryStep`
+        actionToCheck = None
+        for action in self.actionHistory:
+            if (action['step'] == self.actionHistoryStep):                
+                actionToCheck = action
+                break
+
+        # If no action was taken at the specified step, return False
+        if (actionToCheck == None):
+            #print("No action taken at step " + str(self.actionHistoryStep))
+            return False
+        #print("Action taken at step " + str(self.actionHistoryStep) + ": " + str(actionToCheck))
+
+        # Check the action type for a match
+        if (actionTypeStr != actionToCheck['actionType']):
+            #print("Wrong action type (" + actionTypeStr + " != " + actionToCheck['actionType'] + ")")
+            return False
+
+        # print("Correct action type (" + actionTypeStr + " == " + actionToCheck['actionType'] + ")")
+        # print("arg1.uuid: " + str(arg1.uuid))
+        # print("arg2: " + str(arg2))
+        # print("actionToCheck['arg1'].uuid: " + str(actionToCheck['arg1']['objUUID']))
+        # print("actionToCheck['arg2']: " + str(actionToCheck['arg2']))
+
+
+        # If we reach here, check to see that the arguments match. 
+        # First, check for `None`` matches
+        if ((arg1 == None) and (actionToCheck['arg1'] != None)) or ((arg1 != None) and (actionToCheck['arg1'] == None)):
+            return False
+        if ((arg2 == None) and (actionToCheck['arg2'] != None)) or ((arg2 != None) and (actionToCheck['arg2'] == None)):
+            return False
+        
+        # Then, check for object matches
+        if ((arg1 != None) and (actionToCheck['arg1'] != None)):
+            if (arg1.uuid != actionToCheck['arg1']['objUUID']):
+                return False
+        if ((arg2 != None) and (actionToCheck['arg2'] != None)):
+            if (arg2.uuid != actionToCheck['arg2']['objUUID']):
+                return False
+
+        print("FOUND")        
+        # If we reach here, all checks have passed -- the action taken at the specified step matches the action provided in the arguments
+        return True
+
 
 
 
@@ -70,14 +130,17 @@ class KnowledgeEvaluationTemplate():
         f.close()        
         print("Export complete.")
 
+    # Return the length of the world history (in number of steps)
+    def getWorldHistoryLength(self):
+        return len(self.worldHistory)
+
 
     #
     #   World History access functions
     #
     def getWorldHistoryAtStep(self, step):
         # Return the world history at the specified step
-        # Since the world history is pickled then compressed, this will require uncompressing then unpickling
-        print( type(self.worldHistory) )
+        # Since the world history is pickled then compressed, this will require uncompressing then unpickling        
         if (step < 0 or step >= len(self.worldHistory)):
             return None
 
@@ -88,7 +151,7 @@ class KnowledgeEvaluationTemplate():
         pickled = zlib.decompress(compressedPickled)
         # Unpickle the history
         history = pickle.loads(pickled)
-
+                    
         # Convert the history to just a list of all objects at that step
         allObjects = []
         allObjectsByUUID = {}
@@ -98,12 +161,15 @@ class KnowledgeEvaluationTemplate():
             for cell in row:                
                 for obj in cell:
                     convertedObj = KEObject(obj)
+                    # Set the action history step that will be checked, to be the current step
+                    convertedObj.setStepToCheck(step)
+                    # Add the object to the list, and the UUID-to-object LUT
                     allObjects.append(convertedObj)
                     allObjectsByUUID[convertedObj.uuid] = convertedObj
 
-                    if (convertedObj.type == "agent"):
-                        print(obj)
-                        print("\n\n")
+                    # if (convertedObj.type == "agent"):
+                    #     print(obj)
+                    #     print("\n\n")
 
         return allObjects, allObjectsByUUID
 
@@ -143,9 +209,15 @@ class KnowledgeEvaluationTemplate():
 
         return False        
 
-    def exampleHypothesis2(self):
+    def exampleHypothesis2(self, agent, obj1):
         # If an agent eats a mushroom, then it will become sick within 50 steps in the future. 
-        pass
+
+        #if (obj1.name == "mushroom") and (agent.tookAction("EAT", obj1)):
+        if (agent.tookAction("EAT", obj1)):
+            #self.testHypothesisAssertion(agent.willBecomeSickWithin(50) == True)
+            return True
+
+        return False        
 
 
 
@@ -164,20 +236,63 @@ if __name__ == "__main__":
 
     # Step 2: Run the hypothesis
     # TODO
-    allObjects, allObjectsByUUID = knowledgeEvaluationTemplate.getWorldHistoryAtStep(5)
-    #print(allObjectsByUUID)
-
-    print("")
-    print("\n------------------\n")
-    print("Evaluating Hypothesis 1...")
-    for obj in allObjects:
-        result = knowledgeEvaluationTemplate.exampleHypothesis1(obj)
-        if (result == True):
-            print("Hypothesis 1 is true for object: " + obj.name)
-            print(str(obj.attributes))
     
-    print("")
-    print("\n------------------\n")
+    worldHistoryLength = knowledgeEvaluationTemplate.getWorldHistoryLength()
+    print("World history has " + str(worldHistoryLength) + " steps.")
+
+    for step in range(1, worldHistoryLength):
+#        print("")
+#        print("\n------------------\n")
+
+        print("Checking step " + str(step) + ":")
+
+        allObjects0, allObjectsByUUID0 = knowledgeEvaluationTemplate.getWorldHistoryAtStep(step)        # Current step
+        allObjects1, allObjectsByUUID1 = knowledgeEvaluationTemplate.getWorldHistoryAtStep(step-1)      # Previous step
+
+        allObjects = []
+        allObjectsByUUID = {}
+        
+        # If the object doesn't have an action history, then use its version from the last step
+        # NOTE: This is a hack, because while the agent's action history will present as "What it's about to do", the agent's properties will present as "What it used to be"
+        for obj in allObjects1:
+            # If there's no action history, then use the object from the previous step
+            if (obj.actionHistory == None) or (len(obj.actionHistory) == 0):
+                allObjects.append(obj)
+                allObjectsByUUID[obj.uuid] = obj
+            # Otherwise, use the object from the current step
+            else:
+                objAtCurrent = allObjectsByUUID0[obj.uuid]
+                allObjects.append(objAtCurrent)
+                allObjectsByUUID[obj.uuid] = objAtCurrent            
+                
+        #allObjects, allObjectsByUUID = knowledgeEvaluationTemplate.getWorldHistoryAtStep(5)
+        
+        print("Evaluating Hypothesis 1...")
+        for obj in allObjects:
+            result = knowledgeEvaluationTemplate.exampleHypothesis1(obj)
+            if (result == True):
+                print("\tHypothesis 1 is true for object: " + obj.name)
+                #print(str(obj.attributes))
+        
+
+        print("Evaluating Hypothesis 2...")
+        for obj1 in allObjects:
+            for obj2 in allObjects:
+                result = knowledgeEvaluationTemplate.exampleHypothesis2(obj1, obj2)
+                if (result == True):
+                    print("\tHypothesis 2 is true for objects: " + obj1.name + ", " + obj2.name)
+                    #print(str(obj1.attributes))
+                    #print(str(obj2.attributes))
+
+
+        print("Checking for object with specific UUID...")
+        uuidToCheck = 830024008     # Mushroom that is eaten in step 14
+        for obj in allObjects:
+            if (obj.uuid == uuidToCheck):
+                print("\tFound object with UUID " + str(uuidToCheck) + ": " + obj.name)
+                #print(str(obj.attributes))
+#        print("")
+#        print("\n------------------\n")
 
     # Step 3: Export the results (use command line argument to specify filename)
     knowledgeEvaluationTemplate.exportEvaluationResults(args.exportFilename)

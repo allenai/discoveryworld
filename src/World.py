@@ -313,9 +313,15 @@ class World:
                 allObjs = []
                 for layer in Layer:                    
                     for object in self.grid[x][y]["layers"][layer]:
-                        # Pack to dict using the to_dict() method
-                        allObjs.append( object.to_dict() )                        
-                        totalObjects += 1            
+
+                        # For each object, get all the objects it contains/that are its parts. 
+                        allObjContentsAndParts = object.getAllContainedObjectsAndParts()
+                        # Add them to the list of objects to save
+                        for obj in allObjContentsAndParts:
+                            # Pack to dict using the to_dict() method
+                            allObjs.append( obj.to_dict() )                        
+                            totalObjects += 1            
+                            
                 packed["grid"][x].append(allObjs)
 
         # Save the history

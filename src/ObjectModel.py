@@ -233,6 +233,28 @@ class Object:
         # Return
         return out
 
+    # Get all contained objects and parts, do not respect containers (this is typically used for dumping the objects to a file)
+    def getAllContainedObjectsAndParts(self):
+        # TODO: Fix this so it doesn't require the list(set()) hack (which prevents the duplicates, but is slow)
+        out = []
+        # Add self
+        out.append(self)
+
+        for obj in self.contents:
+            # Add self
+            out.append(obj)
+            # Add children
+            out.extend(obj.getAllContainedObjectsAndParts())
+
+        for obj in self.parts:
+            # Add self
+            out.append(obj)
+            # Add children
+            out.extend(obj.getAllContainedObjectsAndParts())
+
+        # Return
+        return list(set(out))
+
     # Get outermost closed container (if this object is contained in a closed container).
     # Essentially answers the question: "What is the next container that I'd have to open to (eventually) get at this object?"
     # Returns None if there is no closed container.
