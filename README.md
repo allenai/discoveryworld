@@ -2,6 +2,8 @@
 
 This is the repository for DiscoveryWorld (currently under development)
 
+![discoverworld](screenshot.png)
+
 ## Installation and Running
 
 ### Installation
