@@ -190,7 +190,7 @@ class UserInterface:
                 # x should be 200 from the right
                 # y should start 100 from the bottom
                 x = self.window.get_width() - 200
-                y = self.window.get_height() - 100
+                y = self.window.get_height() - 120
                 self.renderTaskProgress(x, y, task)
                                 
         pass
@@ -215,7 +215,7 @@ class UserInterface:
         elif (taskScore == 1):
             color = (0, 255, 0)
         else:
-            color = (int(255 * taskScore), int(255 * (1 - taskScore)), 0)
+            color = (int(255 * (1-taskScore)), int(255 * (taskScore)), 0)
         # Then, draw the background
         pygame.draw.rect(self.window, color, (x, y, 200, 20))
 
