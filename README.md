@@ -61,6 +61,12 @@ Agents can be controlled through dialoging with them:
 - Farmer: Can ask to plant more mushroom seeds.
 - Colonists: Nominally there will be a mechanic to call the agents to eat -- the hook is there, right now just press "1".
 
+Manually engaging the hooks (helpful for debugging):
+- The hooks to make agents do things can be manually engaged with number keys (1, 2, 3, 4).
+- 1: Causes the colonists to come to the kitchen and try to eat food.
+- 2: Causes the cook to try to collect mushrooms from the farm into the pot
+- 3: Causes the cook to try to serve mushrooms from the pot
+- 4: Causes the farmer to try and plant more mushroom seeds (which will eventually grow into new mushrooms). 
   
 
 
