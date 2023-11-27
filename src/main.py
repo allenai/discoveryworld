@@ -284,8 +284,8 @@ def main():
 
     # Game parameters
     gameParams = {
-        "height": 1024,
-        "width": 1024,
+        "height": 750,
+        "width": 800,
         "fps": 60,
         "name": "DiscoveryWorld"
     }
@@ -614,8 +614,8 @@ def main():
             #         json.dump(lastHistoryStep, outfile, indent=4, cls=CustomJSONEncoder)
 
             ## Debug: dump the world history to a JSON file
-            filenameWorldHistoryOut = "sandbox/worldHistory.pickle"
-            world.exportWorldHistory(filenameWorldHistoryOut)                                                    
+            ## filenameWorldHistoryOut = "sandbox/worldHistory.pickle"
+            ## world.exportWorldHistory(filenameWorldHistoryOut)                                                    
 
             # Test out the knowledge scorer
             print("--------------------")
@@ -664,8 +664,8 @@ def main():
         # Step 1: Get the agent's location
         agentLocation = currentAgent.getWorldLocation()
         # Step 2: Define the viewport size (in tiles)
-        viewportSizeX = 32
-        viewportSizeY = 32
+        viewportSizeX = 24
+        viewportSizeY = 16
         # Step 3: Determine the worldStartX and worldStartY coordinates
         worldStartX = agentLocation[0] - int(viewportSizeX / 2)
         worldStartY = agentLocation[1] - int(viewportSizeY / 2)
@@ -706,8 +706,7 @@ def main():
     # Convert the frames to a video
     print("Converting frames to video...")
     # Call FFMPEG (forces overwrite)
-    #subprocess.call(["./ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
-    subprocess.call(["ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
+    ## subprocess.call(["ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
 
 
     # Print the action history of the farmer agent
