@@ -48,8 +48,20 @@ The following controls are supported:
 * **Talk:** `t` will attempt to talk to the agent in `arg1`
 * **Read:** `r` will read the object in `arg1`
 * **Eat:** `e` will eat `arg1`
+* **Wait:** `w` will do nothing. 
 * **Quit:** `ESC` will exit.
 
+
+## Events
+
+This scenario is won by having 10 agents successfully eat non-poisonous mushrooms (which is evidenced by them going about 100 steps after eating a mushroom without getting sick).  If they get sick, you'll notice this by the unhappy face on the agent, and them walking themselves to the infirmary (top-right building). 
+
+Agents can be controlled through dialoging with them:
+- Cook: Can ask to (a) collect mushrooms from the farm and put them in the pot, and (b) ask to serve the mushrooms in the pot to the tables.
+- Farmer: Can ask to plant more mushroom seeds.
+- Colonists: Nominally there will be a mechanic to call the agents to eat -- the hook is there, right now just press "1".
+
+  
 
 
 ## Contact
