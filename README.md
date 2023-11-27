@@ -67,7 +67,7 @@ Manually engaging the hooks (helpful for debugging):
 - 2: Causes the cook to try to collect mushrooms from the farm into the pot
 - 3: Causes the cook to try to serve mushrooms from the pot
 - 4: Causes the farmer to try and plant more mushroom seeds (which will eventually grow into new mushrooms). 
-  
+- 0: This will "auto-run" for 100 steps. 
 
 
 ## Contact
