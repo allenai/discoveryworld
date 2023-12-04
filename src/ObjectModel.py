@@ -1196,7 +1196,7 @@ class Bed(Object):
 class Microscope(Object):
     # Constructor
     def __init__(self, world):
-        Object.__init__(self, world, "microscope", "microscope", defaultSpriteName = "placeholder_microscope")
+        Object.__init__(self, world, "microscope", "microscope", defaultSpriteName = "instruments_microscope")
 
         # Default attributes
 
@@ -1210,17 +1210,11 @@ class Microscope(Object):
     #
     def actionUseWith(self, patientObj):
         # Use this object on the patient object
-
         microscopeDescriptionStr = "You use the microscope to view the " + patientObj.name + ".\n"
-
         # Get the description of the object as observed under a microscope
         microscopeDescriptionStr += patientObj.getTextObservationMicroscopic()
-
         # Return the action response
         return ActionSuccess(True, microscopeDescriptionStr, importance=MessageImportance.HIGH)        
-
-    
-
 
     #
     #   Tick
@@ -1246,6 +1240,297 @@ class Microscope(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: Spectrometer
+#
+class Spectrometer(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "spectrometer", "spectrometer", defaultSpriteName = "instruments_spectrometer")
+
+        # Default attributes
+
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        pass        
+        
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+        useDescriptionStr = "You use the spectrometer to view the " + patientObj.name + ".\n (THIS IS A PLACEHOLDER)"
+
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
+
+    #
+    #   Tick
+    #
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+        
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: Thermometer
+#
+class Thermometer(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "thermometer", "thermometer", defaultSpriteName = "instruments_thermometer")
+
+        # Default attributes
+
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        pass        
+        
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+        useDescriptionStr = "You use the thermometer to view the " + patientObj.name + ".\n (THIS IS A PLACEHOLDER)"
+
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
+
+    #
+    #   Tick
+    #
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+        
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: PH Meter
+#
+class PHMeter(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "PH meter", "PH meter", defaultSpriteName = "instruments_ph_meter")
+
+        # Default attributes
+
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        pass        
+        
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+        useDescriptionStr = "You use the PH meter to view the " + patientObj.name + ".\n (THIS IS A PLACEHOLDER)"
+
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
+
+    #
+    #   Tick
+    #
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+        
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: Sampler
+#
+class Sampler(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "sampler", "sampler", defaultSpriteName = "instruments_sampler")
+
+        # Default attributes
+
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        pass        
+        
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+        useDescriptionStr = "You use the sampler to view the " + patientObj.name + ".\n (THIS IS A PLACEHOLDER)"
+
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
+
+    #
+    #   Tick
+    #
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+        
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: Radiation Meter
+#
+class RadiationMeter(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "radiation meter", "radiation meter", defaultSpriteName = "instruments_radiation_meter")
+
+        # Default attributes
+
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        pass        
+        
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+        useDescriptionStr = "You use the radiation meter to view the " + patientObj.name + ".\n (THIS IS A PLACEHOLDER)"
+
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
+
+    #
+    #   Tick
+    #
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+        
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: Petri Dish (container)
+#
+class PetriDish(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "petri dish", "petri dish", defaultSpriteName = "instruments_petri_dish_empty")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+        # Container
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can not be opened (things are stored in the open pot)
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+        self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+        # Infer sprite based on whether empty/non-empty
+        if (len(self.contents) == 0):
+            self.curSpriteName = "instruments_petri_dish_empty"
+        else:
+            self.curSpriteName = "instruments_petri_dish_full"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
 
 
 #
@@ -1700,7 +1985,7 @@ class Pot(Object):
 
 
 #
-#   Object: Pot (container)
+#   Object: Jar (container)
 #
 class Jar(Object):
     # Constructor

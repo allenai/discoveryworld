@@ -139,9 +139,40 @@ def mkScienceLab(x, y, world, buildingMaker):
     # Create a building (science lab)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
     buildingMaker.mkBuildingDivided(world, x=x, y=y, width=8, height=6, dividerX=5, apertureX=3, dividerY=0, apertureY=0, doorX=3, signText="Science Lab")
+
     bench1 = world.createObject("Table")
     world.addObject(x+1, y+1, Layer.FURNITURE, bench1)
     bench1.addObject( world.createObject("Microscope") )
+
+    bench2 = world.createObject("Table")
+    world.addObject(x+2, y+1, Layer.FURNITURE, bench2)
+    bench2.addObject( world.createObject("Spectrometer") )
+
+    bench3 = world.createObject("Table")
+    world.addObject(x+3, y+1, Layer.FURNITURE, bench3)
+    bench3.addObject( world.createObject("PHMeter") )
+
+    bench4 = world.createObject("Table")
+    world.addObject(x+4, y+1, Layer.FURNITURE, bench4)
+    bench4.addObject( world.createObject("RadiationMeter") )
+
+
+    # Add sampler and sample containers (Petri dishes)
+    bench5 = world.createObject("Table")
+    world.addObject(x+1, y+4, Layer.FURNITURE, bench5)
+    bench5.addObject( world.createObject("Sampler") )
+
+    bench6 = world.createObject("Table")
+    world.addObject(x+1, y+3, Layer.FURNITURE, bench6)
+    bench6.addObject( world.createObject("PetriDish") )
+
+
+    bench7 = world.createObject("Table")
+    world.addObject(x+4, y+4, Layer.FURNITURE, bench7)
+    bench7.addObject( world.createObject("Thermometer") )
+
+    
+
 
 
 # Check if a tile already contains a "path"

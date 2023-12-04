@@ -191,12 +191,25 @@
             }
     },
     {
-        "sheetName": "placeholder", 
-        "filename": "placeholder/pixelart-microscope1.png",
+        "sheetName": "instruments", 
+        "filename": "placeholder/instruments1.png",
         "tileSize": [32, 32],        
         "sprites":
-            {    
-                "microscope":    { "baseTile": [0, 0],  "size": [1, 1] }                
+            {   
+                "petri_dish_empty":     { "baseTile": [3, 0],  "size": [1, 1] },
+                "petri_dish_full":      { "baseTile": [3, 0],  "size": [1, 1] },
+                "microscope":           { "baseTile": [4, 0],  "size": [1, 1] },
+                "spectrometer":         { "baseTile": [4, 1],  "size": [1, 1] },
+                "thermometer":          { "baseTile": [4, 2],  "size": [1, 1] },
+                "ph_meter":             { "baseTile": [4, 3],  "size": [1, 1] },
+                "sampler":              { "baseTile": [5, 0],  "size": [1, 1] },
+                "radiation_meter":      { "baseTile": [5, 1],  "size": [1, 1] },
+                "magnetometer":         { "baseTile": [5, 2],  "size": [1, 1] },
+                "co2_meter":            { "baseTile": [5, 3],  "size": [1, 1] },
+                "centrifuge":           { "baseTile": [6, 0],  "size": [1, 1] },
+                "weather_meter":        { "baseTile": [6, 1],  "size": [1, 1] },
+                "npk_fieldtest":        { "baseTile": [6, 2],  "size": [1, 1] },
+                "npk_labtest":          { "baseTile": [6, 3],  "size": [1, 1] }
             },
         "composites": 
             {

@@ -205,6 +205,12 @@ class ObjectMaker:
             "Seed": Seed,            
             "Dirt": Dirt,
             "FlowerPot": FlowerPot,
+            "Spectrometer": Spectrometer,
+            "Thermometer": Thermometer,
+            "PHMeter": PHMeter,
+            "Sampler": Sampler,
+            "RadiationMeter": RadiationMeter,
+            "PetriDish": PetriDish
         }
 
         # Check that the class name is in the dictionary
