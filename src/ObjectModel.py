@@ -1542,7 +1542,8 @@ class RadiationMeter(Object):
     #   Actions (use with)
     #
     def actionUseWith(self, patientObj):
-        # radiationusvh
+        avgRadiationBackgroundLevelUSVH = 0.05        # Average background radiation level in USV/h
+
         # Use this object on the patient object        
         useDescriptionStr = "You use the radiation meter to investigate the " + patientObj.name + ".\n"
 
@@ -1569,9 +1570,13 @@ class RadiationMeter(Object):
 
         # Calculate the radiation level (sum of all radiation levels of each material)
         radiationLevelMicroSeivertsPerHour = sum(radiationLevels)
-        
-        # Report the radiation level (to 1 decimal place(s)
-        useDescriptionStr += "The radiation meter reports a level of " + "{:.1f}".format(radiationLevelMicroSeivertsPerHour) + " micro Seiverts per hour.\n"
+        # Add a random amount of background radiation.  First, generate a number between 0-avgRadiationBackgroundLevelUSVH
+        backgroundRadiation = random.random() * avgRadiationBackgroundLevelUSVH
+        # Add the background radiation to the radiation level
+        radiationLevelMicroSeivertsPerHour += backgroundRadiation
+                
+        # Report the radiation level (to 2 decimal place(s)
+        useDescriptionStr += "The radiation meter reports a level of " + "{:.2f}".format(radiationLevelMicroSeivertsPerHour) + " micro Seiverts per hour.\n"
 
         return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
     #
