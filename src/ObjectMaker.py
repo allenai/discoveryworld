@@ -390,7 +390,7 @@ class ObjectMaker:
 
         # Step 2: Parse the value into the appropriate type
         # Known types: "list", "set", "str", "bool", "int", "float"
-        knownTypes = ["list", "set", "str", "bool", "int", "float"]
+        knownTypes = ["list", "listfloat" "set", "str", "bool", "int", "float"]        
 
         # Strip any whitespace from the value string
         valueStr = valueStr.strip()
@@ -404,7 +404,28 @@ class ObjectMaker:
 
             # Return
             return out
-        
+
+        elif (typeName == "listfloat"):
+            # First, check for an empty list
+            if (valueStr.strip() == ""):
+                return []
+
+            # Split the string by commas
+            out = valueStr.split(",")
+
+            # Strip whitespace from each element
+            out = [x.strip() for x in out]
+
+            # Convert each element to a float
+            try:
+                out = [float(x) for x in out]
+            except:
+                self.errors.append("Error: Could not convert all the elements of this list to floats: " + str(out))
+                return None
+
+            # Return
+            return out
+
         elif (typeName == "set"):
             # Split the string by commas
             out = valueStr.split(",")

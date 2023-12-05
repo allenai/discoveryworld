@@ -171,7 +171,11 @@ def mkScienceLab(x, y, world, buildingMaker):
     world.addObject(x+4, y+4, Layer.FURNITURE, bench7)
     bench7.addObject( world.createObject("Thermometer") )
 
-    
+
+    # Add a red mushroom and a pink mushroom
+    world.addObject(x+3, y+3, Layer.OBJECTS, world.createObject("mushroom1"))
+    world.addObject(x+4, y+3, Layer.OBJECTS, world.createObject("mushroom2"))
+
 
 
 
@@ -433,7 +437,8 @@ def main():
     # Add an agent
     currentAgent = Agent(world)
     #world.addObject(10, 10, Layer.AGENT, currentAgent)
-    world.addObject(20, 22, Layer.AGENT, currentAgent)
+    #world.addObject(20, 22, Layer.AGENT, currentAgent)     # In cafeteria
+    world.addObject(10, 24, Layer.AGENT, currentAgent)     # In science lab
     # Add tools for agent
     currentAgent.addObject(world.createObject("Shovel"))
     currentAgent.addObject(world.createObject("Seed"))

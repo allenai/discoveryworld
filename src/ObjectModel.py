@@ -234,23 +234,25 @@ class Object:
         return out
 
     # Get all contained objects and parts, do not respect containers (this is typically used for dumping the objects to a file)
-    def getAllContainedObjectsAndParts(self):
+    def getAllContainedObjectsAndParts(self, includeContents=True, includeParts=True):
         # TODO: Fix this so it doesn't require the list(set()) hack (which prevents the duplicates, but is slow)
         out = []
         # Add self
         out.append(self)
 
-        for obj in self.contents:
-            # Add self
-            out.append(obj)
-            # Add children
-            out.extend(obj.getAllContainedObjectsAndParts())
+        if (includeContents):
+            for obj in self.contents:
+                # Add self
+                out.append(obj)
+                # Add children
+                out.extend(obj.getAllContainedObjectsAndParts())
 
-        for obj in self.parts:
-            # Add self
-            out.append(obj)
-            # Add children
-            out.extend(obj.getAllContainedObjectsAndParts())
+        if (includeParts):
+            for obj in self.parts:
+                # Add self
+                out.append(obj)
+                # Add children
+                out.extend(obj.getAllContainedObjectsAndParts())
 
         # Return
         return list(set(out))
@@ -1262,7 +1264,45 @@ class Spectrometer(Object):
     #
     def actionUseWith(self, patientObj):
         # Use this object on the patient object
-        useDescriptionStr = "You use the spectrometer to view the " + patientObj.name + ".\n (THIS IS A PLACEHOLDER)"
+        useDescriptionStr = "You use the spectrometer to view the " + patientObj.name + ".\n"
+
+        # Get the patient object, and all its parts
+        # def getAllContainedObjectsAndParts(self, includeContents=True, includeParts=True):
+        patientObjAndParts = patientObj.getAllContainedObjectsAndParts(includeContents=False, includeParts=True)
+        # Collect the materials of the object and its parts
+        patientMaterials = []
+        for patientObjOrPart in patientObjAndParts:
+            if ("materials" in patientObjOrPart.attributes):
+                patientMaterials.extend(patientObjOrPart.attributes["materials"])
+
+        # Get the spectra of the materials
+        spectra = []
+        for patientMaterial in patientMaterials:
+            if ("spectrum" in patientMaterial):
+                spectra.append(patientMaterial["spectrum"])
+
+        # If there are no spectra, say the results are inconclusive. 
+        if (len(spectra) == 0):
+            useDescriptionStr += "The results are inconclusive.\n"
+            return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+
+        # Calculate the spectrum (as emission)
+        # First, check the length of the spectra, and create a new spectrum of that length
+        spectrumLength = len(spectra[0])
+        spectrum = [0] * spectrumLength
+        # Then, add the spectra together
+        for spectrumToAdd in spectra:
+            for i in range(spectrumLength):
+                # Check that it's within the bounds of the spectrum
+                if (i < len(spectrumToAdd)):
+                    spectrum[i] += spectrumToAdd[i]
+
+        # Then, report the spectrum
+        useDescriptionStr += "The results are as follows:\n"
+        for i in range(spectrumLength):
+            #useDescriptionStr += "Channel 1: " + str(spectrum[i]) + "\n"
+            # report to 1 decimal place(s)
+            useDescriptionStr += "- Channel " + str(i+1) + ": " + "{:.2f}".format(spectrum[i]) + "\n"
 
         return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
 
