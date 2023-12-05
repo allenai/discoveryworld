@@ -1542,11 +1542,38 @@ class RadiationMeter(Object):
     #   Actions (use with)
     #
     def actionUseWith(self, patientObj):
-        # Use this object on the patient object
-        useDescriptionStr = "You use the radiation meter to view the " + patientObj.name + ".\n (THIS IS A PLACEHOLDER)"
+        # radiationusvh
+        # Use this object on the patient object        
+        useDescriptionStr = "You use the radiation meter to investigate the " + patientObj.name + ".\n"
 
-        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
+        # Get the patient object, and all its parts
+        # def getAllContainedObjectsAndParts(self, includeContents=True, includeParts=True):
+        patientObjAndParts = patientObj.getAllContainedObjectsAndParts(includeContents=False, includeParts=True)
+        # Collect the materials of the object and its parts
+        patientMaterials = []
+        for patientObjOrPart in patientObjAndParts:
+            if ("materials" in patientObjOrPart.attributes):
+                patientMaterials.extend(patientObjOrPart.attributes["materials"])
 
+        # Get the radiation levels of each material
+        radiationLevels = []
+        for patientMaterial in patientMaterials:
+            if ("radiationusvh" in patientMaterial):
+                radiationLevels.append(patientMaterial["radiationusvh"])
+
+        # If there are radiation levels, say the results are inconclusive.
+        # TODO: Just use background rate, then?
+        if (len(radiationLevels) == 0):
+            useDescriptionStr += "The results are inconclusive.\n"
+            return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+
+        # Calculate the radiation level (sum of all radiation levels of each material)
+        radiationLevelMicroSeivertsPerHour = sum(radiationLevels)
+        
+        # Report the radiation level (to 1 decimal place(s)
+        useDescriptionStr += "The radiation meter reports a level of " + "{:.1f}".format(radiationLevelMicroSeivertsPerHour) + " micro Seiverts per hour.\n"
+
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
     #
     #   Tick
     #

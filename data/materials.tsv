@@ -1,6 +1,6 @@
-ReferenceName	MaterialName	MaterialType	BaseClass	microscopeDesc_str	color_str	spectrum_listfloat	ph_float	isPoisonous_bool	isEdible_bool	cosCanBeLiquid_bool	cosCanBeSolid_bool	cosCanBeGas_bool	cosMeltingPointC_float	cosBoilingPointC_float	cosCombustionPointC_float	isLiving_bool	livingMinTemp_float	livingMaxTemp_float
-PlantMatterGreen	plant matter			The fibers and cells associated with plant matter	green	0.1, 0.2, 0.3, 0.4, 0.5	6	FALSE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	35
-PlantMatterWhite	plant matter			The fibers and cells associated with plant matter	white	0.1, 0.2, 0.3, 0.4, 0.5	6	FALSE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	35
-PlantMatterWood	plant matter			The fibers and cells associated with plant matter	brown	0.1, 0.2, 0.3, 0.4, 0.5	6	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	300	FALSE	0	35
-MoldRed	mold			Fuzzy filaments indicative of mold	red	0.2, 0.2, 0.2, 0.2, 0.5	4	TRUE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	60
-MoldGreen	mold			Fuzzy filaments indicative of mold	green	0.2, 0.2, 0.2, 0.2, 0.5	4	TRUE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	60
+ReferenceName	MaterialName	MaterialType	BaseClass	microscopeDesc_str	color_str	spectrum_listfloat	ph_float	radiationusvh_float	isPoisonous_bool	isEdible_bool	cosCanBeLiquid_bool	cosCanBeSolid_bool	cosCanBeGas_bool	cosMeltingPointC_float	cosBoilingPointC_float	cosCombustionPointC_float	isLiving_bool	livingMinTemp_float	livingMaxTemp_float
+PlantMatterGreen	plant matter			The fibers and cells associated with plant matter	green	0.1, 0.2, 0.3, 0.4, 0.5	6	0.1	FALSE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	35
+PlantMatterWhite	plant matter			The fibers and cells associated with plant matter	white	0.1, 0.2, 0.3, 0.4, 0.5	6	0.1	FALSE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	35
+PlantMatterWood	plant matter			The fibers and cells associated with plant matter	brown	0.1, 0.2, 0.3, 0.4, 0.5	6	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	300	FALSE	0	35
+MoldRed	mold			Fuzzy filaments indicative of mold	red	0.2, 0.2, 0.2, 0.2, 0.5	4	0	TRUE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	60
+MoldGreen	mold			Fuzzy filaments indicative of mold	green	0.2, 0.2, 0.2, 0.2, 0.5	4	0	TRUE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	60
