@@ -1414,7 +1414,36 @@ class PHMeter(Object):
     #
     def actionUseWith(self, patientObj):
         # Use this object on the patient object
-        useDescriptionStr = "You use the PH meter to view the " + patientObj.name + ".\n (THIS IS A PLACEHOLDER)"
+        useDescriptionStr = "You use the PH meter to investigate the " + patientObj.name + ".\n"
+
+        # Get the patient object, and all its parts
+        # def getAllContainedObjectsAndParts(self, includeContents=True, includeParts=True):
+        patientObjAndParts = patientObj.getAllContainedObjectsAndParts(includeContents=False, includeParts=True)
+        # Collect the materials of the object and its parts
+        patientMaterials = []
+        for patientObjOrPart in patientObjAndParts:
+            if ("materials" in patientObjOrPart.attributes):
+                patientMaterials.extend(patientObjOrPart.attributes["materials"])
+
+        # Get the spectra of the materials
+        phs = []
+        for patientMaterial in patientMaterials:
+            if ("ph" in patientMaterial):
+                phs.append(patientMaterial["ph"])
+
+        # If there are no spectra, say the results are inconclusive. 
+        if (len(phs) == 0):
+            useDescriptionStr += "The results are inconclusive.\n"
+            return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+
+        # Calculate the spectrum (as emission)
+        # First, check the length of the spectra, and create a new spectrum of that length
+
+        # Calculate the average PH of the materials (NOTE: this is not physically accurate)
+        averagePH = sum(phs) / len(phs)
+
+        # Report the PH (to 1 decimal place(s)
+        useDescriptionStr += "The PH meter reports a PH of " + "{:.1f}".format(averagePH) + ".\n"
 
         return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
 
