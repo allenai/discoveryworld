@@ -176,8 +176,12 @@ class SpriteLibrary:
 
         if (spriteName not in self.sprites):
             print("WARNING: Sprite not found: " + str(spriteName))
-            exit(1)
-            return
+            missingSpriteName = "missing_missing"
+            if (missingSpriteName not in self.sprites):
+                return 
+            spriteName = missingSpriteName
+            #exit(1)
+            #return
         sprite = self.sprites[spriteName]
 
         # Adjust the y-coordinate based on the sprite's height

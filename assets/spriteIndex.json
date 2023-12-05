@@ -178,6 +178,35 @@
             {
             }
     },
+    {  
+        "sheetName": "cave1",
+        "filename": "pixymoon/CuteRPG_Caves/32x32/CuteRPG_Caves.png",
+        "tileSize": [32, 32],
+        "offset": [0, 0],        
+        "sprites":
+            {
+                "wall_tl":  { "baseTile": [6, 9],  "size": [1, 1] },
+                "wall_tr":  { "baseTile": [8, 9],  "size": [1, 1] },
+                "wall_bl":  { "baseTile": [6, 11],  "size": [1, 1] },
+                "wall_br":  { "baseTile": [8, 11],  "size": [1, 1] },
+                "wall_t":   { "baseTile": [7, 11],  "size": [1, 1] },
+                "wall_b":   { "baseTile": [7, 9],  "size": [1, 1] },
+                "wall_l":   { "baseTile": [6, 10],  "size": [1, 1] },
+                "wall_r":   { "baseTile": [8, 10],  "size": [1, 1] },
+
+                "rock_floor":    { "baseTile": [4, 1],  "size": [1, 1] },
+
+                "rock_glowing":  { "baseTile": [23, 0],  "size": [1, 1] },
+                "rock_small":    { "baseTile": [23, 0],  "size": [1, 1] },
+                "rock_medium":   { "baseTile": [27, 3],  "size": [1, 1] },
+                "rock_large":    { "baseTile": [29, 3],  "size": [1, 1] }
+
+            },
+        "composites":
+            {
+
+            }
+    },
     {
         "sheetName": "placeholder", 
         "filename": "placeholder/placeholder.png",
@@ -354,5 +383,18 @@
         "composites": 
             {
             }
+    },
+    {
+        "sheetName": "missing", 
+        "filename": "placeholder/missing.png",
+        "tileSize": [32, 32],        
+        "sprites":
+            {    
+                "missing":    { "baseTile": [0, 0],  "size": [1, 1] }                
+            },
+        "composites": 
+            {
+            }
     }
+
 ]

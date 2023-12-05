@@ -416,7 +416,13 @@ class Object:
             self.needsSpriteNameUpdate = False
 
         # First, get the name of the current object itself
-        spriteList = [self.getSpriteName()]
+        spriteNameOrNames = self.getSpriteName()        
+        spriteList = []#[self.getSpriteName()]
+        if (isinstance(spriteNameOrNames, list)):
+            spriteList.extend(spriteNameOrNames)
+        else:
+            spriteList.append(spriteNameOrNames)            
+        
         # Add any sprite modifiers
         spriteList.extend(self.curSpriteModifiers)
 
@@ -731,18 +737,225 @@ class Floor(Object):
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
 
+
+
 #
-#   Object: BackWall
+#   Object: Cave Wall
 #
-# class WallHorizontal(Object):
-#     # Constructor
-#     def __init__(self, world):
-#         # Default sprite name
-#         Object.__init__(self, world, "back wall", "back wall", defaultSpriteName = "house2_wall_horiz")
+class CaveWall(Object):
+    # Constructor
+    def __init__(self, world):
+        # Note: Change the default sprite name to something obviously incorrect so it is obvious when it's not inferring properly. 
+        Object.__init__(self, world, "wall", "cave wall", defaultSpriteName = "cave1_wall_t")
+
+        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+        # Rendering attribute (wall direction, "tl", "tr", "bl", "br", "l", "r", "t", "b")     
+        self.wallShape = ""
+
+        
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+
+        # Call superclass
+        Object.tick(self)
+
+    # Helper function to get the neighbouring walls
+    def _hasWall(self, x, y):
+        # Check to see if there is a wall at the given location
+        # First, get objects at a given location
+        objects = self.world.getObjectsAt(x, y)
+        # Then, check to see if any of them are walls
+        for object in objects:
+            if (object.type == "wall"):
+                return (True, object.wallShape)
+            elif (object.type == "door"):
+                return (True, "")
+        # If we get here, there are no walls
+        return (False, "")
+    
+    # Helper function to get the neighbouring walls
+    def _hasFloor(self, x, y):
+        # Check to see if there is a wall at the given location
+        # First, get objects at a given location
+        objects = self.world.getObjectsAt(x, y)
+        # Then, check to see if any of them are walls
+        for object in objects:
+            if object.type == "floor":
+                return True
+        # If we get here, there are no walls
+        return False
+
+
+    # def getSpriteName(self):
+    #     # Get the current sprite name, in response to the current state of the object
+    #     # Normally this just returns the current sprite name, but for these cave walls (that are partially transparent), we're going to add a background object -- the cave floor. 
+    #     caveFloor = "cave1_floor"
+    #     return [caveFloor, self.curSpriteName]
+
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # Check to see what the neighbouring walls are
+        hasWallNorth, wallShapeNorth = self._hasWall(self.attributes["gridX"], self.attributes["gridY"] - 1)
+        hasWallSouth, wallShapeSouth = self._hasWall(self.attributes["gridX"], self.attributes["gridY"] + 1)
+        hasWallWest, wallShapeWest = self._hasWall(self.attributes["gridX"] - 1, self.attributes["gridY"])
+        hasWallEast, wallShapeEast = self._hasWall(self.attributes["gridX"] + 1, self.attributes["gridY"])
+
+        # Check to see if there is neighbouring floor
+        hasFloorNorth = self._hasFloor(self.attributes["gridX"], self.attributes["gridY"] - 1)
+        hasFloorSouth = self._hasFloor(self.attributes["gridX"], self.attributes["gridY"] + 1)
+        hasFloorWest = self._hasFloor(self.attributes["gridX"] - 1, self.attributes["gridY"])
+        hasFloorEast = self._hasFloor(self.attributes["gridX"] + 1, self.attributes["gridY"])        
+
+        #isInterior = (hasFloorNorth and hasFloorSouth) or (hasFloorWest and hasFloorEast)
+        isInterior = False
+
+        # Corners
+        # First, 4 corners
+        if (hasWallNorth and hasWallEast and hasWallSouth and hasWallWest):
+            # 4-way
+            self.curSpriteName = "cave1_wall_int_4way"
+            self.wallShape = "4way"
+
+        # Next, 3 corners
+        elif (hasWallNorth and hasWallSouth and hasWallEast):
+            # 3-way, up/down/right
+            self.curSpriteName = "cave1_wall_int_tbr"
+            self.wallShape = "tbr"
+        elif (hasWallNorth and hasWallSouth and hasWallWest):
+            # 3-way, up/down/left
+            self.curSpriteName = "cave1_wall_int_tbl"
+            self.wallShape = "tbl"
+        elif (hasWallEast and hasWallWest and hasWallNorth):
+            # 3-way, left/right/up
+            self.curSpriteName = "cave1_wall_int_lrt"
+            self.wallShape = "lrt"
+        elif (hasWallEast and hasWallWest and hasWallSouth):
+            # 3-way, left/right/down
+            self.curSpriteName = "cave1_wall_int_lrb"
+            self.wallShape = "lrb"
+
+        # Next, Corners (NE, NW, SE, SW)
+        elif (hasWallSouth and hasWallEast):
+            self.curSpriteName = "cave1_wall_tl"
+            self.wallShape = "tl"
+        elif (hasWallSouth and hasWallWest):
+            self.curSpriteName = "cave1_wall_tr"
+            self.wallShape = "tr"
+        elif (hasWallNorth and hasWallEast):
+            self.curSpriteName = "cave1_wall_bl"
+            self.wallShape = "bl"
+        elif (hasWallNorth and hasWallWest):
+            self.curSpriteName = "cave1_wall_br"
+            self.wallShape = "br"
+        
+        # Next, edges (interior)
+        elif (isInterior):
+            # If a wall north or south, then it's a vertical wall            
+            if (hasWallNorth or hasWallSouth):
+                if (hasWallNorth and hasWallSouth):
+                    self.curSpriteName = "cave1_wall_int_tb"
+                    self.wallShape = "v"
+                elif (hasWallNorth):
+                    self.curSpriteName = "cave1_wall_int_tb_opening_t"
+                    self.wallShape = "v"
+                elif (hasWallSouth):
+                    self.curSpriteName = "cave1_wall_int_tb_opening_b"
+                    self.wallShape = "v"
+            # If a wall east or west, then it's a horizontal wall
+            elif (hasWallEast or hasWallWest):
+                if (hasWallEast and hasWallWest):
+                    self.curSpriteName = "cave1_wall_int_lr"
+                    self.wallShape = "h"
+                elif (hasWallEast):
+                    self.curSpriteName = "cave1_wall_int_lr_opening_l"
+                    self.wallShape = "h"
+                elif (hasWallWest):
+                    self.curSpriteName = "cave1_wall_int_lr_opening_r"
+                    self.wallShape = "h"
+                
+        # Next, edges (exterior)
+        # First, check to see if there is a wall to the north or south
+        elif (hasWallNorth or hasWallSouth):
+            # Check to see if there is a floor to the east or west
+            if (hasFloorEast):
+                self.curSpriteName = "cave1_wall_l"
+                self.wallShape = "l"
+            elif (hasFloorWest):
+                self.curSpriteName = "cave1_wall_r"
+                self.wallShape = "r"
+        
+        # Next, check to see if there is a wall to the east or west
+        elif (hasWallEast or hasWallWest):
+            # Check to see if there is a floor to the north or south
+            if (hasFloorNorth):
+                self.curSpriteName = "cave1_wall_t"
+                self.wallShape = "t"
+            elif (hasFloorSouth):                
+                self.curSpriteName = "cave1_wall_b"
+                self.wallShape = "b"                
+                
+        else:
+            # Catch-all -- possibly a wall with no neighbours?
+            print("Unknown wall shape!")
+            self.curSpriteName = self.defaultSpriteName
+            self.curSpriteName = "cave1_wall_t"
+            self.wallShape = "single"
+
+
+        # If we reach here and still don't know the wall shape, then we'll note that it should be checked again the next tick
+        if (self.wallShape == ""):
+            self.needsSpriteNameUpdate = True
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
 #
-#     def tick(self):
-#         # Call superclass
-#         Object.tick(self)
+#   Object: Floor
+#
+class CaveFloor(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "floor", "cave floor", defaultSpriteName = "cave1_rock_floor")
+
+        # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
+
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # Static -- just use the default sprite name
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
 
 #
 #   Object: Door

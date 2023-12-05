@@ -181,6 +181,8 @@ class ObjectMaker:
             "Object": Object,
             "Wall": Wall,
             "Floor": Floor,
+            "CaveWall": CaveWall,
+            "CaveFloor": CaveFloor,
             "Door": Door,
             "Sign": Sign,
             "SignVillage": SignVillage,

@@ -286,6 +286,12 @@ def mkFarm(x, y, world, buildingMaker):
     return mushroomsAdded
     
 
+# Cave
+def mkCave(x, y, world, buildingMaker):
+    # Make the cave
+    buildingMaker.mkCaveOneRoom(world, x, y, 5, 5, signText="Cave")
+    
+
 
 
 # Path making
@@ -319,13 +325,33 @@ def main():
 
     # 32 pixels/tile * 32 tiles = 1024 pixels
 
+    #windowMode = "small"
+    windowMode = "big"    
     # Game parameters
-    gameParams = {
-        "height": 750,
-        "width": 800,
-        "fps": 60,
-        "name": "DiscoveryWorld"
-    }
+    if (windowMode == "small"):
+        gameParams = {
+            "height": 750,
+            "width": 800,
+            "fps": 60,
+            "name": "DiscoveryWorld"
+        }
+
+        # Step 2: Define the viewport size (in tiles)
+        viewportSizeX = 24
+        viewportSizeY = 16
+    else:
+        gameParams = {
+            "height": 1024,
+            "width": 1024,
+            "fps": 60,
+            "name": "DiscoveryWorld"
+        }
+
+        # Step 2: Define the viewport size (in tiles)
+        viewportSizeX = 32
+        viewportSizeY = 32
+
+
 
     # Open window
     #window = pygame.display.set_mode((gameParams["width"], gameParams["height"]))
@@ -376,6 +402,10 @@ def main():
 
     ## TODO: Add Farm?
     mushroomsAdded = mkFarm(10, 8, world, buildingMaker)
+
+    # Cave?
+    mkCave(0, 0, world, buildingMaker)
+
 
     # Paths
     mkPathY(17, 1, 30, world)       # Top/bottom, through town square
@@ -438,9 +468,9 @@ def main():
 
     # Add an agent
     currentAgent = Agent(world)
-    #world.addObject(10, 10, Layer.AGENT, currentAgent)
+    world.addObject(5, 8, Layer.AGENT, currentAgent)      # Near farm
     #world.addObject(20, 22, Layer.AGENT, currentAgent)     # In cafeteria
-    world.addObject(10, 24, Layer.AGENT, currentAgent)     # In science lab
+    #world.addObject(10, 24, Layer.AGENT, currentAgent)     # In science lab
     # Add tools for agent
     currentAgent.addObject(world.createObject("Shovel"))
     currentAgent.addObject(world.createObject("Seed"))
@@ -701,9 +731,8 @@ def main():
         # def renderViewport(self, window, worldStartX, worldStartY, sizeTilesX, sizeTilesY, offsetX, offsetY):
         # Step 1: Get the agent's location
         agentLocation = currentAgent.getWorldLocation()
-        # Step 2: Define the viewport size (in tiles)
-        viewportSizeX = 24
-        viewportSizeY = 16
+
+
         # Step 3: Determine the worldStartX and worldStartY coordinates
         worldStartX = agentLocation[0] - int(viewportSizeX / 2)
         worldStartY = agentLocation[1] - int(viewportSizeY / 2)
