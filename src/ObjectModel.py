@@ -3,6 +3,7 @@
 import SpriteLibrary
 from Layer import Layer
 from ActionSuccess import *
+from ScienceHelpers import *
 import random
 import json
 import copy
@@ -248,14 +249,14 @@ class Object:
                 # Add self
                 out.append(obj)
                 # Add children
-                out.extend(obj.getAllContainedObjectsAndParts())
+                out.extend(obj.getAllContainedObjectsAndParts(includeContents, includeParts))
 
         if (includeParts):
             for obj in self.parts:
                 # Add self
                 out.append(obj)
                 # Add children
-                out.extend(obj.getAllContainedObjectsAndParts())
+                out.extend(obj.getAllContainedObjectsAndParts(includeContents, includeParts))
 
         # Return
         return list(set(out))
@@ -1549,9 +1550,7 @@ class RadiationMeter(Object):
     #
     #   Actions (use with)
     #
-    def actionUseWith(self, patientObj):
-        avgRadiationBackgroundLevelUSVH = 0.05        # Average background radiation level in USV/h
-
+    def actionUseWith(self, patientObj):        
         # Use this object on the patient object        
         useDescriptionStr = "You use the radiation meter to investigate the " + patientObj.name + ".\n"
 
@@ -1573,20 +1572,27 @@ class RadiationMeter(Object):
         # If there are radiation levels, say the results are inconclusive.
         # TODO: Just use background rate, then?
         if (len(radiationLevels) == 0):
-            useDescriptionStr += "The results are inconclusive.\n"
-            return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+            radiationLevels = [0]
+            #useDescriptionStr += "The results are inconclusive.\n"
+            #return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
 
-        # Calculate the radiation level (sum of all radiation levels of each material)
+        # Calculate the radiation level of this object (sum of all radiation levels of each material)
         radiationLevelMicroSeivertsPerHour = sum(radiationLevels)
-        # Add a random amount of background radiation.  First, generate a number between 0-avgRadiationBackgroundLevelUSVH
-        backgroundRadiation = random.random() * avgRadiationBackgroundLevelUSVH
+        # Add a random amount of background radiation, drawn from the current background radiation rate.  First, generate a number between 0-avgRadiationBackgroundLevelUSVH
+        backgroundRadiation = random.random() * self.world.parameters["avgRadiationBackgroundLevelUSVH"]
         # Add the background radiation to the radiation level
         radiationLevelMicroSeivertsPerHour += backgroundRadiation
+
+        # Also add the radiation from any objects near this location, using the inverse square law. 
+        backgroundNearLocation = getRadiationLevelAroundLocation(self.world, self.attributes["gridX"], self.attributes["gridY"], excludeObject=patientObj, windowSize=5)
+        radiationLevelMicroSeivertsPerHour += backgroundNearLocation
 
         # TODO: Also add the radiation from any other objects near this location.
                 
         # Report the radiation level (to 2 decimal place(s)
         useDescriptionStr += "The radiation meter reports a level of " + "{:.2f}".format(radiationLevelMicroSeivertsPerHour) + " micro Seiverts per hour.\n"
+        useDescriptionStr += "DEBUG:\n Background radiation: " + "{:.2f}".format(backgroundRadiation) + " micro Seiverts per hour.\n"
+        useDescriptionStr += "DEBUG:\n Background near location: " + "{:.2f}".format(backgroundNearLocation) + " micro Seiverts per hour.\n"
 
         return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
     #
@@ -2352,3 +2358,9 @@ class FlowerPot(Object):
     def tick(self):
         # Call superclass
         Object.tick(self)    
+
+
+#
+#   Object: Radioactive Check Source
+#
+

@@ -20,6 +20,11 @@ class World:
         self.sizeX = 32
         self.sizeY = 32
 
+        # Default parameters of the world that can change (like background radiation level)
+        self.parameters = {
+            "avgRadiationBackgroundLevelUSVH": 0.05        # Average background radiation level in uSV/h
+        }
+
         # UUID Generator
         self.uuidGenerator = UUIDGenerator()
 
@@ -133,7 +138,7 @@ class World:
 
 
     # Get all objects at a given position
-    def getObjectsAt(self, x, y, respectContainerStatus=False):
+    def getObjectsAt(self, x, y, respectContainerStatus=False, includeParts=False):
         # Bound checking: Make sure the object is within the world bounds
         if x < 0 or x >= self.sizeX or y < 0 or y >= self.sizeY:
             print("Error: Object out of bounds: " + str(x) + ", " + str(y))
@@ -149,7 +154,11 @@ class World:
                 #print("\t\t\t\tLayer: " + str(layer) + " (" + str(len(objsToAdd)) + " objects)") 
                 for obj in objsToAdd:
                     objects.append(obj)
-                    contents = obj.getAllContainedObjectsRecursive(respectContainerStatus=respectContainerStatus)
+                    contents = []
+                    if (includeParts == False):
+                        contents = obj.getAllContainedObjectsRecursive(respectContainerStatus=respectContainerStatus)
+                    else:
+                        contents = obj.getAllContainedObjectsAndParts(includeContents=True, includeParts=True)
                     if (len(contents) > 0):
                         #print("Contents of " + obj.name + ": " + str(contents))
                         objects += contents

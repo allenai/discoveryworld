@@ -4,7 +4,7 @@ mushroom2	mushroom	mushroom	Mushroom				PlantMatterWhite	green		FALSE	TRUE	25
 mushroom3	mushroom	mushroom	Mushroom				PlantMatterWhite	yellow		FALSE	TRUE	25
 mushroom4	mushroom	mushroom	Mushroom				PlantMatterWhite	pink		FALSE	TRUE	25
 spacemold1	mold	mold	Object	placeholder_1			MoldRed	red	microscopic	TRUE	TRUE	25
-												
+radioactivechecksource	radioactive source	radioactive source	Object	instruments_radioactive_symbol			heavyradioactive	black		FALSE	FALSE	50
 												
 # Base Class												
 			Object									

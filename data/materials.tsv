@@ -4,3 +4,4 @@ PlantMatterWhite	plant matter			The fibers and cells associated with plant matte
 PlantMatterWood	plant matter			The fibers and cells associated with plant matter	brown	0.1, 0.2, 0.3, 0.4, 0.5	6	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	300	FALSE	0	35
 MoldRed	mold			Fuzzy filaments indicative of mold	red	0.2, 0.2, 0.2, 0.2, 0.5	4	0	TRUE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	60
 MoldGreen	mold			Fuzzy filaments indicative of mold	green	0.2, 0.2, 0.2, 0.2, 0.5	4	0	TRUE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	0	60
+heavyradioactive	radioactive			A shiny metalic material, with small glowing dots that appear to flicker in and out of existence. 		0.8, 0.0, 0.8, 0.0, 0.0	7	100	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0
