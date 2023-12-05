@@ -131,6 +131,14 @@ class Object:
         self.world.removeObjectFromTile(self)
 
     #
+    #   Material Property Initialization
+    #
+    def initializeMaterialProperties(self, materialIndexDict):
+        # If the object has special material requirements (like randomly choosing from a number of different materials), then this function should be overridden. 
+        # Otherwise, it can be left blank.
+        pass
+
+    #
     #   Container Semantics
     #
 
@@ -742,7 +750,9 @@ class Floor(Object):
 #
 #   Object: Cave Wall
 #
+# TODO: Most of the interior wall parts of this code are disabled -- so they can either be removed, or the sprite sheet can be modified to include interior walls.
 class CaveWall(Object):
+    
     # Constructor
     def __init__(self, world):
         # Note: Change the default sprite name to something obviously incorrect so it is obvious when it's not inferring properly. 
@@ -759,7 +769,6 @@ class CaveWall(Object):
         # TODO: Invalidate sprite name if this or neighbouring walls change
         if (False):
             self.needsSpriteNameUpdate = True
-
 
         # Call superclass
         Object.tick(self)
@@ -1687,6 +1696,80 @@ class PHMeter(Object):
         self.tempLastSpriteName = self.curSpriteName
 
 
+
+#
+#   Object: NPK Meter
+#
+class NPKMeter(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "NPK field test", "NPK field test", defaultSpriteName = "instruments_npk_fieldtest")
+
+        # Default attributes
+
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        pass        
+        
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+        useDescriptionStr = "You use the NPK field test to investigate the " + patientObj.name + ".\n"
+
+        npk = getNPKContent(patientObj)
+        totalNitrogen = npk["nitrogen"]        
+        totalPhosphorus = npk["phosphorus"]
+        totalPotassium = npk["potassium"]
+
+        # If any numbers are greater than 10, then clip the results to 10
+        MAX_READING = 10
+        if (totalNitrogen > MAX_READING):
+            totalNitrogen = MAX_READING
+        if (totalPhosphorus > MAX_READING):
+            totalPhosphorus = MAX_READING
+        if (totalPotassium > MAX_READING):
+            totalPotassium = MAX_READING
+
+        # Report the PH (to 1 decimal place(s)
+        useDescriptionStr += "The test ranges from 0 (no presence detected) to 10 (the maximum value of the test has been exceeded). \n"
+        useDescriptionStr += "The screen on the field test reports the following numbers: \n"
+        useDescriptionStr += " Nitrogen: " + "{:.1f}".format(totalNitrogen) + "\n"
+        useDescriptionStr += " Phosphorus: " + "{:.1f}".format(totalPhosphorus) + "\n"
+        useDescriptionStr += " Potassium: " + "{:.1f}".format(totalPotassium) + "\n"
+
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
+
+    #
+    #   Tick
+    #
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+        
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+
+
 #
 #   Object: Sampler
 #
@@ -2544,6 +2627,27 @@ class Dirt(Object):
 
         self.attributes["isMovable"] = True                       # Can it be moved?
         self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+    #
+    #   Material Property Initialization
+    #
+    def initializeMaterialProperties(self, materialIndexDict):
+        # Randomly choose the material type ("soil_good", "soil_medium", "soil_poor")
+        soilTypes = ["soil_good", "soil_medium", "soil_poor"]
+        # Randomly choose one
+        randIdx = random.randint(0, len(soilTypes) - 1)
+        randMaterialName = soilTypes[randIdx]
+        # Set the material type        
+        if (randMaterialName in materialIndexDict):
+            material = materialIndexDict[randMaterialName]            
+            self.attributes["materials"].append( copy.deepcopy(material) )
+        else:
+            print("Error: Material '" + randMaterialName + "' not found in materialIndexDict")
+            print("Material Index Dict: " + str(materialIndexDict))
+            exit(1)
+                        
+        pass
+
 
     def tick(self):
         # Call superclass

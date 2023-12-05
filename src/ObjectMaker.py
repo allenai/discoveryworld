@@ -149,6 +149,9 @@ class ObjectMaker:
                     # Add it to this object
                     obj.addPart(pObjInstance)
 
+            # Special material initialization (if applicable)
+            obj.initializeMaterialProperties(materialIndexDict=self.materialProperties)
+
             # Return
             return obj
 
@@ -159,6 +162,9 @@ class ObjectMaker:
             className = objectReferenceName
             # Create a new instance of the class            
             obj = self._createObjectInstance(className)
+
+            # Special material initialization (if applicable)
+            obj.initializeMaterialProperties(materialIndexDict=self.materialProperties)
 
             return obj
 
@@ -212,6 +218,7 @@ class ObjectMaker:
             "PHMeter": PHMeter,
             "Sampler": Sampler,
             "RadiationMeter": RadiationMeter,
+            "NPKMeter": NPKMeter,
             "PetriDish": PetriDish
         }
 

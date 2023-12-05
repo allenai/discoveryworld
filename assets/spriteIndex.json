@@ -197,7 +197,7 @@
                 "rock_floor":    { "baseTile": [4, 1],  "size": [1, 1] },
 
                 "rock_glowing":  { "baseTile": [23, 0],  "size": [1, 1] },
-                "rock_small":    { "baseTile": [23, 0],  "size": [1, 1] },
+                "rock_small":    { "baseTile": [23, 3],  "size": [1, 1] },
                 "rock_medium":   { "baseTile": [27, 3],  "size": [1, 1] },
                 "rock_large":    { "baseTile": [29, 3],  "size": [1, 1] }
 
