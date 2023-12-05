@@ -95,6 +95,9 @@ class Object:
         self.attributes['isReadable'] = False                      # Can it be read?
         self.attributes['document'] = ""                           # Any text to read
 
+        # Temperature
+        self.attributes['temperatureC'] = 20                       # The default object temeprature, in Celsius
+
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
         self.firstInit = True
@@ -1352,8 +1355,17 @@ class Thermometer(Object):
     #
     def actionUseWith(self, patientObj):
         # Use this object on the patient object
-        useDescriptionStr = "You use the thermometer to view the " + patientObj.name + ".\n (THIS IS A PLACEHOLDER)"
+        useDescriptionStr = "You use the thermometer to measure the temperature of the " + patientObj.name + ".\n"
 
+        # Get the patient object's temperature
+        patientTemperature = patientObj.attributes["temperatureC"]
+        if (patientTemperature == None):
+            useDescriptionStr += "The results are inconclusive.\n"
+            return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+        
+        # Report the temperature (to 1 decimal place(s)
+        useDescriptionStr += "The thermometer reports a temperature of " + "{:.1f}".format(patientTemperature) + " degrees Celsius.\n"
+        
         return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
 
     #
