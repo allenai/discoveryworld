@@ -1493,7 +1493,15 @@ class Sampler(Object):
     #
     def actionUseWith(self, patientObj):
         # Use this object on the patient object
-        useDescriptionStr = "You use the sampler to view the " + patientObj.name + ".\n (THIS IS A PLACEHOLDER)"
+        useDescriptionStr = "You use the sampler to take a sample of the " + patientObj.name + ".\n The sample has been placed in your inventory.\n"
+
+        # Create a sample of the patient
+        sample = Sample(self.world, patientObj)
+        petriDish = PetriDish(self.world)
+        petriDish.addObject(sample)
+        
+        # Place the sample in the same parent container as the sampler. 
+        self.parentContainer.addObject(petriDish)
 
         return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
 
@@ -1574,6 +1582,8 @@ class RadiationMeter(Object):
         backgroundRadiation = random.random() * avgRadiationBackgroundLevelUSVH
         # Add the background radiation to the radiation level
         radiationLevelMicroSeivertsPerHour += backgroundRadiation
+
+        # TODO: Also add the radiation from any other objects near this location.
                 
         # Report the radiation level (to 2 decimal place(s)
         useDescriptionStr += "The radiation meter reports a level of " + "{:.2f}".format(radiationLevelMicroSeivertsPerHour) + " micro Seiverts per hour.\n"
@@ -1643,6 +1653,34 @@ class PetriDish(Object):
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
 
+
+#
+#   Object: Sample
+#   A Sample is a special type of object that clones the attributes of another parent object, but not its contents. 
+class Sample(Object):
+    # Constructor
+    def __init__(self, world, parentObject):
+        # Default sprite name
+        Object.__init__(self, world, "sample", "sample of " + parentObject.name, defaultSpriteName = "instruments_sample")
+
+        # Materials
+        # Deep copy the materials from the parent object
+        self.attributes["materials"] = copy.deepcopy(parentObject.attributes["materials"])
+
+        # Parts (for composite objects -- similar to containers)
+        self.parts = []                                            
+        # For each part in the parent object, create a new part in this object
+        for parentPart in parentObject.parts:
+            # Create a new part, and add it to this object
+            newPart = Sample(self.world, parentPart)
+            self.parts.append(newPart)
+
+        # Poison/health attributes
+        self.attributes['isPoisonous'] = parentObject.attributes['isPoisonous'] if ('isPoisonous' in parentObject.attributes) else False
+        self.attributes['temperatureC'] = parentObject.attributes['temperatureC'] if ('temperatureC' in parentObject.attributes) else 20.0
+
+        # Remove the parent object's contents
+        self.contents = []
 
 
 
