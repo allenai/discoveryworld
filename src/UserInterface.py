@@ -533,14 +533,14 @@ class UserInterface:
 
 
     # DiscoveryFeed actions
-    def getDiscoveryFeedUpdates(self):
+    def getDiscoveryFeedUpdates(self, startFromID=0):
         # Show the last 10 updates        
-        success = self.currentAgent.actionDiscoveryFeedGetPosts()
+        success = self.currentAgent.actionDiscoveryFeedGetPosts(startFromID)
         return success        
 
-    def getDiscoveryFeedArticles(self):
+    def getDiscoveryFeedArticles(self, startFromID=0):
         # Show the last 10 articles
-        success = self.currentAgent.actionDiscoveryFeedGetArticleTitles()
+        success = self.currentAgent.actionDiscoveryFeedGetArticleTitles(startFromID)
         return success
     
     def getSpecificDiscoveryFeedPost(self, postID):
@@ -783,9 +783,9 @@ class UserInterface:
         # DiscoveryFeed Actions
         # Reading articles
         elif (keys[pygame.K_v]):
-            return (False, self.getDiscoveryFeedUpdates())
+            return (False, self.getDiscoveryFeedUpdates(startFromID=10))
         elif (keys[pygame.K_b]):
-            return (False, self.getDiscoveryFeedArticles())
+            return (False, self.getDiscoveryFeedArticles(startFromID=10))
         elif (keys[pygame.K_n]):
             # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
             randPostID = math.floor(random.random() * 10) + 1            

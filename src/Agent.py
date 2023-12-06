@@ -685,11 +685,36 @@ class Agent(Object):
     #
 
     # Get the most recent updates from the discovery feed
-    def actionDiscoveryFeedGetPosts(self):
-        numPostsToRetrieve = 10 # Number of posts to retrieve
+    def actionDiscoveryFeedGetPosts(self, startFromID=0):
+        numPostsToRetrieve = 5 # Number of posts to retrieve
         postDelimiter = "---\n"
-        allPosts = self.world.discoveryFeed.getPosts()        
-        lastPosts = allPosts[-numPostsToRetrieve:]
+        allPosts = self.world.discoveryFeed.getPosts()                
+        lastPosts = []
+        notificationStr = ""
+        if (startFromID <= 0):
+            # Just get the last N posts
+            lastPosts = allPosts[-numPostsToRetrieve:]
+            notificationStr = "Showing the most recent " + str(len(lastPosts)) + " posts."
+        else:
+            # Get the last N posts starting from the specified ID.  Posts are sorted in ascending order. 
+            postLocation = -1
+            for post in allPosts:
+                if (post["postID"] >= startFromID):
+                    postLocation = allPosts.index(post)
+                    break
+            if (postLocation >= 0):
+                postEnd = postLocation + numPostsToRetrieve
+                if (postEnd > len(allPosts)):
+                    postEnd = len(allPosts)
+                
+                lastPosts = allPosts[postLocation:postEnd]
+
+                notificationStr = "Showing the most recent " + str(len(lastPosts)) + " posts starting from post ID " + str(startFromID) + "."
+            else:
+                # Just get the last N posts
+                lastPosts = allPosts[-numPostsToRetrieve:]
+                notificationStr = "Failed to find update posts with ID " + str(startFromID) + ", showing the most recent " + str(len(lastPosts)) + " posts."
+
 
         # Create a string to display the posts        
         postStrings = []
@@ -701,7 +726,8 @@ class Agent(Object):
         # Final string
         outStr = "DiscoveryFeed (Update Posts)\n"
         outStr += "DiscoveryFeed contains " + str(len(allPosts)) + " update posts.\n"
-        outStr += "Last " + str(len(postStrings)) + " posts found:\n\n"
+        #outStr += "Last " + str(len(postStrings)) + " posts found:\n\n"
+        outStr += notificationStr + "\n\n"
         outStr += postDelimiter.join(postStrings)
 
         # Generate result
@@ -711,11 +737,37 @@ class Agent(Object):
         return result
     
     # Get the most recent updates from the discovery feed
-    def actionDiscoveryFeedGetArticleTitles(self):
-        numArticlesToRetrieve = 10 # Number of posts to retrieve
+    def actionDiscoveryFeedGetArticleTitles(self, startFromID=0):
+        numArticlesToRetrieve = 5 # Number of posts to retrieve
         postDelimiter = "---\n"
         allArticles = self.world.discoveryFeed.getArticles()        
-        lastArticles = allArticles[-numArticlesToRetrieve:]
+        
+        lastArticles = []
+        notificationStr = ""
+        if (startFromID <= 0):
+            # Just get the last N posts
+            lastArticles = allArticles[-numArticlesToRetrieve:]
+            notificationStr = "Showing the most recent " + str(len(lastArticles)) + " articles."
+        else:
+            # Get the last N posts starting from the specified ID.  Posts are sorted in ascending order. 
+            postLocation = -1
+            for post in allArticles:
+                if (post["postID"] >= startFromID):
+                    postLocation = allArticles.index(post)
+                    break
+            if (postLocation >= 0):
+                postEnd = postLocation + numArticlesToRetrieve
+                if (postEnd > len(allArticles)):
+                    postEnd = len(allArticles)
+                
+                lastArticles = allArticles[postLocation:postEnd]
+
+                notificationStr = "Showing the most recent " + str(len(lastArticles)) + " articles starting from document ID " + str(startFromID) + "."
+            else:
+                # Just get the last N posts
+                lastArticles = allArticles[-numArticlesToRetrieve:]
+                notificationStr = "Failed to find articles with ID " + str(startFromID) + ", showing the most recent " + str(len(lastArticles)) + " articles."
+
 
         # Create a string to display the posts        
         postStrings = []
@@ -728,7 +780,8 @@ class Agent(Object):
         # Final string
         outStr = "DiscoveryFeed (Article Index)\n"
         outStr += "DiscoveryFeed contains " + str(len(allArticles)) + " articles.\n"
-        outStr += "Last " + str(len(postStrings)) + " articles found.  Here are their titles:\n\n"
+        outStr += notificationStr
+        outStr += " Articles can be retrieved by their ID. Here are their titles:\n\n"
         outStr += postDelimiter.join(postStrings)
 
         # Generate result
