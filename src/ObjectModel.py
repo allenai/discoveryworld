@@ -98,6 +98,8 @@ class Object:
 
         # Temperature
         self.attributes['temperatureC'] = 20                       # The default object temeprature, in Celsius
+        self.attributes['heatSourceMaxTemp'] = 0                   # If it is a heat source, then this is the maximum temperature that it can reach
+        self.attributes['coolSourceMinTemp'] = 0                   # If it is a cool source, then this is the minimum temperature that it can reach
 
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
@@ -1134,13 +1136,22 @@ class Stove(Object):
         self.attributes['isActivatable'] = True                       # Is this a device? (more specifically, can it be activated/deactivated?)
         self.attributes['isActivated'] = False                      # Is this device currently activated?
 
+        # Heating        
+        self.attributes['heatSourceMaxTemp'] = 350                   # If it is a heat source, then this is the maximum temperature that it can reach        
+
 
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
         if (False):
             self.needsSpriteNameUpdate = True
+        
+        # If the stove is on, then all of its contents gets heated towards its maximum heating temperature
+        if (self.attributes["isActivated"]):            
+            # Get a list of all the contents (recursive, with parts)
+            contentsAndParts = self.getAllContainedObjectsAndParts(includeContents=True, includeParts=True)
+            # Heat them
+            heatObjects(contentsAndParts, finalTemperature = self.attributes['heatSourceMaxTemp'])            
 
-        # TODO
 
         # Call superclass
         Object.tick(self)
@@ -1242,14 +1253,22 @@ class Fridge(Object):
         self.attributes['isActivatable'] = True                      # Is this a device? (more specifically, can it be activated/deactivated?)
         self.attributes['isActivated'] = True                      # Is this device currently activated?
 
+        # Heating
+        self.attributes['coolSourceMinTemp'] = -4                    # If it is a cool source, then this is the minimum temperature that it can reach
 
 
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
         if (False):
             self.needsSpriteNameUpdate = True
+        
+        # If the fridge is on, then all of its contents gets cooled towards its minimum cooling temperature
+        if (self.attributes["isActivated"]):            
+            # Get a list of all the contents (recursive, with parts)
+            contentsAndParts = self.getAllContainedObjectsAndParts(includeContents=True, includeParts=True)
+            # Heat them
+            coolObjects(contentsAndParts, finalTemperature = self.attributes['coolSourceMinTemp'])            
 
-        # TODO
 
         # Call superclass
         Object.tick(self)

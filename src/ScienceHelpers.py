@@ -86,3 +86,41 @@ def getNPKContent(obj):
         # Pack
         npkContent = {"nitrogen": totalNitrogen, "phosphorus": totalPhosphorus, "potassium": totalPotassium}
         return npkContent        
+
+
+
+#
+#   Heat or cool all the objects subjected to a heat/cooling source
+#
+
+def heatObjects(objList:list, finalTemperature:float, maxTemperatureChange:float=25):
+    # For every object in the object list
+    for obj in objList:
+        # Get the current temperature of the object
+        currentTemperature = obj.attributes["temperatureC"]
+        # Get the temperature difference between the current temperature and the final temperature
+        temperatureDifference = finalTemperature - currentTemperature
+        
+        # If there's a positive difference, start heating
+        if (temperatureDifference > 0):
+            # If the temperature difference is greater than the maximum temperature change, only change the temperature by the maximum temperature change
+            if (temperatureDifference > maxTemperatureChange):
+                obj.attributes["temperatureC"] += maxTemperatureChange   # Heat the object by the maximum temperature change this step
+            else:
+                obj.attributes["temperatureC"] += temperatureDifference  # Heat the object by the temperature difference this step
+
+def coolObjects(objList:list, finalTemperature:float, maxTemperatureChange:float=25):
+    # For every object in the object list
+    for obj in objList:
+        # Get the current temperature of the object
+        currentTemperature = obj.attributes["temperatureC"]
+        # Get the temperature difference between the current temperature and the final temperature
+        temperatureDifference = currentTemperature - finalTemperature
+        
+        # If there's a positive difference, start heating
+        if (temperatureDifference > 0):
+            # If the temperature difference is greater than the maximum temperature change, only change the temperature by the maximum temperature change
+            if (temperatureDifference > maxTemperatureChange):
+                obj.attributes["temperatureC"] -= maxTemperatureChange   # Cool the object by the maximum temperature change this step
+            else:
+                obj.attributes["temperatureC"] -= temperatureDifference  # Cool the object by the temperature difference this step
