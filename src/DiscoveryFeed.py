@@ -46,8 +46,8 @@ class DiscoveryFeed:
     #
     #   Add posts
     #
-    def addUpdatePost(self, curStep:int, authorName:str, content:str):
-        self.articles.append({"step": curStep, "author": authorName, "content": content})
+    def addUpdatePost(self, curStep:int, authorName:str, content:str, signals:list = None):
+        self.updatePosts.append({"step": curStep, "author": authorName, "content": content, "signals": signals})
 
     def addArticle(self, curStep:int, authorName:str, title:str, content:str):
         self.articles.append({"step": curStep, "author": authorName, "title": title, "content": content})

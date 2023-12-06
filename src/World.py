@@ -6,6 +6,7 @@ from Layer import Layer
 from ObjectModel import Object
 from TaskScorer import *
 from UUIDGenerator import *
+from DiscoveryFeed import *
 import pygame
 import time
 import zlib
@@ -15,7 +16,7 @@ import pickle
 # Storage class for the world (including the full environment grid)
 class World:
     # Constructor
-    def __init__(self, assetPath, filenameSpriteIndex, dataPath, filenameObjectData, filenameMaterialData):
+    def __init__(self, assetPath, filenameSpriteIndex, dataPath, filenameObjectData, filenameMaterialData, filenameDiscoveryFeed):
         # World size (in tiles)
         self.sizeX = 32
         self.sizeY = 32
@@ -39,6 +40,9 @@ class World:
 
         # Initialize agent array
         self.agents = []
+
+        # Initialize DiscoveryFeed, and load any pre-existing articles and update posts
+        self.discoveryFeed = DiscoveryFeed(dataPath + "/" + filenameDiscoveryFeed)
 
         # Initialize task generator and scorer
         self.taskMaker = TaskMaker(world=self)
