@@ -104,6 +104,10 @@ class Object:
         # Alive
         self.attributes['isLiving'] = False                         # Is it alive?
 
+        # Modifier text, if the object is viewed under a microscope. This is a list of strings, which are displayed in the microscope view.
+        self.attributes['microscopeModifierText'] = []
+
+
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
         self.firstInit = True
@@ -329,6 +333,8 @@ class Object:
         else:
             self.inferSpriteName()
 
+        # Remove the list of object description modifiers, which should be regenerated every tick. 
+        self.attributes['microscopeModifierText'] = []
 
         # Set that the tick has been completed on this object
         self.tickCompleted = True
@@ -364,13 +370,17 @@ class Object:
         # Describe the materials            
         materials = self.attributes['materials']
         if (len(materials) == 0):
-            microscopeDescriptionStr += "Observing the " + self.name + ", you don't observe anything particularly noteworthy.\n"
+            microscopeDescriptionStr += "Observing the " + self.name + ", you don't observe anything particularly noteworthy."
         else:
             microscopeDescriptionStr += "Observing the " + self.name + ", you see the following: "
             materialDescs = []
             for material in materials:
                 materialDescs.append(material['microscopeDesc'])                
             microscopeDescriptionStr += ", ".join(materialDescs) + ".\n"
+
+        # Add any specific attributes to be mentioned. 
+        if (len(self.attributes['microscopeModifierText']) > 0):
+            microscopeDescriptionStr += " ".join(self.attributes['microscopeModifierText']) + "\n"
 
         # Then, recursively describe all the parts. 
         for part in self.parts:
@@ -2448,7 +2458,9 @@ class Mold(Object):
         # If it's dead, then it's no longer poisonous
         if (self.attributes['isLiving'] == False):
             self.attributes['isPoisonous'] = False
-
+            # Make a note of this in the microscope modifier text.
+            ## TODO: This should be refactored -- perhaps only do it in response to a 'generateMicroscopeDesc' string? (i.e. only when the player looks at it)
+            self.attributes['microscopeModifierText'].append("This mold appears dead.")
 
 
 
