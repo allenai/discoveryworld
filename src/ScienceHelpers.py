@@ -124,3 +124,21 @@ def coolObjects(objList:list, finalTemperature:float, maxTemperatureChange:float
                 obj.attributes["temperatureC"] -= maxTemperatureChange   # Cool the object by the maximum temperature change this step
             else:
                 obj.attributes["temperatureC"] -= temperatureDifference  # Cool the object by the temperature difference this step
+
+
+#
+#   Living Things -- set dead if outside of temperature range
+#
+def livingTemperatureRangeCheck(obj):
+    # Check to see if the temperature goes out of range of the living things tolerance.  If so, set the living thing to dead.     
+    # Can only perform this check if the living thing has a material specified. 
+    if (len(obj.attributes["materials"]) > 0) and (obj.attributes['isLiving'] == True):
+        curTemperature = obj.attributes['temperatureC']
+        # Should only be one material
+        material = obj.attributes["materials"][0]
+        if (material['isLiving'] == True):
+            if (curTemperature < material['livingMinTemp']) or (curTemperature > material['livingMaxTemp']):
+                # Outside of living range
+                obj.attributes['isLiving'] = False
+                print("### " + obj.name + " is dead, due to being out of temperature range.  Temperature is " + str(curTemperature) + " C.  Living range is " + str(material['livingMinTemp']) + " C to " + str(material['livingMaxTemp']) + " C.  ###")
+                    

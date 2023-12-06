@@ -205,6 +205,7 @@ class ObjectMaker:
             "Microscope": Microscope,
             "PlantGeneric": PlantGeneric,
             "Mushroom": Mushroom,
+            "Mold": Mold,
             "Statue": Statue,
             "Fence": Fence,
             "Pot": Pot,

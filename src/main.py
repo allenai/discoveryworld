@@ -496,8 +496,8 @@ def main():
     # Add an agent
     currentAgent = Agent(world)
     #world.addObject(5, 8, Layer.AGENT, currentAgent)      # Near cave
-    world.addObject(10, 10, Layer.AGENT, currentAgent)      # Near farm
-    #world.addObject(20, 22, Layer.AGENT, currentAgent)     # In cafeteria
+    #world.addObject(10, 10, Layer.AGENT, currentAgent)      # Near farm
+    world.addObject(20, 22, Layer.AGENT, currentAgent)     # In cafeteria
     #world.addObject(10, 24, Layer.AGENT, currentAgent)     # In science lab
     # Add tools for agent
     currentAgent.addObject(world.createObject("Shovel"))
@@ -520,6 +520,13 @@ def main():
     world.addObject(11, 12, Layer.AGENT, npcFarmer)
     dialogMaker.mkDialogFarmer(npcFarmer)
     world.addAgent(npcFarmer)
+
+    ## MOLD TEST
+    mold1 = world.createObject("spacemold1")
+    world.addObject(31, 31, Layer.OBJECTS, mold1)
+    mush1 = world.createObject("mushroom1")
+    world.addObject(30, 31, Layer.OBJECTS, mush1)
+
 
     # Add another NPC colonist
     #npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickup=None)
@@ -744,6 +751,15 @@ def main():
 
             print("############################################################################################\n")                
             #time.sleep(0.25)            
+
+            #### DEBUG: Monitor on mold:
+            print("MOLD MONITOR:")
+            print(mold1.attributes)
+            print("MUSH1 Monitor:")
+            print(mush1.attributes)
+            for part in mush1.parts:
+                print(part.attributes)
+
 
             if (autoRunCycles > 0):
                 autoRunCycles -= 1

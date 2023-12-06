@@ -101,6 +101,9 @@ class Object:
         self.attributes['heatSourceMaxTemp'] = 0                   # If it is a heat source, then this is the maximum temperature that it can reach
         self.attributes['coolSourceMinTemp'] = 0                   # If it is a cool source, then this is the minimum temperature that it can reach
 
+        # Alive
+        self.attributes['isLiving'] = False                         # Is it alive?
+
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
         self.firstInit = True
@@ -332,6 +335,12 @@ class Object:
 
         # Also call tick on all contained objects
         for obj in self.contents:
+            # First, update the grid location of the contained objects to be the same as the container
+            obj.setWorldLocation(self.attributes["gridX"], self.attributes["gridY"])
+            # Next, call tick()
+            obj.tick()
+        # And all parts
+        for obj in self.parts:
             # First, update the grid location of the contained objects to be the same as the container
             obj.setWorldLocation(self.attributes["gridX"], self.attributes["gridY"])
             # Next, call tick()
@@ -2411,6 +2420,43 @@ class Mushroom(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: Mold
+#
+class Mold(Object):
+    # Constructor
+    def __init__(self, world, color:str=""):
+        # Default sprite name
+        Object.__init__(self, world, "mold", "mold", defaultSpriteName = "forest1_mushroom_pink")
+
+        self.attributes['isLiving'] = True                         # Is it alive?
+        # Most properties populated from the external spreadsheet
+            
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+        # Check to make sure this living thing is not subjected to extreme temperatures that may kill it
+        print("### MOLD: " + str(self.attributes['isLiving']) + " ###")
+        print("### MOLD: " + str(self.attributes['isPoisonous']) + " ###")
+        print("### MOLD: " + str(self.attributes['temperatureC']) + " ###")
+
+        livingTemperatureRangeCheck(self)
+
+        print("### MOLD: " + str(self.attributes['isLiving']) + " ###")
+        print("### MOLD: " + str(self.attributes['isPoisonous']) + " ###")
+        print("### MOLD: " + str(self.attributes['temperatureC']) + " ###")
+
+        # If it's dead, then it's no longer poisonous
+        if (self.attributes['isLiving'] == False):
+            self.attributes['isPoisonous'] = False
+            print("### Mold is dead, so it is no longer poisonous. ###")
+            exit(1)
+
+
+
 
 
 #

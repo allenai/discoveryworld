@@ -65,6 +65,8 @@ class Agent(Object):
         # Object visibility for agents (i.e. the last object(s) they interacted with)
         self.attributes["objectToShow"] = None                     # The object to show the agent carrying
         
+        # Alive/dead
+        self.attributes["isLiving"] = True                          # Is the agent alive?
 
     #   
     #   Accessors/helpers
