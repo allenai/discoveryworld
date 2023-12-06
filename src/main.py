@@ -215,12 +215,14 @@ def mkFarm(x, y, world, buildingMaker):
 
     # Add a table in the farm house
     seedTable = world.createObject("Table")
-    seedJar = world.createObject("Jar")
+    seedJar = world.createObject("Jar")    
+    seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
+    seedJar.name = "seed jar"
     #seedJar.addObject(Seed(world, "red"))
 
     # Add 5 seeds to the jar
-    for i in range(5):
-        seedJar.addObject( world.createObject("Seed") )
+    #for i in range(5):
+    #    seedJar.addObject( world.createObject("Seed") )
 
     seedTable.addObject(seedJar)
     world.addObject(x+3, y+1, Layer.FURNITURE, seedTable)

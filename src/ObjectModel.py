@@ -2456,9 +2456,53 @@ class Jar(Object):
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
         self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
 
+        # Auto fill
+        self.autoFillCheckForObjectName = None
+        self.autoFillFillObjectName = None
+        self.lastAddedCount = 0
+        self.replenishTime = 5
+
+    # If we want this object to autofill (i.e. perpetually fill with a supply of an object), set it here. 
+    def setAutoFill(self, checkObjectName:str, fillObjectName:str, minCount:int, replenishTime:int=8):
+        self.autoFillCheckForObjectName = checkObjectName
+        self.autoFillFillObjectName = fillObjectName
+        self.autoFillMinCount = minCount
+        self.replenishTime = replenishTime
+        self.lastAddedCount = 0
+        
+
+
     def tick(self):
         # Call superclass
         Object.tick(self)    
+
+        # Auto fill
+        #if (self.autoFillObjectName != None and self.autoFillMinCount != None):
+        if (self.autoFillCheckForObjectName != None) and (self.autoFillFillObjectName != None) and (self.autoFillMinCount != None):
+            # Count how much of the object is contained within the root level of the contents
+            count = 0
+            for obj in self.contents:
+                if (obj.name == self.autoFillCheckForObjectName):
+                    count += 1
+            
+            # Fill up to the minimum count
+            if (count < self.autoFillMinCount):
+                # Check to see if the last added count is zero
+                if (self.lastAddedCount <= 0):
+                    # Add one more
+                    objToAdd = self.world.createObject(self.autoFillFillObjectName)
+                    self.addObject(objToAdd, force=True)
+                    # Tick the object to update its sprite
+                    objToAdd.tick()                    
+                    # Invalidate object sprite
+                    self.needsSpriteNameUpdate = True
+                    # Tick 
+                    self.lastAddedCount = self.replenishTime     # Wait a few ticks before adding the next one
+                else:
+                    self.lastAddedCount -= 1
+
+
+
 
     # Sprite
     # Updates the current sprite name based on the current state of the object
@@ -2705,7 +2749,7 @@ class FertilizerBag(Object):
             # Add enough fertilizer pellets to make 3
             for i in range(3 - numFertilizerPellets):
                 fertilizerPellet = self.world.createObject("FertilizerPellet")
-                self.addObject(fertilizerPellet)
+                self.addObject(fertilizerPellet, force=True)
                 fertilizerPellet.tick()
 
 
