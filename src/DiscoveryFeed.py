@@ -55,10 +55,10 @@ class DiscoveryFeed:
     #   Add posts
     #
     def addUpdatePost(self, curStep:int, authorName:str, content:str, signals:list = None):        
-        self.updatePosts.append({"step": curStep, "author": authorName, "content": content, "signals": signals, "postID": self.getUniquePostID()})
+        self.updatePosts.append({"step": curStep, "author": authorName, "content": content, "signals": signals, "postID": self.getUniquePostID(), "type": "update"})
 
     def addArticle(self, curStep:int, authorName:str, title:str, content:str):
-        self.articles.append({"step": curStep, "author": authorName, "title": title, "content": content, "postID": self.getUniquePostID()})
+        self.articles.append({"step": curStep, "author": authorName, "title": title, "content": content, "postID": self.getUniquePostID(), "type": "article"})
         
     #
     #   Get posts
@@ -69,6 +69,17 @@ class DiscoveryFeed:
     def getArticles(self):
         return self.articles
     
+
+    def getByPostID(self, postID:int):
+        for article in self.articles:
+            if (article["postID"] == postID):
+                return article
+
+        for post in self.updatePosts:
+            if (post["postID"] == postID):
+                return post
+
+        return None
 
     #
     #   Export to dictionary

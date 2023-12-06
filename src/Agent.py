@@ -705,16 +705,68 @@ class Agent(Object):
 
         # Final string
         outStr = "DiscoveryFeed (Update Posts)\n"
+        outStr += "DiscoveryFeed contains " + str(len(allPosts)) + " update posts.\n"
         outStr += "Last " + str(len(postStrings)) + " posts found:\n\n"
         outStr += postDelimiter.join(postStrings)
 
         # Generate result
         result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)        
         # Add to action history
-        self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_POSTS, arg1=None, arg2=None, result=result)
+        self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_UPDATES, arg1=None, arg2=None, result=result)
+        return result
+    
+    # Get the most recent updates from the discovery feed
+    def actionDiscoveryFeedGetArticleTitles(self):
+        numArticlesToRetrieve = 10 # Number of posts to retrieve
+        postDelimiter = "---\n"
+        allArticles = self.world.discoveryFeed.getArticles()        
+        lastArticles = allArticles[-numArticlesToRetrieve:]
+
+        # Create a string to display the posts        
+        postStrings = []
+        for post in lastArticles:
+            postStr = "Article " + str(post["postID"]) + " Title: " + post["title"] + "\n"
+            postStr += "Submitted by " + post["author"] + " on Step " + str(post["step"]) + "\n"
+            #postStr += post["content"] + "\n"
+            postStrings.append(postStr)
+
+        # Final string
+        outStr = "DiscoveryFeed (Article Index)\n"
+        outStr += "DiscoveryFeed contains " + str(len(allArticles)) + " articles.\n"
+        outStr += "Last " + str(len(postStrings)) + " articles found.  Here are their titles:\n\n"
+        outStr += postDelimiter.join(postStrings)
+
+        # Generate result
+        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)        
+        # Add to action history
+        self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_ARTICLES, arg1=None, arg2=None, result=result)
         return result
 
+    # Get the most recent updates from the discovery feed
+    def actionDiscoveryFeedGetByID(self, postID):
+        post = self.world.discoveryFeed.getPostByID(postID)
+        if (post == None):
+            result = ActionSuccess(False, "No post found with ID " + str(postID), importance=MessageImportance.HIGH)
+            self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_POST_BY_ID, arg1=postID, arg2=None, result=result)
+            return result
+        
+        postStr = ""
+        if (post["type"] == "update"):
+            postStr = "Post " + str(post["postID"]) + "\nPosted by " + post["author"] + " on Step " + str(post["step"]) + ":\n"
+            postStr += post["content"] + "\n"
+        elif (post["type"] == "article"):
+            postStr = "Article " + str(post["postID"]) + ": " + post["title"] + "\n"
+            postStr += "Submitted by " + post["author"] + " on Step " + str(post["step"]) + "\n\n"
+            postStr += post["content"] + "\n"
+        else:
+            #raise ValueError("Unknown post type: " + str(post["type"]))
+            result = ActionSuccess(False, "Unknown post type: " + str(post["type"]) + "\n" + str(post), importance=MessageImportance.HIGH)
 
+        # Generate result
+        result = ActionSuccess(True, postStr, importance=MessageImportance.HIGH)        
+        # Add to action history
+        self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_POST_BY_ID, arg1=postID, arg2=None, result=result)
+        return result
             
         
 

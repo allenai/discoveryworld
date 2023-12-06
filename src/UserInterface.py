@@ -536,6 +536,15 @@ class UserInterface:
         success = self.currentAgent.actionDiscoveryFeedGetPosts()
         return success        
 
+    def getDiscoveryFeedArticles(self):
+        # Show the last 10 articles
+        success = self.currentAgent.actionDiscoveryFeedGetArticleTitles()
+        return success
+    
+    def getSpecificDiscoveryFeedPost(self, postID):
+        # Show the post with the given ID
+        success = self.currentAgent.actionDiscoveryFeedGetByID(postID)
+        return success
 
 
     #
@@ -762,6 +771,11 @@ class UserInterface:
         # DiscoveryFeed Actions
         elif (keys[pygame.K_v]):
             return (False, self.getDiscoveryFeedUpdates())
+        elif (keys[pygame.K_b]):
+            return (False, self.getDiscoveryFeedArticles())
+        #elif (keys[pygame.K_n]):
+        # TODO: Specific post by ID
+
 
 
         # If we reach here, then no known key was pressed
