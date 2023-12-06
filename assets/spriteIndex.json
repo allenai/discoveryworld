@@ -26,9 +26,10 @@
                 "chair_u":    { "baseTile": [5, 6],  "size": [1, 1] },
                 "chair_d":    { "baseTile": [4, 6],  "size": [1, 1] },
 
-                "stove_off":    { "baseTile": [3, 12],  "size": [1, 1] },
+                "stove_off":    { "baseTile": [2, 12],  "size": [1, 1] },
                 "stove_on":     { "baseTile": [0, 12],  "size": [1, 1] },
                 "stove_open":   { "baseTile": [1, 12],  "size": [1, 1] },
+                "stove_on_open":{ "baseTile": [0, 13],  "size": [1, 1] },
 
                 "sink_off":     { "baseTile": [1, 14],  "size": [1, 1] },
                 "sink_on":      { "baseTile": [1, 15],  "size": [1, 1] },

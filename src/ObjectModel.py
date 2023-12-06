@@ -1174,7 +1174,11 @@ class Stove(Object):
 
         # If the stove is open, then we need to use the open sprite
         if (self.attributes["isOpenContainer"]):
-            self.curSpriteName = "house1_stove_open"
+            if (self.attributes["isActivated"]):
+                self.curSpriteName = "house1_stove_on_open"
+            else:
+                self.curSpriteName = "house1_stove_open"
+
         else:
             if (self.attributes["isActivated"]):
                 self.curSpriteName = "house1_stove_on"
