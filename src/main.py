@@ -285,6 +285,13 @@ def mkFarm(x, y, world, buildingMaker):
             print("ERROR: Couldn't add all mushrooms to farm.  Exiting to prevent infinite loop.")
             break
 
+
+    # add a fertilizer pellet    
+    world.addObject(x, y+4, Layer.OBJECTS, world.createObject("FertilizerPellet"))
+    world.addObject(x-1, y+4, Layer.OBJECTS, world.createObject("FertilizerPellet"))
+    world.addObject(x-2, y+4, Layer.OBJECTS, world.createObject("FertilizerPellet"))
+
+
     ## Debug, gives references to mushrooms added for agents to pick up
     return mushroomsAdded
     
@@ -482,9 +489,10 @@ def main():
 
     # Add an agent
     currentAgent = Agent(world)
-    #world.addObject(5, 8, Layer.AGENT, currentAgent)      # Near farm
+    #world.addObject(5, 8, Layer.AGENT, currentAgent)      # Near cave
+    world.addObject(10, 10, Layer.AGENT, currentAgent)      # Near farm
     #world.addObject(20, 22, Layer.AGENT, currentAgent)     # In cafeteria
-    world.addObject(10, 24, Layer.AGENT, currentAgent)     # In science lab
+    #world.addObject(10, 24, Layer.AGENT, currentAgent)     # In science lab
     # Add tools for agent
     currentAgent.addObject(world.createObject("Shovel"))
     currentAgent.addObject(world.createObject("Seed"))

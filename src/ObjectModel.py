@@ -2598,7 +2598,7 @@ class Seed(Object):
                 npk = getNPKContent(self.parentContainer)
                 sumNPK = npk["nitrogen"] + npk["phosphorus"] + npk["potassium"]
                 # NPK is nominally between 0-10, but most of the soil in DiscoveryWorld has starting values between 1-4 for each.  Call the nominal max growth rate at 5.  5*3 = 15, so divide by 15 to get a growth rate. 
-                growthRate = sumNPK / 15.0
+                growthRate = sumNPK / 30.0
                 # Randomly generate a number, and see if that number is less than the growth rate. If it is, then the plant grows.
                 randGrowth = random.random()
                 if (randGrowth < growthRate):
@@ -2609,6 +2609,69 @@ class Seed(Object):
                     
 
         
+#
+#   Object: Fertilizer Pellet
+#
+class FertilizerPellet(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "fertilizer", "fertilizer", defaultSpriteName = "instruments_fertilizer_pellet")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+        self.attributes["absorbTime"] = 8                         # How many ticks until it absorbs into the soil?
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
+        # Check if the conditions for the seed to grow have been met
+        # Condition 1: Check if the fertilizer pellet is contained within soil
+        nearDirt = None
+
+        # Check if parent container is soil with dirt in it
+        if (self.parentContainer is not None):            
+            if (self.parentContainer.type == "soil"):
+                # Get any contained dirt
+                parentContinerObjs = self.parentContainer.contents
+                for obj in parentContinerObjs:
+                    if (obj.type == "dirt"):
+                        nearDirt = obj
+                        break
+
+        # OR, check if the fertilizer pellet is in no container, but is on the same tile as dirt. 
+        if (self.parentContainer is None) and (nearDirt is None):
+            # Get the tile that this object is on            
+            objectsAtTile = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"])
+            for object in objectsAtTile:
+                if (object.type == "dirt"):
+                    nearDirt = object
+                    break
+
+        # If the conditions have been met, continue the absorption process
+        if (nearDirt is not None):
+            self.attributes["absorbTime"] -= 1
+
+            # If the absorb time is 0, then absorb into the soil
+            if (self.attributes["absorbTime"] == 0):
+                #print("Absorb into soil")
+
+                # Increase the N/P/K of the dirt material by one
+                found = False
+                for material in nearDirt.attributes["materials"]:
+                    if (material["MaterialName"] == "soil"):
+                        material["nitrogen"] += 1
+                        material["phosphorus"] += 1
+                        material["potassium"] += 1
+                        break
+                        
+                # Remove the fertilizer pellet from the world
+                self.world.removeObject(self)
+                return
+
+                    
 
 
 # #

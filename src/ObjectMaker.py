@@ -219,7 +219,9 @@ class ObjectMaker:
             "Sampler": Sampler,
             "RadiationMeter": RadiationMeter,
             "NPKMeter": NPKMeter,
-            "PetriDish": PetriDish
+            "PetriDish": PetriDish,
+            "FertilizerPellet": FertilizerPellet
+
         }
 
         # Check that the class name is in the dictionary
