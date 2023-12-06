@@ -114,6 +114,8 @@ class Pathfinder():
             result = self.runDigInFrontOfAgent(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.BURY_IN_FRONT_OF_AGENT):
             result = self.runBuryInFrontOfAgent(autopilotAction.args, agent, world)
+        elif (actionType == AutopilotActionType.POST_DISCOVERY_FEED_UPDATE):
+            result = self.runPostDiscoveryFeedUpdate(autopilotAction.args, agent, world)
         else:
             print("ERROR: Invalid autopilot action type: " + str(actionType))
             return ActionResult.INVALID
@@ -230,6 +232,19 @@ class Pathfinder():
         # Action succeeded
         return ActionResult.COMPLETED
      
+     
+    # Post an update to the Discovery Feed
+    def runPostDiscoveryFeedUpdate(self, args:dict, agent, world):
+        # Content and signals
+        contentStr = args['contentStr']
+        signals = args['signals']
+
+        # Post the update to the feed
+        agent.actionDiscoveryFeedMakeUpdatePost(contentStr, signals=signals)
+
+        # Action succeeded
+        return ActionResult.COMPLETED        
+
 
     # Bury an object in front of the agent
     def runBuryInFrontOfAgent(self, args:dict, agent, world):
@@ -992,6 +1007,16 @@ class AutopilotAction_Wait(AutopilotAction):
         self.args = {}
         self.args['priority'] = priority                
 
+class AutopilotAction_PostDiscoveryFeedUpdate(AutopilotAction):
+    # Constructor
+    def __init__(self, contentStr:str, signals:list=[], priority=0):
+        self.actionType = AutopilotActionType.POST_DISCOVERY_FEED_UPDATE
+        self.args = {}
+        self.args['contentStr'] = contentStr
+        self.args['signals'] = signals
+        self.args['priority'] = priority
+
+
 
 # Enumeration for types of autopilot actions
 class AutopilotActionType(Enum):
@@ -1006,4 +1031,5 @@ class AutopilotActionType(Enum):
     DIG_IN_FRONT_OF_AGENT   = 8
     BURY_IN_FRONT_OF_AGENT  = 9
     DROP_OBJ_AT_LOCATION    = 10
+    POST_DISCOVERY_FEED_UPDATE = 11
 

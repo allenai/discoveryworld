@@ -1935,6 +1935,8 @@ class NPCChef1(NPC):
             # First, remove the collect signal
             self.attributes['states'].remove("collectSignal")
 
+            self.actionDiscoveryFeedMakeUpdatePost("I'm going to the farm to collect mushrooms.", signals=[])
+
             # First, pick up the pot
             potContainer = self.pot.parentContainer
             self.addAutopilotActionToQueue( AutopilotAction_PickupObj(self.pot, priority=5) )
@@ -1951,6 +1953,9 @@ class NPCChef1(NPC):
             # Then, put the pot back down
             self.addAutopilotActionToQueue( AutopilotAction_PlaceObjInContainer(self.pot, potContainer, priority=5) )
 
+            # Send a note to the discovery feed signifying the task is completed
+            self.addAutopilotActionToQueue( AutopilotAction_PostDiscoveryFeedUpdate(contentStr="I'm going back to the cafeteria from the farm.", signals=[], priority=5) )
+
             # Then, travel back to your starting location
             self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=20, y=21, priority=5) )
 
@@ -1959,6 +1964,8 @@ class NPCChef1(NPC):
             # Serve the food
             # First, remove the serve signal
             self.attributes['states'].remove("serveSignal")
+
+            self.actionDiscoveryFeedMakeUpdatePost("I'm going to serve food in the cafeteria.", signals=[])
 
             # First, pick up the pot
             potContainer = self.pot.parentContainer
@@ -1974,7 +1981,7 @@ class NPCChef1(NPC):
             self.addAutopilotActionToQueue( AutopilotAction_PlaceObjInContainer(self.pot, potContainer, priority=5) )
 
             # Then, travel back to your starting location
-            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=20, y=21, priority=5) )
+            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=20, y=21, priority=5) )                        
 
 
         # Run the autopilot action queue
@@ -2100,6 +2107,8 @@ class NPCColonistAuto2(NPC):
             # First, remove the collect signal
             self.attributes['states'].remove("eatSignal")
 
+            self.actionDiscoveryFeedMakeUpdatePost("Heading to the cafeteria for some food.", signals=[])
+
             # First, record the agent's starting location
             agentStartingLocation = self.getWorldLocation()
 
@@ -2120,8 +2129,7 @@ class NPCColonistAuto2(NPC):
             self.addAutopilotActionToQueue( AutopilotAction_EatObjectInInventory(objectNamesOrTypesToEat=["mushroom"], priority=5) )
 
             # Then, travel back to your starting location
-            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=agentStartingLocation[0], y=agentStartingLocation[1], priority=5) )
-
+            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=agentStartingLocation[0], y=agentStartingLocation[1], priority=5) )            
 
 
 
@@ -2253,6 +2261,7 @@ class NPCFarmer1(NPC):
             self.attributes['states'].remove("plantSignal")
 
             numSeedsToPlant = 5
+            self.actionDiscoveryFeedMakeUpdatePost("I'm going to try to plant some seeds.", signals=[])
 
             # First, pick up a shovel
             farmX = 10
