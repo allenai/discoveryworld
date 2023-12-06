@@ -521,12 +521,6 @@ def main():
     dialogMaker.mkDialogFarmer(npcFarmer)
     world.addAgent(npcFarmer)
 
-    ## MOLD TEST
-    mold1 = world.createObject("spacemold1")
-    world.addObject(31, 31, Layer.OBJECTS, mold1)
-    mush1 = world.createObject("mushroom1")
-    world.addObject(30, 31, Layer.OBJECTS, mush1)
-
 
     # Add another NPC colonist
     #npcColonist1 = NPCColonist1(world, "Colonist 1", thingToPickup=None)
@@ -751,14 +745,6 @@ def main():
 
             print("############################################################################################\n")                
             #time.sleep(0.25)            
-
-            #### DEBUG: Monitor on mold:
-            print("MOLD MONITOR:")
-            print(mold1.attributes)
-            print("MUSH1 Monitor:")
-            print(mush1.attributes)
-            for part in mush1.parts:
-                print(part.attributes)
 
 
             if (autoRunCycles > 0):

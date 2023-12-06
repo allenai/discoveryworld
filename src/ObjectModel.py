@@ -2439,21 +2439,11 @@ class Mold(Object):
         Object.tick(self)
 
         # Check to make sure this living thing is not subjected to extreme temperatures that may kill it
-        print("### MOLD: " + str(self.attributes['isLiving']) + " ###")
-        print("### MOLD: " + str(self.attributes['isPoisonous']) + " ###")
-        print("### MOLD: " + str(self.attributes['temperatureC']) + " ###")
-
         livingTemperatureRangeCheck(self)
-
-        print("### MOLD: " + str(self.attributes['isLiving']) + " ###")
-        print("### MOLD: " + str(self.attributes['isPoisonous']) + " ###")
-        print("### MOLD: " + str(self.attributes['temperatureC']) + " ###")
 
         # If it's dead, then it's no longer poisonous
         if (self.attributes['isLiving'] == False):
             self.attributes['isPoisonous'] = False
-            print("### Mold is dead, so it is no longer poisonous. ###")
-            exit(1)
 
 
 
