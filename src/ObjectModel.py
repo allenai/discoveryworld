@@ -2593,7 +2593,19 @@ class Seed(Object):
             else:
                 #print("Decrement sprout time")
                 # If the sprout time has already been set, then decrement it
-                self.attributes["sproutTime"] -= 1
+                # How fast the plant grows is determined by the quality of its soil. The better the soil, the faster it grows.
+                # Soil quality is determined by NPK content. The higher the NPK content, the better the soil.  Use the ScienceHelper.getNPKContent() to calculate this. 
+                npk = getNPKContent(self.parentContainer)
+                sumNPK = npk["nitrogen"] + npk["phosphorus"] + npk["potassium"]
+                # NPK is nominally between 0-10, but most of the soil in DiscoveryWorld has starting values between 1-4 for each.  Call the nominal max growth rate at 5.  5*3 = 15, so divide by 15 to get a growth rate. 
+                growthRate = sumNPK / 15.0
+                # Randomly generate a number, and see if that number is less than the growth rate. If it is, then the plant grows.
+                randGrowth = random.random()
+                if (randGrowth < growthRate):
+                    self.attributes["sproutTime"] -= 1
+                else:
+                    # Plant did not grow this cycle
+                    pass
                     
 
         
