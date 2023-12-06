@@ -70,7 +70,7 @@ class DiscoveryFeed:
         return self.articles
     
 
-    def getByPostID(self, postID:int):
+    def getPostByID(self, postID:int):
         for article in self.articles:
             if (article["postID"] == postID):
                 return article

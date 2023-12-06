@@ -6,7 +6,9 @@ from Layer import Layer
 from ObjectModel import Object
 from Agent import Agent
 from ActionSuccess import *
+import random
 import math
+
 #ActionSuccess
 
 
@@ -773,8 +775,10 @@ class UserInterface:
             return (False, self.getDiscoveryFeedUpdates())
         elif (keys[pygame.K_b]):
             return (False, self.getDiscoveryFeedArticles())
-        #elif (keys[pygame.K_n]):
-        # TODO: Specific post by ID
+        elif (keys[pygame.K_n]):
+            # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
+            randPostID = math.floor(random.random() * 10) + 1            
+            return (False, self.getSpecificDiscoveryFeedPost(postID=randPostID))
 
 
 

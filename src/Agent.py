@@ -744,9 +744,13 @@ class Agent(Object):
 
     # Get the most recent updates from the discovery feed
     def actionDiscoveryFeedGetByID(self, postID):
+        outStr = "DiscoveryFeed (Search)\n"
+        outStr += "Search results for DiscoveryFeed document ID " + str(postID) + ":\n\n"
+
         post = self.world.discoveryFeed.getPostByID(postID)
         if (post == None):
-            result = ActionSuccess(False, "No post found with ID " + str(postID), importance=MessageImportance.HIGH)
+            outStr += "No post found with ID " + str(postID) + "\n"
+            result = ActionSuccess(False, outStr, importance=MessageImportance.HIGH)
             self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_POST_BY_ID, arg1=postID, arg2=None, result=result)
             return result
         
@@ -762,8 +766,10 @@ class Agent(Object):
             #raise ValueError("Unknown post type: " + str(post["type"]))
             result = ActionSuccess(False, "Unknown post type: " + str(post["type"]) + "\n" + str(post), importance=MessageImportance.HIGH)
 
+        outStr += postStr
+
         # Generate result
-        result = ActionSuccess(True, postStr, importance=MessageImportance.HIGH)        
+        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)        
         # Add to action history
         self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_POST_BY_ID, arg1=postID, arg2=None, result=result)
         return result

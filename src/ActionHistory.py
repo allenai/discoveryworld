@@ -2,6 +2,7 @@
 
 from enum import Enum, unique
 from ActionSuccess import *
+from ObjectModel import Object
 
 # Enumeration for layer types
 class ActionType(Enum):
@@ -72,10 +73,22 @@ class ActionHistory:
                 #'result': not saved here
             }
             if (action['arg1'] != None):
-                packed['arg1'] = {"objUUID": action['arg1'].uuid}
-            if (action['arg2'] != None):
-                packed['arg2'] = {"objUUID": action['arg2'].uuid}
-
+                # Check type -- if it's an Object, then we need to pack it differently
+                if (isinstance(action['arg1'], Object)):
+                    packed['arg1'] = {"objUUID": action['arg1'].uuid}
+                else:
+                    # It's not an Object, so just pack it directly
+                    packed['arg1'] = action['arg1'] 
+                #packed['arg1'] = {"objUUID": action['arg1'].uuid}
+            if (action['arg2'] != None):                
+                # Check type -- if it's an Object, then we need to pack it differently
+                if (isinstance(action['arg2'], Object)):
+                    packed['arg2'] = {"objUUID": action['arg2'].uuid}
+                else:
+                    # It's not an Object, so just pack it directly
+                    packed['arg2'] = action['arg2'] 
+                #packed['arg2'] = {"objUUID": action['arg2'].uuid}
+                
             out.append(packed)
 
         return out
