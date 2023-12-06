@@ -94,6 +94,21 @@ class Agent(Object):
         # Return the new location
         return (x, y)
 
+    #
+    #   States
+    #
+
+    # Add a state to this agent
+    def addState(self, stateName):
+        self.attributes['states'].add(stateName)
+
+    # Savely remov a state (fails gracefully if the state doesn't exist)    
+    def removeState(self, stateName):
+        if (stateName in self.attributes['states']):
+            self.attributes['states'].remove(stateName)
+            return True
+        else:
+            return False
 
     # 
     #   Get inventory    
@@ -150,12 +165,12 @@ class Agent(Object):
 
             elif (self.attributes['poisonedCounter'] > -1):
                 # Poisoned and actively affecting the agent
-                self.attributes['states'].add('poisoned')
+                self.addState('poisoned')
                 print("Agent " + self.name + ": I don't feel very well!")
         else:
             # Remove state of 'poisoned' from the agent
             if ('poisoned' in self.attributes['states']):
-                self.attributes['states'].remove('poisoned')
+                self.removeState('poisoned')
             if (self.attributes['isPoisoned'] == True):
                 self.actionDiscoveryFeedMakeUpdatePost("I'm feeling better.", signals=[])
                 self.attributes['isPoisoned'] = False
@@ -1292,7 +1307,7 @@ class NPCChef(NPC):
             # If the agent is poisoned, then head for the infirmary
             # Remove the "wandering" state
             if ("wandering" in self.attributes['states']):
-                self.attributes['states'].remove("wandering")
+                self.removeState("wandering")
             # Head to the infirmary
             self.attributes["goalLocation"] = (23, 7)   # Infirmary entrance
 
@@ -1308,9 +1323,9 @@ class NPCChef(NPC):
             # Drop pot
             successDrop = self.actionDrop(pot)
             # Remove "putPotBack" from external signals
-            self.attributes['states'].remove("putPotBack")
+            self.removeState("putPotBack")
             # Add "moveToInitialLocation" to state
-            self.attributes['states'].add("moveToInitialLocation")
+            self.addState("moveToInitialLocation")
             # Remove 'foodContainer' attribute
             del self.attributes['foodContainer']
 
@@ -1318,13 +1333,13 @@ class NPCChef(NPC):
         elif ("serveDinner" in self.attributes['states']):
             # Remove the "waiting" state
             if ("waiting" in self.attributes['states']):
-                self.attributes['states'].remove("waiting")
+                self.removeState("waiting")
             # Head to the cafeteria kitchen, beside the table with the pot
             self.attributes["goalLocation"] = (21, 21)
             # remove "eatSignal" from external signals
-            self.attributes['states'].remove("serveDinner")
+            self.removeState("serveDinner")
             # Add "movingToCafeteria" to external signals
-            self.attributes['states'].add("pickupFoodFromCafeteria")
+            self.addState("pickupFoodFromCafeteria")
 
         elif ("takePotFromCafeteria" in self.attributes['states']):
             # Look directly in front of the agent for something edible
@@ -1349,10 +1364,10 @@ class NPCChef(NPC):
                 print("TAKE: " + str(successTake))
 
                 # Remove "takeFoodFromCafeteria" from external signals
-                self.attributes['states'].remove("takePotFromCafeteria")
+                self.removeState("takePotFromCafeteria")
                 # Add "eating" to external signals
-                self.attributes['states'].add("serveFood")
-                self.attributes['states'].add("moveToSpot1")
+                self.addState("serveFood")
+                self.addState("moveToSpot1")
 
                 # Set which object to eat
                 self.attributes["foodContainer"] = potObject
@@ -1379,8 +1394,8 @@ class NPCChef(NPC):
                     # Put the food at the spot
                     successDrop = self.actionDrop(foodObject)
                     # Move to next spot
-                    self.attributes['states'].remove("putFoodAtSpot1")
-                    self.attributes['states'].add("moveToSpot2")
+                    self.removeState("putFoodAtSpot1")
+                    self.addState("moveToSpot2")
                 else:
                     print("NO FOOD IN CONTAINER!")
             elif ("putFoodAtSpot2" in self.attributes['states']):
@@ -1391,8 +1406,8 @@ class NPCChef(NPC):
                     # Put the food at the spot
                     successDrop = self.actionDrop(foodObject)
                     # Move to next spot
-                    self.attributes['states'].remove("putFoodAtSpot2")
-                    self.attributes['states'].add("moveToSpot3")
+                    self.removeState("putFoodAtSpot2")
+                    self.addState("moveToSpot3")
                 else:
                     print("NO FOOD IN CONTAINER!")
             elif ("putFoodAtSpot3" in self.attributes['states']):
@@ -1403,8 +1418,8 @@ class NPCChef(NPC):
                     # Put the food at the spot
                     successDrop = self.actionDrop(foodObject)
                     # Move to next spot
-                    self.attributes['states'].remove("putFoodAtSpot3")
-                    self.attributes['states'].add("moveToSpot4")
+                    self.removeState("putFoodAtSpot3")
+                    self.addState("moveToSpot4")
                 else:
                     print("NO FOOD IN CONTAINER!")
             elif ("putFoodAtSpot4" in self.attributes['states']):
@@ -1415,8 +1430,8 @@ class NPCChef(NPC):
                     # Put the food at the spot
                     successDrop = self.actionDrop(foodObject)
                     # Move to next spot
-                    self.attributes['states'].remove("putFoodAtSpot4")
-                    self.attributes['states'].add("moveToSpot5")
+                    self.removeState("putFoodAtSpot4")
+                    self.addState("moveToSpot5")
                 else:
                     print("NO FOOD IN CONTAINER!")
             elif ("putFoodAtSpot5" in self.attributes['states']):
@@ -1427,8 +1442,8 @@ class NPCChef(NPC):
                     # Put the food at the spot
                     successDrop = self.actionDrop(foodObject)
                     # Move to next spot
-                    self.attributes['states'].remove("putFoodAtSpot5")
-                    self.attributes['states'].add("moveToPutPotPack")
+                    self.removeState("putFoodAtSpot5")
+                    self.addState("moveToPutPotPack")
                 else:
                     print("NO FOOD IN CONTAINER!")
     
@@ -1450,16 +1465,16 @@ class NPCChef(NPC):
         #         print(successEat)
 
         #         # Remove "eating" from external signals
-        #         self.attributes['states'].remove("eating")
+        #         self.removeState("eating")
         #         # Add "wandering" to external signals
-        #         self.attributes['states'].add("wandering")
+        #         self.addState("wandering")
         #         # Remove "objectToEat" attribute
         #         del self.attributes["objectToEat"]
 
         else:
             # Default behavior, if no other behaviors are present, is to wander
             if ("waiting" not in self.attributes['states']):
-                self.attributes['states'].add("waiting")
+                self.addState("waiting")
 
 
         # Pathfinding/Auto-navigation        
@@ -1470,50 +1485,50 @@ class NPCChef(NPC):
                 if ("pickupFoodFromCafeteria" in self.attributes['states']):
                     if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
                         # We're in the kitchen at the pot -- pick it up
-                        self.attributes['states'].remove("pickupFoodFromCafeteria")
-                        self.attributes['states'].add("takePotFromCafeteria")
+                        self.removeState("pickupFoodFromCafeteria")
+                        self.addState("takePotFromCafeteria")
                         # Remove the goal location
                         del self.attributes["goalLocation"]
                 elif ("moveToInitialLocation" in self.attributes['states']):
                     # Check to see if we've moved to the initial location
                     if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
                         # We're in the kitchen at the pot -- pick it up
-                        self.attributes['states'].remove("moveToInitialLocation")
-                        self.attributes['states'].add("TODO")
+                        self.removeState("moveToInitialLocation")
+                        self.addState("TODO")
                         # Remove the goal location
                         del self.attributes["goalLocation"]
                 elif ("moveToPutPotPack" in self.attributes['states']):
                     # Check to see if we've moved to the initial location
                     if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
                         # We're in the kitchen at the pot -- pick it up
-                        self.attributes['states'].remove("moveToPutPotPack")
-                        self.attributes['states'].add("putPotBack")
+                        self.removeState("moveToPutPotPack")
+                        self.addState("putPotBack")
                         # Remove the goal location
                         del self.attributes["goalLocation"]
 
                 elif ("serveFood" in self.attributes['states']):
                     if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
                         # We're in the kitchen at the pot -- pick it up
-                        #self.attributes['states'].remove("serveFood")
+                        #self.removeState("serveFood")
                         if ("moveToSpot1" in self.attributes['states']):
-                            self.attributes['states'].remove("moveToSpot1")
-                            self.attributes['states'].add("putFoodAtSpot1")
+                            self.removeState("moveToSpot1")
+                            self.addState("putFoodAtSpot1")
                             del self.attributes["goalLocation"]
                         elif ("moveToSpot2" in self.attributes['states']):
-                            self.attributes['states'].remove("moveToSpot2")
-                            self.attributes['states'].add("putFoodAtSpot2")
+                            self.removeState("moveToSpot2")
+                            self.addState("putFoodAtSpot2")
                             del self.attributes["goalLocation"]
                         elif ("moveToSpot3" in self.attributes['states']):
-                            self.attributes['states'].remove("moveToSpot3")
-                            self.attributes['states'].add("putFoodAtSpot3")
+                            self.removeState("moveToSpot3")
+                            self.addState("putFoodAtSpot3")
                             del self.attributes["goalLocation"]
                         elif ("moveToSpot4" in self.attributes['states']):
-                            self.attributes['states'].remove("moveToSpot4")
-                            self.attributes['states'].add("putFoodAtSpot4")
+                            self.removeState("moveToSpot4")
+                            self.addState("putFoodAtSpot4")
                             del self.attributes["goalLocation"]
                         elif ("moveToSpot5" in self.attributes['states']):
-                            self.attributes['states'].remove("moveToSpot5")
-                            self.attributes['states'].add("putFoodAtSpot5")
+                            self.removeState("moveToSpot5")
+                            self.addState("putFoodAtSpot5")
                             del self.attributes["goalLocation"]
 
 
@@ -1615,7 +1630,7 @@ class NPCColonist(NPC):
             # If the agent is poisoned, then head for the infirmary
             # Remove the "wandering" state
             if ("wandering" in self.attributes['states']):
-                self.attributes['states'].remove("wandering")
+                self.removeState("wandering")
             # Head to the infirmary
             self.attributes["goalLocation"] = (23, 7)   # Infirmary entrance
 
@@ -1623,13 +1638,13 @@ class NPCColonist(NPC):
         elif ("eatSignal" in self.attributes['states']):
             # Remove the "wandering" state
             if ("wandering" in self.attributes['states']):
-                self.attributes['states'].remove("wandering")
+                self.removeState("wandering")
             # Head to the cafeteria
             self.attributes["goalLocation"] = (23, 23)
             # remove "eatSignal" from external signals
-            self.attributes['states'].remove("eatSignal")
+            self.removeState("eatSignal")
             # Add "movingToCafeteria" to external signals
-            self.attributes['states'].add("movingToCafeteria")
+            self.addState("movingToCafeteria")
 
         elif ("takeFoodFromCafeteria" in self.attributes['states']):
             # Look directly in front of the agent for something edible
@@ -1654,9 +1669,9 @@ class NPCColonist(NPC):
                 print(successTake)
 
                 # Remove "takeFoodFromCafeteria" from external signals
-                self.attributes['states'].remove("takeFoodFromCafeteria")
+                self.removeState("takeFoodFromCafeteria")
                 # Add "eating" to external signals
-                self.attributes['states'].add("eating")
+                self.addState("eating")
 
                 # Set which object to eat
                 self.attributes["objectToEat"] = edibleObject
@@ -1673,16 +1688,16 @@ class NPCColonist(NPC):
                 print(successEat)
 
                 # Remove "eating" from external signals
-                self.attributes['states'].remove("eating")
+                self.removeState("eating")
                 # Add "wandering" to external signals
-                self.attributes['states'].add("wandering")
+                self.addState("wandering")
                 # Remove "objectToEat" attribute
                 del self.attributes["objectToEat"]
 
         else:
             # Default behavior, if no other behaviors are present, is to wander
             if ("wandering" not in self.attributes['states']):
-                self.attributes['states'].add("wandering")
+                self.addState("wandering")
 
 
         # Pathfinding/Auto-navigation        
@@ -1693,8 +1708,8 @@ class NPCColonist(NPC):
                 if ("movingToCafeteria" in self.attributes['states']):
                     if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
                         # We're in the cafeteria -- eat!
-                        self.attributes['states'].remove("movingToCafeteria")
-                        self.attributes['states'].add("takeFoodFromCafeteria")
+                        self.removeState("movingToCafeteria")
+                        self.addState("takeFoodFromCafeteria")
                         # Remove the goal location
                         del self.attributes["goalLocation"]
 
@@ -1801,7 +1816,7 @@ class NPCColonist1(NPC):
             # If the agent is poisoned, then head for the infirmary
             # Remove the "wandering" state
             if ("wandering" in self.attributes['states']):
-                self.attributes['states'].remove("wandering")
+                self.removeState("wandering")
             # Head to the infirmary
             self.attributes["goalLocation"] = (23, 7)   # Infirmary entrance
 
@@ -1916,7 +1931,7 @@ class NPCChef1(NPC):
             # If the agent is poisoned, then head for the infirmary
             # Remove the "wandering" state
             if ("wandering" in self.attributes['states']):
-                self.attributes['states'].remove("wandering")
+                self.removeState("wandering")
             # Head to the infirmary
             self.attributes["goalLocation"] = (23, 7)   # Infirmary entrance
 
@@ -1933,7 +1948,7 @@ class NPCChef1(NPC):
         elif ("collectSignal" in self.attributes['states']):
             # Collect the mushrooms from the field
             # First, remove the collect signal
-            self.attributes['states'].remove("collectSignal")
+            self.removeState("collectSignal")
 
             self.actionDiscoveryFeedMakeUpdatePost("I'm going to the farm to collect mushrooms.", signals=[])
 
@@ -1963,7 +1978,7 @@ class NPCChef1(NPC):
         elif ("serveSignal" in self.attributes['states']):
             # Serve the food
             # First, remove the serve signal
-            self.attributes['states'].remove("serveSignal")
+            self.removeState("serveSignal")
 
             self.actionDiscoveryFeedMakeUpdatePost("I'm going to serve food in the cafeteria.", signals=[])
 
@@ -2101,11 +2116,12 @@ class NPCColonistAuto2(NPC):
         #self.autopilotActionQueue = []                              # Queue of autopilot actions
         #self.pathfinder = Pathfinder()
 
-        elif ("eatSignal" in self.attributes['states']):
+        elif ("eatSignal" in self.attributes['states']) or (("eatSignal_" + self.name) in self.attributes['states']):
             # Collect a single mushroom from the cafeteria tables
 
             # First, remove the collect signal
-            self.attributes['states'].remove("eatSignal")
+            self.removeState("eatSignal")
+            self.removeState("eatSignal_" + self.name)
 
             self.actionDiscoveryFeedMakeUpdatePost("Heading to the cafeteria for some food.", signals=[])
 
@@ -2241,7 +2257,7 @@ class NPCFarmer1(NPC):
             # If the agent is poisoned, then head for the infirmary
             # Remove the "wandering" state
             if ("wandering" in self.attributes['states']):
-                self.attributes['states'].remove("wandering")
+                self.removeState("wandering")
             # Head to the infirmary
             self.attributes["goalLocation"] = (23, 7)   # Infirmary entrance
 
@@ -2258,7 +2274,7 @@ class NPCFarmer1(NPC):
         elif ("plantSignal" in self.attributes['states']):
             # Collect the mushrooms from the field
             # First, remove the collect signal
-            self.attributes['states'].remove("plantSignal")
+            self.removeState("plantSignal")
 
             numSeedsToPlant = 5
             self.actionDiscoveryFeedMakeUpdatePost("I'm going to try to plant some seeds.", signals=[])
@@ -2313,7 +2329,7 @@ class NPCFarmer1(NPC):
         elif ("serveSignal" in self.attributes['states']):
             # # Serve the food
             # # First, remove the serve signal
-            # self.attributes['states'].remove("serveSignal")
+            # self.removeState("serveSignal")
 
             # # First, pick up the pot
             # potContainer = self.pot.parentContainer

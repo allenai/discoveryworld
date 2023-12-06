@@ -530,9 +530,12 @@ def main():
     # Add another NPC colonist
     npcColonists = []
     for i in range(0, 5):
-        npcColonists.append(NPCColonistAuto2(world, "Colonist " + str(i)))
-        world.addObject(13+i, 20, Layer.AGENT, npcColonists[i])
-        world.addAgent(npcColonists[i])
+        colonist = NPCColonistAuto2(world, "Colonist " + str(i))
+        dialogMaker.mkDialogColonist(colonist)        
+        world.addObject(13+i, 20, Layer.AGENT, colonist)
+        world.addAgent(colonist)
+
+        npcColonists.append(colonist)
 
 
     # Add tasks

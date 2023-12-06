@@ -184,7 +184,7 @@ class DialogMaker():
     def mkDialogFarmer(self, agent):
         tree = DialogTree(agent)        
 
-        # Root node (introduce the farmer, give options to ask to collect food, or distribute food)
+        # Root node (introduce the farmer, give options to ask to plant more seeds)
         rootNode = DialogNode("rootNode", "Hello, I am the farmer. I can plant more seeds.", statesToAdd = [], statesToRemove = [])
         rootNode.addDialogOption("Can you plant more seeds", "plantSeeds")
         rootNode.addDialogOption("Goodbye", "endNode")        
@@ -203,3 +203,29 @@ class DialogMaker():
 
         # Store dialog tree in agent
         agent.setDialogTree(tree)
+
+    
+    def mkDialogColonist(self, agent):
+        tree = DialogTree(agent)
+
+        colonistName = agent.name
+
+        # Root node (introduce the colonist, give option to ask the agent to go to the cafeteria to try to eat)
+        rootNode = DialogNode("rootNode", "Hello, I am a colonist here on Discovery World. ", statesToAdd = [], statesToRemove = [])
+        rootNode.addDialogOption("I think there is food available in the cafeteria.", "eatNode")
+        rootNode.addDialogOption("Goodbye", "endNode")
+        tree.addNode(rootNode)
+        tree.setRoot(rootNode.name)
+
+        # Eat node        
+        eatNode = DialogNode("eatNode", "I will go to the cafeteria to find something to eat.", statesToAdd = ["eatSignal_" + colonistName], statesToRemove = [])
+        eatNode.addDialogOption("OK", "endNode")
+        tree.addNode(eatNode)
+
+        # End node
+        endNode = DialogNode("endNode", "Goodbye.", statesToAdd = [], statesToRemove = [])
+        tree.addNode(endNode)
+
+        # Store dialog tree in agent
+        agent.setDialogTree(tree)
+
