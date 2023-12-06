@@ -10,10 +10,16 @@ class DiscoveryFeed:
         self.articles = []
         self.updatePosts = []
 
+        self.uniquePostIDs = 1
+
         # Load the file (if supplied)
         if (filenameIn != None):
             self.loadFromFile(filenameIn)
 
+    # Get a unique post ID
+    def getUniquePostID(self):
+        self.uniquePostIDs += 1
+        return self.uniquePostIDs - 1
 
     #
     # Load articles and update posts from a JSON file
@@ -30,13 +36,15 @@ class DiscoveryFeed:
 
         # Add the articles
         for article in data["articles"]:
-            self.articles.append(article)
+            article["postID"] = self.getUniquePostID()      # Replace the unique post ID with a new one
+            self.articles.append(article)            
 
         # Sort the articles by step (ascending)
         self.articles.sort(key=lambda x: x["step"], reverse=False)
 
         # Add the update posts
-        for post in data["updatePosts"]:
+        for post in data["updatePosts"]:            
+            post["postID"] = self.getUniquePostID()         # Replace the unique post ID with a new one
             self.updatePosts.append(post)
         
         # Sort the update posts by step (ascending)
@@ -46,12 +54,11 @@ class DiscoveryFeed:
     #
     #   Add posts
     #
-    def addUpdatePost(self, curStep:int, authorName:str, content:str, signals:list = None):
-        self.updatePosts.append({"step": curStep, "author": authorName, "content": content, "signals": signals})
+    def addUpdatePost(self, curStep:int, authorName:str, content:str, signals:list = None):        
+        self.updatePosts.append({"step": curStep, "author": authorName, "content": content, "signals": signals, "postID": self.getUniquePostID()})
 
     def addArticle(self, curStep:int, authorName:str, title:str, content:str):
-        self.articles.append({"step": curStep, "author": authorName, "title": title, "content": content})
-
+        self.articles.append({"step": curStep, "author": authorName, "title": title, "content": content, "postID": self.getUniquePostID()})
         
     #
     #   Get posts
@@ -63,3 +70,8 @@ class DiscoveryFeed:
         return self.articles
     
 
+    #
+    #   Export to dictionary
+    #
+    def toDict(self):
+        return {"articles": self.articles, "updatePosts": self.updatePosts}

@@ -20,6 +20,8 @@ class ActionType(Enum):
     EAT             = 12
     READ            = 13
     USE             = 14
+    DISCOVERY_FEED_GET_POSTS = 15
+    
 
 # Stores the action history for one agent
 class ActionHistory:

@@ -316,7 +316,8 @@ class World:
             "step": self.step,
             "sizeX": self.sizeX,
             "sizeY": self.sizeY,
-            "grid": [],            
+            "grid": [],    
+            "discoveryFeed": self.discoveryFeed.toDict()        
         }
 
         # Clone everything in the grid into this record

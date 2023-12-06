@@ -530,6 +530,13 @@ class UserInterface:
         return success
 
 
+    # DiscoveryFeed actions
+    def getDiscoveryFeedUpdates(self):
+        # Show the last 10 updates        
+        success = self.currentAgent.actionDiscoveryFeedGetPosts()
+        return success        
+
+
 
     #
     #   Action Parser (keys)
@@ -751,6 +758,11 @@ class UserInterface:
             self.changeArgumentBox(delta=1, whichBox=2)
             return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
             
+
+        # DiscoveryFeed Actions
+        elif (keys[pygame.K_v]):
+            return (False, self.getDiscoveryFeedUpdates())
+
 
         # If we reach here, then no known key was pressed
         return (False, None)

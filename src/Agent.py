@@ -680,6 +680,47 @@ class Agent(Object):
         return result
 
 
+    #
+    #   DiscoveryFeed actions
+    #
+
+    # Formats: 
+    # self.updatePosts.append({"step": curStep, "author": authorName, "content": content, "signals": signals})    
+    # self.articles.append({"step": curStep, "author": authorName, "title": title, "content": content})
+
+
+    # Get the most recent updates from the discovery feed
+    def actionDiscoveryFeedGetPosts(self):
+        numPostsToRetrieve = 10 # Number of posts to retrieve
+        postDelimiter = "---\n"
+        allPosts = self.world.discoveryFeed.getPosts()        
+        lastPosts = allPosts[-numPostsToRetrieve:]
+
+        # Create a string to display the posts        
+        postStrings = []
+        for post in lastPosts:
+            postStr = "Post " + str(post["postID"]) + "\nPosted by " + post["author"] + " on Step " + str(post["step"]) + ":\n"
+            postStr += post["content"] + "\n"
+            postStrings.append(postStr)
+
+        # Final string
+        outStr = "DiscoveryFeed (Update Posts)\n"
+        outStr += "Last " + str(len(postStrings)) + " posts found:\n\n"
+        outStr += postDelimiter.join(postStrings)
+
+        # Generate result
+        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)        
+        # Add to action history
+        self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_POSTS, arg1=None, arg2=None, result=result)
+        return result
+
+
+            
+        
+
+
+        
+
 
     #
     #   Autopilot helpers
