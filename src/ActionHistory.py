@@ -24,6 +24,8 @@ class ActionType(Enum):
     DISCOVERY_FEED_GET_UPDATES = 15
     DISCOVERY_FEED_GET_ARTICLES = 16
     DISCOVERY_FEED_GET_POST_BY_ID = 17
+    DISCOVERY_FEED_CREATE_UPDATE = 18
+    DISCOVERY_FEED_CREATE_ARTICLE = 19
 
 
 # Stores the action history for one agent
@@ -88,7 +90,7 @@ class ActionHistory:
                     # It's not an Object, so just pack it directly
                     packed['arg2'] = action['arg2'] 
                 #packed['arg2'] = {"objUUID": action['arg2'].uuid}
-                
+
             out.append(packed)
 
         return out

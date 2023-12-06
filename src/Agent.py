@@ -684,11 +684,6 @@ class Agent(Object):
     #   DiscoveryFeed actions
     #
 
-    # Formats: 
-    # self.updatePosts.append({"step": curStep, "author": authorName, "content": content, "signals": signals})    
-    # self.articles.append({"step": curStep, "author": authorName, "title": title, "content": content})
-
-
     # Get the most recent updates from the discovery feed
     def actionDiscoveryFeedGetPosts(self):
         numPostsToRetrieve = 10 # Number of posts to retrieve
@@ -774,11 +769,45 @@ class Agent(Object):
         self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_POST_BY_ID, arg1=postID, arg2=None, result=result)
         return result
             
+    # Make a post
+    def actionDiscoveryFeedMakeUpdatePost(self, contentStr, signals:list=[]):
+        # Create the post
+        postID = self.world.discoveryFeed.addUpdatePost(self.world.step, self.name, contentStr, signals)
+
+        post = self.world.discoveryFeed.getPostByID(postID)
+        outStr = "DiscoveryFeed (Create Update Post)\n"
+        outStr += "I made an update post with ID " + str(postID) + ":\n\n"
+        postStr = "Post " + str(post["postID"]) + "\nPosted by " + post["author"] + " on Step " + str(post["step"]) + ":\n"
+        postStr += post["content"] + "\n"
+        outStr += postStr
+
+        # Generate result
+        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)        
+
+        # Add to action history
+        self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_CREATE_UPDATE, arg1=post, arg2=None, result=result)
+        return result
+    
+    # Make an article
+    def actionDiscoveryFeedMakeArticle(self, titleStr, contentStr):
+        # Create the article
+        postID = self.world.discoveryFeed.addArticle(self.world.step, self.name, titleStr, contentStr)
+
+        post = self.world.discoveryFeed.getPostByID(postID)
+        outStr = "DiscoveryFeed (Create Article)\n"
+        outStr += "I made an article with ID " + str(postID) + ":\n\n"
+        postStr = "Article " + str(post["postID"]) + ": " + post["title"] + "\n"
+        postStr += "Submitted by " + post["author"] + " on Step " + str(post["step"]) + "\n\n"
+        postStr += post["content"] + "\n"
+        outStr += postStr
+
+        # Generate result
+        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)        
+
+        # Add to action history
+        self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_CREATE_ARTICLE, arg1=post, arg2=None, result=result)
+        return result
         
-
-
-        
-
 
     #
     #   Autopilot helpers

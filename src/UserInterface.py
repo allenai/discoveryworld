@@ -548,6 +548,16 @@ class UserInterface:
         success = self.currentAgent.actionDiscoveryFeedGetByID(postID)
         return success
 
+    def createDiscoveryFeedUpdate(self, contentStr, signals:list=[]):
+        # Create a new update post
+        success = self.currentAgent.actionDiscoveryFeedMakeUpdatePost(contentStr, signals)    
+        return success
+    
+    def createDiscoveryFeedArticle(self, titleStr, contentStr):
+        # Create a new article
+        success = self.currentAgent.actionDiscoveryFeedMakeArticle(titleStr, contentStr)
+        return success
+
 
     #
     #   Action Parser (keys)
@@ -771,6 +781,7 @@ class UserInterface:
             
 
         # DiscoveryFeed Actions
+        # Reading articles
         elif (keys[pygame.K_v]):
             return (False, self.getDiscoveryFeedUpdates())
         elif (keys[pygame.K_b]):
@@ -779,7 +790,11 @@ class UserInterface:
             # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
             randPostID = math.floor(random.random() * 10) + 1            
             return (False, self.getSpecificDiscoveryFeedPost(postID=randPostID))
-
+        # Creating articles
+        elif (keys[pygame.K_m]):            
+            return (False, self.createDiscoveryFeedUpdate(contentStr="This is a test update."))
+        elif (keys[pygame.K_COMMA]):
+            return (False, self.createDiscoveryFeedArticle(titleStr="Test Article", contentStr="This is a test article."))
 
 
         # If we reach here, then no known key was pressed
