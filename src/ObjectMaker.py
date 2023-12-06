@@ -220,7 +220,8 @@ class ObjectMaker:
             "RadiationMeter": RadiationMeter,
             "NPKMeter": NPKMeter,
             "PetriDish": PetriDish,
-            "FertilizerPellet": FertilizerPellet
+            "FertilizerPellet": FertilizerPellet,
+            "FertilizerBag": FertilizerBag
 
         }
 

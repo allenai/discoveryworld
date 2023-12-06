@@ -2671,7 +2671,54 @@ class FertilizerPellet(Object):
                 self.world.removeObject(self)
                 return
 
-                    
+
+#
+#   Object: Fertilizer Bag (container, infinite)
+#
+class FertilizerBag(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "fertilizer bag", "fertilizer bag", defaultSpriteName = "instruments_fertilizer_bag")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+        # Container
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can not be opened (things are stored in the open pot)
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+        self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
+        # If the bag contains less than 3 fertilizer pellets, then add enough to make 3
+        numFertilizerPellets = 0
+        for obj in self.contents:
+            if (obj.type == "fertilizer"):
+                numFertilizerPellets += 1
+
+        if (numFertilizerPellets < 3):
+            # Add enough fertilizer pellets to make 3
+            for i in range(3 - numFertilizerPellets):
+                fertilizerPellet = self.world.createObject("FertilizerPellet")
+                self.addObject(fertilizerPellet)
+                fertilizerPellet.tick()
+
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    # def inferSpriteName(self, force:bool=False):
+    #     if (not self.needsSpriteNameUpdate and not force):
+    #         # No need to update the sprite name
+    #         return
+
+    #     # This will be the next last sprite name (when we flip the backbuffer)
+    #     self.tempLastSpriteName = self.curSpriteName
+
 
 
 # #

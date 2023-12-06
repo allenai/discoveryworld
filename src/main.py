@@ -229,6 +229,10 @@ def mkFarm(x, y, world, buildingMaker):
     shovel = world.createObject("Shovel")
     world.addObject(x+2, y+1, Layer.FURNITURE, shovel)
 
+    # Add a bag of fertilizer
+    fertilizer = world.createObject("FertilizerBag")
+    world.addObject(x+2, y+2, Layer.FURNITURE, fertilizer)
+
     # Add a seed just outside the farm house
     #world.addObject(x+1, y+houseSizeY+2, Layer.OBJECTS, world.createObject("Seed"))
 
@@ -287,9 +291,9 @@ def mkFarm(x, y, world, buildingMaker):
 
 
     # add a fertilizer pellet    
-    world.addObject(x, y+4, Layer.OBJECTS, world.createObject("FertilizerPellet"))
-    world.addObject(x-1, y+4, Layer.OBJECTS, world.createObject("FertilizerPellet"))
-    world.addObject(x-2, y+4, Layer.OBJECTS, world.createObject("FertilizerPellet"))
+    #world.addObject(x, y+4, Layer.OBJECTS, world.createObject("FertilizerPellet"))
+    #world.addObject(x-1, y+4, Layer.OBJECTS, world.createObject("FertilizerPellet"))
+    #world.addObject(x-2, y+4, Layer.OBJECTS, world.createObject("FertilizerPellet"))
 
 
     ## Debug, gives references to mushrooms added for agents to pick up
