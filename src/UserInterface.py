@@ -783,9 +783,9 @@ class UserInterface:
         # DiscoveryFeed Actions
         # Reading articles
         elif (keys[pygame.K_v]):
-            return (False, self.getDiscoveryFeedUpdates(startFromID=10))
+            return (False, self.getDiscoveryFeedUpdates(startFromID=0))
         elif (keys[pygame.K_b]):
-            return (False, self.getDiscoveryFeedArticles(startFromID=10))
+            return (False, self.getDiscoveryFeedArticles(startFromID=0))
         elif (keys[pygame.K_n]):
             # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
             randPostID = math.floor(random.random() * 10) + 1            

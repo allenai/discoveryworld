@@ -146,6 +146,8 @@ class Agent(Object):
             if (self.attributes['poisonedCounter'] < -POISON_INCUBATION_PERIOD):
                 self.attributes['poisonedCounter'] = POISON_DURATION     # Duration of poison
                 self.attributes['isPoisoned'] = True
+                self.actionDiscoveryFeedMakeUpdatePost("I'm not feeling well.", signals=[])
+
             elif (self.attributes['poisonedCounter'] > -1):
                 # Poisoned and actively affecting the agent
                 self.attributes['states'].add('poisoned')
@@ -154,7 +156,10 @@ class Agent(Object):
             # Remove state of 'poisoned' from the agent
             if ('poisoned' in self.attributes['states']):
                 self.attributes['states'].remove('poisoned')
-            self.attributes['isPoisoned'] = False
+            if (self.attributes['isPoisoned'] == True):
+                self.actionDiscoveryFeedMakeUpdatePost("I'm feeling better.", signals=[])
+                self.attributes['isPoisoned'] = False
+            
 
 
 
