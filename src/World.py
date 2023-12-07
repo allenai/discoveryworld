@@ -64,15 +64,34 @@ class World:
     #
     #   Initialization (agents, tasks)
     #
+
+    # Add an agent to the world
     def addAgent(self, agent):
         self.agents.append(agent)
 
+    # Return an agent by name
     def getAgentByName(self, agentName):
         for agent in self.agents:
             if agent.name == agentName:
                 return agent
 
         return None
+
+    # Return a list of all agents that are user agents
+    def getUserAgents(self):        
+        userAgents = []
+        for agent in self.agents:
+            if (agent.attributes["isNPC"] == False):
+                userAgents.append(agent)
+        return userAgents
+    
+    # Return a list of all agents that are NPC agents
+    def getNPCAgents(self):        
+        npcAgents = []
+        for agent in self.agents:
+            if (agent.attributes["isNPC"] == True):
+                npcAgents.append(agent)
+        return npcAgents
 
     def addTaskByName(self, taskName):
         task = self.taskMaker.makeTask(taskName)
@@ -83,9 +102,12 @@ class World:
         else:
             print("Error: Task name not recognized: " + taskName)
             return False
-            
 
+
+
+    #
     # Get the current step number.  Starts at 0, increments 1 per call to the world.tick().
+    #
     def getStepCounter(self):
         return self.step
 

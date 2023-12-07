@@ -35,8 +35,11 @@ class Agent(Object):
         self.pathfinder = Pathfinder()
         self.actionTimestampCounter = 0                             # Counter for the timestamp of the last action
 
+        # Is this a user-controlled agent, or NPC?
+        self.attributes["isNPC"] = False                            # Is this agent an NPC?
+
         # Default attributes
-        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isMovable"] = False                       # Can it be moved?        
 
         # Agent is a container for its inventory
         # Container attributes
@@ -1132,6 +1135,9 @@ class NPC(Agent):
         # Rendering
         self.attributes["faceDirection"] = "south"        
         self.spriteCharacterPrefix = "character17_"
+
+        # Is this a user-controlled agent, or NPC?
+        self.attributes["isNPC"] = True                            # Is this agent an NPC?
 
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
