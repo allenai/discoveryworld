@@ -24,9 +24,6 @@ from KnowledgeScorer import *
 from JSONEncoder import CustomJSONEncoder
 
 
-
-
-
 def main():
     print("Initializing...")
 
@@ -368,8 +365,8 @@ def main():
 
 
     # Print the action history of the farmer agent
-    print("Farmer agent action history:")
-    print(npcFarmer.actionHistory)
+    #print("Farmer agent action history:")
+    #print(npcFarmer.actionHistory)
 
 # Main
 if __name__ == "__main__":
