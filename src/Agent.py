@@ -706,7 +706,7 @@ class Agent(Object):
 
     # Get the most recent updates from the discovery feed
     def actionDiscoveryFeedGetPosts(self, startFromID=0):
-        numPostsToRetrieve = 5 # Number of posts to retrieve
+        numPostsToRetrieve = 8 # Number of posts to retrieve
         postDelimiter = "---\n"
         allPosts = self.world.discoveryFeed.getPosts()                
         lastPosts = []
@@ -1939,6 +1939,16 @@ class NPCChef1(NPC):
         elif ("eatSignal" in self.attributes['states']):
             # TODO: Add the action sequence to go to the cafeteria and eat
             pass
+
+        elif ("callColonistsSignal" in self.attributes['states']):
+            # Call the colonists to the cafeteria for a meal
+            # First, remove the call colonists signal
+            self.removeState("callColonistsSignal")
+
+            # Send the signal via a Discovery Feed update. 
+            self.actionDiscoveryFeedMakeUpdatePost("Food is being served in the cafeteria.", signals=["eatSignal"])
+
+
 
     
         # Call the NPC's action interpreter

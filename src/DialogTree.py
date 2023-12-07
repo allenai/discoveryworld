@@ -158,6 +158,7 @@ class DialogMaker():
         rootNode = DialogNode("rootNode", "Hello, I am the chef. I can collect food from the farm, or serve food from the pot.", statesToAdd = [], statesToRemove = [])
         rootNode.addDialogOption("Can you collect food?", "collectFoodNode")
         rootNode.addDialogOption("Can you serve food?", "serveFoodNode")
+        rootNode.addDialogOption("Can you call the colonists for a meal?", "callColonistsNode")
         rootNode.addDialogOption("Goodbye", "endNode")
         tree.addNode(rootNode)
         tree.setRoot(rootNode.name)
@@ -167,12 +168,16 @@ class DialogMaker():
         collectFoodNode.addDialogOption("OK", "endNode")
         tree.addNode(collectFoodNode)
         
-
         # Serve food node 
         serveFoodNode = DialogNode("serveFoodNode", "I will serve food from the pot.", statesToAdd = ["serveSignal"], statesToRemove = [])
         serveFoodNode.addDialogOption("OK", "endNode")
         tree.addNode(serveFoodNode)
         
+        # Call Colonists node
+        callColonistsNode = DialogNode("callColonistsNode", "I will call the colonists for a meal.", statesToAdd = ["callColonistsSignal"], statesToRemove = [])
+        callColonistsNode.addDialogOption("OK", "endNode")
+        tree.addNode(callColonistsNode)
+
         # End node
         endNode = DialogNode("endNode", "Goodbye.", statesToAdd = [], statesToRemove = [])
         tree.addNode(endNode)

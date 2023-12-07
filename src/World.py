@@ -298,6 +298,13 @@ class World:
         # Also save the world history
         self.saveWorldHistory()
 
+        # Collect any signals from posts sent in the current Discovery Feed step
+        signalsToBroadcast = self.discoveryFeed.getSignalsFromPosts(curStep = self.step)
+        # Broadcast those signals to all agents
+        for agent in self.agents:
+            for signal in signalsToBroadcast:
+                agent.addState(signal)            
+
         # Increment step counter
         self.step += 1
 

@@ -84,6 +84,16 @@ class DiscoveryFeed:
                 return post
 
         return None
+    
+    #
+    #   Collect all signals from posts made in the current step
+    #
+    def getSignalsFromPosts(self, curStep:int):
+        signals = []
+        for post in self.updatePosts:
+            if (post["step"] == curStep):
+                signals.extend(post["signals"])
+        return signals
 
     #
     #   Export to dictionary
