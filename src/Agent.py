@@ -1075,8 +1075,15 @@ class Agent(Object):
     # If the agent is not carrying any, then it will set 'objectToShow' to None.
     # If the agent is carrying more than one, it will show the first one it finds. 
     def updateLastInteractedObject(self, objList:list):
-        self.attributes["objectToShow"] = None                     # The object to show the agent carrying
+        self.attributes["objectToShow"] = None                     # The object to show the agent carrying        
         
+        # Filter the object list to remove any Nones
+        objList = [x for x in objList if x != None]
+        # Stop if there are no objects in the list
+        if (len(objList) == 0):
+            self.attributes["objectToShow"] = None
+            return
+
         # Filter the list of objects to show only those that are in the agent's inventory
         accessibleInventoryObjects = self.getAllContainedObjectsRecursive(respectContainerStatus=True)
         
@@ -1087,10 +1094,11 @@ class Agent(Object):
 
         # If there are no objects in the list, then we're done
         if (len(filteredInInventory) == 0):
+            self.attributes["objectToShow"] = None
             return
 
         # Otherwise, take the first object
-        self.attributes["objectToShow"] = filteredInInventory[0]
+        self.attributes["objectToShow"] = filteredInInventory[0]        
 
 
     def clearLastInteractedObject(self):

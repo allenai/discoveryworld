@@ -932,12 +932,12 @@ class UserInterface:
             if (arg1Obj == None):
                 errors.append("arg1: Could not find object with UUID '" + str(jsonIn['arg1']) + "'")
         # So things don't break, if arg1 is not specified (or not found), set it to the first object. 
-        if (arg1Obj == None):
-            if (len(accessibleObjs) > 0):
-                arg1Obj = accessibleObjs[0]
-                errors.append("arg1: No object specified. Defaulting to first accessible object.")
-            else:
-                errors.append("arg1: No object specified, and no accessible objects found.")                
+        # if (arg1Obj == None):
+        #     if (len(accessibleObjs) > 0):
+        #         arg1Obj = accessibleObjs[0]
+        #         errors.append("arg1: No object specified. Defaulting to first accessible object.")
+        #     else:
+        #         errors.append("arg1: No object specified, and no accessible objects found.")                
 
         if ('arg2' in jsonIn) and (jsonIn['arg2'] != None):
             for obj in accessibleObjs:
@@ -948,16 +948,19 @@ class UserInterface:
             if (arg2Obj == None):
                 errors.append("arg2: Could not find object with UUID '" + str(jsonIn['arg2']) + "'")
         # So things don't break, if arg2 is not specified (or not found), set it to the first object.
-        if (arg2Obj == None):
-            if (len(accessibleObjs) > 0):
-                arg2Obj = accessibleObjs[0]
-                errors.append("arg2: No object specified. Defaulting to first accessible object.")
-            else:
-                errors.append("arg2: No object specified, and no accessible objects found.")
+        # if (arg2Obj == None):
+        #     if (len(accessibleObjs) > 0):
+        #         arg2Obj = accessibleObjs[0]
+        #         errors.append("arg2: No object specified. Defaulting to first accessible object.")
+        #     else:
+        #         errors.append("arg2: No object specified, and no accessible objects found.")
 
         # Set the current selected objects
         self.curSelectedArgument1Obj = arg1Obj
         self.curSelectedArgument2Obj = arg2Obj
+
+        # Update what the agent last interacted with
+        self.currentAgent.updateLastInteractedObject([self.curSelectedArgument1Obj])
 
         # Return any errors
         return errors

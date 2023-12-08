@@ -30,8 +30,8 @@ class ActionType(Enum):
 # Returns a dictionary of action descriptions
 def getActionDescriptions(limited:bool = False):
     actionDescriptions = {
-        ActionType.MOVE_FORWARD.name:   {"args": [], "desc": "move forward 1 step"}, 
-        ActionType.MOVE_BACKWARD.name:  {"args": [], "desc": "move backward 1 step"}, 
+        ActionType.MOVE_FORWARD.name:   {"args": [], "desc": "move forward 1 step (in whatever direction the agent is facing)"}, 
+        ActionType.MOVE_BACKWARD.name:  {"args": [], "desc": "move backward 1 step (backwards from whatever direction the agent is facing)"}, 
         ActionType.ROTATE_CCW.name:     {"args": [], "desc": "move counter-clockwise 90 degrees"}, 
         ActionType.ROTATE_CW.name:      {"args": [], "desc": "move clockwise 90 degrees"}, 
         ActionType.PICKUP.name:         {"args": ["arg1"], "desc": "pick up an object (arg1)"},
