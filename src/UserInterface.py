@@ -6,6 +6,7 @@ from Layer import Layer
 from ObjectModel import Object
 from Agent import Agent
 from ActionSuccess import *
+from ActionHistory import *
 import random
 import math
 
@@ -897,4 +898,259 @@ class UserInterface:
 
         # If we reach here, the arguments should be valid
         return None
+
+
+    def _convertJSONArgsToObjects(self, jsonIn):
+        errors = []
+
+        # Get a list of inventory and accessible objects
+        accessibleObjs = self.currentAgent.getInventory()
+        accessibleObjs += self.currentAgent.getObjectsAgentFacing(respectContainerStatus=True)
+
+        # Convert the JSON args to objects
+        arg1Obj = None
+        arg2Obj = None
+        if ('arg1' in jsonIn):
+            for obj in accessibleObjs:
+                if (obj.uuid == jsonIn['arg1']):
+                    arg1Obj = obj
+                    break
+            # If we reach here and the object is still None, then the object was not found
+            if (arg1Obj == None):
+                errors.append("arg1: Could not find object with UUID '" + jsonIn['arg1'] + "'")
+        # So things don't break, if arg1 is not specified (or not found), set it to the first object. 
+        if (arg1Obj == None):
+            if (len(accessibleObjs) > 0):
+                arg1Obj = accessibleObjs[0]
+                errors.append("arg1: No object specified. Defaulting to first accessible object.")
+            else:
+                errors.append("arg1: No object specified, and no accessible objects found.")                
+
+        if ('arg2' in jsonIn):
+            for obj in accessibleObjs:
+                if (obj.uuid == jsonIn['arg2']):
+                    arg2Obj = obj
+                    break        
+            # If we reach here and the object is still None, then the object was not found
+            if (arg2Obj == None):
+                errors.append("arg2: Could not find object with UUID '" + jsonIn['arg2'] + "'")
+        # So things don't break, if arg2 is not specified (or not found), set it to the first object.
+        if (arg2Obj == None):
+            if (len(accessibleObjs) > 0):
+                arg2Obj = accessibleObjs[0]
+                errors.append("arg2: No object specified. Defaulting to first accessible object.")
+            else:
+                errors.append("arg2: No object specified, and no accessible objects found.")
+
+        # Set the current selected objects
+        self.curSelectedArgument1Obj = arg1Obj
+        self.curSelectedArgument2Obj = arg2Obj
+
+        # Return any errors
+        return errors
+        
+
+    #
+    #   Parse actions from JSON
+    #
+    def parseActionJSON(self, jsonIn):
+        # jsonIn format: {"action": "EAT", "arg1": uuid, "arg2": uuid}
+        # Except dialog actions, which don't take arg1/arg2, but specific dialog options.                 
+        # Action names (from enumeration)
+        # Enumeration for layer types
+        # class ActionType(Enum):
+        #     MOVE_FORWARD    = 0
+        #     MOVE_BACKWARD   = 1
+        #     ROTATE_CW       = 2
+        #     ROTATE_CCW      = 3
+        #     PICKUP          = 4
+        #     PUT             = 5
+        #     DROP            = 6 
+        #     OPEN            = 7
+        #     CLOSE           = 8
+        #     ACTIVATE        = 9
+        #     DEACTIVATE      = 10
+        #     TALK            = 11
+        #     EAT             = 12
+        #     READ            = 13
+        #     USE             = 14
+        #     DISCOVERY_FEED_GET_UPDATES = 15
+        #     DISCOVERY_FEED_GET_ARTICLES = 16
+        #     DISCOVERY_FEED_GET_POST_BY_ID = 17
+        #     DISCOVERY_FEED_CREATE_UPDATE = 18
+        #     DISCOVERY_FEED_CREATE_ARTICLE = 19
+
+        # TODO: Convert 'arg1' and 'arg2' from JSON into internal (arg1, arg2) selection variables for UI
+        self._convertJSONArgsToObjects(jsonIn)
+
+        # First, check if we're in the middle of a dialog
+        # if (self.currentAgent.isInDialog()):
+        #     # If so, we need to parse the dialog keys
+        #     print("### IS IN DIALOG")
+        #     return self._parseDialogKeys(keys)
+        # else:
+        #     self.dialogToDisplay = None
+        
+        # Move the agent forward
+        if (jsonIn["action"] == str(ActionType.MOVE_FORWARD)):            
+            return (True, self.actionMoveAgentForward())
+
+        # Move the agent backward
+        elif (jsonIn["action"] == str(ActionType.MOVE_BACKWARD)):
+            return (True, self.actionMoveAgentBackward())
+
+        # Rotate the agent counterclockwise
+        elif (jsonIn["action"] == str(ActionType.ROTATE_CCW)):
+            return (True, self.actionRotateAgentCounterclockwise())
+
+        # Rotate the agent clockwise
+        elif (jsonIn["action"] == str(ActionType.ROTATE_CW)):
+            return (True, self.actionRotateAgentClockwise())
+
+
+        # Pick-up Object in arg1 slot
+        elif (jsonIn["action"] == str(ActionType.PICKUP)):
+            checkArgSuccess = self._checkArgs(actionName = "pick up object", arg1 = True, arg2 = False)
+            if (checkArgSuccess == False):
+                return (False, False)
+
+            return (True, self.actionPickupObject(objToPickUp = self.curSelectedArgument1Obj)            )
+
+        # Drop an inventory item in arg1 slot at the agents current location
+        elif (jsonIn["action"] == str(ActionType.DROP)):
+            checkArgSuccess = self._checkArgs(actionName = "drop item", arg1 = True, arg2 = False)
+            if (checkArgSuccess == False):
+                return (False, False)
+
+            return (True, self.actionDropObject(objToDrop = self.curSelectedArgument1Obj))
+
+        # Put an item (arg1) in a specific container (arg2)
+        elif (jsonIn["action"] == str(ActionType.PUT)):
+            checkArgSuccess = self._checkArgs(actionName = "put item in container", arg1 = True, arg2 = True)
+            if (checkArgSuccess == False):
+                return (False, False)
+
+            return (True, self.actionPutObjectInContainer(objToPut = self.curSelectedArgument1Obj, container = self.curSelectedArgument2Obj))
+
+        # Open a container or passage (arg1) 
+        elif (jsonIn["action"] == str(ActionType.OPEN)):
+            checkArgSuccess = self._checkArgs(actionName = "open", arg1 = True, arg2 = False)
+            if (checkArgSuccess == False):
+                return (False, False)
+
+            return (True, self.actionOpenObject(objToOpen = self.curSelectedArgument1Obj))
+        
+        # Close a container or passage (arg1)
+        elif (jsonIn["action"] == str(ActionType.CLOSE)):
+            checkArgSuccess = self._checkArgs(actionName = "close", arg1 = True, arg2 = False)
+            if (checkArgSuccess == False):
+                return (False, False)
+
+            return (True, self.actionCloseObject(objToClose = self.curSelectedArgument1Obj))
+        
+        # Activate an object (arg1) 
+        elif (jsonIn["action"] == str(ActionType.ACTIVATE)):
+            checkArgSuccess = self._checkArgs(actionName = "activate", arg1 = True, arg2 = False)
+            if (checkArgSuccess == False):
+                return (False, False)
+
+            return (True, self.actionActivateObject(objToActivate = self.curSelectedArgument1Obj))
+            
+        # For some read K_d doesn't work. 
+        # Should be D key here
+        # Deactivate an object (arg1)
+        elif (jsonIn["action"] == str(ActionType.DEACTIVATE)):
+            checkArgSuccess = self._checkArgs(actionName = "deactivate", arg1 = True, arg2 = False)
+            if (checkArgSuccess == False):
+                return (False, False)
+
+            return (True, self.actionDeactivateObject(objToDeactivate = self.curSelectedArgument1Obj))
+            
+        # Dialog/talk with agent specified in arg1
+        elif (jsonIn["action"] == str(ActionType.TALK)):
+            checkArgSuccess = self._checkArgs(actionName = "talk", arg1 = True, arg2 = False)
+            if (checkArgSuccess == False):
+                return (False, False)
+
+            actionResult = self.actionTalk(agentToTalkTo = self.curSelectedArgument1Obj)
+
+            # If the agent is in dialog, then we need to display the dialog options
+            if (self.currentAgent.isInDialog()):
+                npcResponse, nextDialogOptions = self.currentAgent.getAgentInDialogWith().dialogTree.getCurrentDialog()
+                self.dialogToDisplay = {}
+                self.dialogToDisplay['dialogText'] = npcResponse
+                self.dialogToDisplay['dialogOptions'] = nextDialogOptions
+
+            return (True, actionResult)
+
+        # Eat arg1
+        elif (jsonIn["action"] == str(ActionType.EAT)):
+            checkArgSuccess = self._checkArgs(actionName = "eat", arg1 = True, arg2 = False)
+            if (checkArgSuccess == False):
+                return (False, False)
+
+            return (True, self.actionEat(objToEat = self.curSelectedArgument1Obj))
+
+        # Read arg1
+        elif (jsonIn["action"] == str(ActionType.READ)):
+            checkArgSuccess = self._checkArgs(actionName = "read", arg1 = True, arg2 = False)
+            if (checkArgSuccess == False):
+                return (False, False)
+
+            return (True, self.actionRead(objToRead = self.curSelectedArgument1Obj))
+
+        # Use action (use arg1 with arg2)
+        elif (jsonIn["action"] == str(ActionType.USE)):
+            checkArgSuccess = self._checkArgs(actionName = "use object", arg1 = True, arg2 = True)
+            if (checkArgSuccess == False):
+                return (False, False)
+
+            result = self.actionUse(objToUse = self.curSelectedArgument1Obj, objToUseWith = self.curSelectedArgument2Obj)
+
+            # # If there is a .generatedItems populated in this result, then process it            
+            # if ('generatedItems' in result.data):
+            #     for item in result.data['generatedItems']:
+            #         self.currentAgent.addObject(item)
+
+            return (True, result)
+
+        # NOTE: These can probably safely be deleted, since the arguments are supplied directly in the JSON
+        # # UI element (incrementing argument boxes with [, ], ;, and ')
+        # elif (keys[pygame.K_LEFTBRACKET]):
+        #     self.changeArgumentBox(delta=-1, whichBox=1)
+        #     return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
+            
+        # elif (keys[pygame.K_RIGHTBRACKET]):
+        #     self.changeArgumentBox(delta=1, whichBox=1)
+        #     return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
+            
+        # elif (keys[pygame.K_SEMICOLON]):
+        #     self.changeArgumentBox(delta=-1, whichBox=2)
+        #     return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
+            
+        # elif (keys[pygame.K_QUOTE]):
+        #     self.changeArgumentBox(delta=1, whichBox=2)
+        #     return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
+            
+
+        # DiscoveryFeed Actions
+        # TODO: These need to be updated to take their arguments from the JSON
+        # Reading articles
+        elif (jsonIn["action"] == str(ActionType.DISCOVERY_FEED_GET_UPDATES)):
+            return (False, self.getDiscoveryFeedUpdates(startFromID=0))
+        elif (jsonIn["action"] == str(ActionType.DISCOVERY_FEED_GET_ARTICLES)):
+            return (False, self.getDiscoveryFeedArticles(startFromID=0))
+        elif (jsonIn["action"] == str(ActionType.DISCOVERY_FEED_GET_POST_BY_ID)):
+            # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
+            randPostID = math.floor(random.random() * 10) + 1            
+            return (False, self.getSpecificDiscoveryFeedPost(postID=randPostID))
+        # Creating articles
+        elif (jsonIn["action"] == str(ActionType.DISCOVERY_FEED_CREATE_UPDATE)):
+            return (False, self.createDiscoveryFeedUpdate(contentStr="This is a test update."))
+        elif (jsonIn["action"] == str(ActionType.DISCOVERY_FEED_CREATE_ARTICLE)):
+            return (False, self.createDiscoveryFeedArticle(titleStr="Test Article", contentStr="This is a test article."))
+
+
+        # If we reach here, then no known key was pressed
+        return (False, None)
 
