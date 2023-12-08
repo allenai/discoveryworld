@@ -235,7 +235,8 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     promptStr += json.dumps(lastAction, indent=1, sort_keys=True)
     promptStr += "```\n"
     promptStr += "\n"
-    promptStr += "Navigation note: In the image, north is the top, south is the bottom, east is the right, and west is the left. Moving forward moves you in the direction you're facing.\n"
+    facingDirection = observation["ui"]["agentLocation"]["faceDirection"]
+    promptStr += "Navigation note: In the image, north is the top, south is the bottom, east is the right, and west is the left. Moving forward moves you in the direction you're facing. You are currently facing `" + facingDirection + "`. You seen to confuse directions a lot.  Directions are relative to the center of the image. Things above the center are north of the agent. Things left of the center are east of the agent.\n"
     promptStr += "Interaction note: You can only interact (i.e. take actions with) objects that are in your inventory, or directly (i.e. one square) in front of you, in the direction that you're facing.  E.g. if you want to pick an object up, you need to move directly in front of it, and face it, before using the pick-up action on it.\n"
     promptStr += "\n"
     promptStr += "Please create your output (the next action you'd like to take) below.  It should be in the JSON form expected above e.g.(`{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12}`). \n"
@@ -429,7 +430,7 @@ if __name__ == "__main__":
     api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v.mp4")
 
     # Random agent
-    #randomAgent(api, numSteps=100)
+    #randomAgent(api, numSteps=10)
     # Create a video from the random agent
     #api.createAgentVideo(agentIdx=0, filenameOut="output_randomAgent.mp4")
     

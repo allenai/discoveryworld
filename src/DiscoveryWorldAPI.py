@@ -38,8 +38,11 @@ class DiscoveryWorldAPI:
 
         self.FRAME_DIR = "video/frames"
 
-        self.viewportSizeX = 15
-        self.viewportSizeY = 15
+        #self.viewportSizeX = 15
+        #self.viewportSizeY = 15
+        self.viewportSizeX = 9
+        self.viewportSizeY = 9
+        self.renderScale = 1.5
 
         # Create a random number generator
         self.r = random.Random()        
@@ -127,7 +130,7 @@ class DiscoveryWorldAPI:
 
         # Step 3: Render the viewport (the world view) and the UI for this agent
         self.window.fill((0, 0, 0)) # Clear the viewport
-        self.world.renderViewport(self.window, worldStartX, worldStartY, self.viewportSizeX, self.viewportSizeY, 0, 0, includeGrid=False)        
+        self.world.renderViewport(self.window, worldStartX, worldStartY, self.viewportSizeX, self.viewportSizeY, 0, 0, self.renderScale, includeGrid=False)        
         ui.render()                 # Render UI
         pygame.display.flip()       # Flip the backbuffer, to display this content to the window
 
@@ -149,7 +152,7 @@ class DiscoveryWorldAPI:
 
         # Step 4: Also capture the viewport with the grid
         self.window.fill((0, 0, 0)) # Clear the viewport
-        self.world.renderViewport(self.window, worldStartX, worldStartY, self.viewportSizeX, self.viewportSizeY, 0, 0, includeGrid=True)
+        self.world.renderViewport(self.window, worldStartX, worldStartY, self.viewportSizeX, self.viewportSizeY, 0, 0, self.renderScale, includeGrid=True)
         ui.render()                 # Render UI
         pygame.display.flip()       # Flip the backbuffer, to display this content to the window
 
