@@ -203,6 +203,13 @@ class UserInterface:
         # Out
         out = {}
 
+        # Add agent location and facing direction
+        agentLocation = {}
+        agentLocation["x"] = self.currentAgent.attributes["gridX"]
+        agentLocation["y"] = self.currentAgent.attributes["gridY"]
+        agentLocation["faceDirection"] = self.currentAgent.attributes["faceDirection"]
+        out.update({"agentLocation": agentLocation})
+
         # Inventory and accessible objects
         objsInv = []
         objsEnv = []
