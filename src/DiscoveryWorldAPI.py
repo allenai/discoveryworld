@@ -16,6 +16,7 @@ from BuildingMaker import BuildingMaker
 from ScenarioMaker import *
 from ObjectModel import *
 from Agent import *
+from ActionHistory import *
 from ActionSuccess import *
 from UserInterface import UserInterface
 from DialogTree import DialogMaker
@@ -132,6 +133,53 @@ class DiscoveryWorldAPI:
 
         response = {"errors": [], "ui": uiJSON} 
         return response
+
+
+    # Lists all known actions (as they are parsed by the JSON action interpreter), by directly enumerating the ActionType enum
+    def listKnownActions(self):
+        out = []
+        for action in ActionType:
+            out.append(action.name)
+        return out
+    
+
+    # Perform an action for a given agent
+    def performAgentAction(self, agentIdx, actionJSON):
+        # Check to make sure the agent index is valid
+        if (agentIdx < 0) or (agentIdx >= self.numUserAgents):            
+            response = {"errors": ["Agent index out of range. Specified agent index: " + str(agentIdx) + ". Number of agents: " + str(self.numUserAgents) + " (i.e. value must be between 0 and " + str(self.numUserAgents - 1) + ")"]}
+            return response
+        
+        # Check that the world is initialized
+        if (self.world == None):                        
+            response = {"errors": ["World is not initialized"]}
+            return response
+        
+        
+        # Get a reference to this agent's UI
+        ui = self.ui[agentIdx]
+
+        # Get a reference to the agent        
+        agent = ui.currentAgent
+
+        # Parse any action keys
+        (doTick, success) = ui.parseActionJSON(jsonIn = actionJSON)
+
+        if (success != None):
+            # Update the UI with the message (for the bottom of the screen)
+            ui.updateLastActionMessage(success.message)
+
+            # If the message was rated as high importance, also add it to the explicit modal dialog queue
+            if (success.importance == MessageImportance.HIGH):
+                ui.addTextMessageToQueue(success.message)
+        else:
+            # Update the UI with the message (for the bottom of the screen)
+            ui.updateLastActionMessage("Invalid action")
+            return False
+        
+        return True
+
+
 
     #
     #   UI

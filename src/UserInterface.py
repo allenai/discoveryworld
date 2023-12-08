@@ -992,24 +992,24 @@ class UserInterface:
         #     self.dialogToDisplay = None
         
         # Move the agent forward
-        if (jsonIn["action"] == str(ActionType.MOVE_FORWARD)):            
+        if (jsonIn["action"] == ActionType.MOVE_FORWARD.name):            
             return (True, self.actionMoveAgentForward())
 
         # Move the agent backward
-        elif (jsonIn["action"] == str(ActionType.MOVE_BACKWARD)):
+        elif (jsonIn["action"] == ActionType.MOVE_BACKWARD.name):
             return (True, self.actionMoveAgentBackward())
 
         # Rotate the agent counterclockwise
-        elif (jsonIn["action"] == str(ActionType.ROTATE_CCW)):
+        elif (jsonIn["action"] == ActionType.ROTATE_CCW.name):
             return (True, self.actionRotateAgentCounterclockwise())
 
         # Rotate the agent clockwise
-        elif (jsonIn["action"] == str(ActionType.ROTATE_CW)):
+        elif (jsonIn["action"] == ActionType.ROTATE_CW.name):
             return (True, self.actionRotateAgentClockwise())
 
 
         # Pick-up Object in arg1 slot
-        elif (jsonIn["action"] == str(ActionType.PICKUP)):
+        elif (jsonIn["action"] == ActionType.PICKUP.name):
             checkArgSuccess = self._checkArgs(actionName = "pick up object", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -1017,7 +1017,7 @@ class UserInterface:
             return (True, self.actionPickupObject(objToPickUp = self.curSelectedArgument1Obj)            )
 
         # Drop an inventory item in arg1 slot at the agents current location
-        elif (jsonIn["action"] == str(ActionType.DROP)):
+        elif (jsonIn["action"] == ActionType.DROP.name):
             checkArgSuccess = self._checkArgs(actionName = "drop item", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -1025,7 +1025,7 @@ class UserInterface:
             return (True, self.actionDropObject(objToDrop = self.curSelectedArgument1Obj))
 
         # Put an item (arg1) in a specific container (arg2)
-        elif (jsonIn["action"] == str(ActionType.PUT)):
+        elif (jsonIn["action"] == ActionType.PUT.name):
             checkArgSuccess = self._checkArgs(actionName = "put item in container", arg1 = True, arg2 = True)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -1033,7 +1033,7 @@ class UserInterface:
             return (True, self.actionPutObjectInContainer(objToPut = self.curSelectedArgument1Obj, container = self.curSelectedArgument2Obj))
 
         # Open a container or passage (arg1) 
-        elif (jsonIn["action"] == str(ActionType.OPEN)):
+        elif (jsonIn["action"] == ActionType.OPEN.name):
             checkArgSuccess = self._checkArgs(actionName = "open", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -1041,7 +1041,7 @@ class UserInterface:
             return (True, self.actionOpenObject(objToOpen = self.curSelectedArgument1Obj))
         
         # Close a container or passage (arg1)
-        elif (jsonIn["action"] == str(ActionType.CLOSE)):
+        elif (jsonIn["action"] == ActionType.CLOSE.name):
             checkArgSuccess = self._checkArgs(actionName = "close", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -1049,7 +1049,7 @@ class UserInterface:
             return (True, self.actionCloseObject(objToClose = self.curSelectedArgument1Obj))
         
         # Activate an object (arg1) 
-        elif (jsonIn["action"] == str(ActionType.ACTIVATE)):
+        elif (jsonIn["action"] == ActionType.ACTIVATE.name):
             checkArgSuccess = self._checkArgs(actionName = "activate", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -1059,7 +1059,7 @@ class UserInterface:
         # For some read K_d doesn't work. 
         # Should be D key here
         # Deactivate an object (arg1)
-        elif (jsonIn["action"] == str(ActionType.DEACTIVATE)):
+        elif (jsonIn["action"] == ActionType.DEACTIVATE.name):
             checkArgSuccess = self._checkArgs(actionName = "deactivate", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -1067,7 +1067,7 @@ class UserInterface:
             return (True, self.actionDeactivateObject(objToDeactivate = self.curSelectedArgument1Obj))
             
         # Dialog/talk with agent specified in arg1
-        elif (jsonIn["action"] == str(ActionType.TALK)):
+        elif (jsonIn["action"] == ActionType.TALK.name):
             checkArgSuccess = self._checkArgs(actionName = "talk", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -1084,7 +1084,7 @@ class UserInterface:
             return (True, actionResult)
 
         # Eat arg1
-        elif (jsonIn["action"] == str(ActionType.EAT)):
+        elif (jsonIn["action"] == ActionType.EAT.name):
             checkArgSuccess = self._checkArgs(actionName = "eat", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -1092,7 +1092,7 @@ class UserInterface:
             return (True, self.actionEat(objToEat = self.curSelectedArgument1Obj))
 
         # Read arg1
-        elif (jsonIn["action"] == str(ActionType.READ)):
+        elif (jsonIn["action"] == ActionType.READ.name):
             checkArgSuccess = self._checkArgs(actionName = "read", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -1100,7 +1100,7 @@ class UserInterface:
             return (True, self.actionRead(objToRead = self.curSelectedArgument1Obj))
 
         # Use action (use arg1 with arg2)
-        elif (jsonIn["action"] == str(ActionType.USE)):
+        elif (jsonIn["action"] == ActionType.USE.name):
             checkArgSuccess = self._checkArgs(actionName = "use object", arg1 = True, arg2 = True)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -1136,18 +1136,18 @@ class UserInterface:
         # DiscoveryFeed Actions
         # TODO: These need to be updated to take their arguments from the JSON
         # Reading articles
-        elif (jsonIn["action"] == str(ActionType.DISCOVERY_FEED_GET_UPDATES)):
+        elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_GET_UPDATES.name):
             return (False, self.getDiscoveryFeedUpdates(startFromID=0))
-        elif (jsonIn["action"] == str(ActionType.DISCOVERY_FEED_GET_ARTICLES)):
+        elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_GET_ARTICLES.name):
             return (False, self.getDiscoveryFeedArticles(startFromID=0))
-        elif (jsonIn["action"] == str(ActionType.DISCOVERY_FEED_GET_POST_BY_ID)):
+        elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name):
             # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
             randPostID = math.floor(random.random() * 10) + 1            
             return (False, self.getSpecificDiscoveryFeedPost(postID=randPostID))
         # Creating articles
-        elif (jsonIn["action"] == str(ActionType.DISCOVERY_FEED_CREATE_UPDATE)):
+        elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_CREATE_UPDATE.name):
             return (False, self.createDiscoveryFeedUpdate(contentStr="This is a test update."))
-        elif (jsonIn["action"] == str(ActionType.DISCOVERY_FEED_CREATE_ARTICLE)):
+        elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_CREATE_ARTICLE.name):
             return (False, self.createDiscoveryFeedArticle(titleStr="Test Article", contentStr="This is a test article."))
 
 
