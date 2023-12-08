@@ -910,7 +910,8 @@ class UserInterface:
         # Convert the JSON args to objects
         arg1Obj = None
         arg2Obj = None
-        if ('arg1' in jsonIn):
+
+        if ('arg1' in jsonIn) and (jsonIn['arg1'] != None):
             for obj in accessibleObjs:
                 if (obj.uuid == jsonIn['arg1']):
                     arg1Obj = obj
@@ -926,7 +927,7 @@ class UserInterface:
             else:
                 errors.append("arg1: No object specified, and no accessible objects found.")                
 
-        if ('arg2' in jsonIn):
+        if ('arg2' in jsonIn) and (jsonIn['arg2'] != None):
             for obj in accessibleObjs:
                 if (obj.uuid == jsonIn['arg2']):
                     arg2Obj = obj
@@ -994,19 +995,19 @@ class UserInterface:
         
         # Move the agent forward
         if (jsonIn["action"] == ActionType.MOVE_FORWARD.name):            
-            return (True, self.actionMoveAgentForward())
+            return (True, jsonParseErrors, self.actionMoveAgentForward())
 
         # Move the agent backward
         elif (jsonIn["action"] == ActionType.MOVE_BACKWARD.name):
-            return (True, self.actionMoveAgentBackward())
+            return (True, jsonParseErrors, self.actionMoveAgentBackward())
 
         # Rotate the agent counterclockwise
         elif (jsonIn["action"] == ActionType.ROTATE_CCW.name):
-            return (True, self.actionRotateAgentCounterclockwise())
+            return (True, jsonParseErrors, self.actionRotateAgentCounterclockwise())
 
         # Rotate the agent clockwise
         elif (jsonIn["action"] == ActionType.ROTATE_CW.name):
-            return (True, self.actionRotateAgentClockwise())
+            return (True, jsonParseErrors, self.actionRotateAgentClockwise())
 
 
         # Pick-up Object in arg1 slot
@@ -1015,47 +1016,47 @@ class UserInterface:
             if (checkArgSuccess == False):
                 return (False, False)
 
-            return (True, self.actionPickupObject(objToPickUp = self.curSelectedArgument1Obj)            )
+            return (True, jsonParseErrors, self.actionPickupObject(objToPickUp = self.curSelectedArgument1Obj)            )
 
         # Drop an inventory item in arg1 slot at the agents current location
         elif (jsonIn["action"] == ActionType.DROP.name):
             checkArgSuccess = self._checkArgs(actionName = "drop item", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, False)
+                return (False, jsonParseErrors, False)
 
-            return (True, self.actionDropObject(objToDrop = self.curSelectedArgument1Obj))
+            return (True, jsonParseErrors, self.actionDropObject(objToDrop = self.curSelectedArgument1Obj))
 
         # Put an item (arg1) in a specific container (arg2)
         elif (jsonIn["action"] == ActionType.PUT.name):
             checkArgSuccess = self._checkArgs(actionName = "put item in container", arg1 = True, arg2 = True)
             if (checkArgSuccess == False):
-                return (False, False)
+                return (False, jsonParseErrors, False)
 
-            return (True, self.actionPutObjectInContainer(objToPut = self.curSelectedArgument1Obj, container = self.curSelectedArgument2Obj))
+            return (True, jsonParseErrors, self.actionPutObjectInContainer(objToPut = self.curSelectedArgument1Obj, container = self.curSelectedArgument2Obj))
 
         # Open a container or passage (arg1) 
         elif (jsonIn["action"] == ActionType.OPEN.name):
             checkArgSuccess = self._checkArgs(actionName = "open", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, False)
+                return (False, jsonParseErrors, False)
 
-            return (True, self.actionOpenObject(objToOpen = self.curSelectedArgument1Obj))
+            return (True, jsonParseErrors, self.actionOpenObject(objToOpen = self.curSelectedArgument1Obj))
         
         # Close a container or passage (arg1)
         elif (jsonIn["action"] == ActionType.CLOSE.name):
             checkArgSuccess = self._checkArgs(actionName = "close", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, False)
+                return (False, jsonParseErrors, False)
 
-            return (True, self.actionCloseObject(objToClose = self.curSelectedArgument1Obj))
+            return (True, jsonParseErrors, self.actionCloseObject(objToClose = self.curSelectedArgument1Obj))
         
         # Activate an object (arg1) 
         elif (jsonIn["action"] == ActionType.ACTIVATE.name):
             checkArgSuccess = self._checkArgs(actionName = "activate", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, False)
+                return (False, jsonParseErrors, False)
 
-            return (True, self.actionActivateObject(objToActivate = self.curSelectedArgument1Obj))
+            return (True, jsonParseErrors, self.actionActivateObject(objToActivate = self.curSelectedArgument1Obj))
             
         # For some read K_d doesn't work. 
         # Should be D key here
@@ -1063,15 +1064,15 @@ class UserInterface:
         elif (jsonIn["action"] == ActionType.DEACTIVATE.name):
             checkArgSuccess = self._checkArgs(actionName = "deactivate", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, False)
+                return (False, jsonParseErrors, False)
 
-            return (True, self.actionDeactivateObject(objToDeactivate = self.curSelectedArgument1Obj))
+            return (True, jsonParseErrors, self.actionDeactivateObject(objToDeactivate = self.curSelectedArgument1Obj))
             
         # Dialog/talk with agent specified in arg1
         elif (jsonIn["action"] == ActionType.TALK.name):
             checkArgSuccess = self._checkArgs(actionName = "talk", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, False)
+                return (False, jsonParseErrors, False)
 
             actionResult = self.actionTalk(agentToTalkTo = self.curSelectedArgument1Obj)
 
@@ -1082,29 +1083,29 @@ class UserInterface:
                 self.dialogToDisplay['dialogText'] = npcResponse
                 self.dialogToDisplay['dialogOptions'] = nextDialogOptions
 
-            return (True, actionResult)
+            return (True, jsonParseErrors, actionResult)
 
         # Eat arg1
         elif (jsonIn["action"] == ActionType.EAT.name):
             checkArgSuccess = self._checkArgs(actionName = "eat", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, False)
+                return (False, jsonParseErrors, False)
 
-            return (True, self.actionEat(objToEat = self.curSelectedArgument1Obj))
+            return (True, jsonParseErrors, self.actionEat(objToEat = self.curSelectedArgument1Obj))
 
         # Read arg1
         elif (jsonIn["action"] == ActionType.READ.name):
             checkArgSuccess = self._checkArgs(actionName = "read", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, False)
+                return (False, jsonParseErrors, False)
 
-            return (True, self.actionRead(objToRead = self.curSelectedArgument1Obj))
+            return (True, jsonParseErrors, self.actionRead(objToRead = self.curSelectedArgument1Obj))
 
         # Use action (use arg1 with arg2)
         elif (jsonIn["action"] == ActionType.USE.name):
             checkArgSuccess = self._checkArgs(actionName = "use object", arg1 = True, arg2 = True)
             if (checkArgSuccess == False):
-                return (False, False)
+                return (False, jsonParseErrors, False)
 
             result = self.actionUse(objToUse = self.curSelectedArgument1Obj, objToUseWith = self.curSelectedArgument2Obj)
 
@@ -1113,7 +1114,7 @@ class UserInterface:
             #     for item in result.data['generatedItems']:
             #         self.currentAgent.addObject(item)
 
-            return (True, result)
+            return (True, jsonParseErrors, result)
 
         # NOTE: These can probably safely be deleted, since the arguments are supplied directly in the JSON
         # # UI element (incrementing argument boxes with [, ], ;, and ')
@@ -1138,20 +1139,20 @@ class UserInterface:
         # TODO: These need to be updated to take their arguments from the JSON
         # Reading articles
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_GET_UPDATES.name):
-            return (False, self.getDiscoveryFeedUpdates(startFromID=0))
+            return (False, jsonParseErrors, self.getDiscoveryFeedUpdates(startFromID=0))
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_GET_ARTICLES.name):
-            return (False, self.getDiscoveryFeedArticles(startFromID=0))
+            return (False, jsonParseErrors, self.getDiscoveryFeedArticles(startFromID=0))
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name):
             # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
             randPostID = math.floor(random.random() * 10) + 1            
-            return (False, self.getSpecificDiscoveryFeedPost(postID=randPostID))
+            return (False, jsonParseErrors, self.getSpecificDiscoveryFeedPost(postID=randPostID))
         # Creating articles
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_CREATE_UPDATE.name):
-            return (False, self.createDiscoveryFeedUpdate(contentStr="This is a test update."))
+            return (False, jsonParseErrors, self.createDiscoveryFeedUpdate(contentStr="This is a test update."))
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_CREATE_ARTICLE.name):
-            return (False, self.createDiscoveryFeedArticle(titleStr="Test Article", contentStr="This is a test article."))
+            return (False, jsonParseErrors, self.createDiscoveryFeedArticle(titleStr="Test Article", contentStr="This is a test article."))
 
 
         # If we reach here, then no known key was pressed
-        return (False, None)
+        return (False, jsonParseErrors, None)
 

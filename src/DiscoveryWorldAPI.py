@@ -165,7 +165,13 @@ class DiscoveryWorldAPI:
         agent = ui.currentAgent
 
         # Parse any action keys
-        (doTick, success) = ui.parseActionJSON(jsonIn = actionJSON)
+        doTick, jsonParseErrors, success = ui.parseActionJSON(jsonIn = actionJSON)
+
+        # Pack the response
+        response = {
+            "errors": jsonParseErrors,
+            "success": success            
+        }
 
         if (success != None):
             # Update the UI with the message (for the bottom of the screen)
@@ -177,9 +183,10 @@ class DiscoveryWorldAPI:
         else:
             # Update the UI with the message (for the bottom of the screen)
             ui.updateLastActionMessage("Invalid action")
-            return False
+            response["errors"].append("Invalid action")
+
         
-        return True
+        return response
 
 
 
