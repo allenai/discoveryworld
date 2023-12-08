@@ -7,6 +7,9 @@ import time
 import subprocess
 import psutil
 
+import io
+import base64
+
 # Sprite library
 import SpriteLibrary
 from ObjectMaker import ObjectMaker
@@ -95,14 +98,17 @@ class DiscoveryWorldAPI:
             
     # Gets the current observation of the world from a given agent's perspective 
     def getAgentObservation(self, agentIdx, includeGrid:bool=True):
+        # Start populating response
+        response = {"errors": [], "ui": {}, "vision": {}}
+
         # Check to make sure the agent index is valid
         if (agentIdx < 0) or (agentIdx >= self.numUserAgents):            
-            response = {"errors": ["Agent index out of range. Specified agent index: " + str(agentIdx) + ". Number of agents: " + str(self.numUserAgents) + " (i.e. value must be between 0 and " + str(self.numUserAgents - 1) + ")"]}
+            response["errors"].append("Agent index out of range. Specified agent index: " + str(agentIdx) + ". Number of agents: " + str(self.numUserAgents) + " (i.e. value must be between 0 and " + str(self.numUserAgents - 1) + ")")
             return response
         
         # Check that the world is initialized
-        if (self.world == None):                        
-            response = {"errors": ["World is not initialized"]}
+        if (self.world == None):                                    
+            response["errors"].append("World is not initialized")
             return response
         
         
@@ -116,33 +122,55 @@ class DiscoveryWorldAPI:
         agentLocation = agent.getWorldLocation()
 
         # Clear the viewport
-        self.window.fill((0, 0, 0))
 
-        # Step 3: Render the viewport (the world view) for this agent
+        # Define the viewport for this agent
         worldStartX = agentLocation[0] - int(self.viewportSizeX / 2)
         worldStartY = agentLocation[1] - int(self.viewportSizeY / 2)        
-        self.world.renderViewport(self.window, worldStartX, worldStartY, self.viewportSizeX, self.viewportSizeY, 0, 0, includeGrid=includeGrid)
 
-        # Step 5: Render the user interface for this agent
+        # Step 3: Render the viewport (the world view) and the UI for this agent
+        self.window.fill((0, 0, 0))
+        self.world.renderViewport(self.window, worldStartX, worldStartY, self.viewportSizeX, self.viewportSizeY, 0, 0, includeGrid=False)        
         ui.render()
-        uiJSON = ui.renderJSON()
+        pygame.display.flip()       # Flip the backbuffer, to display this content to the window
 
-        # Flip the backbuffer, to display this content to the window
-        pygame.display.flip()
-
-        # Capture the current window (i.e. through a screenshot) and save it to a file        
+        # Capture the current window, and save to file
         curStep = self.world.getStepCounter()
-        frameFilename = self.FRAME_DIR + "/ui_agent_" + str(agentIdx) + "_frame_" + str(curStep) + ".png"
-        pygame.image.save(self.window, frameFilename)
+        filenameOutPNG = self.FRAME_DIR + "/ui_agent_" + str(agentIdx) + "_frame_" + str(curStep) + ".png"
+        pygame.image.save(self.window, filenameOutPNG)
 
-        # Also capture just the first 512x512 pixels of the window, and save it to a file
+        # Also capture just the first 512x512 pixels of the window, and encode it as a base64 string
         # This is for the agent's "vision"
-        visionFilename = self.FRAME_DIR + "/ui_agent_" + str(agentIdx) + "_vision_" + str(curStep) + ".png"
         visionSurface = pygame.Surface((512, 512))
         visionSurface.blit(self.window, (0, 0), (0, 0, 512, 512))
-        pygame.image.save(visionSurface, visionFilename)
+        image_io = io.BytesIO()
+        pygame.image.save(visionSurface, image_io, 'PNG')                       # Convert to PNG
+        image_io.seek(0)                                                        # Go to the beginning of the BytesIO object
+        encodedImageNoGrid = base64.b64encode(image_io.read()).decode('utf-8')       # Convert to base64        
+        encodedImageNoGrid = "data:image/png;base64," + encodedImageNoGrid
+        response["vision"]["base64_no_grid"] = encodedImageNoGrid
 
-        response = {"errors": [], "ui": uiJSON} 
+        # Step 4: Also capture the viewport with the grid
+        self.window.fill((0, 0, 0))
+        self.world.renderViewport(self.window, worldStartX, worldStartY, self.viewportSizeX, self.viewportSizeY, 0, 0, includeGrid=True)
+        ui.render()
+        pygame.display.flip()       # Flip the backbuffer, to display this content to the window
+
+        # Capture the first 512x512 pixels of the window, and encode it as a base64 string
+        # This is for the agent's "vision"
+        visionSurface = pygame.Surface((512, 512))
+        visionSurface.blit(self.window, (0, 0), (0, 0, 512, 512))
+        image_io = io.BytesIO()
+        pygame.image.save(visionSurface, image_io, 'PNG')                       # Convert to PNG
+        image_io.seek(0)                                                        # Go to the beginning of the BytesIO object
+        encodedImageWithGrid = base64.b64encode(image_io.read()).decode('utf-8')       # Convert to base64        
+        encodedImageWithGrid = "data:image/png;base64," + encodedImageWithGrid
+        response["vision"]["base64_with_grid"] = encodedImageWithGrid
+
+        # JSON rendering
+        uiJSON = ui.renderJSON()
+        response["ui"] = uiJSON        
+
+        # Return response        
         return response
 
 
