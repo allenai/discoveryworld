@@ -97,7 +97,7 @@ class DiscoveryWorldAPI:
 
             
     # Gets the current observation of the world from a given agent's perspective 
-    def getAgentObservation(self, agentIdx, includeGrid:bool=True):
+    def getAgentObservation(self, agentIdx):
         # Start populating response
         response = {"errors": [], "ui": {}, "vision": {}}
 
@@ -120,17 +120,15 @@ class DiscoveryWorldAPI:
 
         # Get the agent's current location
         agentLocation = agent.getWorldLocation()
-
-        # Clear the viewport
-
+        
         # Define the viewport for this agent
         worldStartX = agentLocation[0] - int(self.viewportSizeX / 2)
         worldStartY = agentLocation[1] - int(self.viewportSizeY / 2)        
 
         # Step 3: Render the viewport (the world view) and the UI for this agent
-        self.window.fill((0, 0, 0))
+        self.window.fill((0, 0, 0)) # Clear the viewport
         self.world.renderViewport(self.window, worldStartX, worldStartY, self.viewportSizeX, self.viewportSizeY, 0, 0, includeGrid=False)        
-        ui.render()
+        ui.render()                 # Render UI
         pygame.display.flip()       # Flip the backbuffer, to display this content to the window
 
         # Capture the current window, and save to file
@@ -150,9 +148,9 @@ class DiscoveryWorldAPI:
         response["vision"]["base64_no_grid"] = encodedImageNoGrid
 
         # Step 4: Also capture the viewport with the grid
-        self.window.fill((0, 0, 0))
+        self.window.fill((0, 0, 0)) # Clear the viewport
         self.world.renderViewport(self.window, worldStartX, worldStartY, self.viewportSizeX, self.viewportSizeY, 0, 0, includeGrid=True)
-        ui.render()
+        ui.render()                 # Render UI
         pygame.display.flip()       # Flip the backbuffer, to display this content to the window
 
         # Capture the first 512x512 pixels of the window, and encode it as a base64 string
