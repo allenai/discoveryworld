@@ -137,11 +137,13 @@ class DiscoveryWorldAPI:
 
     # Lists all known actions (as they are parsed by the JSON action interpreter), by directly enumerating the ActionType enum
     def listKnownActions(self):
-        out = []
-        for action in ActionType:
-            out.append(action.name)
-        return out
-    
+        return getActionDescriptions()      # from ActionHistory
+        
+    # Additional helpful information about the action string, for building prompts. 
+    def additionalActionDescriptionString(self):
+        outStr = ""
+        outStr += "Actions are expressed as JSON. The format is as follows: `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12}`, where 'action' is the action type, and 'arg1' and 'arg2' refer to the UUIDs of the objects that serve as arguments. Some actions may require arg1, arg2, or no arguments.  Discovery Feed actions require different arguments.  What arguments are required for specific actions is provided in the known actions list.  Attempting actions not in the known actions list will result in an error." 
+        return outStr
 
     # Perform an action for a given agent
     def performAgentAction(self, agentIdx, actionJSON):

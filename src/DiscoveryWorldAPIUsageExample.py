@@ -33,6 +33,8 @@ if __name__ == "__main__":
     print("")
     print("Known actions: " + str(api.listKnownActions()))
     print("")
+    print("Additional action information: " + api.additionalActionDescriptionString())
+    print("")
     print("Attempting action: " + json.dumps(actionJSON))
     print("")
     actionSuccess = api.performAgentAction(agentIdx=0, actionJSON=actionJSON)
