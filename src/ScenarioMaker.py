@@ -351,6 +351,11 @@ class ScenarioMaker:
 
     # Make the town scenario
     def makeScenarioTown(self, world, numUserAgents=1):
+        # Set a limit for the number of user agents
+        MAX_NUM_AGENTS = 5
+        if (numUserAgents > MAX_NUM_AGENTS):
+            numUserAgents = MAX_NUM_AGENTS
+
         # Populate with structures/objects
         buildingMaker = BuildingMaker(world)
 
