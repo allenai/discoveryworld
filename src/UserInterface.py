@@ -279,6 +279,7 @@ class UserInterface:
     def renderTaskProgressJSON(self, task):
         out = {
             "taskName": task.taskName,
+            "description": task.taskDescription,
             "score": task.getScoreNormalized()
         }
         return out

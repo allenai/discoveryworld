@@ -119,12 +119,12 @@ if __name__ == "__main__":
 
 
     # Test the API
-    #testAgent(api)
+    testAgent(api)
 
     # Random agent
-    randomAgent(api, numSteps=250)
+    #randomAgent(api, numSteps=250)
     # Create a video from the random agent
-    api.createAgentVideo(agentIdx=0, filenameOut="output_randomAgent.mp4")
+    #api.createAgentVideo(agentIdx=0, filenameOut="output_randomAgent.mp4")
 
 
     

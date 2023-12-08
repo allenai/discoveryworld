@@ -54,8 +54,9 @@ class TaskMaker():
 #
 class Task():
     # Constructor
-    def __init__(self, taskName:str, world):
+    def __init__(self, taskName:str, taskDescription:str, world):
         self.taskName = taskName
+        self.taskDescription = taskDescription
         self.world = world
         self.score = 0                          # Current task score
         self.maxScore = 1                       # Maximum score
@@ -98,7 +99,8 @@ class Task():
 class EatMushroomTask(Task):
     # Constructor
     def __init__(self, world):
-        Task.__init__(self, "EatMushroomTask", world)            
+        taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist are sometimes getting sick.  Your task is to figure out why people are getting sick, and to prevent it.  You must demonstrate this by having 10 colonists successfully eat mushrooms without eventually getting sick."
+        Task.__init__(self, "EatMushroomTask", taskDescription, world)            
         self.score = 0
         self.maxScore = 10                       # Maximum score
         self.agentsToMonitorForSickness = {}        # Key: agent name, value: step they were added
