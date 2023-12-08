@@ -1,3 +1,4 @@
 pygame
 pathfinding
 psutil
+openai

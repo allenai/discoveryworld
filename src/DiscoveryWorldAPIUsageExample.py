@@ -3,9 +3,13 @@
 
 from DiscoveryWorldAPI import DiscoveryWorldAPI
 
+from openai import OpenAI
+
 import json
 import time
 import random
+
+
 
 # Random agent, that randomly selects an action to take at each step. 
 def randomAgent(api, numSteps:int = 10):
@@ -72,6 +76,112 @@ def randomAgent(api, numSteps:int = 10):
 
 
         
+# promptImages should be a list of base64-encoded images
+def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model="gpt-4-vision-preview", temperature=0.0, maxTokens=300):
+
+    # Create the message prompt, initially including only the prompt string
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", 
+                 "text": promptStr
+                },
+            ],
+        }
+    ]
+
+    # If there are images, include them.
+    if (promptImages != None) and (len(promptImages) > 0):
+        for image in promptImages:
+            packedImage = {
+                "type": "image_url",
+                "image_url": {
+                    "url": image,
+                    #"detail": "low",
+                },
+            }
+            messages[0]["content"].append(packedImage)
+
+
+    # Print the message
+    print("MESSAGE:")
+    print(messages)
+    print("")
+
+
+    # Get the response
+    response = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        max_tokens=maxTokens,
+        temperature=temperature,
+    )
+
+
+    # Return the response
+    print("RESPONSE:")
+    print(response)
+
+    print("")
+
+    print("RESPONSE CONTENT:")
+    print(response.choices[0].message.content)    
+    return response
+
+
+
+# For testing the API 
+def GPT4VBaselineAgent(api):
+    # Get the OpenAI key (stored in a file called "openai_key.txt")
+    key = ""
+    with open("openai_key.txt", "r") as file:
+        key = file.read().strip()
+
+    # Create the OpenAI client
+    client = OpenAI(api_key=key)
+
+
+
+    # Perform the first step
+    response = api.getAgentObservation(agentIdx=0)
+
+    # print the response (pretty)
+    print(json.dumps(response, indent=4, sort_keys=True))
+
+
+    # Query OpenAI with the observation
+    promptStr = "Please describe in detail what you see in this image."
+    imageWithGrid = response["vision"]["base64_with_grid"]
+    promptImages = [imageWithGrid]
+
+    response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model="gpt-4-vision-preview", temperature=0.0, maxTokens=300)
+    print(response)
+
+
+
+    # Try an action
+    actionJSON = {
+        "action": "MOVE_FORWARD",
+        "arg1": "agent",
+        "arg2": "north"
+    }
+
+    print("")
+    print("Known actions: " + str(api.listKnownActions()))
+    print("")
+    print("Additional action information: " + api.additionalActionDescriptionString())
+    print("")
+    print("Attempting action: " + json.dumps(actionJSON))
+    print("")
+    actionSuccess = api.performAgentAction(agentIdx=0, actionJSON=actionJSON)
+
+    # Take another observation, and print it
+    print("\n")
+    response = api.getAgentObservation(agentIdx=0)
+    print(json.dumps(response, indent=4, sort_keys=True))
+
+
 
 
 # For testing the API 
@@ -119,7 +229,10 @@ if __name__ == "__main__":
 
 
     # Test the API
-    testAgent(api)
+    #testAgent(api)
+
+    # GPT4-V Baseline Agent
+    GPT4VBaselineAgent(api)
 
     # Random agent
     #randomAgent(api, numSteps=250)
