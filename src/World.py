@@ -458,12 +458,15 @@ class World:
 
     #   Render a viewport, starting from world position (worldStartX, worldStartY), and of size (in tiles) (sizeTilesX, sizeTilesY). 
     #   The offset (in pixels) from the top-left corner of the window is (offsetX, offsetY)
-    def renderViewport(self, window, worldStartX, worldStartY, sizeTilesX, sizeTilesY, offsetX, offsetY, scale=1.0):
+    def renderViewport(self, window, worldStartX, worldStartY, sizeTilesX, sizeTilesY, offsetX, offsetY, scale=1.0, includeGrid=False):
         # Render the viewport
         tileSize = int(32 * scale)
 
         # DEBUG: Enable rendering grid locations
         renderGridLocations = False
+        # For agents: Enable rendering grid (expands the tile size by one, to leave a functional black grid line between tiles)
+        #if (includeGrid):
+        #    tileSize += 1
 
         for y in range(worldStartY, worldStartY + sizeTilesY):
             for x in range(worldStartX, worldStartX + sizeTilesX):
@@ -505,6 +508,7 @@ class World:
                 if (renderGridLocations):
                     text = self.font.render(str(x) + "," + str(y), True, (0, 0, 0))
                     window.blit(text, (screenX, screenY))
+                if (renderGridLocations) or (includeGrid):
                     # Also draw a rectangle around the tile
                     pygame.draw.rect(window, (0, 0, 0), (screenX, screenY, tileSize, tileSize), 1)
 

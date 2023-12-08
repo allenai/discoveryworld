@@ -35,8 +35,8 @@ class DiscoveryWorldAPI:
 
         self.FRAME_DIR = "video/frames"
 
-        self.viewportSizeX = 16
-        self.viewportSizeY = 16
+        self.viewportSizeX = 15
+        self.viewportSizeY = 15
 
         # Create a random number generator
         self.r = random.Random()        
@@ -94,7 +94,7 @@ class DiscoveryWorldAPI:
 
             
     # Gets the current observation of the world from a given agent's perspective 
-    def getAgentObservation(self, agentIdx):
+    def getAgentObservation(self, agentIdx, includeGrid:bool=True):
         # Check to make sure the agent index is valid
         if (agentIdx < 0) or (agentIdx >= self.numUserAgents):            
             response = {"errors": ["Agent index out of range. Specified agent index: " + str(agentIdx) + ". Number of agents: " + str(self.numUserAgents) + " (i.e. value must be between 0 and " + str(self.numUserAgents - 1) + ")"]}
@@ -121,7 +121,7 @@ class DiscoveryWorldAPI:
         # Step 3: Render the viewport (the world view) for this agent
         worldStartX = agentLocation[0] - int(self.viewportSizeX / 2)
         worldStartY = agentLocation[1] - int(self.viewportSizeY / 2)        
-        self.world.renderViewport(self.window, worldStartX, worldStartY, self.viewportSizeX, self.viewportSizeY, 0, 0)
+        self.world.renderViewport(self.window, worldStartX, worldStartY, self.viewportSizeX, self.viewportSizeY, 0, 0, includeGrid=includeGrid)
 
         # Step 5: Render the user interface for this agent
         ui.render()
@@ -134,6 +134,13 @@ class DiscoveryWorldAPI:
         curStep = self.world.getStepCounter()
         frameFilename = self.FRAME_DIR + "/ui_agent_" + str(agentIdx) + "_frame_" + str(curStep) + ".png"
         pygame.image.save(self.window, frameFilename)
+
+        # Also capture just the first 512x512 pixels of the window, and save it to a file
+        # This is for the agent's "vision"
+        visionFilename = self.FRAME_DIR + "/ui_agent_" + str(agentIdx) + "_vision_" + str(curStep) + ".png"
+        visionSurface = pygame.Surface((512, 512))
+        visionSurface.blit(self.window, (0, 0), (0, 0, 512, 512))
+        pygame.image.save(visionSurface, visionFilename)
 
         response = {"errors": [], "ui": uiJSON} 
         return response
