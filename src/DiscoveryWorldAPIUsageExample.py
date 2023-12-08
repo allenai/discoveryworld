@@ -4,6 +4,7 @@
 from DiscoveryWorldAPI import DiscoveryWorldAPI
 
 import json
+import time
 import random
 
 # Random agent, that randomly selects an action to take at each step. 
@@ -11,6 +12,10 @@ def randomAgent(api, numSteps:int = 10):
     r = random.Random()
     r.seed(0)
 
+    # Record start time
+    startTime = time.time()    
+
+    # Run for numSteps steps in the environment
     for i in range(numSteps):
         print("\n\n")
         print("-----------------------------------------------------------")
@@ -30,7 +35,7 @@ def randomAgent(api, numSteps:int = 10):
         # Get a dictionary of all possible actions
         # The keys of the dictionary represent the action name. 
         # The 'args' field of a given key represents what arguments must be populated (with objects)
-        possibleActions = api.listKnownActions()
+        possibleActions = api.listKnownActions(limited=True)
 
         # Pick a random action from the list of keys
         actionName = r.choice(list(possibleActions.keys()))
@@ -55,7 +60,17 @@ def randomAgent(api, numSteps:int = 10):
         actionSuccess = api.performAgentAction(agentIdx=0, actionJSON=actionJSONOut)
         print("actionSuccess: " + str(actionSuccess))
 
-        # Print a delimiter
+
+        # Perform the world tick
+        api.tick()
+
+    # Calculate elapsed time    
+    deltaTime = time.time() - startTime
+    print("Elapsed time: " + str(deltaTime) + " seconds for " + str(numSteps) + " steps.")
+    print("Average time per step: " + str(deltaTime / numSteps) + " seconds.")
+    print("Average steps per second: " + str(numSteps / deltaTime) + " steps per second.")
+
+
         
 
 
@@ -107,7 +122,9 @@ if __name__ == "__main__":
     #testAgent(api)
 
     # Random agent
-    randomAgent(api, numSteps=10)
+    randomAgent(api, numSteps=250)
+    # Create a video from the random agent
+    api.createAgentVideo(agentIdx=0, filenameOut="output_randomAgent.mp4")
 
 
     

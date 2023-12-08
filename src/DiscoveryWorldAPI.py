@@ -33,6 +33,8 @@ class DiscoveryWorldAPI:
         self.NAME = "DiscoveryWorld API"
         self.VERSION = "0.1"
 
+        self.FRAME_DIR = "video/frames"
+
         self.viewportSizeX = 16
         self.viewportSizeY = 16
 
@@ -49,6 +51,9 @@ class DiscoveryWorldAPI:
         # User interfaces (one per agent)
         self.numUserAgents = 0
         self.ui = []
+
+        # Which agents have already performed actions this step
+        self.agentsThatHaveActedThisStep = set()
 
 
     def getNameAndVersion(self):
@@ -125,10 +130,9 @@ class DiscoveryWorldAPI:
         # Flip the backbuffer, to display this content to the window
         pygame.display.flip()
 
-        # Capture the current window (i.e. through a screenshot) and save it to a file
-        FRAME_DIR = "video/frames"
+        # Capture the current window (i.e. through a screenshot) and save it to a file        
         curStep = self.world.getStepCounter()
-        frameFilename = FRAME_DIR + "/ui_agent_" + str(agentIdx) + "_frame_" + str(curStep) + ".png"
+        frameFilename = self.FRAME_DIR + "/ui_agent_" + str(agentIdx) + "_frame_" + str(curStep) + ".png"
         pygame.image.save(self.window, frameFilename)
 
         response = {"errors": [], "ui": uiJSON} 
@@ -136,14 +140,15 @@ class DiscoveryWorldAPI:
 
 
     # Lists all known actions (as they are parsed by the JSON action interpreter), by directly enumerating the ActionType enum
-    def listKnownActions(self):
-        return getActionDescriptions()      # from ActionHistory
+    def listKnownActions(self, limited:bool=False):
+        return getActionDescriptions(limited)      # from ActionHistory
         
     # Additional helpful information about the action string, for building prompts. 
     def additionalActionDescriptionString(self):
         outStr = ""
         outStr += "Actions are expressed as JSON. The format is as follows: `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12}`, where 'action' is the action type, and 'arg1' and 'arg2' refer to the UUIDs of the objects that serve as arguments. Some actions may require arg1, arg2, or no arguments.  Discovery Feed actions require different arguments.  What arguments are required for specific actions is provided in the known actions list.  Attempting actions not in the known actions list will result in an error." 
         return outStr
+
 
     # Perform an action for a given agent
     def performAgentAction(self, agentIdx, actionJSON):
@@ -155,6 +160,11 @@ class DiscoveryWorldAPI:
         # Check that the world is initialized
         if (self.world == None):                        
             response = {"errors": ["World is not initialized"]}
+            return response
+        
+        # Check that this agent has not already acted this step
+        if (agentIdx in self.agentsThatHaveActedThisStep):
+            response = {"errors": ["Agent has already acted this step.  World tick must be called before this agent can act again."]}
             return response
         
         
@@ -185,7 +195,35 @@ class DiscoveryWorldAPI:
             ui.updateLastActionMessage("Invalid action")
             response["errors"].append("Invalid action")
 
+
+        # Mark that this agent has acted this step
+        self.agentsThatHaveActedThisStep.add(agentIdx)
         
+        return response
+
+
+
+    #
+    #   World tick
+    #
+    def tick(self):
+        response = {
+            "errors": [],
+            "success": False
+        }
+
+        # Check that the world is initialized
+        if (self.world == None):                        
+            response["errors"].append("World is not initialized")            
+            return response
+
+        # Tick the world
+        self.world.tick()
+
+        # Reset the agents that have acted this step
+        self.agentsThatHaveActedThisStep = set()
+
+        response["success"] = True
         return response
 
 
@@ -210,8 +248,8 @@ class DiscoveryWorldAPI:
 
         # Game parameters
         gameParams = {
-            "height": 1024,
-            "width": 1024,
+            "height": 800,
+            "width": 800,
             "fps": 60,
             "name": "DiscoveryWorld"            
         }
@@ -228,3 +266,12 @@ class DiscoveryWorldAPI:
 
         # Return the window
         return window
+    
+
+    # Convert a directory of frames into an agent video, using ffmpeg
+    def createAgentVideo(self, agentIdx:int, filenameOut:str):
+        # Call FFMPEG (forces overwrite)
+        filenameInPrefix = self.FRAME_DIR + "/ui_agent_" + str(agentIdx) + "_frame_%d.png"
+        #filenameOut = "output_agent" + str(agentIdx) + ".mp4"
+
+        subprocess.call(["ffmpeg", "-y", "-framerate", "10", "-i", filenameInPrefix, "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", filenameOut])

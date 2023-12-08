@@ -28,7 +28,7 @@ class ActionType(Enum):
     DISCOVERY_FEED_CREATE_ARTICLE = 19
 
 # Returns a dictionary of action descriptions
-def getActionDescriptions():
+def getActionDescriptions(limited:bool = False):
     actionDescriptions = {
         ActionType.MOVE_FORWARD.name:   {"args": [], "desc": "move forward 1 step"}, 
         ActionType.MOVE_BACKWARD.name:  {"args": [], "desc": "move backward 1 step"}, 
@@ -52,7 +52,21 @@ def getActionDescriptions():
         ActionType.DISCOVERY_FEED_CREATE_UPDATE.name:   {"args": ["arg1"], "desc": "create a status update on discovery feed (arg1)"},
         ActionType.DISCOVERY_FEED_CREATE_ARTICLE.name:  {"args": ["arg1"], "desc": "create a scientific article on discovery feed (arg1)"}
     }
+
+    # Limited mode allows removing some actions that may be challenging for some agent models
+    if (limited):
+        # Remove the talk action
+        actionDescriptions.pop(ActionType.TALK.name)
+        # Remove the discovery feed actions
+        actionDescriptions.pop(ActionType.DISCOVERY_FEED_GET_UPDATES.name)
+        actionDescriptions.pop(ActionType.DISCOVERY_FEED_GET_ARTICLES.name)
+        actionDescriptions.pop(ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name)
+        actionDescriptions.pop(ActionType.DISCOVERY_FEED_CREATE_UPDATE.name)
+        actionDescriptions.pop(ActionType.DISCOVERY_FEED_CREATE_ARTICLE.name)
+
     return actionDescriptions
+
+
 
 # Stores the action history for one agent
 class ActionHistory:
