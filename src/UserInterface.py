@@ -197,8 +197,53 @@ class UserInterface:
                                 
         pass
 
+    # A JSON version of the user interface
+    def renderJSON(self):
+        # Out
+        out = {}
 
+        # Inventory and accessible objects
+        objsInv = []
+        objsEnv = []
+        if (self.currentAgent != None):
+            objsInv = self.currentAgent.getInventory()
+            objsEnv += self.currentAgent.getObjectsAgentFacing(respectContainerStatus=True)
+
+        invAndEnvObjs = self.renderObjectSelectionBoxJSON(objsInv, objsEnv)        
+        out.update(invAndEnvObjs)
+
+        # Pop-up boxes/Dialog  
+        dialogBoxDict = {}
+        if (self.dialogToDisplay != None):
+            dialogBoxDict["dialogIn"] = self.dialogToDisplay['dialogText']
+            dialogBoxDict["dialogOptions"] = {}            
+            # Then, add the options the user can say back
+            for idx, option in enumerate(self.dialogToDisplay['dialogOptions']):
+                dialogBoxDict["dialogOptions"][idx+1] = option            
+
+        out.update(invAndEnvObjs)
+
+        # Text boxes
+        nextMessage = ""
+        if (len(self.messageQueueText) > 0):
+            nextMessage = self.messageQueueText[0]
+        out["message"] = nextMessage
+
+        # Last action message
+        lastActionMessageStr = self.lastActionMessage
+        out["lastActionMessage"] = lastActionMessageStr
+
+        # Task progress
+        taskProgressList = []
+        if (self.currentAgent != None):
+            taskList = self.currentAgent.world.taskScorer.tasks
+            for idx, task in enumerate(taskList):
+                taskProgressList.append(self.renderTaskProgressJSON(task))
+        out["taskProgress"] = taskProgressList
     
+        # Return the JSON
+        return out
+
     #
     #   User interface elements
     #
@@ -228,6 +273,13 @@ class UserInterface:
         textSurface = self.font.render(text, True, (0, 0, 0))
         self.window.blit(textSurface, (x, y))
 
+
+    def renderTaskProgressJSON(self, task):
+        out = {
+            "taskName": task.taskName,
+            "score": task.getScoreNormalized()
+        }
+        return out
 
 
     # Render a long section of boxes at the bottom of the screen that show items in the agent's inventory
@@ -358,6 +410,25 @@ class UserInterface:
 
         pass
 
+    # As above, but renders in JSON format
+    def renderObjectSelectionBoxJSON(self, objsInv, objsEnv):        
+        invOut = []
+        envOut = []
+        # Populate
+        for obj in objsInv:
+            invOut.append({"uuid": obj.uuid, "name": obj.name, "description": ""})
+        for obj in objsEnv:
+            envOut.append({"uuid": obj.uuid, "name": obj.name, "description": ""})
+        # Sort by UUID (ascending)
+        invOut.sort(key=lambda x: x["uuid"], reverse=False)
+        envOut.sort(key=lambda x: x["uuid"], reverse=False)
+        # Pack
+        out = {
+            "inventoryObjects": invOut,
+            "accessibleEnvironmentObjects": envOut
+        }
+        # Return
+        return out
 
     # Split a line of text into multiple lines, if it exceeds a maximum length
     def _splitLongTextLines(self, line, MAX_LENGTH=80):        

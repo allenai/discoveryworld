@@ -119,6 +119,7 @@ class DiscoveryWorldAPI:
 
         # Step 5: Render the user interface for this agent
         ui.render()
+        uiJSON = ui.renderJSON()
 
         # Flip the backbuffer, to display this content to the window
         pygame.display.flip()
@@ -126,10 +127,10 @@ class DiscoveryWorldAPI:
         # Capture the current window (i.e. through a screenshot) and save it to a file
         FRAME_DIR = "video/frames"
         curStep = self.world.getStepCounter()
-        frameFilename = FRAME_DIR + "/ui_frame_" + str(curStep) + ".png"
+        frameFilename = FRAME_DIR + "/ui_agent_" + str(agentIdx) + "_frame_" + str(curStep) + ".png"
         pygame.image.save(self.window, frameFilename)
 
-        response = {"errors": []} 
+        response = {"errors": [], "ui": uiJSON} 
         return response
 
     #
