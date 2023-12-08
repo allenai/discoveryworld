@@ -79,19 +79,24 @@ def randomAgent(api, numSteps:int = 10):
         
 # promptImages should be a list of base64-encoded images
 # NOTE: JSON response not available for GPT-4 Vision Preview
-def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model="gpt-4-vision-preview", temperature=0.0, maxTokens=300, jsonResponse:bool=False):
+def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model="gpt-4-vision-preview", prevImage=None, temperature=0.0, maxTokens=300, jsonResponse:bool=False):
+    content = []
 
-    # Create the message prompt, initially including only the prompt string
-    messages=[
-        {
-            "role": "user",
-            "content": [
-                {"type": "text", 
-                 "text": promptStr
-                },
-            ],
+    # If previous image was popualted, include it
+    if (prevImage != None):
+        # Add a text message saying it was the previous image. 
+        content.append({"type": "text", "text": "IMAGE FROM PREVIOUS STEP:"})
+        packedImage = {
+            "type": "image_url",
+            "image_url": {
+                "url": prevImage,
+                #"detail": "low",
+            },
         }
-    ]
+        content.append(packedImage)
+
+    # Add main prompt
+    content.append({"type": "text", "text": promptStr})
 
     # If there are images, include them.
     if (promptImages != None) and (len(promptImages) > 0):
@@ -103,7 +108,16 @@ def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model="gpt-4-v
                     #"detail": "low",
                 },
             }
-            messages[0]["content"].append(packedImage)
+            content.append(packedImage)
+
+
+    # Create the message prompt, initially including only the prompt string
+    messages=[
+        {
+            "role": "user",
+            "content": content,            
+        }
+    ]
 
 
     # Print the message
@@ -179,7 +193,7 @@ def extractJSONfromGPT4Response(strIn):
     
 
 
-def GPT4BaselineOneStep(api, client, lastAction):
+def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     # Perform the first step
     observation = api.getAgentObservation(agentIdx=0)
 
@@ -226,7 +240,12 @@ def GPT4BaselineOneStep(api, client, lastAction):
     imageWithGrid = observation["vision"]["base64_with_grid"]
     promptImages = [imageWithGrid]
 
-    response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model="gpt-4-vision-preview", temperature=0.0, maxTokens=300)
+    # last image (if available)
+    lastImage = None
+    if (lastObservation != None):
+        lastImage = lastObservation["vision"]["base64_with_grid"]        
+
+    response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model="gpt-4-vision-preview", prevImage=lastImage, temperature=0.0, maxTokens=300)
     print(response)
 
     # Extract the JSON from the response
@@ -253,7 +272,7 @@ def GPT4BaselineOneStep(api, client, lastAction):
     api.tick()
     
     # Return the action that it chose (to pass into the next step)
-    return nextAction
+    return nextAction, observation
 
 
 
@@ -286,6 +305,7 @@ def GPT4VBaselineAgent(api, numSteps:int = 10):
     startTime = time.time()
 
     # Run for numSteps steps in the environment
+    lastObservation = None
     for i in range(0, numSteps):
         # Run one step
         print("\n\n")
@@ -293,7 +313,7 @@ def GPT4VBaselineAgent(api, numSteps:int = 10):
         print("Step " + str(i) + " of " + str(numSteps))
         print("-----------------------------------------------------------")
         print("")
-        lastAction = GPT4BaselineOneStep(api, client, lastAction)
+        lastAction, lastObservation = GPT4BaselineOneStep(api, client, lastAction, lastObservation)
         print("LAST ACTION: ")
         print(lastAction)
         print("")
@@ -367,7 +387,7 @@ if __name__ == "__main__":
     #testAgent(api)
 
     # GPT4-V Baseline Agent
-    GPT4VBaselineAgent(api)
+    GPT4VBaselineAgent(api, numSteps=25)
     api.createAgentVideo(agentIdx=0, filenameOut="output_randomAgent.mp4")
 
     # Random agent
