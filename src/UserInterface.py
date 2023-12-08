@@ -210,6 +210,10 @@ class UserInterface:
         agentLocation["faceDirection"] = self.currentAgent.attributes["faceDirection"]
         out.update({"agentLocation": agentLocation})
 
+        # Add the steps taken in the world
+        out["world_steps"] = self.currentAgent.world.getStepCounter()
+
+
         # Inventory and accessible objects
         objsInv = []
         objsEnv = []

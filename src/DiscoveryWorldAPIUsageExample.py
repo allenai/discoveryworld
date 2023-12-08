@@ -78,7 +78,8 @@ def randomAgent(api, numSteps:int = 10):
 
         
 # promptImages should be a list of base64-encoded images
-def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model="gpt-4-vision-preview", temperature=0.0, maxTokens=300):
+# NOTE: JSON response not available for GPT-4 Vision Preview
+def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model="gpt-4-vision-preview", temperature=0.0, maxTokens=300, jsonResponse:bool=False):
 
     # Create the message prompt, initially including only the prompt string
     messages=[
@@ -110,15 +111,25 @@ def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model="gpt-4-v
     print(messages)
     print("")
 
+    
+    response = {}
 
     # Get the response
-    response = client.chat.completions.create(
-        model=model,
-        messages=messages,
-        max_tokens=maxTokens,
-        temperature=temperature,
-    )
-
+    if (jsonResponse == False):
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            max_tokens=maxTokens,
+            temperature=temperature,
+        )
+    else:
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            max_tokens=maxTokens,
+            temperature=temperature,
+            response_format={ "type": "json_object" },
+        )        
 
     # Return the response
     print("RESPONSE:")
@@ -157,10 +168,15 @@ def GPT4VBaselineAgent(api):
     # print the response (pretty)
     print(json.dumps(observationNoVision, indent=4, sort_keys=True))
 
+    # Memory
+    observationNoVision["memory"] = "This is the first step, so there is no memory yet."
+    observationNoVision["lastAction"] = {
+        "action": "This is the first action",
+    }
 
     # Query OpenAI with the observation
     #promptStr = "Please describe in detail what you see in this image."
-    promptStr = "You are playing a video game about making scientific discoveries.  The game is in the style of a 2D top-down RPG (you are the agent in the center of the image), and as input you get both an image, as well as information from the user interface (provided in the JSON below) that describes your location, inventory, objects in front of you, the result of your last action, and the task that you're assigned to complete.\n"
+    promptStr = "You are playing a video game about making scientific discoveries.  The game is in the style of a 2D top-down RPG (you are the agent in the center of the image), and as input you get both an image, as well as information from the user interface (provided in the JSON below) that describes your location, inventory, objects in front of you, the result of your last action, and the task that you're assigned to complete. You also have access to a memory, that you wrote to yourself from the last turn you took.\n"
     promptStr += "Because this is a game, the actions that you can complete are limited to a set of actions that are defined by the game. Those are also described below.\n"
     promptStr += "This game is played step-by-step.  At each step, you get the input that I am providing, and output a single action to take as the next step.\n"
     promptStr += "\n"
@@ -169,6 +185,7 @@ def GPT4VBaselineAgent(api):
     promptStr += json.dumps(observationNoVision, indent=4, sort_keys=True)
     promptStr += "```\n"
     promptStr += "\n"
+    promptStr += "The contents of your memory, which is a scratchpad that you can use to write down information for yourself to remember in the future, is also included in the JSON above.\n"
     promptStr += "Actions:\n"
     promptStr += "```json\n"
     promptStr += json.dumps(api.listKnownActions(limited=True), indent=4, sort_keys=True)
@@ -177,7 +194,9 @@ def GPT4VBaselineAgent(api):
     promptStr += "Additional information on actions, and how to format your response:\n"
     promptStr += api.additionalActionDescriptionString() + "\n"
     promptStr += "\n"
-    promptStr += "Please create your output (the next action you'd like to take) below.  It should be in the JSON form expected above e.g.(`{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12}`).  You can include an additional JSON key, \"explanation\", to describe your reasoning for performing this action.\n"
+    promptStr += "Please create your output (the next action you'd like to take) below.  It should be in the JSON form expected above e.g.(`{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12}`). \n"
+    promptStr += "Your response should ONLY be in JSON.  You should include an additional JSON key, \"explanation\", to describe your reasoning for performing this action. e.g. `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12, \"explanation\": \"Using the shovel on the soil will allow me to dig a hole to plant a seed\"}`.  Note that even though this explanation is short, yours can be a few hundred tokens, if you'd like.\n"
+    promptStr += "Lastly, your response should also include an additional JSON key, \"memory\", that includes any information you'd like to write down and pass on to yourself for the future.  This can be helpful in remembering important results, high-level tasks, low-level subtasks, or anything else you'd like to remember or think would be helpful. e.g. `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12, \"explanation\": \"...\", \"memory\": \"...\"}`\n"
     
 
     imageWithGrid = observation["vision"]["base64_with_grid"]
