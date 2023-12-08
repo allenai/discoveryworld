@@ -30,27 +30,27 @@ class ActionType(Enum):
 # Returns a dictionary of action descriptions
 def getActionDescriptions():
     actionDescriptions = {
-        ActionType.MOVE_FORWARD.name:   {"arguments": [], "desc": "move forward 1 step"}, 
-        ActionType.MOVE_BACKWARD.name:  {"arguments": [], "desc": "move backward 1 step"}, 
-        ActionType.ROTATE_CCW.name:     {"arguments": [], "desc": "move counter-clockwise 90 degrees"}, 
-        ActionType.ROTATE_CW.name:      {"arguments": [], "desc": "move clockwise 90 degrees"}, 
-        ActionType.PICKUP.name:         {"arguments": ["arg1"], "desc": "pick up an object (arg1)"},
-        ActionType.DROP.name:           {"arguments": ["arg1"], "desc": "drop an object (arg1)"},
-        ActionType.PUT.name:            {"arguments": ["arg1", "arg2"], "desc": "put an object (arg1) in/on another object (arg2)"},
-        ActionType.OPEN.name:           {"arguments": ["arg1"], "desc": "open an object (arg1)"},
-        ActionType.CLOSE.name:          {"arguments": ["arg1"], "desc": "close an object (arg1)"},
-        ActionType.ACTIVATE.name:       {"arguments": ["arg1"], "desc": "activate an object (arg1)"},
-        ActionType.DEACTIVATE.name:     {"arguments": ["arg1"], "desc": "deactivate an object (arg1)"},
-        ActionType.TALK.name:           {"arguments": ["arg1"], "desc": "talk to another agent (arg1)"},
-        ActionType.EAT.name:            {"arguments": ["arg1"], "desc": "eat an object (arg1)"},
-        ActionType.READ.name:           {"arguments": ["arg1"], "desc": "read an object (arg1)"},
-        ActionType.USE.name:            {"arguments": ["arg1", "arg2"], "desc": "use an object (arg1) on another object (arg2)"},
+        ActionType.MOVE_FORWARD.name:   {"args": [], "desc": "move forward 1 step"}, 
+        ActionType.MOVE_BACKWARD.name:  {"args": [], "desc": "move backward 1 step"}, 
+        ActionType.ROTATE_CCW.name:     {"args": [], "desc": "move counter-clockwise 90 degrees"}, 
+        ActionType.ROTATE_CW.name:      {"args": [], "desc": "move clockwise 90 degrees"}, 
+        ActionType.PICKUP.name:         {"args": ["arg1"], "desc": "pick up an object (arg1)"},
+        ActionType.DROP.name:           {"args": ["arg1"], "desc": "drop an object (arg1)"},
+        ActionType.PUT.name:            {"args": ["arg1", "arg2"], "desc": "put an object (arg1) in/on another object (arg2)"},
+        ActionType.OPEN.name:           {"args": ["arg1"], "desc": "open an object (arg1)"},
+        ActionType.CLOSE.name:          {"args": ["arg1"], "desc": "close an object (arg1)"},
+        ActionType.ACTIVATE.name:       {"args": ["arg1"], "desc": "activate an object (arg1)"},
+        ActionType.DEACTIVATE.name:     {"args": ["arg1"], "desc": "deactivate an object (arg1)"},
+        ActionType.TALK.name:           {"args": ["arg1"], "desc": "talk to another agent (arg1)"},
+        ActionType.EAT.name:            {"args": ["arg1"], "desc": "eat an object (arg1)"},
+        ActionType.READ.name:           {"args": ["arg1"], "desc": "read an object (arg1)"},
+        ActionType.USE.name:            {"args": ["arg1", "arg2"], "desc": "use an object (arg1) on another object (arg2)"},
 
-        ActionType.DISCOVERY_FEED_GET_UPDATES.name:     {"arguments": [], "desc": "read the latest status updates on discovery feed"},
-        ActionType.DISCOVERY_FEED_GET_ARTICLES.name:    {"arguments": [], "desc": "read the latest scientific articles on discovery feed"},
-        ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name:  {"arguments": ["arg1"], "desc": "read a specific post on discovery feed (arg1)"},
-        ActionType.DISCOVERY_FEED_CREATE_UPDATE.name:   {"arguments": ["arg1"], "desc": "create a status update on discovery feed (arg1)"},
-        ActionType.DISCOVERY_FEED_CREATE_ARTICLE.name:  {"arguments": ["arg1"], "desc": "create a scientific article on discovery feed (arg1)"}
+        ActionType.DISCOVERY_FEED_GET_UPDATES.name:     {"args": [], "desc": "read the latest status updates on discovery feed"},
+        ActionType.DISCOVERY_FEED_GET_ARTICLES.name:    {"args": [], "desc": "read the latest scientific articles on discovery feed"},
+        ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name:  {"args": ["arg1"], "desc": "read a specific post on discovery feed (arg1)"},
+        ActionType.DISCOVERY_FEED_CREATE_UPDATE.name:   {"args": ["arg1"], "desc": "create a status update on discovery feed (arg1)"},
+        ActionType.DISCOVERY_FEED_CREATE_ARTICLE.name:  {"args": ["arg1"], "desc": "create a scientific article on discovery feed (arg1)"}
     }
     return actionDescriptions
 

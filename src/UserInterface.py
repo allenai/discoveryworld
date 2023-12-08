@@ -917,7 +917,7 @@ class UserInterface:
                     break
             # If we reach here and the object is still None, then the object was not found
             if (arg1Obj == None):
-                errors.append("arg1: Could not find object with UUID '" + jsonIn['arg1'] + "'")
+                errors.append("arg1: Could not find object with UUID '" + str(jsonIn['arg1']) + "'")
         # So things don't break, if arg1 is not specified (or not found), set it to the first object. 
         if (arg1Obj == None):
             if (len(accessibleObjs) > 0):
@@ -933,7 +933,7 @@ class UserInterface:
                     break        
             # If we reach here and the object is still None, then the object was not found
             if (arg2Obj == None):
-                errors.append("arg2: Could not find object with UUID '" + jsonIn['arg2'] + "'")
+                errors.append("arg2: Could not find object with UUID '" + str(jsonIn['arg2']) + "'")
         # So things don't break, if arg2 is not specified (or not found), set it to the first object.
         if (arg2Obj == None):
             if (len(accessibleObjs) > 0):
@@ -981,7 +981,8 @@ class UserInterface:
         #     DISCOVERY_FEED_CREATE_ARTICLE = 19
 
         # TODO: Convert 'arg1' and 'arg2' from JSON into internal (arg1, arg2) selection variables for UI
-        self._convertJSONArgsToObjects(jsonIn)
+        # TODO: Provide these JSON parse errors in the output
+        jsonParseErrors = self._convertJSONArgsToObjects(jsonIn)
 
         # First, check if we're in the middle of a dialog
         # if (self.currentAgent.isInDialog()):
