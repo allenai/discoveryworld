@@ -350,7 +350,7 @@ class ScenarioMaker:
 
 
     # Make the town scenario
-    def makeScenarioTown(self, world):
+    def makeScenarioTown(self, world, numUserAgents=1):
         # Populate with structures/objects
         buildingMaker = BuildingMaker(world)
 
@@ -442,16 +442,26 @@ class ScenarioMaker:
         # DialogMaker
         dialogMaker = DialogMaker()
 
-        # Add an agent
-        currentAgent = Agent(world)
-        #world.addObject(5, 8, Layer.AGENT, currentAgent)      # Near cave
-        #world.addObject(10, 10, Layer.AGENT, currentAgent)      # Near farm
-        world.addObject(20, 22, Layer.AGENT, currentAgent)     # In cafeteria
-        #world.addObject(10, 24, Layer.AGENT, currentAgent)     # In science lab
-        # Add tools for agent
-        currentAgent.addObject(world.createObject("Shovel"))
-        currentAgent.addObject(world.createObject("Seed"))
-        world.addAgent(currentAgent)
+        # Add some number of user agents
+        for userAgentIdx in range(0, numUserAgents):
+            userAgent = Agent(world)
+            # TODO: Add starting tools for agent
+            userAgent.addObject(world.createObject("Shovel"))
+            userAgent.addObject(world.createObject("Seed"))
+            # Add the agent to a specfic location
+            world.addObject(13+userAgentIdx, 18, Layer.AGENT, userAgent)      # Near cave
+            # Register the agent with the World so we can keep track of it
+            world.addAgent(userAgent)
+            
+        # currentAgent = Agent(world)
+        # #world.addObject(5, 8, Layer.AGENT, currentAgent)      # Near cave
+        # #world.addObject(10, 10, Layer.AGENT, currentAgent)      # Near farm
+        # #world.addObject(20, 22, Layer.AGENT, currentAgent)     # In cafeteria
+        # #world.addObject(10, 24, Layer.AGENT, currentAgent)     # In science lab
+        # # Add tools for agent
+        # currentAgent.addObject(world.createObject("Shovel"))
+        # currentAgent.addObject(world.createObject("Seed"))
+        # world.addAgent(currentAgent)
 
         # Add an NPC
         npcColonist = NPCColonist(world, "Example NPC")
