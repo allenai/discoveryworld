@@ -121,9 +121,9 @@ def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model="gpt-4-v
 
 
     # Print the message
-    print("MESSAGE:")
-    print(messages)
-    print("")
+    #print("MESSAGE:")
+    #print(messages)
+    #print("")
 
     
     response = {}
@@ -202,7 +202,10 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     observationNoVision = copy.deepcopy(observation)
     # Remove the 'vision' key from the observation
     observationNoVision.pop("vision", None)
-        
+
+    # Add the result of the last action to the last action     
+    if (lastAction != None):
+        lastAction["result_of_last_action"] = observation["ui"]["lastActionMessage"]
 
     # print the response (pretty)
     print(json.dumps(observationNoVision, indent=4, sort_keys=True))
@@ -232,8 +235,11 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     promptStr += json.dumps(lastAction, indent=1, sort_keys=True)
     promptStr += "```\n"
     promptStr += "\n"
+    promptStr += "Navigation note: In the image, north is the top, south is the bottom, east is the right, and west is the left. Moving forward moves you in the direction you're facing.\n"
+    promptStr += "Interaction note: You can only interact (i.e. take actions with) objects that are in your inventory, or directly (i.e. one square) in front of you, in the direction that you're facing.  E.g. if you want to pick an object up, you need to move directly in front of it, and face it, before using the pick-up action on it.\n"
+    promptStr += "\n"
     promptStr += "Please create your output (the next action you'd like to take) below.  It should be in the JSON form expected above e.g.(`{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12}`). \n"
-    promptStr += "Your response should ONLY be in JSON.  You should include an additional JSON key, \"explanation\", to describe your reasoning for performing this action. e.g. `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12, \"explanation\": \"Using the shovel on the soil will allow me to dig a hole to plant a seed\"}`.  Note that even though this explanation is short, yours can be a few hundred tokens, if you'd like.\n"
+    promptStr += "Your response should ONLY be in JSON.  You should include an additional JSON key, \"explanation\", to describe your reasoning for performing this action. e.g. `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12, \"explanation\": \"Using the shovel on the soil will allow me to dig a hole to plant a seed\"}`.  Note that even though this explanation is short, yours can be a few hundred tokens, if you'd like. Your explanation should say: (1) What your subgoal is, (2) What you see around you, (3) What you see in front of you, (4) What you are doing to progress towards your immediate subgoal.\n"
     promptStr += "Lastly, your response should also include an additional JSON key, \"memory\", that includes any information you'd like to write down and pass on to yourself for the future.  This can be helpful in remembering important results, high-level tasks, low-level subtasks, or anything else you'd like to remember or think would be helpful. e.g. `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12, \"explanation\": \"...\", \"memory\": \"...\"}`\n"
     
 
@@ -245,7 +251,7 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     if (lastObservation != None):
         lastImage = lastObservation["vision"]["base64_with_grid"]        
 
-    response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model="gpt-4-vision-preview", prevImage=lastImage, temperature=0.0, maxTokens=300)
+    response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model="gpt-4-vision-preview", prevImage=lastImage, temperature=0.1, maxTokens=300)
     print(response)
 
     # Extract the JSON from the response
@@ -301,23 +307,55 @@ def GPT4VBaselineAgent(api, numSteps:int = 10):
     lastActionHistory = []
     lastActionHistory.append(lastAction)
 
+    # Keep a history of the last observations
+    observationHistory = []    
+
     # Record start time
     startTime = time.time()
 
     # Run for numSteps steps in the environment
-    lastObservation = None
+    numErrors = 0
+    lastObservation = None    
     for i in range(0, numSteps):
-        # Run one step
-        print("\n\n")
-        print("-----------------------------------------------------------")
-        print("Step " + str(i) + " of " + str(numSteps))
-        print("-----------------------------------------------------------")
-        print("")
-        lastAction, lastObservation = GPT4BaselineOneStep(api, client, lastAction, lastObservation)
-        print("LAST ACTION: ")
-        print(lastAction)
-        print("")
-        lastActionHistory.append(lastAction)
+        try:
+            # Run one step
+            print("\n\n")
+            print("-----------------------------------------------------------")
+            print("Step " + str(i) + " of " + str(numSteps))
+            print("-----------------------------------------------------------")
+            print("")
+            lastAction, lastObservation = GPT4BaselineOneStep(api, client, lastAction, lastObservation)
+            print("LAST ACTION: ")
+            print(lastAction)
+            print("")
+            lastActionHistory.append(lastAction)
+
+            packed = {
+                "step": i,
+                "observation": lastObservation,
+                "action": lastAction
+            }
+            observationHistory.append(packed)
+
+            # Save to JSON
+            with open("output_observationHistory.json", "w") as file:
+                json.dump(observationHistory, file, indent=4, sort_keys=True)
+
+        except KeyboardInterrupt:
+            print("Keyboard interrupt detected.  Exiting.")
+            exit(1)
+                
+        # Generic exception, print error
+        except Exception as e:
+            print("ERROR: Exception caught: " + str(e))
+            numErrors += 1
+
+            if (numErrors > 5):
+                print("ERROR: Maximum number of errors exceeded (5). Exiting.")
+
+            exit(1)
+
+
 
 
     # Last action history
@@ -387,8 +425,8 @@ if __name__ == "__main__":
     #testAgent(api)
 
     # GPT4-V Baseline Agent
-    GPT4VBaselineAgent(api, numSteps=25)
-    api.createAgentVideo(agentIdx=0, filenameOut="output_randomAgent.mp4")
+    GPT4VBaselineAgent(api, numSteps=50)
+    api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v.mp4")
 
     # Random agent
     #randomAgent(api, numSteps=100)
