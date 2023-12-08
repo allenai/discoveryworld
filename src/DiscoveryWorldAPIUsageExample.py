@@ -8,6 +8,7 @@ from openai import OpenAI
 import json
 import time
 import random
+import copy
 
 
 
@@ -144,15 +145,42 @@ def GPT4VBaselineAgent(api):
 
 
     # Perform the first step
-    response = api.getAgentObservation(agentIdx=0)
+    observation = api.getAgentObservation(agentIdx=0)
+
+    # Get a copy of the observation JSON without the images in it (that we can give directly to GPT-4 in the prompt)
+    # Deep copy the observation dictionary
+    observationNoVision = copy.deepcopy(observation)
+    # Remove the 'vision' key from the observation
+    observationNoVision.pop("vision", None)
+        
 
     # print the response (pretty)
-    print(json.dumps(response, indent=4, sort_keys=True))
+    print(json.dumps(observationNoVision, indent=4, sort_keys=True))
 
 
     # Query OpenAI with the observation
-    promptStr = "Please describe in detail what you see in this image."
-    imageWithGrid = response["vision"]["base64_with_grid"]
+    #promptStr = "Please describe in detail what you see in this image."
+    promptStr = "You are playing a video game about making scientific discoveries.  The game is in the style of a 2D top-down RPG (you are the agent in the center of the image), and as input you get both an image, as well as information from the user interface (provided in the JSON below) that describes your location, inventory, objects in front of you, the result of your last action, and the task that you're assigned to complete.\n"
+    promptStr += "Because this is a game, the actions that you can complete are limited to a set of actions that are defined by the game. Those are also described below.\n"
+    promptStr += "This game is played step-by-step.  At each step, you get the input that I am providing, and output a single action to take as the next step.\n"
+    promptStr += "\n"
+    promptStr += "Environment Observation (as JSON):\n"
+    promptStr += "```json\n"
+    promptStr += json.dumps(observationNoVision, indent=4, sort_keys=True)
+    promptStr += "```\n"
+    promptStr += "\n"
+    promptStr += "Actions:\n"
+    promptStr += "```json\n"
+    promptStr += json.dumps(api.listKnownActions(limited=True), indent=4, sort_keys=True)
+    promptStr += "```\n"
+    promptStr += "\n"
+    promptStr += "Additional information on actions, and how to format your response:\n"
+    promptStr += api.additionalActionDescriptionString() + "\n"
+    promptStr += "\n"
+    promptStr += "Please create your output (the next action you'd like to take) below.  It should be in the JSON form expected above e.g.(`{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12}`).  You can include an additional JSON key, \"explanation\", to describe your reasoning for performing this action.\n"
+    
+
+    imageWithGrid = observation["vision"]["base64_with_grid"]
     promptImages = [imageWithGrid]
 
     response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model="gpt-4-vision-preview", temperature=0.0, maxTokens=300)
@@ -160,26 +188,26 @@ def GPT4VBaselineAgent(api):
 
 
 
-    # Try an action
-    actionJSON = {
-        "action": "MOVE_FORWARD",
-        "arg1": "agent",
-        "arg2": "north"
-    }
+    # # Try an action
+    # actionJSON = {
+    #     "action": "MOVE_FORWARD",
+    #     "arg1": "agent",
+    #     "arg2": "north"
+    # }
 
-    print("")
-    print("Known actions: " + str(api.listKnownActions()))
-    print("")
-    print("Additional action information: " + api.additionalActionDescriptionString())
-    print("")
-    print("Attempting action: " + json.dumps(actionJSON))
-    print("")
-    actionSuccess = api.performAgentAction(agentIdx=0, actionJSON=actionJSON)
+    # print("")
+    # print("Known actions: " + str(api.listKnownActions()))
+    # print("")
+    # print("Additional action information: " + api.additionalActionDescriptionString())
+    # print("")
+    # print("Attempting action: " + json.dumps(actionJSON))
+    # print("")
+    # actionSuccess = api.performAgentAction(agentIdx=0, actionJSON=actionJSON)
 
-    # Take another observation, and print it
-    print("\n")
-    response = api.getAgentObservation(agentIdx=0)
-    print(json.dumps(response, indent=4, sort_keys=True))
+    # # Take another observation, and print it
+    # print("\n")
+    # response = api.getAgentObservation(agentIdx=0)
+    # print(json.dumps(response, indent=4, sort_keys=True))
 
 
 
