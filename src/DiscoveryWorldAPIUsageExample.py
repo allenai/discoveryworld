@@ -218,13 +218,12 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     promptStr += "\n"
     promptStr += "Environment Observation (as JSON):\n"
     promptStr += "```json\n"
-    promptStr += json.dumps(observationNoVision, indent=1, sort_keys=True)
+    promptStr += json.dumps(observationNoVision, indent=2, sort_keys=True)
     promptStr += "```\n"
-    promptStr += "\n"
-    promptStr += "The contents of your memory, which is a scratchpad that you can use to write down information for yourself to remember in the future, is also included in the JSON above.\n"
+    promptStr += "\n"    
     promptStr += "Actions:\n"
     promptStr += "```json\n"
-    promptStr += json.dumps(api.listKnownActions(limited=True), indent=1, sort_keys=True)
+    promptStr += json.dumps(api.listKnownActions(limited=True), indent=2, sort_keys=True)
     promptStr += "```\n"
     promptStr += "\n"
     promptStr += "Additional information on actions, and how to format your response:\n"
@@ -232,7 +231,7 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     promptStr += "\n"
     promptStr == "Your last action, explanation for that action, and messages you've left in your scratchpad:\n"
     promptStr += "```json\n"
-    promptStr += json.dumps(lastAction, indent=1, sort_keys=True)
+    promptStr += json.dumps(lastAction, indent=2, sort_keys=True)
     promptStr += "```\n"
     promptStr += "\n"
     facingDirection = observation["ui"]["agentLocation"]["faceDirection"]
@@ -243,6 +242,12 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     promptStr += "Your response should ONLY be in JSON.  You should include an additional JSON key, \"explanation\", to describe your reasoning for performing this action. e.g. `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12, \"explanation\": \"Using the shovel on the soil will allow me to dig a hole to plant a seed\"}`.  Note that even though this explanation is short, yours can be a few hundred tokens, if you'd like. Your explanation should say: (1) What your subgoal is, (2) What you see around you, (3) What you see in front of you, (4) What you are doing to progress towards your immediate subgoal.\n"
     promptStr += "Lastly, your response should also include an additional JSON key, \"memory\", that includes any information you'd like to write down and pass on to yourself for the future.  This can be helpful in remembering important results, high-level tasks, low-level subtasks, or anything else you'd like to remember or think would be helpful. e.g. `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12, \"explanation\": \"...\", \"memory\": \"...\"}`\n"
     
+
+    # Write prompt to console
+    print("---------------------------------------")
+    print("PROMPT:")
+    print(promptStr)
+    print("---------------------------------------")
 
     imageWithGrid = observation["vision"]["base64_with_grid"]
     promptImages = [imageWithGrid]
@@ -426,7 +431,7 @@ if __name__ == "__main__":
     #testAgent(api)
 
     # GPT4-V Baseline Agent
-    GPT4VBaselineAgent(api, numSteps=50)
+    GPT4VBaselineAgent(api, numSteps=100)
     api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v.mp4")
 
     # Random agent
@@ -437,5 +442,6 @@ if __name__ == "__main__":
 
 
     
+
 
 

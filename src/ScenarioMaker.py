@@ -454,7 +454,7 @@ class ScenarioMaker:
             userAgent.addObject(world.createObject("Shovel"))
             userAgent.addObject(world.createObject("Seed"))
             # Add the agent to a specfic location
-            world.addObject(13+userAgentIdx, 18, Layer.AGENT, userAgent)      # Near cave
+            world.addObject(14+userAgentIdx, 14, Layer.AGENT, userAgent)      # Near cave
             # Register the agent with the World so we can keep track of it
             world.addAgent(userAgent)
             
