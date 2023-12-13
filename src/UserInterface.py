@@ -995,6 +995,9 @@ class UserInterface:
         #     DISCOVERY_FEED_GET_POST_BY_ID = 17
         #     DISCOVERY_FEED_CREATE_UPDATE = 18
         #     DISCOVERY_FEED_CREATE_ARTICLE = 19
+        #     MOVE_DIRECTION = 20
+        #     ROTATE_DIRECTION = 21
+
 
         # TODO: Convert 'arg1' and 'arg2' from JSON into internal (arg1, arg2) selection variables for UI
         # TODO: Provide these JSON parse errors in the output
@@ -1023,6 +1026,37 @@ class UserInterface:
         # Rotate the agent clockwise
         elif (jsonIn["action"] == ActionType.ROTATE_CW.name):
             return (True, jsonParseErrors, self.actionRotateAgentClockwise())
+
+        # Move in a specific direction (north/east/south/west)
+        elif (jsonIn["action"] == ActionType.MOVE_DIRECTION.name):
+            #checkArgSuccess = self._checkArgs(actionName = "move direction", arg1 = True, arg2 = False)
+            #if (checkArgSuccess == False):
+            #    return (False, jsonParseErrors, False)
+            # Check if there is a key 'direction' in 'jsonIn', and if it contains a valid direction ('north', 'east', 'south', 'west')
+            if ('direction' not in jsonIn):
+                jsonParseErrors.append("Missing 'direction' key in JSON.")
+                return (False, jsonParseErrors, False)
+            if (jsonIn['direction'] not in ['north', 'east', 'south', 'west']):
+                jsonParseErrors.append("Invalid direction '" + str(jsonIn['direction']) + "' specified in JSON.")
+                return (False, jsonParseErrors, False)
+        
+            # Get the direction from the argument
+            direction = jsonIn['arg1']
+            return (True, jsonParseErrors, self.currentAgent.actionMoveAgentNorthEastSouthWest(direction))
+
+        # Rotate to a specific direction (north/east/south/west)
+        elif (jsonIn["action"] == ActionType.ROTATE_DIRECTION.name):
+            # Check if there is a key 'direction' in 'jsonIn', and if it contains a valid direction ('north', 'east', 'south', 'west')
+            if ('direction' not in jsonIn):
+                jsonParseErrors.append("Missing 'direction' key in JSON.")
+                return (False, jsonParseErrors, False)
+            if (jsonIn['direction'] not in ['north', 'east', 'south', 'west']):
+                jsonParseErrors.append("Invalid direction '" + str(jsonIn['direction']) + "' specified in JSON.")
+                return (False, jsonParseErrors, False)
+        
+            # Get the direction from the argument
+            direction = jsonIn['arg1']
+            return (True, jsonParseErrors, self.currentAgent.actionRotateAgentFacingDirectionAbsolute(direction))
 
 
         # Pick-up Object in arg1 slot

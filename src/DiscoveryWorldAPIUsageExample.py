@@ -431,7 +431,7 @@ if __name__ == "__main__":
     #testAgent(api)
 
     # GPT4-V Baseline Agent
-    GPT4VBaselineAgent(api, numSteps=100)
+    GPT4VBaselineAgent(api, numSteps=5)
     api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v.mp4")
 
     # Random agent

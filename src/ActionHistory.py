@@ -26,6 +26,9 @@ class ActionType(Enum):
     DISCOVERY_FEED_GET_POST_BY_ID = 17
     DISCOVERY_FEED_CREATE_UPDATE = 18
     DISCOVERY_FEED_CREATE_ARTICLE = 19
+    MOVE_DIRECTION = 20
+    ROTATE_DIRECTION = 21
+
 
 # Returns a dictionary of action descriptions
 def getActionDescriptions(limited:bool = False):
@@ -46,6 +49,9 @@ def getActionDescriptions(limited:bool = False):
         ActionType.READ.name:           {"args": ["arg1"], "desc": "read an object (arg1)"},
         ActionType.USE.name:            {"args": ["arg1", "arg2"], "desc": "use an object (arg1) on another object (arg2)"},
 
+        ActionType.MOVE_DIRECTION.name:     {"args": ["direction"], "desc": "move in a specific direction (direction), which is one of 'north', 'east', 'south', or 'west'."},
+        ActionType.ROTATE_DIRECTION.name:   {"args": ["direction"], "desc": "rotate to face a specific direction (direction), which is one of 'north', 'east', 'south', or 'west'."},
+
         ActionType.DISCOVERY_FEED_GET_UPDATES.name:     {"args": [], "desc": "read the latest status updates on discovery feed"},
         ActionType.DISCOVERY_FEED_GET_ARTICLES.name:    {"args": [], "desc": "read the latest scientific articles on discovery feed"},
         ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name:  {"args": ["arg1"], "desc": "read a specific post on discovery feed (arg1)"},
@@ -55,6 +61,13 @@ def getActionDescriptions(limited:bool = False):
 
     # Limited mode allows removing some actions that may be challenging for some agent models
     if (limited):
+        # Remove the Forward/backward/rotate ccw/rotate cw actions
+        # NOTE: THIS IS A TEMPORARY TEST!
+        actionDescriptions.pop(ActionType.MOVE_FORWARD.name)
+        actionDescriptions.pop(ActionType.MOVE_BACKWARD.name)
+        actionDescriptions.pop(ActionType.ROTATE_CCW.name)
+        actionDescriptions.pop(ActionType.ROTATE_CW.name)
+
         # Remove the talk action
         actionDescriptions.pop(ActionType.TALK.name)
         # Remove the discovery feed actions

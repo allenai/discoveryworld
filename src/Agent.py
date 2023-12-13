@@ -263,6 +263,24 @@ class Agent(Object):
         self.actionHistory.add(actionType=actionType, arg1=None, arg2=None, result=result)
         return result
 
+    # Rotate the agent to face a particular direction
+    # Direction: "north", "east", "south", "west"
+    def actionRotateAgentFacingDirectionAbsolute(self, direction):
+        # Get the current direction
+        currentDirection = self.attributes["faceDirection"]
+
+        # Update the direction
+        self.attributes["faceDirection"] = direction
+
+        # Invalidate the sprite name
+        self.needsSpriteNameUpdate = True
+
+        # Result
+        result = ActionSuccess(True, "I rotated to face " + direction + ".")
+        self.actionHistory.add(actionType=ActionType.ROTATE_DIRECTION, arg1=direction, arg2=None, result=result)
+        return result
+    
+
     # Move forward (or backward) in the direction the agent is facing
     # Direction: +1 = forward, -1 = backward
     def actionMoveAgentForwardBackward(self, direction=+1):
@@ -326,6 +344,56 @@ class Agent(Object):
         return result
 
 
+    # Move the agent north/east/south/west, and rotate the agent to face the direction it moved
+    # Direction: "north", "east", "south", "west"
+    def actionMoveAgentNorthEastSouthWest(self, direction):
+        #actionType = ActionType.MOVE_NORTH if (direction == "north") else ActionType.MOVE_EAST if (direction == "east") else ActionType.MOVE_SOUTH if (direction == "south") else ActionType.MOVE_WEST
+        actionType = ActionType.MOVE_DIRECTION
+
+        # Get the new location
+        if (direction == "north"):
+            newX = self.attributes["gridX"]
+            newY = self.attributes["gridY"] - 1
+        elif (direction == "east"):
+            newX = self.attributes["gridX"] + 1
+            newY = self.attributes["gridY"]
+        elif (direction == "south"):
+            newX = self.attributes["gridX"]
+            newY = self.attributes["gridY"] + 1
+        elif (direction == "west"):
+            newX = self.attributes["gridX"] - 1
+            newY = self.attributes["gridY"]
+
+        # Check if the new location is valid
+        # Check 1: Is the new location within the bounds of the world?
+        if (newX < 0 or newX >= self.world.sizeX or newY < 0 or newY >= self.world.sizeY):
+            # Invalid location
+            result = ActionSuccess(False, "That would take me beyond the edge of the world.")
+            self.actionHistory.add(actionType=actionType, arg1=direction, arg2=None, result=result)
+            return result
+        
+        # Check 2: Check if the new location is passable
+        isPassable, blockingObject = self.world.isPassable(newX, newY)
+        if (not isPassable):
+            result = ActionSuccess(False, "I can't move there. There is something in the way (" + blockingObject.name + ").")
+            self.actionHistory.add(actionType=actionType, arg1=direction, arg2=None, result=result)
+            return result
+
+
+        # If we reach here, the new location is valid. Update the agent's location to the new location
+        self.world.removeObject(self)                           # First, remove the object from it's current location in the world grid
+        self.world.addObject(newX, newY, Layer.AGENT, self)     # Then, add the object to the new location in the world grid
+
+        # Update the direction the agent is facing
+        self.attributes["faceDirection"] = direction
+
+        # Invalidate sprite name
+        self.needsSpriteNameUpdate = True
+
+        result = ActionSuccess(True, "I moved to (" + str(newX) + ", " + str(newY) + ").")
+        self.actionHistory.add(actionType=actionType, arg1=direction, arg2=None, result=result)
+        return result
+            
 
 
     # Pick up an object, and add it to the agent's inventory
