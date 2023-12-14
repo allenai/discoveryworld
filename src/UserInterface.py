@@ -446,9 +446,9 @@ class UserInterface:
         envOut = []
         # Populate
         for obj in objsInv:
-            invOut.append({"uuid": obj.uuid, "name": obj.name, "description": ""})
+            invOut.append({"uuid": obj.uuid, "name": obj.name, "description": obj.getTextDescription()})
         for obj in objsEnv:
-            envOut.append({"uuid": obj.uuid, "name": obj.name, "description": ""})
+            envOut.append({"uuid": obj.uuid, "name": obj.name, "description": obj.getTextDescription()})
         # Sort by UUID (ascending)
         invOut.sort(key=lambda x: x["uuid"], reverse=False)
         envOut.sort(key=lambda x: x["uuid"], reverse=False)

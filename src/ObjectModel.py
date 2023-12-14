@@ -356,6 +356,11 @@ class Object:
     #
     #   Text Observations
     #
+    def getTextDescription(self):
+        # Get a text description of this object
+        return self.name 
+    
+
     def getTextObservationMicroscopic(self):
         # Get a text description of this object, under a microscope
         # TODO: Check object size (normal, microscopic, nanoscopic?)

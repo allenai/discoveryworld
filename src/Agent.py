@@ -226,7 +226,7 @@ class Agent(Object):
                     visibleObjects.append({
                         "name": obj.name,
                         "uuid": obj.uuid,
-                        #"description": "TODO",
+                        "description": obj.getTextDescription(),
                         "direction": directions,
                         "distance": distance
                     })
@@ -238,7 +238,8 @@ class Agent(Object):
 #                    }
                     #for direction in directions:
                     direction = "-".join(directions)
-                    visibleObjectsByDirection[direction].append(obj.name)
+                    #visibleObjectsByDirection[direction].append(obj.name)
+                    visibleObjectsByDirection[direction].append({"name": obj.name, "description": obj.getTextDescription()})
 
         return visibleObjects, visibleObjectsByDirection
 
