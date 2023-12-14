@@ -232,7 +232,7 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     promptStr += "Additional information on actions, and how to format your response:\n"
     promptStr += api.additionalActionDescriptionString() + "\n"
     promptStr += "\n"
-    promptStr == "Your last action, explanation for that action, and messages you've left in your scratchpad:\n"
+    promptStr += "Your last action, explanation for that action, and messages you've left in your scratchpad:\n"
     promptStr += "```json\n"
     promptStr += json.dumps(lastAction, indent=2, sort_keys=True)
     promptStr += "```\n"
