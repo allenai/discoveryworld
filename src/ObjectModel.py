@@ -2440,6 +2440,13 @@ class Mushroom(Object):
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
 
+    #
+    #   Text Observations
+    #
+    def getTextDescription(self):
+        # Get a text description of this object
+        return self.attributes["color"] + " " + self.name 
+
 
 #
 #   Object: Mold
