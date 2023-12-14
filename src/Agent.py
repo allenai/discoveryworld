@@ -144,6 +144,14 @@ class Agent(Object):
     # This should respect the container status. 
     def getNearbyVisibleObjects(self, maxDistance=2):
         visibleObjects = []
+        visibleObjectsByDirection = {
+            "north": [],
+            "east": [],
+            "south": [],
+            "west": [],
+            "same": []
+        }
+
         for x in range(self.attributes["gridX"] - maxDistance, self.attributes["gridX"] + maxDistance + 1):
             for y in range(self.attributes["gridY"] - maxDistance, self.attributes["gridY"] + maxDistance + 1):
                 objsAtLocation = []
@@ -182,7 +190,14 @@ class Agent(Object):
                         "distance": distance
                     })
 
-        return visibleObjects
+                    smallPacked = {
+                        "name": obj.name,
+                        "uuid": obj.uuid,
+                    }
+                    for direction in directions:
+                        visibleObjectsByDirection[direction].append(smallPacked)
+
+        return visibleObjects, visibleObjectsByDirection
 
 
     #
