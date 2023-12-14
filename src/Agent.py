@@ -137,6 +137,55 @@ class Agent(Object):
 
 
     #
+    #   Get nearby objects
+    #
+
+    # Get a list of all objects within a certain number of grid locations of the agent. 
+    # This should respect the container status. 
+    def getNearbyVisibleObjects(self, maxDistance=2):
+        visibleObjects = []
+        for x in range(self.attributes["gridX"] - maxDistance, self.attributes["gridX"] + maxDistance + 1):
+            for y in range(self.attributes["gridY"] - maxDistance, self.attributes["gridY"] + maxDistance + 1):
+                objsAtLocation = []
+                if (self.world.isWithinBounds(x, y)):
+                    # Get objects at location
+                    objs = self.world.getObjectsAt(x, y, respectContainerStatus=True, includeParts=False)
+                    # Add them to the list
+                    objsAtLocation += objs
+                
+                # Pack the objects into the list, using a more minimal representation containing the name, uuid, description, and direction relative to the agent (north/east/south/west, or 'same' if the object is at the same location as the agent)
+                for obj in objsAtLocation:
+                    # Get the direction relative to the agent
+                    directions = []
+                    if (obj.attributes["gridY"] < self.attributes["gridY"]):
+                        directions.append("north")
+                    elif (obj.attributes["gridY"] > self.attributes["gridY"]):
+                        directions.append("south")
+                    if (obj.attributes["gridX"] < self.attributes["gridX"]):
+                        directions.append("west")
+                    elif (obj.attributes["gridX"] > self.attributes["gridX"]):
+                        directions.append("east")
+                    if (len(directions) == 0):
+                        directions.append("same")
+
+                    # Distance
+                    distance = abs(obj.attributes["gridX"] - self.attributes["gridX"]) + abs(obj.attributes["gridY"] - self.attributes["gridY"])
+                    # Round distance to 1 decimal place
+                    distance = round(distance, 1)
+
+                    # Pack the object into the list
+                    visibleObjects.append({
+                        "name": obj.name,
+                        "uuid": obj.uuid,
+                        #"description": "TODO",
+                        "direction": directions,
+                        "distance": distance
+                    })
+
+        return visibleObjects
+
+
+    #
     #   Tick
     #
         

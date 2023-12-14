@@ -15,7 +15,8 @@ class UUIDGenerator():
 
     # Generate a new UUID
     def generateUUID(self):
-        MAX_UUID = 2**30
+        #MAX_UUID = 2**30
+        MAX_UUID = 2**16
         uuid = self.random.randint(0, MAX_UUID)
         while uuid in self.existingUUIDs:
             uuid = self.random.randint(0, MAX_UUID)

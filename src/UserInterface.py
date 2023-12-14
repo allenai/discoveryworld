@@ -224,6 +224,15 @@ class UserInterface:
         invAndEnvObjs = self.renderObjectSelectionBoxJSON(objsInv, objsEnv)        
         out.update(invAndEnvObjs)
 
+
+        # Show nearby objects
+        nearbyObjectsMaxDistance = 2
+        nearbyObjects = self.currentAgent.getNearbyVisibleObjects(maxDistance=nearbyObjectsMaxDistance)
+        out["nearbyObjects"] = {
+            "note": "The objects below are within " + str(nearbyObjectsMaxDistance) + " tiles of the agent, but may not neccesarily be usable if they're not in the agent inventory, or directly in front of the agent.  This list should help in navigating to objects you'd like to interact with or use.  Objects to interact with or use should be in the 'accessibleEnvironmentObjects' or 'inventoryObjects' lists.",
+            "objects": nearbyObjects
+        }
+
         # Pop-up boxes/Dialog  
         dialogBoxDict = {}
         if (self.dialogToDisplay != None):
