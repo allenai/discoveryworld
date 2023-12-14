@@ -186,6 +186,9 @@ class DiscoveryWorldAPI:
         outStr += "Actions are expressed as JSON. The format is as follows: `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12}`, where 'action' is the action type, and 'arg1' and 'arg2' refer to the UUIDs of the objects that serve as arguments. Some actions may require arg1, arg2, or no arguments.  Some actions, like MOVE_DIRECTION, ROTATE_DIRECTION, and Discovery Feed actions require different arguments, shown above.  What arguments are required for specific actions is provided in the known actions list above.  Attempting actions not in the known actions list, or providing incorrect arguments, will result in an error." 
         return outStr
 
+    def listTeleportLocationsDict(self):        
+        return self.world.getTeleportLocations()
+        
 
     # Perform an action for a given agent
     def performAgentAction(self, agentIdx, actionJSON):

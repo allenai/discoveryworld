@@ -1058,6 +1058,16 @@ class UserInterface:
             direction = jsonIn['arg1']
             return (True, jsonParseErrors, self.currentAgent.actionRotateAgentFacingDirectionAbsolute(direction))
 
+        # Teleport action
+        elif (jsonIn["action"] == ActionType.TELEPORT_TO_LOCATION.name):
+            # Check if there is a key 'arg1' that lists the location to teleport to
+            if ('arg1' not in jsonIn):
+                jsonParseErrors.append("Missing 'arg1' key in JSON.")
+                return (False, jsonParseErrors, ActionSuccess(False, "Missing 'arg1' key in JSON."))
+            
+            # Get the location from the argument
+            location = jsonIn['arg1']
+            return (True, jsonParseErrors, self.currentAgent.actionTeleportAgentToLocation(location))            
 
         # Pick-up Object in arg1 slot
         elif (jsonIn["action"] == ActionType.PICKUP.name):

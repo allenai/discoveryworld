@@ -394,6 +394,33 @@ class Agent(Object):
         self.actionHistory.add(actionType=actionType, arg1=direction, arg2=None, result=result)
         return result
             
+    # Teleport the agent to a specific named location
+    def actionTeleportAgentToLocation(self, locationName):
+        # Get a list of known teleport locations
+        knownTeleportLocations = self.world.getTeleportLocations()
+        # Check for name key in known teleport locations
+        if (not locationName in knownTeleportLocations):
+            result = ActionSuccess(False, "That's not a known teleport location ('" + locationName + "'). I know about the following locations: " + str(sorted(list(knownTeleportLocations.keys()))))
+            self.actionHistory.add(actionType=ActionType.TELEPORT_TO_LOCATION, arg1=locationName, arg2=None, result=result)
+            return result
+
+        # Get the location
+        location = self.world.getTeleportLocationByName(locationName)
+        if (location == None):
+            result = ActionSuccess(False, "I don't know where that is.")
+            self.actionHistory.add(actionType=ActionType.TELEPORT_TO_LOCATION, arg1=locationName, arg2=None, result=result)
+            return result
+
+        # Teleport the agent to the location
+        self.world.removeObject(self)                           # First, remove the object from it's current location in the world grid
+        self.world.addObject(location["gridX"], location["gridY"], Layer.AGENT, self)     # Then, add the object to the new location in the world grid
+
+        # Invalidate sprite name
+        self.needsSpriteNameUpdate = True
+
+        result = ActionSuccess(True, "I teleported to " + locationName + " at " + str(location["gridX"]) + ", " + str(location["gridY"]) + ".")
+        self.actionHistory.add(actionType=ActionType.TELEPORT_TO_LOCATION, arg1=locationName, arg2=None, result=result)
+        return result
 
 
     # Pick up an object, and add it to the agent's inventory

@@ -458,7 +458,18 @@ class ScenarioMaker:
             world.addObject(12+userAgentIdx, 18, Layer.AGENT, userAgent)      # Near farm
             # Register the agent with the World so we can keep track of it
             world.addAgent(userAgent)
-            
+
+
+        # Add teleport locations to world            
+        world.addTeleportLocation("science lab", 10, 24)
+        world.addTeleportLocation("cafeteria", 20, 22)
+        world.addTeleportLocation("farm", 10, 10)
+        world.addTeleportLocation("cave", 5, 8)
+        world.addTeleportLocation("farmers field", 18, 25)
+        world.addTeleportLocation("town square", 16, 18)
+        world.addTeleportLocation("barracks", 18, 11)
+        world.addTeleportLocation("infirmary", 19, 4)
+
         # currentAgent = Agent(world)
         # #world.addObject(5, 8, Layer.AGENT, currentAgent)      # Near cave
         # #world.addObject(10, 10, Layer.AGENT, currentAgent)      # Near farm

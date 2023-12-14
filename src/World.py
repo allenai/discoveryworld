@@ -60,6 +60,9 @@ class World:
         # World history
         self.worldHistory = []
 
+        # Add a dictionary of teleport locations (key = location name), to make an agent's navigation task easier
+        self.teleportLocations = {}
+
 
     #
     #   Initialization (agents, tasks)
@@ -110,7 +113,7 @@ class World:
     #
     def getStepCounter(self):
         return self.step
-
+    
 
     #
     #   Grid
@@ -513,7 +516,14 @@ class World:
                     pygame.draw.rect(window, (0, 0, 0), (screenX, screenY, tileSize, tileSize), 1)
 
 
+    #
+    #   Teleport locations
+    #
+    def addTeleportLocation(self, name, gridX, gridY):
+        self.teleportLocations[name] = {"gridX": gridX, "gridY": gridY}
 
+    def getTeleportLocations(self):
+        return self.teleportLocations
                     
 
 
