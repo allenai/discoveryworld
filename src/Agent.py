@@ -135,6 +135,43 @@ class Agent(Object):
         # Return the objects
         return objs
 
+    #
+    #   Get a list of nearby directions (north, east, south, west) that can be moved to -- i.e. that do not contain untraversable objects. 
+    #
+    def getValidDirectionsToMoveTo(self):
+        validDirections = []
+        blockedDirections = []
+        for direction in ["north", "east", "south", "west"]:
+            # Get the new location
+            if (direction == "north"):
+                newX = self.attributes["gridX"]
+                newY = self.attributes["gridY"] - 1
+            elif (direction == "east"):
+                newX = self.attributes["gridX"] + 1
+                newY = self.attributes["gridY"]
+            elif (direction == "south"):
+                newX = self.attributes["gridX"]
+                newY = self.attributes["gridY"] + 1
+            elif (direction == "west"):
+                newX = self.attributes["gridX"] - 1
+                newY = self.attributes["gridY"]
+
+            # Check if the new location is valid
+            # Check 1: Is the new location within the bounds of the world?
+            if (newX < 0 or newX >= self.world.sizeX or newY < 0 or newY >= self.world.sizeY):
+                # Invalid location
+                continue
+            
+            # Check 2: Check if the new location is passable
+            isPassable, blockingObject = self.world.isPassable(newX, newY)
+            if (not isPassable):
+                blockedDirections.append(direction)
+                continue
+
+            # If we reach here, the direction is valid
+            validDirections.append(direction)
+
+        return validDirections, blockedDirections
 
     #
     #   Get nearby objects
@@ -145,9 +182,13 @@ class Agent(Object):
     def getNearbyVisibleObjects(self, maxDistance=2):
         visibleObjects = []
         visibleObjectsByDirection = {
+            "north-west": [],
             "north": [],
+            "north-east": [],
             "east": [],
+            "south-east": [],
             "south": [],
+            "south-west": [],
             "west": [],
             "same": []
         }
@@ -190,12 +231,14 @@ class Agent(Object):
                         "distance": distance
                     })
 
-                    smallPacked = {
-                        "name": obj.name,
-                        "uuid": obj.uuid,
-                    }
-                    for direction in directions:
-                        visibleObjectsByDirection[direction].append(smallPacked)
+#                    smallPacked = {
+#                        "name": obj.name,
+#                        "distance": distance,
+#                        "uuid": obj.uuid,
+#                    }
+                    #for direction in directions:
+                    direction = "-".join(directions)
+                    visibleObjectsByDirection[direction].append(obj.name)
 
         return visibleObjects, visibleObjectsByDirection
 

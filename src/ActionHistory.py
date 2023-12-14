@@ -49,7 +49,7 @@ def getActionDescriptions(limited:bool = False):
         ActionType.TALK.name:           {"args": ["arg1"], "desc": "talk to another agent (arg1)"},
         ActionType.EAT.name:            {"args": ["arg1"], "desc": "eat an object (arg1)"},
         ActionType.READ.name:           {"args": ["arg1"], "desc": "read an object (arg1)"},
-        ActionType.USE.name:            {"args": ["arg1", "arg2"], "desc": "use an object (arg1) on another object (arg2)"},
+        ActionType.USE.name:            {"args": ["arg1", "arg2"], "desc": "use an object (arg1), e.g. a thermometer, on another object (arg2), e.g. water."},
 
         ActionType.MOVE_DIRECTION.name:     {"args": ["arg1"], "desc": "move in a specific direction (arg1), which is one of 'north', 'east', 'south', or 'west'."},
         ActionType.ROTATE_DIRECTION.name:   {"args": ["arg1"], "desc": "rotate to face a specific direction (arg1), which is one of 'north', 'east', 'south', or 'west'."},

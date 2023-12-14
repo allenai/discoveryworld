@@ -208,6 +208,9 @@ class UserInterface:
         agentLocation["x"] = self.currentAgent.attributes["gridX"]
         agentLocation["y"] = self.currentAgent.attributes["gridY"]
         agentLocation["faceDirection"] = self.currentAgent.attributes["faceDirection"]
+        validDirections, blockedDirections = self.currentAgent.getValidDirectionsToMoveTo()
+        agentLocation["directions_you_can_move"] = validDirections
+        agentLocation["directions_blocked"] = blockedDirections
         out.update({"agentLocation": agentLocation})
 
         # Add the steps taken in the world
@@ -1180,6 +1183,14 @@ class UserInterface:
                 return (False, jsonParseErrors, checkArgSuccess)
 
             result = self.actionUse(objToUse = self.curSelectedArgument1Obj, objToUseWith = self.curSelectedArgument2Obj)
+
+            if (result.success == False):
+                # Try switching the arguments around, since the LLMs are terrible at getting the arguments in the correct order.
+                result1 = self.actionUse(objToUse = self.curSelectedArgument2Obj, objToUseWith = self.curSelectedArgument1Obj)
+                if (result1.success == True):
+                    result = result1
+                    # Append a message saying the arguments were switched
+                    result.message += "\n Note, the original action failed (USE, arg1:" + self.curSelectedArgument1Obj.name + ", arg2:" + self.curSelectedArgument2Obj.name + "), but the arguments were switched and the action succeeded (USE, arg1:" + self.curSelectedArgument2Obj.name + ", arg2:" + self.curSelectedArgument1Obj.name + "). Try to enter the arguments in the correct order next time."
 
             # # If there is a .generatedItems populated in this result, then process it            
             # if ('generatedItems' in result.data):
