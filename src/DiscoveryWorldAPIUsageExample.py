@@ -290,7 +290,7 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     api.tick()
     
     # Return the action that it chose (to pass into the next step)
-    return nextAction, observation
+    return nextAction, observation, promptStr
 
 
 
@@ -336,7 +336,7 @@ def GPT4VBaselineAgent(api, numSteps:int = 10):
             print("Step " + str(i) + " of " + str(numSteps))
             print("-----------------------------------------------------------")
             print("")
-            lastAction, lastObservation = GPT4BaselineOneStep(api, client, lastAction, lastObservation)
+            lastAction, lastObservation, promptStr = GPT4BaselineOneStep(api, client, lastAction, lastObservation)
             print("LAST ACTION: ")
             print(lastAction)
             print("")
@@ -345,7 +345,8 @@ def GPT4VBaselineAgent(api, numSteps:int = 10):
             packed = {
                 "step": i,
                 "observation": lastObservation,
-                "action": lastAction
+                "action": lastAction,
+                "promptStr": promptStr
             }
             observationHistory.append(packed)
 
