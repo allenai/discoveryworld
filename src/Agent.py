@@ -405,7 +405,7 @@ class Agent(Object):
             return result
 
         # Get the location
-        location = self.world.getTeleportLocationByName(locationName)
+        location = self.world.getTeleportLocations(locationName)
         if (location == None):
             result = ActionSuccess(False, "I don't know where that is.")
             self.actionHistory.add(actionType=ActionType.TELEPORT_TO_LOCATION, arg1=locationName, arg2=None, result=result)

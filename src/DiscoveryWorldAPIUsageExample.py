@@ -196,7 +196,7 @@ def extractJSONfromGPT4Response(strIn):
     
 
 
-def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
+def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation):
     # Perform the first step
     observation = api.getAgentObservation(agentIdx=0)
 
@@ -206,9 +206,9 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     # Remove the 'vision' key from the observation
     observationNoVision.pop("vision", None)
 
-    # Add the result of the last action to the last action     
-    if (lastAction != None):
-        lastAction["result_of_last_action"] = observation["ui"]["lastActionMessage"]
+    # Add the last action to the observation
+    if (len(lastActionHistory) > 0):
+        lastActionHistory[-1]["result_of_last_action"] = observation["ui"]["lastActionMessage"]
 
     # print the response (pretty)
     print(json.dumps(observationNoVision, indent=4, sort_keys=True))
@@ -232,24 +232,30 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     promptStr += "Additional information on actions, and how to format your response:\n"
     promptStr += api.additionalActionDescriptionString() + "\n"
     promptStr += "\n"
-    promptStr += "Your last action, explanation for that action, and messages you've left in your scratchpad:\n"
+    promptStr += "Your last few action(s), explanation for those action(s), and messages you've left in your scratchpad:\n"
     promptStr += "```json\n"
-    promptStr += json.dumps(lastAction, indent=4, sort_keys=True)
+    # Add up to last 3 actions
+    for idx, action in enumerate(lastActionHistory[-3:]):
+        promptStr += "Action " + str(idx) + ":\n"
+        promptStr += json.dumps(action, indent=4, sort_keys=True)
+        promptStr += "\n"
+    #promptStr += json.dumps(lastAction, indent=4, sort_keys=True)
     promptStr += "```\n"
     promptStr += "\n"
-    facingDirection = observation["ui"]["agentLocation"]["faceDirection"]
-    promptStr += "Navigation note: In the image, you are in the center, north is the top, south is the bottom, east is the right, and west is the left. Moving forward moves you in the direction you're facing. You are currently facing `" + facingDirection + "`. You seen to confuse directions a lot.  Directions are relative to the center of the image. Things above the center are north of the agent. Things left of the center are east of the agent.\n"
     promptStr += "Teleporting: To make moving easier, you can teleport to a list of specific locations in the environment, using the teleport action.  In this case, 'arg1' is the name of a location, from the list below:\n"
     promptStr += "```json\n"
     promptStr += json.dumps(api.listTeleportLocationsDict(), indent=4, sort_keys=True)
     promptStr += "```\n"
     promptStr += "\n"
+    facingDirection = observation["ui"]["agentLocation"]["faceDirection"]
+    promptStr += "Navigation note: In the image, you are in the center, north is the top, south is the bottom, east is the right, and west is the left. Moving forward moves you in the direction you're facing. You are currently facing `" + facingDirection + "`. You seen to confuse directions a lot.  Directions are relative to the center of the image. Things above the center are north of the agent. Things left of the center are east of the agent.\n"
     promptStr += "Interaction note: You can only interact (i.e. take actions with) objects that are in your inventory, or directly (i.e. one square) in front of you, in the direction that you're facing.  E.g. if you want to pick an object up, you need to move directly in front of it, and face it, before using the pick-up action on it.\n"
     promptStr += "\n"
     promptStr += "Please create your output (the next action you'd like to take) below.  It should be in the JSON form expected above e.g.(`{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12}`). \n"
     promptStr += "Your response should ONLY be in JSON.  You should include an additional JSON key, \"explanation\", to describe your reasoning for performing this action. e.g. `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12, \"explanation\": \"Using the shovel on the soil will allow me to dig a hole to plant a seed\"}`.  Note that even though this explanation is short, yours can be a few hundred tokens, if you'd like. Your explanation should say: (1) What your subgoal is, (2) What you see around you, (3) What you see in front of you, (4) What you are doing to progress towards your immediate subgoal.\n"
     promptStr += "Lastly, your response should also include an additional JSON key, \"memory\", that includes any information you'd like to write down and pass on to yourself for the future.  This can be helpful in remembering important results, high-level tasks, low-level subtasks, or anything else you'd like to remember or think would be helpful. e.g. `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12, \"explanation\": \"...\", \"memory\": \"...\"}`\n"
     promptStr += "To make your memory helpful, you might consider including things learned from attempting your last action -- e.g. adding in that certain actions were useful, or not useful, and retaining (and adding to) this information over time.\n"
+    promptStr += "If your last action failed, or other last recent actions failed, please consider thinking why they failed, and trying different actions unless you believe things have changed to make failed actions work this time.\n"
     
 
     # Write prompt to console
@@ -282,7 +288,7 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
         nextAction = {
             "action": "ERROR: Could not parse the last action that was generated.  Please be careful in generating valid JSON.",
             "explanation": "",
-            "memory": lastAction["memory"]
+            "memory": lastActionHistory[-1]["memory"]
         }
     else:
         nextAction.update(responseJSON)
@@ -342,11 +348,13 @@ def GPT4VBaselineAgent(api, numSteps:int = 10):
             print("Step " + str(i) + " of " + str(numSteps))
             print("-----------------------------------------------------------")
             print("")
-            lastAction, lastObservation, promptStr = GPT4BaselineOneStep(api, client, lastAction, lastObservation)
+            lastAction, lastObservation, promptStr = GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation)
             print("LAST ACTION: ")
+            
             print(lastAction)
-            print("")
+            print("")            
             lastActionHistory.append(lastAction)
+            
 
             packed = {
                 "step": i,
