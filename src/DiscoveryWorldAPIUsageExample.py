@@ -5,6 +5,8 @@ from DiscoveryWorldAPI import DiscoveryWorldAPI
 
 from openai import OpenAI
 
+import traceback
+
 import json
 import time
 import random
@@ -152,7 +154,8 @@ def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model="gpt-4-v
     print("")
 
     print("RESPONSE CONTENT:")
-    print(response.choices[0].message.content)    
+    print(response.choices[0].message.content)   
+    print("PASS1") 
     return response
 
 # Extract the JSON from the GPT-4 response
@@ -261,8 +264,11 @@ def GPT4BaselineOneStep(api, client, lastAction, lastObservation):
     print(response)
 
     # Extract the JSON from the response
+    print("EXCTRACTING MESSAGE")
     responseStr = response.choices[0].message.content
+    print("SUCCESS1")
     responseJSON = extractJSONfromGPT4Response(responseStr)
+    print("SUCCESS2")
 
     # Check if the response is valid
     nextAction = {}
@@ -353,11 +359,16 @@ def GPT4VBaselineAgent(api, numSteps:int = 10):
                 
         # Generic exception, print error
         except Exception as e:
-            print("ERROR: Exception caught: " + str(e))
+            # Get the current line number
+            line_number = traceback.extract_tb(e.__traceback__)[-1].lineno
+            print(f"ERROR: Exception caught on line {line_number}: {e}")
+            print("ERROR: Exception caught:\n", traceback.format_exc())
+
             numErrors += 1
 
-            if (numErrors > 5):
+            if numErrors > 5:
                 print("ERROR: Maximum number of errors exceeded (5). Exiting.")
+                
 
             exit(1)
 

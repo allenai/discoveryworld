@@ -49,8 +49,8 @@ def getActionDescriptions(limited:bool = False):
         ActionType.READ.name:           {"args": ["arg1"], "desc": "read an object (arg1)"},
         ActionType.USE.name:            {"args": ["arg1", "arg2"], "desc": "use an object (arg1) on another object (arg2)"},
 
-        ActionType.MOVE_DIRECTION.name:     {"args": ["direction"], "desc": "move in a specific direction (direction), which is one of 'north', 'east', 'south', or 'west'."},
-        ActionType.ROTATE_DIRECTION.name:   {"args": ["direction"], "desc": "rotate to face a specific direction (direction), which is one of 'north', 'east', 'south', or 'west'."},
+        ActionType.MOVE_DIRECTION.name:     {"args": ["arg1"], "desc": "move in a specific direction (arg1), which is one of 'north', 'east', 'south', or 'west'."},
+        ActionType.ROTATE_DIRECTION.name:   {"args": ["arg1"], "desc": "rotate to face a specific direction (arg1), which is one of 'north', 'east', 'south', or 'west'."},
 
         ActionType.DISCOVERY_FEED_GET_UPDATES.name:     {"args": [], "desc": "read the latest status updates on discovery feed"},
         ActionType.DISCOVERY_FEED_GET_ARTICLES.name:    {"args": [], "desc": "read the latest scientific articles on discovery feed"},

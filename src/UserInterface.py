@@ -1033,12 +1033,12 @@ class UserInterface:
             #if (checkArgSuccess == False):
             #    return (False, jsonParseErrors, False)
             # Check if there is a key 'direction' in 'jsonIn', and if it contains a valid direction ('north', 'east', 'south', 'west')
-            if ('direction' not in jsonIn):
-                jsonParseErrors.append("Missing 'direction' key in JSON.")
-                return (False, jsonParseErrors, False)
-            if (jsonIn['direction'] not in ['north', 'east', 'south', 'west']):
-                jsonParseErrors.append("Invalid direction '" + str(jsonIn['direction']) + "' specified in JSON.")
-                return (False, jsonParseErrors, False)
+            if ('arg1' not in jsonIn):
+                jsonParseErrors.append("Missing 'arg1' key in JSON.")
+                return (False, jsonParseErrors, ActionSuccess(False, "Missing 'arg1' key in JSON."))
+            if (jsonIn['arg1'] not in ['north', 'east', 'south', 'west']):
+                jsonParseErrors.append("Invalid direction '" + str(jsonIn['arg1']) + "' specified in JSON.")
+                return (False, jsonParseErrors, ActionSuccess(False, "Invalid direction '" + str(jsonIn['arg1']) + "' specified in JSON."))
         
             # Get the direction from the argument
             direction = jsonIn['arg1']
@@ -1047,12 +1047,12 @@ class UserInterface:
         # Rotate to a specific direction (north/east/south/west)
         elif (jsonIn["action"] == ActionType.ROTATE_DIRECTION.name):
             # Check if there is a key 'direction' in 'jsonIn', and if it contains a valid direction ('north', 'east', 'south', 'west')
-            if ('direction' not in jsonIn):
-                jsonParseErrors.append("Missing 'direction' key in JSON.")
-                return (False, jsonParseErrors, False)
-            if (jsonIn['direction'] not in ['north', 'east', 'south', 'west']):
-                jsonParseErrors.append("Invalid direction '" + str(jsonIn['direction']) + "' specified in JSON.")
-                return (False, jsonParseErrors, False)
+            if ('arg1' not in jsonIn):
+                jsonParseErrors.append("Missing 'arg1' key in JSON.")
+                return (False, jsonParseErrors, ActionSuccess(False, "Missing 'arg1' key in JSON."))
+            if (jsonIn['arg1'] not in ['north', 'east', 'south', 'west']):
+                jsonParseErrors.append("Invalid direction '" + str(jsonIn['arg1']) + "' specified in JSON.")
+                return (False, jsonParseErrors, ActionSuccess(False, "Invalid direction '" + str(jsonIn['arg1']) + "' specified in JSON."))
         
             # Get the direction from the argument
             direction = jsonIn['arg1']
@@ -1063,15 +1063,15 @@ class UserInterface:
         elif (jsonIn["action"] == ActionType.PICKUP.name):
             checkArgSuccess = self._checkArgs(actionName = "pick up object", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, False)
+                return (False, jsonParseErrors, ActionSuccess(success=False, message="Action 'pick up object' requires argument 1."))
 
-            return (True, jsonParseErrors, self.actionPickupObject(objToPickUp = self.curSelectedArgument1Obj)            )
+            return (True, jsonParseErrors, self.actionPickupObject(objToPickUp = self.curSelectedArgument1Obj))
 
         # Drop an inventory item in arg1 slot at the agents current location
         elif (jsonIn["action"] == ActionType.DROP.name):
             checkArgSuccess = self._checkArgs(actionName = "drop item", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, jsonParseErrors, False)
+                return (False, jsonParseErrors, ActionSuccess(success=False, message="Action 'drop item' requires argument 1."))
 
             return (True, jsonParseErrors, self.actionDropObject(objToDrop = self.curSelectedArgument1Obj))
 
@@ -1079,7 +1079,7 @@ class UserInterface:
         elif (jsonIn["action"] == ActionType.PUT.name):
             checkArgSuccess = self._checkArgs(actionName = "put item in container", arg1 = True, arg2 = True)
             if (checkArgSuccess == False):
-                return (False, jsonParseErrors, False)
+                return (False, jsonParseErrors, ActionSuccess(success=False, message="Action 'put item in container' requires two argument objects. Missing both arguments."))
 
             return (True, jsonParseErrors, self.actionPutObjectInContainer(objToPut = self.curSelectedArgument1Obj, container = self.curSelectedArgument2Obj))
 
@@ -1087,7 +1087,7 @@ class UserInterface:
         elif (jsonIn["action"] == ActionType.OPEN.name):
             checkArgSuccess = self._checkArgs(actionName = "open", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, jsonParseErrors, False)
+                return (False, jsonParseErrors, ActionSuccess(success=False, message="Action 'open' requires argument 1."))
 
             return (True, jsonParseErrors, self.actionOpenObject(objToOpen = self.curSelectedArgument1Obj))
         
@@ -1095,7 +1095,7 @@ class UserInterface:
         elif (jsonIn["action"] == ActionType.CLOSE.name):
             checkArgSuccess = self._checkArgs(actionName = "close", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, jsonParseErrors, False)
+                return (False, jsonParseErrors, ActionSuccess(success=False, message="Action 'close' requires argument 1."))
 
             return (True, jsonParseErrors, self.actionCloseObject(objToClose = self.curSelectedArgument1Obj))
         
@@ -1103,7 +1103,7 @@ class UserInterface:
         elif (jsonIn["action"] == ActionType.ACTIVATE.name):
             checkArgSuccess = self._checkArgs(actionName = "activate", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, jsonParseErrors, False)
+                return (False, jsonParseErrors, ActionSuccess(success=False, message="Action 'activate' requires argument 1."))
 
             return (True, jsonParseErrors, self.actionActivateObject(objToActivate = self.curSelectedArgument1Obj))
             
@@ -1113,7 +1113,7 @@ class UserInterface:
         elif (jsonIn["action"] == ActionType.DEACTIVATE.name):
             checkArgSuccess = self._checkArgs(actionName = "deactivate", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, jsonParseErrors, False)
+                return (False, jsonParseErrors, ActionSuccess(success=False, message="Action 'deactivate' requires argument 1."))
 
             return (True, jsonParseErrors, self.actionDeactivateObject(objToDeactivate = self.curSelectedArgument1Obj))
             
@@ -1121,7 +1121,7 @@ class UserInterface:
         elif (jsonIn["action"] == ActionType.TALK.name):
             checkArgSuccess = self._checkArgs(actionName = "talk", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, jsonParseErrors, False)
+                return (False, jsonParseErrors, ActionSuccess(success=False, message="Action 'talk' requires argument 1."))
 
             actionResult = self.actionTalk(agentToTalkTo = self.curSelectedArgument1Obj)
 
@@ -1138,7 +1138,7 @@ class UserInterface:
         elif (jsonIn["action"] == ActionType.EAT.name):
             checkArgSuccess = self._checkArgs(actionName = "eat", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, jsonParseErrors, False)
+                return (False, jsonParseErrors, ActionSuccess(success=False, message="Action 'eat' requires argument 1."))
 
             return (True, jsonParseErrors, self.actionEat(objToEat = self.curSelectedArgument1Obj))
 
@@ -1146,7 +1146,7 @@ class UserInterface:
         elif (jsonIn["action"] == ActionType.READ.name):
             checkArgSuccess = self._checkArgs(actionName = "read", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
-                return (False, jsonParseErrors, False)
+                return (False, jsonParseErrors, ActionSuccess(success=False, message="Action 'read' requires argument 1."))
 
             return (True, jsonParseErrors, self.actionRead(objToRead = self.curSelectedArgument1Obj))
 
@@ -1154,7 +1154,7 @@ class UserInterface:
         elif (jsonIn["action"] == ActionType.USE.name):
             checkArgSuccess = self._checkArgs(actionName = "use object", arg1 = True, arg2 = True)
             if (checkArgSuccess == False):
-                return (False, jsonParseErrors, False)
+                return (False, jsonParseErrors, ActionSuccess(success=False, message="Action 'use object' requires two argument objects. Missing one or both arguments."))
 
             result = self.actionUse(objToUse = self.curSelectedArgument1Obj, objToUseWith = self.curSelectedArgument2Obj)
 
@@ -1203,5 +1203,5 @@ class UserInterface:
 
 
         # If we reach here, then no known key was pressed
-        return (False, jsonParseErrors, None)
+        return (False, jsonParseErrors, ActionSuccess(success=False, message="Unknown action '" + str(jsonIn["action"]) + "'."))
 
