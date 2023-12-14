@@ -236,10 +236,12 @@ class UserInterface:
         out.update(invAndEnvObjs)
 
         # Text boxes
-        nextMessage = ""
+        out["extended_action_message"] = ""
         if (len(self.messageQueueText) > 0):
             nextMessage = self.messageQueueText[0]
-        out["message"] = nextMessage
+            out["extended_action_message"] = nextMessage
+            # Pop that most recent message from the queue, since we've already displayed it
+            self.popMessageFromQueue()
 
         # Last action message
         lastActionMessageStr = self.lastActionMessage
@@ -251,8 +253,8 @@ class UserInterface:
             taskList = self.currentAgent.world.taskScorer.tasks
             for idx, task in enumerate(taskList):
                 taskProgressList.append(self.renderTaskProgressJSON(task))
-        out["taskProgress"] = taskProgressList
-    
+        out["taskProgress"] = taskProgressList    
+
         # Return the JSON
         return out
 

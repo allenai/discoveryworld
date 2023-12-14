@@ -468,7 +468,7 @@ class ScenarioMaker:
         world.addTeleportLocation("farmers field", 18, 25)
         world.addTeleportLocation("town square", 16, 18)
         world.addTeleportLocation("barracks", 18, 11)
-        world.addTeleportLocation("infirmary", 19, 4)
+        world.addTeleportLocation("infirmary", 22, 7)
 
         # currentAgent = Agent(world)
         # #world.addObject(5, 8, Layer.AGENT, currentAgent)      # Near cave

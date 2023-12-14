@@ -172,7 +172,7 @@ class SpriteLibrary:
         # Tile size
         tileSize = 32
         if (scale != 1):
-            tileSize = int(32 * scale)
+            tileSize = int(32 * scale)        
 
         if (spriteName not in self.sprites):
             print("WARNING: Sprite not found: " + str(spriteName))
@@ -188,6 +188,12 @@ class SpriteLibrary:
         adjusted_y = y
         if (adjustY):
             adjusted_y = y - sprite.get_height() + tileSize
+            #offsetY = 0
+            #if (scale != 1):
+            #    offsetY = tileSize - (tileSize*scale)
+            #adjusted_y -= offsetY
+
+            print("Original Y: " + str(y) + "    Adjusted y: " + str(adjusted_y))
 
         if (scale != 1):
             sprite = pygame.transform.scale(sprite, (int(sprite.get_width() * scale), int(sprite.get_height() * scale)))            

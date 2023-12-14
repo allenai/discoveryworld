@@ -209,6 +209,7 @@ def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation):
     # Add the last action to the observation
     if (len(lastActionHistory) > 0):
         lastActionHistory[-1]["result_of_last_action"] = observation["ui"]["lastActionMessage"]
+        lastActionHistory[-1]["extended_action_message"] = observation["ui"]["extended_action_message"]
 
     # print the response (pretty)
     print(json.dumps(observationNoVision, indent=4, sort_keys=True))
@@ -242,7 +243,7 @@ def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation):
     #promptStr += json.dumps(lastAction, indent=4, sort_keys=True)
     promptStr += "```\n"
     promptStr += "\n"
-    promptStr += "Teleporting: To make moving easier, you can teleport to a list of specific locations in the environment, using the teleport action.  In this case, 'arg1' is the name of a location, from the list below:\n"
+    promptStr += "Teleporting: To make moving easier, you can teleport to a list of specific locations in the environment, using the teleport action.  In this case, 'arg1' is the name of a location, from the list below. An example teleport action would be: `{\"action\": \"TELEPORT_TO_LOCATION\", \"arg1\": \"school\"}).\n"
     promptStr += "```json\n"
     promptStr += json.dumps(api.listTeleportLocationsDict(), indent=4, sort_keys=True)
     promptStr += "```\n"
@@ -256,6 +257,7 @@ def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation):
     promptStr += "Lastly, your response should also include an additional JSON key, \"memory\", that includes any information you'd like to write down and pass on to yourself for the future.  This can be helpful in remembering important results, high-level tasks, low-level subtasks, or anything else you'd like to remember or think would be helpful. e.g. `{\"action\": \"USE\", \"arg1\": 5, \"arg2\": 12, \"explanation\": \"...\", \"memory\": \"...\"}`\n"
     promptStr += "To make your memory helpful, you might consider including things learned from attempting your last action -- e.g. adding in that certain actions were useful, or not useful, and retaining (and adding to) this information over time.\n"
     promptStr += "If your last action failed, or other last recent actions failed, please consider thinking why they failed, and trying different actions unless you believe things have changed to make failed actions work this time.\n"
+    promptStr += "If you don't see what you're looking for, and anticipate it might be in another location, consider teleporting to that location. \n"
     
 
     # Write prompt to console
@@ -457,7 +459,7 @@ if __name__ == "__main__":
     #testAgent(api)
 
     # GPT4-V Baseline Agent
-    GPT4VBaselineAgent(api, numSteps=50)
+    GPT4VBaselineAgent(api, numSteps=100)
     api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v.mp4")
 
     # Random agent

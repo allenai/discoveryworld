@@ -40,9 +40,14 @@ class DiscoveryWorldAPI:
 
         #self.viewportSizeX = 15
         #self.viewportSizeY = 15
-        self.viewportSizeX = 9
-        self.viewportSizeY = 9
-        self.renderScale = 1.5
+
+        #self.viewportSizeX = 9
+        #self.viewportSizeY = 9
+        #self.renderScale = 1.5
+
+        self.viewportSizeX = 7
+        self.viewportSizeY = 7
+        self.renderScale = 2.0
 
         # Create a random number generator
         self.r = random.Random()        
@@ -166,6 +171,9 @@ class DiscoveryWorldAPI:
         encodedImageWithGrid = base64.b64encode(image_io.read()).decode('utf-8')       # Convert to base64        
         encodedImageWithGrid = "data:image/png;base64," + encodedImageWithGrid
         response["vision"]["base64_with_grid"] = encodedImageWithGrid
+
+        # Also dump this 'with grid' version to a debug file, called "current_viewport.png"
+        pygame.image.save(visionSurface, "current_viewport.png")
 
         # JSON rendering
         uiJSON = ui.renderJSON()

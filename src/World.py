@@ -463,7 +463,12 @@ class World:
     #   The offset (in pixels) from the top-left corner of the window is (offsetX, offsetY)
     def renderViewport(self, window, worldStartX, worldStartY, sizeTilesX, sizeTilesY, offsetX, offsetY, scale=1.0, includeGrid=False):
         # Render the viewport
+        originalTileSize = int(32)
         tileSize = int(32 * scale)
+
+        # Handle the wonkyness of the scaling as it relates to slight Y drawing offsets (particularly for non-standard (i.e. non-32-pixel) sprites)
+        tileDiff = tileSize - originalTileSize
+        offsetY -= tileDiff
 
         # DEBUG: Enable rendering grid locations
         renderGridLocations = False
@@ -512,8 +517,12 @@ class World:
                     text = self.font.render(str(x) + "," + str(y), True, (0, 0, 0))
                     window.blit(text, (screenX, screenY))
                 if (renderGridLocations) or (includeGrid):
-                    # Also draw a rectangle around the tile
-                    pygame.draw.rect(window, (0, 0, 0), (screenX, screenY, tileSize, tileSize), 1)
+                    # Also draw a rectangle around the tile                    
+                    #pygame.draw.rect(window, (0, 0, 0), (screenX, screenY, tileSize, tileSize), 1)
+                    pygame.draw.rect(window, (0, 0, 0), (screenX, screenY+tileDiff, tileSize, tileSize), 1)
+                    
+                    
+                    
 
 
     #
