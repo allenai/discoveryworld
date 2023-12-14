@@ -468,7 +468,7 @@ class World:
 
         # Handle the wonkyness of the scaling as it relates to slight Y drawing offsets (particularly for non-standard (i.e. non-32-pixel) sprites)
         tileDiff = tileSize - originalTileSize
-        offsetY -= tileDiff
+        #offsetY -= tileDiff
 
         # DEBUG: Enable rendering grid locations
         renderGridLocations = False
@@ -519,7 +519,7 @@ class World:
                 if (renderGridLocations) or (includeGrid):
                     # Also draw a rectangle around the tile                    
                     #pygame.draw.rect(window, (0, 0, 0), (screenX, screenY, tileSize, tileSize), 1)
-                    pygame.draw.rect(window, (0, 0, 0), (screenX, screenY+tileDiff, tileSize, tileSize), 1)
+                    pygame.draw.rect(window, (0, 0, 0), (screenX, screenY, tileSize, tileSize), 1)
                     
                     
                     

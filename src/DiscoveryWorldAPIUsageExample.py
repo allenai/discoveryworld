@@ -465,6 +465,7 @@ if __name__ == "__main__":
     # Random agent
     #randomAgent(api, numSteps=10)
     # Create a video from the random agent
+
     #api.createAgentVideo(agentIdx=0, filenameOut="output_randomAgent.mp4")
     
 

@@ -187,13 +187,12 @@ class SpriteLibrary:
         # Adjust the y-coordinate based on the sprite's height
         adjusted_y = y
         if (adjustY):
-            adjusted_y = y - sprite.get_height() + tileSize
+            adjusted_y = y - (sprite.get_height()*scale) + tileSize
             #offsetY = 0
             #if (scale != 1):
             #    offsetY = tileSize - (tileSize*scale)
             #adjusted_y -= offsetY
-
-            print("Original Y: " + str(y) + "    Adjusted y: " + str(adjusted_y))
+            #print("Original Y: " + str(y) + "    Adjusted y: " + str(adjusted_y))
 
         if (scale != 1):
             sprite = pygame.transform.scale(sprite, (int(sprite.get_width() * scale), int(sprite.get_height() * scale)))            
