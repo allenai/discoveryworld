@@ -705,6 +705,7 @@ def consolodateKnowledgeStep(client, scientificKnowledge):
     promptStr += "Your job is to take the knowledge base below, and consolodate it into a smaller, more compact, and more useful knowledge base, but in exactly the same format (i.e. the list of measurements and hypotheses).\n"
     promptStr += "You can do this by removing any repeated or duplicated knowledge, and by removing any irrelevant knowledge.\n"
     promptStr += "You can also do this by combining multiple measurements or hypotheses into a single measurement or hypothesis, if they are logically equivalent.\n"
+    promptStr += "Consolodated hypotheses must still have a `status` (i.e. pending, confirmed, rejected) and ideally succinct `supporting evidence` supporting that status.\n"
     promptStr += "The output should be in JSON, and should have a single top-level key (`scientific_knowledge`), which is an array of measurements and/or hypotheses.\n"
     promptStr += "Here is the existing knowledge base:\n"
     promptStr += "```json\n"
@@ -726,7 +727,9 @@ def consolodateKnowledgeStep(client, scientificKnowledge):
 
     if (responseJSONKnowledge == None):
         # Failed for some reason -- return original knowledge base
-        return scientificKnowledge
+        #return scientificKnowledge # Deep copy
+        return copy.deepcopy(scientificKnowledge)
+
     
     # Check if the response includes a "scientific_knowledge" key
     if (responseJSONKnowledge != None) and ("scientific_knowledge" in responseJSONKnowledge):
@@ -739,7 +742,8 @@ def consolodateKnowledgeStep(client, scientificKnowledge):
                 return {"scientific_knowledge": newKnowledge}
                 
     # Otherwise, return the old one
-    return scientificKnowledge
+    #return scientificKnowledge # deep copy
+    return copy.deepcopy(scientificKnowledge)
 
 
 
