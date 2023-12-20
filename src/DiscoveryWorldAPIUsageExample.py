@@ -13,8 +13,33 @@ import random
 import copy
 
 
+#
+#   Helper functions
+#
 
-# Random agent, that randomly selects an action to take at each step. 
+def getVisibleObjectByUUID(uuid, observation):
+    # First, collect all objects
+    visibleObjectsByUUID = {}
+    for obj in observation["ui"]["inventoryObjects"]:
+        visibleObjectsByUUID[obj["uuid"]] = obj
+    for obj in observation["ui"]["accessibleEnvironmentObjects"]:
+        visibleObjectsByUUID[obj["uuid"]] = obj
+    
+    # # Also include 'nearbyObjects'
+    # for direction in observation["ui"]["nearbyObjects"]["objects"]:
+    #     for obj in direction:
+    #         visibleObjectsByUUID[obj["uuid"]] = obj
+
+    # Check if the UUID is in the list
+    if uuid in visibleObjectsByUUID:
+        return visibleObjectsByUUID[uuid]
+    else:
+        return None
+
+
+#
+#   Random agent, that randomly selects an action to take at each step. 
+#
 def randomAgent(api, numSteps:int = 10):
     r = random.Random()
     r.seed(0)
@@ -195,7 +220,6 @@ def extractJSONfromGPT4Response(strIn):
         return None
     
 
-
 #
 #   GPT-4 Baseline Agent 
 #
@@ -300,6 +324,23 @@ def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation):
         }
     else:
         nextAction.update(responseJSON)
+    
+        # nextAction has 'arg1' and 'arg2', expressed as UUIDs.  Look up the object names, and add these as "arg1_desc", and "arg2_desc"    
+        if ("arg1" in nextAction) and (nextAction["arg1"] != None):
+            uuid = nextAction["arg1"]
+            obj = getVisibleObjectByUUID(uuid, observation)
+            if (obj != None):
+                nextAction["arg1_desc"] = obj["name"] + ": " + obj["description"]
+            #else:
+            #    nextAction["arg1_desc"] = "ERROR: Could not find object with UUID " + str(uuid) + " in the list of visible objects."
+        if ("arg2" in nextAction) and (nextAction["arg2"] != None):
+            uuid = nextAction["arg2"]
+            obj = getVisibleObjectByUUID(uuid, observation)
+            if (obj != None):
+                nextAction["arg2_desc"] = obj["name"] + ": " + obj["description"]
+            #else:
+            #    nextAction["arg2_desc"] = "ERROR: Could not find object with UUID " + str(uuid) + " in the list of visible objects."
+
         # Try to run the action in the environment
         actionSuccess = api.performAgentAction(agentIdx=0, actionJSON=nextAction)
         print("ACTION SUCCESS: ")
@@ -521,6 +562,24 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
         }
     else:
         nextAction.update(responseJSON)
+
+        # nextAction has 'arg1' and 'arg2', expressed as UUIDs.  Look up the object names, and add these as "arg1_desc", and "arg2_desc"            
+        if ("arg1" in nextAction) and (nextAction["arg1"] != None):
+            uuid = nextAction["arg1"]
+            obj = getVisibleObjectByUUID(uuid, observation)
+            if (obj != None):
+                nextAction["arg1_desc"] = obj["name"] + ": " + obj["description"]
+            #else:
+                #nextAction["arg1_desc"] = "ERROR: Could not find object with UUID " + str(uuid) + " in the list of visible objects."
+        if ("arg2" in nextAction) and (nextAction["arg2"] != None):
+            uuid = nextAction["arg2"]
+            obj = getVisibleObjectByUUID(uuid, observation)
+            if (obj != None):
+                nextAction["arg2_desc"] = obj["name"] + ": " + obj["description"]
+            #else:
+                #nextAction["arg2_desc"] = "ERROR: Could not find object with UUID " + str(uuid) + " in the list of visible objects."
+
+
         # Try to run the action in the environment
         actionSuccess = api.performAgentAction(agentIdx=0, actionJSON=nextAction)
         print("ACTION SUCCESS: ")
