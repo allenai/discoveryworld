@@ -36,6 +36,25 @@ def getVisibleObjectByUUID(uuid, observation):
     else:
         return None
 
+# A short, single-line string, of just the immediately interactable objects
+def mkShortInteractableObjectList(observation):
+    objStrs = []
+    for obj in observation["ui"]["inventoryObjects"]:
+        name = obj["name"]
+        uuid = obj["uuid"]
+        strOut = "{\"name\": \"" + name + "\", \"uuid\": " + str(uuid) + "}"
+        objStrs.append(strOut)
+        
+    for obj in observation["ui"]["accessibleEnvironmentObjects"]:
+        name = obj["name"]
+        uuid = obj["uuid"]
+        strOut = "{\"name\": \"" + name + "\", \"uuid\": " + str(uuid) + "}"
+        objStrs.append(strOut)
+
+    jsonOut = "[" + ", ".join(objStrs) + "]"
+    return jsonOut
+        
+
 
 #
 #   Random agent, that randomly selects an action to take at each step. 
@@ -287,6 +306,7 @@ def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation):
     promptStr += "To help frame your investigations scientifically, and also evaluate your invesgiations, please include an additional JSON key, \"running_hypotheses\", that includes your current running hypothesis/hypotheses that you're working on developing and/or testing. \n"
     promptStr += "If your last action failed, or other last recent actions failed, please consider thinking why they failed, and trying different actions unless you believe things have changed to make failed actions work this time.\n"
     promptStr += "If you don't see what you're looking for, and anticipate it might be in another location, consider teleporting to that location. \n"
+    promptStr += "For reference again, here is a list of the objects that are interactable (from your inventory, and directly in front of you): " + mkShortInteractableObjectList(observation) + "\n"
     
 
     # Write prompt to console
@@ -524,6 +544,7 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
     promptStr1 += "To help frame your investigations scientifically, and also evaluate your invesgiations, please include an additional JSON key, \"running_hypotheses\", that includes your current running hypothesis/hypotheses that you're working on developing and/or testing. \n"
     promptStr1 += "If your last action failed, or other last recent actions failed, please consider thinking why they failed, and trying different actions unless you believe things have changed to make failed actions work this time.\n"
     promptStr1 += "If you don't see what you're looking for, and anticipate it might be in another location, consider teleporting to that location. \n"
+    promptStr1 += "For reference again, here is a list of the objects that are interactable (from your inventory, and directly in front of you): " + mkShortInteractableObjectList(observation) + "\n"
     
     promptStr = promptStr0 + promptStr1
 
