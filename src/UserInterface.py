@@ -242,7 +242,7 @@ class UserInterface:
         out["nearbyAgents"] = self.getRecentActionHistoryOfAgents(nearbyObjectsFull)
 
         # Recent posts on Discovery Feed
-        out["discoveryFeed"] = self.currentAgent.world.discoveryFeed.getSignalsFromPosts(curStep=self.currentAgent.world.getStepCounter(), lastNSteps=3)
+        out["discoveryFeed"] = self.currentAgent.world.discoveryFeed.getRecentPosts(curStep=self.currentAgent.world.getStepCounter(), lastNSteps=3)
 
         # Pop-up boxes/Dialog          
         dialogBoxDict = {}

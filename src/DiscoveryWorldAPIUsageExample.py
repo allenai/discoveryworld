@@ -963,7 +963,7 @@ if __name__ == "__main__":
 
     # GPT4-V Hypothesizer Agent
     GPT4VHypothesizerAgent(api, numSteps=250)
-    #api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v_hypothesizer.mp4")
+    api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v_hypothesizer.mp4")
 
     # Random agent
     #randomAgent(api, numSteps=10)
