@@ -132,6 +132,10 @@ class Agent(Object):
         # Get objects at location
         objs = self.world.getObjectsAt(facingLocation[0], facingLocation[1], respectContainerStatus=respectContainerStatus)                    
 
+        # Also try to get objects at the agent's location
+        objsAtAgentLocation = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"], respectContainerStatus=respectContainerStatus)
+        objs += objsAtAgentLocation
+
         # Return the objects
         return objs
 
@@ -191,7 +195,7 @@ class Agent(Object):
             "south": [],
             "south-west": [],
             "west": [],
-            "same": []
+            "same_location": []
         }
 
         for x in range(self.attributes["gridX"] - maxDistance, self.attributes["gridX"] + maxDistance + 1):
@@ -216,7 +220,7 @@ class Agent(Object):
                     elif (obj.attributes["gridX"] > self.attributes["gridX"]):
                         directions.append("east")
                     if (len(directions) == 0):
-                        directions.append("same")
+                        directions.append("same_location")
 
                     # Distance
                     distance = abs(obj.attributes["gridX"] - self.attributes["gridX"]) + abs(obj.attributes["gridY"] - self.attributes["gridY"])
