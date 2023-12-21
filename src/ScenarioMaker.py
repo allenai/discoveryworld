@@ -463,7 +463,7 @@ class ScenarioMaker:
         # Add teleport locations to world            
         world.addTeleportLocation("science lab", 10, 24)
         world.addTeleportLocation("cafeteria", 20, 22)
-        world.addTeleportLocation("farm", 10, 10)
+        world.addTeleportLocation("farm", 12, 13)
         world.addTeleportLocation("cave", 5, 8)
         world.addTeleportLocation("farmers field", 18, 25)
         world.addTeleportLocation("town square", 16, 18)

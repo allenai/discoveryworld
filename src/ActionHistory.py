@@ -35,10 +35,10 @@ class ActionType(Enum):
 # Returns a dictionary of action descriptions
 def getActionDescriptions(limited:bool = False):
     actionDescriptions = {
-        ActionType.MOVE_FORWARD.name:   {"args": [], "desc": "move forward 1 step (in whatever direction the agent is facing)"}, 
-        ActionType.MOVE_BACKWARD.name:  {"args": [], "desc": "move backward 1 step (backwards from whatever direction the agent is facing)"}, 
-        ActionType.ROTATE_CCW.name:     {"args": [], "desc": "move counter-clockwise 90 degrees"}, 
-        ActionType.ROTATE_CW.name:      {"args": [], "desc": "move clockwise 90 degrees"}, 
+        #ActionType.MOVE_FORWARD.name:   {"args": [], "desc": "move forward 1 step (in whatever direction the agent is facing)"}, 
+        #ActionType.MOVE_BACKWARD.name:  {"args": [], "desc": "move backward 1 step (backwards from whatever direction the agent is facing)"}, 
+        #ActionType.ROTATE_CCW.name:     {"args": [], "desc": "move counter-clockwise 90 degrees"}, 
+        #ActionType.ROTATE_CW.name:      {"args": [], "desc": "move clockwise 90 degrees"}, 
         ActionType.PICKUP.name:         {"args": ["arg1"], "desc": "pick up an object (arg1)"},
         ActionType.DROP.name:           {"args": ["arg1"], "desc": "drop an object (arg1)"},
         ActionType.PUT.name:            {"args": ["arg1", "arg2"], "desc": "put an object (arg1) in/on another object (arg2)"},
@@ -66,10 +66,10 @@ def getActionDescriptions(limited:bool = False):
     if (limited):
         # Remove the Forward/backward/rotate ccw/rotate cw actions
         # NOTE: THIS IS A TEMPORARY TEST!
-        actionDescriptions.pop(ActionType.MOVE_FORWARD.name)
-        actionDescriptions.pop(ActionType.MOVE_BACKWARD.name)
-        actionDescriptions.pop(ActionType.ROTATE_CCW.name)
-        actionDescriptions.pop(ActionType.ROTATE_CW.name)
+        #actionDescriptions.pop(ActionType.MOVE_FORWARD.name)
+        #actionDescriptions.pop(ActionType.MOVE_BACKWARD.name)
+        #actionDescriptions.pop(ActionType.ROTATE_CCW.name)
+        #actionDescriptions.pop(ActionType.ROTATE_CW.name)
 
         # Remove the talk action
         actionDescriptions.pop(ActionType.TALK.name)
