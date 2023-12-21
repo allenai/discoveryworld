@@ -134,6 +134,8 @@ class Agent(Object):
 
         # Also try to get objects at the agent's location
         objsAtAgentLocation = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"], respectContainerStatus=respectContainerStatus)
+        # But do not add itself
+        objsAtAgentLocation = [obj for obj in objsAtAgentLocation if (obj != self)]
         objs += objsAtAgentLocation
 
         # Return the objects
