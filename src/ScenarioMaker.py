@@ -481,9 +481,9 @@ class ScenarioMaker:
         # world.addAgent(currentAgent)
 
         # Add an NPC
-        npcColonist = NPCColonist(world, "Example NPC")
-        world.addObject(18, 25, Layer.AGENT, npcColonist)
-        world.addAgent(npcColonist)
+        #npcColonist = NPCColonist(world, "Example NPC")
+        #world.addObject(18, 25, Layer.AGENT, npcColonist)
+        #world.addAgent(npcColonist)
 
         # Add the NPC Chef
         npcChef = NPCChef1(world, "Chef", tables=tables, pot=pot)
@@ -508,7 +508,7 @@ class ScenarioMaker:
         for i in range(0, 5):
             colonist = NPCColonistAuto2(world, "Colonist " + str(i))
             dialogMaker.mkDialogColonist(colonist)        
-            world.addObject(13+i, 20, Layer.AGENT, colonist)
+            world.addObject(13+i, 19, Layer.AGENT, colonist)
             world.addAgent(colonist)
 
             npcColonists.append(colonist)

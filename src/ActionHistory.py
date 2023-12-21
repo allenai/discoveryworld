@@ -150,7 +150,66 @@ class ActionHistory:
             out.append(packed)
 
         return out
-    
+
+
+    # Export the action history to a list that can be converted to JSON
+    def exportToJSONAbleListHumanReadable(self, lastNSteps:int = 0):
+        out = []
+
+        # Determine what steps we should export from.  If lastNSteps is 0, then export all steps
+        currentWorldStep = self.world.getStepCounter()
+        exportAboveStep = currentWorldStep - lastNSteps
+        if (lastNSteps <= 0):
+            exportAboveStep = -1
+
+        for action in self.history:            
+            # If we're only exporting the last N steps, then skip any actions that happened before that
+            step = action['step']
+            if (step <= exportAboveStep):
+                continue
+
+            # Pack the action
+            packed = {
+                'actionType': action['actionType'].name,
+                'arg1': None,
+                'arg2': None,
+                'success': action['success'],
+                'step': action['step']
+                #'result': not saved here
+            }
+            if (action['arg1'] != None):
+                # Check type -- if it's an Object, then we need to pack it differently
+                if (isinstance(action['arg1'], Object)):
+                    #packed['arg1'] = {"objUUID": action['arg1'].uuid}
+                    packed['arg1_desc'] = action['arg1'].name + ": " + action['arg1'].getTextDescription()
+                    packed['arg1'] = action['arg1'].uuid
+                else:
+                    # It's not an Object, so just pack it directly                
+                    packed['arg1'] = action['arg1'] 
+            else:
+                # It is None, so delete this key from packed
+                del packed['arg1']
+
+            if (action['arg2'] != None):                
+                # Check type -- if it's an Object, then we need to pack it differently
+                if (isinstance(action['arg2'], Object)):
+                    #packed['arg2'] = {"objUUID": action['arg2'].uuid}
+                    packed['arg2_desc'] = action['arg2'].name + ": " + action['arg2'].getTextDescription()
+                    packed['arg2'] = action['arg2'].uuid
+                else:
+                    # It's not an Object, so just pack it directly
+                    packed['arg2'] = action['arg2'] 
+            else:
+                # It is None, so delete this key from packed
+                del packed['arg2']
+                    #packed['arg2'] = action['arg2'] 
+                #packed['arg2'] = {"objUUID": action['arg2'].uuid}
+
+            out.append(packed)
+
+        return out
+
+
     def __str__(self):
         strOut = ""
         for action in self.history:

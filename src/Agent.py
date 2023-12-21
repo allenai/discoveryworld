@@ -180,6 +180,7 @@ class Agent(Object):
     # Get a list of all objects within a certain number of grid locations of the agent. 
     # This should respect the container status. 
     def getNearbyVisibleObjects(self, maxDistance=2):
+        visibleObjectsFull = [] # The actual objects rather than dicts representing them, for downstream processing
         visibleObjects = []
         visibleObjectsByDirection = {
             "north-west": [],
@@ -222,6 +223,9 @@ class Agent(Object):
                     # Round distance to 1 decimal place
                     distance = round(distance, 1)
 
+                    # Add the actual object
+                    visibleObjectsFull.append(obj)
+
                     # Pack the object into the list
                     visibleObjects.append({
                         "name": obj.name,
@@ -241,7 +245,7 @@ class Agent(Object):
                     #visibleObjectsByDirection[direction].append(obj.name)
                     visibleObjectsByDirection[direction].append({"name": obj.name, "description": obj.getTextDescription()})
 
-        return visibleObjects, visibleObjectsByDirection
+        return visibleObjectsFull, visibleObjects, visibleObjectsByDirection
 
 
     #
