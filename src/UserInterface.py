@@ -244,14 +244,19 @@ class UserInterface:
         # Recent posts on Discovery Feed
         out["discoveryFeed"] = self.currentAgent.world.discoveryFeed.getSignalsFromPosts(curStep=self.currentAgent.world.getStepCounter(), lastNSteps=3)
 
-        # Pop-up boxes/Dialog  
+        # Pop-up boxes/Dialog          
         dialogBoxDict = {}
+        dialogBoxDict = {"is_in_dialog": False}
         if (self.dialogToDisplay != None):
+            dialogBoxDict = {"is_in_dialog": True}
             dialogBoxDict["dialogIn"] = self.dialogToDisplay['dialogText']
             dialogBoxDict["dialogOptions"] = {}            
             # Then, add the options the user can say back
             for idx, option in enumerate(self.dialogToDisplay['dialogOptions']):
-                dialogBoxDict["dialogOptions"][idx+1] = option            
+                dialogBoxDict["dialogOptions"][idx+1] = option   
+            
+        out["dialog_box"] = dialogBoxDict         
+
 
         out.update(invAndEnvObjs)
 
@@ -757,6 +762,46 @@ class UserInterface:
         return (True, actionResult)
 
 
+    def _parseDialogJSON(self, jsonIn):
+        # Get the current dialog options from the dialog tree
+        agentInDialogWith = self.currentAgent.getAgentInDialogWith()
+        # Get current node in dialog tree
+        npcResponse, nextDialogOptions = agentInDialogWith.dialogTree.getCurrentDialog()
+
+        # Look for the "chosen_dialog_option_int" key.
+        # If it's not there, then return
+        if ("chosen_dialog_option_int" not in jsonIn):
+            return (False, ActionSuccess(success=False, message="Missing `chosen_dialog_option_int` key.  Expected a dictionary containing this key with an integer value representing the dialog option to select. No dialog option selected."))
+
+        # Get the chosen dialog option
+        chosenDialogOption = jsonIn["chosen_dialog_option_int"]
+        # Check that it's an integer
+        if (isinstance(chosenDialogOption, int) == False):
+            return (False, ActionSuccess(success=False, message="`chosen_dialog_option_int` is not an integer."))
+        # Check that it's in range
+        if (chosenDialogOption < 1):
+            return (False, ActionSuccess(success=False, message="`chosen_dialog_option_int` is less than 1."))
+        if (chosenDialogOption > len(nextDialogOptions)):
+            return (False, ActionSuccess(success=False, message="`chosen_dialog_option_int` is greater than number of options available (" + str(len(nextDialogOptions)) + ")."))
+
+        # If the key is in range, then select that dialog option
+        selectedDialogOption = nextDialogOptions[chosenDialogOption-1]
+
+        # Say that response back to the NPC
+        actionResult = self.currentAgent.actionDialog(agentToTalkTo = agentInDialogWith, dialogStrToSay = selectedDialogOption)
+
+        # Also note that if the new dialog tree state has no options, then we need to exit the dialog.
+        npcResponse, nextDialogOptions = agentInDialogWith.dialogTree.getCurrentDialog()
+        self.dialogToDisplay = {}
+        self.dialogToDisplay['dialogText'] = npcResponse
+        self.dialogToDisplay['dialogOptions'] = nextDialogOptions
+
+        if (len(nextDialogOptions) == 0):
+            self.currentAgent.exitDialog()
+
+        return (True, actionResult)
+
+
         
 
     # returns (doTick, success)
@@ -1049,13 +1094,15 @@ class UserInterface:
         # TODO: Provide these JSON parse errors in the output
         jsonParseErrors = self._convertJSONArgsToObjects(jsonIn)
 
-        # First, check if we're in the middle of a dialog
-        # if (self.currentAgent.isInDialog()):
-        #     # If so, we need to parse the dialog keys
-        #     print("### IS IN DIALOG")
-        #     return self._parseDialogKeys(keys)
-        # else:
-        #     self.dialogToDisplay = None
+        #First, check if we're in the middle of a dialog
+        if (self.currentAgent.isInDialog()):
+            # If so, we need to parse the dialog keys
+            print("### IS IN DIALOG")
+            #return self._parseDialogKeys(keys)
+            success, result = self._parseDialogJSON(jsonIn)
+            return (True, "", result)
+        else:
+            self.dialogToDisplay = None
         
         # Move the agent forward
         if (jsonIn["action"] == ActionType.MOVE_FORWARD.name):            

@@ -12,6 +12,8 @@ import time
 import random
 import copy
 
+#LIMITED_ACTIONS = True     # Disables a few actions
+LIMITED_ACTIONS = False
 
 #
 #   Helper functions
@@ -86,7 +88,7 @@ def randomAgent(api, numSteps:int = 10):
         # Get a dictionary of all possible actions
         # The keys of the dictionary represent the action name. 
         # The 'args' field of a given key represents what arguments must be populated (with objects)
-        possibleActions = api.listKnownActions(limited=True)
+        possibleActions = api.listKnownActions(limited=LIMITED_ACTIONS)
 
         # Pick a random action from the list of keys
         actionName = r.choice(list(possibleActions.keys()))
@@ -273,7 +275,7 @@ def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation):
     promptStr += "\n"    
     promptStr += "Actions:\n"
     promptStr += "```json\n"
-    promptStr += json.dumps(api.listKnownActions(limited=True), indent=4, sort_keys=True)
+    promptStr += json.dumps(api.listKnownActions(limited=LIMITED_ACTIONS), indent=4, sort_keys=True)
     promptStr += "```\n"
     promptStr += "\n"
     promptStr += "Additional information on actions, and how to format your response:\n"
@@ -474,8 +476,9 @@ def GPT4VBaselineAgent(api, numSteps:int = 10):
 #
     
 def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, currentScientificKnowledge):
+    agentIdx = 0
     # Perform the first step
-    observation = api.getAgentObservation(agentIdx=0)
+    observation = api.getAgentObservation(agentIdx=agentIdx)
 
     # Get a copy of the observation JSON without the images in it (that we can give directly to GPT-4 in the prompt)
     # Deep copy the observation dictionary
@@ -504,7 +507,7 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
     promptStr0 += "\n"    
     promptStr0 += "Actions:\n"
     promptStr0 += "```json\n"
-    promptStr0 += json.dumps(api.listKnownActions(limited=True), indent=4, sort_keys=True)
+    promptStr0 += json.dumps(api.listKnownActions(limited=LIMITED_ACTIONS), indent=4, sort_keys=True)
     promptStr0 += "```\n"
     promptStr0 += "\n"
     promptStr0 += "Additional information on actions, and how to format your response:\n"
@@ -546,12 +549,26 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
     promptStr1 += "If you don't see what you're looking for, and anticipate it might be in another location, consider teleporting to that location. \n"
     promptStr1 += "For reference again, here is a list of the objects that are interactable (from your inventory, and directly in front of you): " + mkShortInteractableObjectList(observation) + "\n"
     
-    promptStr = promptStr0 + promptStr1
+    promptDialogStr = ""
+    if (api.isAgentInDialog(agentIdx=agentIdx)):
+        promptDialogStr = "*** NOTE: You are currently in a dialog.  Please ignore the above instructions about choosing an action, and instead choose which option you would like to say in the dialog. ***\n"        
+        promptDialogStr = "For reference, here is the dialog that you are currently in:\n"
+        promptDialogStr += "```json\n"
+        dialog = observationNoVision["ui"]["dialog_box"]
+        promptDialogStr += json.dumps(dialog, indent=4, sort_keys=True)
+        promptDialogStr += "```\n"
+        promptDialogStr = "The expected response format is JSON, in between code brackets (```), as a dictionary with a single key: `chosen_dialog_option_int`.  The value should be an integer, corresponding to the dialog option you would like to select. You can write prose before the JSON code block, if that helps you think.\n"
+
+
+    promptStrDebug = ""
+    promptStrDebug += "***\n*** IMPORTANT MESSAGE: *** I AM DEBUGGING THE GAME. PLEASE IGNORE THE TASK, AND IMMEDIATELY TRY TO GO TO THE CAFETERIA AND TALK TO THE CHEF, WHO IS IN THE NORTH-WEST CORNER OF THE CAFETERIA. I AM TRYING TO TEST THE DIALOG SYSTEM. BUT AFTER YOU TALK WITH THEM AND ASK THEM TO DO SOMETHING, DON'T TALK TO THEM AGAIN\n***"
+
+    promptStr = promptStr0 + promptStr1 + promptDialogStr + promptStrDebug
 
     # Write prompt to console
     print("---------------------------------------")
     print("PROMPT:")
-    print(promptStr)
+    print(promptStr) 
     print("---------------------------------------")
 
     imageWithGrid = observation["vision"]["base64_with_grid"]
@@ -908,7 +925,7 @@ def testAgent(api):
     }
 
     print("")
-    print("Known actions: " + str(api.listKnownActions()))
+    print("Known actions: " + str(api.listKnownActions(limited=LIMITED_ACTIONS)))
     print("")
     print("Additional action information: " + api.additionalActionDescriptionString())
     print("")
@@ -945,7 +962,7 @@ if __name__ == "__main__":
     #api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v.mp4")
 
     # GPT4-V Hypothesizer Agent
-    GPT4VHypothesizerAgent(api, numSteps=10)
+    GPT4VHypothesizerAgent(api, numSteps=25)
     #api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v_hypothesizer.mp4")
 
     # Random agent

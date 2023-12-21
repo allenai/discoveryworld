@@ -197,6 +197,23 @@ class DiscoveryWorldAPI:
     def listTeleportLocationsDict(self):        
         return self.world.getTeleportLocations()
         
+    # Check to see if the agent is currentinly in the middle of a dialog
+    def isAgentInDialog(self, agentIdx):
+        # Check to make sure the agent index is valid
+        if (agentIdx < 0) or (agentIdx >= self.numUserAgents):            
+            #response = {"errors": ["Agent index out of range. Specified agent index: " + str(agentIdx) + ". Number of agents: " + str(self.numUserAgents) + " (i.e. value must be between 0 and " + str(self.numUserAgents - 1) + ")"]}
+            return False
+
+        # Get a reference to this agent's UI
+        ui = self.ui[agentIdx]
+
+        # Get a reference to the agent        
+        agent = ui.currentAgent
+
+        # Return whether or not the agent is in a dialog
+        return agent.isInDialog()
+    
+
 
     # Perform an action for a given agent
     def performAgentAction(self, agentIdx, actionJSON):
@@ -280,6 +297,7 @@ class DiscoveryWorldAPI:
     #   UI
     #
     def setUI(self, agentIdx):
+        print("TODO!!!!!!!!!!!!!!!!!")
         pass
 
 
