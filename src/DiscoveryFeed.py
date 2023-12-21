@@ -97,9 +97,27 @@ class DiscoveryFeed:
         return posts
 
     #
-    #   Collect all signals from posts made in the current step
+    #   Collect all signals from posts made in the current step    
     #
-    def getSignalsFromPosts(self, curStep:int, lastNSteps:int = 3):
+
+
+    # Collect all the signals from posts and articles made in the current step
+    def getSignalsFromPosts(self, curStep:int):
+        signals = set()
+        for post in self.updatePosts:
+            if (post["step"] == curStep):
+                for signal in post["signals"]:
+                    signals.add(signal)
+
+        for article in self.articles:
+            if (article["step"] == curStep):
+                for signal in article["signals"]:
+                    signals.add(signal)
+        
+        return list(signals)
+
+
+    def getRecentPosts(self, curStep:int, lastNSteps:int = 3):
         # Get all posts posted within lastNSteps of curStep
         posts = []
         articles = []

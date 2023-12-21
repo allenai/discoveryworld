@@ -28,6 +28,7 @@ class DialogTree():
     def reset(self):
         self.setCurrentNode(self.rootNodeName)
         self.engagingWithAgent = None
+        self.agent.setNotInDialog()
 
     # Call this when an agent stops talking to this dialog tree        
     def endDialog(self):
@@ -156,8 +157,8 @@ class DialogMaker():
 
         # Root node (introduce the chef, give options to ask to collect food, or distribute food)
         rootNode = DialogNode("rootNode", "Hello, I am the chef. I can collect food from the farm, or serve food from the pot.", statesToAdd = [], statesToRemove = [])
-        rootNode.addDialogOption("Can you collect food?", "collectFoodNode")
-        rootNode.addDialogOption("Can you serve food?", "serveFoodNode")
+        rootNode.addDialogOption("Can you collect food from the farm and place it in the pot?", "collectFoodNode")
+        rootNode.addDialogOption("Can you serve the food in the pot onto the buffet so it's available for meals?", "serveFoodNode")
         rootNode.addDialogOption("Can you call the colonists for a meal?", "callColonistsNode")
         rootNode.addDialogOption("Goodbye", "endNode")
         tree.addNode(rootNode)
@@ -169,7 +170,7 @@ class DialogMaker():
         tree.addNode(collectFoodNode)
         
         # Serve food node 
-        serveFoodNode = DialogNode("serveFoodNode", "I will serve food from the pot.", statesToAdd = ["serveSignal"], statesToRemove = [])
+        serveFoodNode = DialogNode("serveFoodNode", "I will serve food from the pot to the buffet so it's available for meals.", statesToAdd = ["serveSignal"], statesToRemove = [])
         serveFoodNode.addDialogOption("OK", "endNode")
         tree.addNode(serveFoodNode)
         

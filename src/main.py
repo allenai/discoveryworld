@@ -170,35 +170,36 @@ def main():
 
             else:
             
-                # Manual state adjustment
+                # # Manual state adjustment
                 if (keys[pygame.K_1]):
-                    # Change the colonist NPC external signal
-                    print("Sending 'eatSignal' to colonist NPC")
-                    for npcColonist in npcColonists:
-                        npcColonist.attributes['states'].add("eatSignal")
+                    pass
+                #     # Change the colonist NPC external signal
+                #     print("Sending 'eatSignal' to colonist NPC")
+                #     for npcColonist in npcColonists:
+                #          npcColonist.attributes['states'].add("eatSignal")
 
-                    doNextTurn = True
+                #     doNextTurn = True
                 
-                elif (keys[pygame.K_2]):
-                    # Change the Chef NPC external signal
-                    print("Sending 'collectSignal' to chef NPC")
-                    npcChef.attributes['states'].add("collectSignal")
+                # elif (keys[pygame.K_2]):
+                #     # Change the Chef NPC external signal
+                #     print("Sending 'collectSignal' to chef NPC")
+                #     npcChef.attributes['states'].add("collectSignal")
 
-                    doNextTurn = True
+                #     doNextTurn = True
 
-                elif (keys[pygame.K_3]):
-                    # Change the Chef NPC external signal
-                    print("Sending 'serveSignal' to chef NPC")
-                    npcChef.attributes['states'].add("serveSignal")
+                # elif (keys[pygame.K_3]):
+                #     # Change the Chef NPC external signal
+                #     print("Sending 'serveSignal' to chef NPC")
+                #     npcChef.attributes['states'].add("serveSignal")
 
-                    doNextTurn = True
+                #     doNextTurn = True
 
-                elif (keys[pygame.K_4]):
-                    # Change the Farmer's external signal
-                    print("Sending 'plantSignal' to Farmer NPC")
-                    npcFarmer.attributes['states'].add("plantSignal")
+                # elif (keys[pygame.K_4]):
+                #     # Change the Farmer's external signal
+                #     print("Sending 'plantSignal' to Farmer NPC")
+                #     npcFarmer.attributes['states'].add("plantSignal")
 
-                    doNextTurn = True
+                #     doNextTurn = True
 
 
                 # Manual "wait"
@@ -258,6 +259,12 @@ def main():
             delta = curSize - lastSize
             print("Current memory usage: " + str( curSize ) + " MB      (delta: " + str(delta) + " MB)")
             lastSize = curSize
+
+            # Show all discovery feed posts
+            print("Discovery feed:")
+            for post in world.discoveryFeed.updatePosts:
+                print(post)
+
 
             # Dump the world history to a JSON file
             # prevStep = world.step - 1

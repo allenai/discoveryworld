@@ -325,9 +325,11 @@ class World:
 
         # Collect any signals from posts sent in the current Discovery Feed step
         signalsToBroadcast = self.discoveryFeed.getSignalsFromPosts(curStep = self.step)
+        
         # Broadcast those signals to all agents
         for agent in self.agents:
             for signal in signalsToBroadcast:
+                print("BROADCASTING SIGNAL " + str(signal) + " to agent " + agent.name)
                 agent.addState(signal)            
 
         # Increment step counter

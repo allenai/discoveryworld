@@ -1175,6 +1175,13 @@ class Agent(Object):
         #  Note: The 'timestamp' field is used to break ties in priority
         self.autopilotActionQueue.sort(key=lambda x: (x.priority, -x.timestamp), reverse=True)                        
         
+    # Returns TRUE if there are one or more actions in the autopilot queue with a priority greater than 1
+    def isBusyAutopilot(self):
+        for action in self.autopilotActionQueue:
+            if (action.priority > 1):
+                return True
+        return False
+
 
     # Display the autopilot queue (for debugging)
     def displayAutopilotQueueStr(self):
@@ -1221,6 +1228,10 @@ class Agent(Object):
         # Check if dialogable
         if ('isDialogable' in agentToTalkTo.attributes) and (agentToTalkTo.attributes["isDialogable"] == False):
             return ActionSuccess(False, "You can't talk to that (" + agentToTalkTo.name + ").")
+        
+        # Check if the other agent is busy, and we're not already talking to it
+        if (agentToTalkTo.isBusyAutopilot()) and (agentToTalkTo.dialogTree.getAgentTalkingTo() != self):
+            return ActionSuccess(False, "That agent (" + agentToTalkTo.name + ") is busy, try again later.")
 
         # Make sure the agent to talk to has a dialog tree
         if (agentToTalkTo.dialogTree == None):
@@ -1233,13 +1244,15 @@ class Agent(Object):
             # Check if te action is to stop the dialog
             if (dialogStrToSay == None):
                 # Stop the dialog
-                agentToTalkTo.dialogTree.endDialog()
-                self.setNotInDialog()
+                agentToTalkTo.dialogTree.endDialog()                                
+                self.setNotInDialog()                
+
                 return ActionSuccess(True, "Finished talking to " + str(agentToTalkTo.name) + ".")
 
             # We're currently in the middle of a dialog -- send the dialogStrToSay. 
             success = agentToTalkTo.dialogTree.say(thingToSay=dialogStrToSay, agentEngaging=self)
             if (success == False):
+                agentToTalkTo.dialogTree.endDialog()
                 self.setNotInDialog()
                 return ActionSuccess(False, "Something went wrong in the dialog -- the response was unexpected.")
 
@@ -1248,6 +1261,7 @@ class Agent(Object):
 
             # Return the NPC's response
             self.setInDialogWith(agentToTalkTo)
+            agentToTalkTo.setInDialogWith(self)
             return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
 
         else: 
@@ -1272,6 +1286,7 @@ class Agent(Object):
 
                 # Return the NPC's response
                 self.setInDialogWith(agentToTalkTo)
+                agentToTalkTo.setInDialogWith(self)
                 return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
             
 
@@ -1340,6 +1355,17 @@ class Agent(Object):
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
 
+    #
+    #   Text Observations
+    #
+    def getTextDescription(self):
+        # Get a text description of this object
+        outStr = self.name
+        # Check if busy
+        if (self.isBusyAutopilot()):
+            outStr += " (busy)"
+
+        return outStr
 
 
 
@@ -2061,7 +2087,7 @@ class NPCColonist1(NPC):
         print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
-        if (len(self.autopilotActionQueue) > 0):            
+        if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):            
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
@@ -2242,7 +2268,7 @@ class NPCChef1(NPC):
         print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
-        if (len(self.autopilotActionQueue) > 0):
+        if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):            
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
@@ -2392,7 +2418,7 @@ class NPCColonistAuto2(NPC):
         print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
-        if (len(self.autopilotActionQueue) > 0):
+        if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):            
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
@@ -2591,7 +2617,7 @@ class NPCFarmer1(NPC):
         print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
-        if (len(self.autopilotActionQueue) > 0):
+        if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):            
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
