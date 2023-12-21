@@ -1021,7 +1021,7 @@ class UserInterface:
                     break
             # If we reach here and the object is still None, then the object was not found
             if (arg1Obj == None):
-                errors.append("arg1: Could not find object with UUID '" + str(jsonIn['arg1']) + "'")
+                errors.append("arg1: Could not find object with UUID '" + str(jsonIn['arg1']) + "'. Are you sure it's accessible (i.e in your inventory, or directly in front of you?)")
         # So things don't break, if arg1 is not specified (or not found), set it to the first object. 
         # if (arg1Obj == None):
         #     if (len(accessibleObjs) > 0):
@@ -1037,7 +1037,7 @@ class UserInterface:
                     break        
             # If we reach here and the object is still None, then the object was not found
             if (arg2Obj == None):
-                errors.append("arg2: Could not find object with UUID '" + str(jsonIn['arg2']) + "'")
+                errors.append("arg2: Could not find object with UUID '" + str(jsonIn['arg2']) + "' Are you sure it's accessible (i.e in your inventory, or directly in front of you?)")
         # So things don't break, if arg2 is not specified (or not found), set it to the first object.
         # if (arg2Obj == None):
         #     if (len(accessibleObjs) > 0):

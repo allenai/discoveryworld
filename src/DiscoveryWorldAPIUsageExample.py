@@ -591,6 +591,7 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
 
     # Check if the response is valid
     nextAction = {}
+    actionSuccess = {}
     if (responseJSON == None):
         nextAction = {
             "action": "ERROR: Could not parse the last action that was generated.  Please be careful in generating valid JSON.",
@@ -622,6 +623,13 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
         actionSuccess = api.performAgentAction(agentIdx=0, actionJSON=nextAction)
         print("ACTION SUCCESS: ")
         print(actionSuccess)
+        # Hacky: Reformat "success" key so it's JSON serializable
+        wasSuccessful = actionSuccess["success"].success
+        if (wasSuccessful == True):
+            actionSuccess["errors"] = []
+            actionSuccess["success"] = True        
+        else:
+            actionSuccess["success"] = actionSuccess["success"].success
 
 
     # Perform world tick
@@ -697,6 +705,7 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
     
     packedOut = {
         "nextAction": nextAction,
+        "actionSuccess": actionSuccess,
         "observation": observation,
         "promptStr": promptStr,
         "responseStr": responseStr,
@@ -835,6 +844,11 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10):
             lastObservation = outHypothesizer["observation"]
             promptStr = outHypothesizer["promptStr"]
             responseStr = outHypothesizer["responseStr"]
+            actionSuccess = outHypothesizer["actionSuccess"]
+
+            # Store any detailed parsing errors in the last action, so these are stored in the history for reference
+            if ("errors" in actionSuccess):
+                lastAction["errors"] = actionSuccess["errors"]
 
             allHistory.append(outHypothesizer)
 
@@ -962,7 +976,7 @@ if __name__ == "__main__":
     #api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v.mp4")
 
     # GPT4-V Hypothesizer Agent
-    GPT4VHypothesizerAgent(api, numSteps=250)
+    GPT4VHypothesizerAgent(api, numSteps=1000)
     api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v_hypothesizer.mp4")
 
     # Random agent
