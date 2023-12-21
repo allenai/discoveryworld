@@ -2,6 +2,7 @@
 # A news feed for status updates from agents, as well as scientific articles published by agents (or that are preexisting in a given scenario)
 
 import json
+import copy
 
 class DiscoveryFeed:
     # Constructor
@@ -86,14 +87,44 @@ class DiscoveryFeed:
         return None
     
     #
-    #   Collect all signals from posts made in the current step
+    #   Get recent posts
     #
-    def getSignalsFromPosts(self, curStep:int):
-        signals = []
+    def getRecentPosts(self, curStep:int):
+        posts = []
         for post in self.updatePosts:
             if (post["step"] == curStep):
-                signals.extend(post["signals"])
-        return signals
+                posts.append(post)
+        return posts
+
+    #
+    #   Collect all signals from posts made in the current step
+    #
+    def getSignalsFromPosts(self, curStep:int, lastNSteps:int = 3):
+        # Get all posts posted within lastNSteps of curStep
+        posts = []
+        articles = []
+
+        # Get the posts
+        for post in self.updatePosts:
+            if ((post["step"] >= (curStep - lastNSteps)) and (post["step"] <= curStep)):
+                # Add the post, but with the signals removed
+                postCopy = copy.deepcopy(post)                
+                del postCopy["signals"]                
+                posts.append(postCopy)
+
+        # Get the articles (but just post the step, id, titles and authors)
+        for article in self.articles:
+            if ((article["step"] >= (curStep - lastNSteps)) and (article["step"] <= curStep)):
+                articles.append({"step": article["step"], "postID": article["postID"], "title": article["title"], "author": article["author"]})
+
+        # Packed
+        packed = {
+            "description": "This section contains recent posts (from the last few steps) on the Discovery Feed social media platform.",
+            "posts": posts,
+            "scientific_articles": articles
+        }
+        
+        return packed
 
     #
     #   Export to dictionary

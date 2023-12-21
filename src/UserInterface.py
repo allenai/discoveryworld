@@ -241,6 +241,9 @@ class UserInterface:
         # For any agents in the nearby objects list, show their recent action history to the user, to show what they're doing. 
         out["nearbyAgents"] = self.getRecentActionHistoryOfAgents(nearbyObjectsFull)
 
+        # Recent posts on Discovery Feed
+        out["discoveryFeed"] = self.currentAgent.world.discoveryFeed.getSignalsFromPosts(curStep=self.currentAgent.world.getStepCounter(), lastNSteps=3)
+
         # Pop-up boxes/Dialog  
         dialogBoxDict = {}
         if (self.dialogToDisplay != None):
