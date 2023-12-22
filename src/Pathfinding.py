@@ -401,7 +401,7 @@ class Pathfinder():
 
         for tileX in range(startX, endX):
             for tileY in range(startY, endY):
-                objectsAtTile = world.getObjectsAt(tileX, tileY, respectContainerStatus=True)
+                objectsAtTile = world.getObjectsAt(tileX, tileY, respectContainerStatus=True, excludeObjectsOnAgents=excludeObjectsOnAgent)
                 for obj in objectsAtTile:
                     if (obj.type in objectTypes):
                         # We found an object that matches one of the types we're looking for.  Place it in the container.

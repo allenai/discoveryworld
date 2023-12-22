@@ -167,7 +167,7 @@ class World:
 
 
     # Get all objects at a given position
-    def getObjectsAt(self, x, y, respectContainerStatus=False, includeParts=False):
+    def getObjectsAt(self, x, y, respectContainerStatus=False, includeParts=False, excludeObjectsOnAgents=False):
         # Bound checking: Make sure the object is within the world bounds
         if x < 0 or x >= self.sizeX or y < 0 or y >= self.sizeY:
             print("Error: Object out of bounds: " + str(x) + ", " + str(y))
@@ -184,6 +184,12 @@ class World:
                 for obj in objsToAdd:
                     objects.append(obj)
                     contents = []
+                    # Check if this object is an agent
+                    if (excludeObjectsOnAgents == True) and (obj.attributes["isAgent"] == True):
+                        #print("\t\t\t\t\tSkipping agent " + obj.name)
+                        continue
+
+                    # Add contents/parts
                     if (includeParts == False):
                         contents = obj.getAllContainedObjectsRecursive(respectContainerStatus=respectContainerStatus)
                     else:
