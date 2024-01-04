@@ -184,7 +184,7 @@ class World:
                 for obj in objsToAdd:
                     objects.append(obj)
                     contents = []
-                    # Check if this object is an agent
+                    # Check if this object is an agent (i.e. is an instance of Agent)
                     if (excludeObjectsOnAgents == True) and (obj.attributes["isAgent"] == True):
                         #print("\t\t\t\t\tSkipping agent " + obj.name)
                         continue

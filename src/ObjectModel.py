@@ -48,10 +48,14 @@ class Object:
 
         # Agent action history (if applicable)
         self.actionHistory = None
+        self.attributes["isAgent"] = False                          # Is this object an agent? (e.g. a person)
+        self.attributes["isNPC"] = False                            # Is this agent an NPC?        
 
         # Default attributes
         self.attributes["isMovable"] = True                         # Can it be moved?
         self.attributes["isPassable"] = True                        # Can an agent walk over this?
+
+
 
         # Materials
         self.attributes["materials"] = []                           # List of materials that this object is made of
@@ -358,7 +362,19 @@ class Object:
     #
     def getTextDescription(self):
         # Get a text description of this object
-        return self.name 
+        containerName = ""        
+        if (self.parentContainer != None):            
+            containerName = self.parentContainer.name + ( " [uuid: " + str(self.parentContainer.uuid) + "]")
+
+        outStr = self.name
+        if (containerName != ""):
+            containerPrefix = "in"
+            if ("containerPrefix" in self.attributes) and (self.attributes['containerPrefix'] != ""):
+                containerPrefix = self.attributes['containerPrefix']
+
+            outStr += " (" + containerPrefix + " " + containerName + ")"
+
+        return outStr
     
 
     def getTextObservationMicroscopic(self):

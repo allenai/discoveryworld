@@ -36,6 +36,7 @@ class Agent(Object):
         self.actionTimestampCounter = 0                             # Counter for the timestamp of the last action
 
         # Is this a user-controlled agent, or NPC?
+        self.attributes["isAgent"] = True                           # Is this object an agent? (e.g. a person)
         self.attributes["isNPC"] = False                            # Is this agent an NPC?
 
         # Default attributes
@@ -46,7 +47,7 @@ class Agent(Object):
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = False                      # Can be opened
         self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
-        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")            
         self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
 
         # Dialog attributes
@@ -249,7 +250,7 @@ class Agent(Object):
                     #for direction in directions:
                     direction = "-".join(directions)
                     #visibleObjectsByDirection[direction].append(obj.name)
-                    visibleObjectsByDirection[direction].append({"name": obj.name, "description": obj.getTextDescription()})
+                    visibleObjectsByDirection[direction].append({"name": obj.name, "description": obj.getTextDescription(), "distance": distance})
 
         return visibleObjectsFull, visibleObjects, visibleObjectsByDirection
 
@@ -1394,7 +1395,7 @@ class NPC(Agent):
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = False                      # Can be opened
         self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
-        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")            
     
         # Dialog attributes
         self.attributes['isDialogable'] = True                     # Can it be dialoged with?
@@ -1821,7 +1822,7 @@ class NPCColonist(NPC):
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = False                      # Can be opened
         self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
-        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")            
     
         # Dialog attributes
         self.attributes['isDialogable'] = True                     # Can it be dialoged with?
