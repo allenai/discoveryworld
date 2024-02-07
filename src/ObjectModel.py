@@ -111,6 +111,11 @@ class Object:
         # Modifier text, if the object is viewed under a microscope. This is a list of strings, which are displayed in the microscope view.
         self.attributes['microscopeModifierText'] = []
 
+        # Substance properties
+        self.attributes["substanceName"] = ""                     # Name of the substance
+        self.attributes['isSubstance'] = False                    # Is it a substance?
+        self.attributes['isAutoReacting'] = False                 # Does it react automatically with other substances?        
+
 
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
@@ -3076,3 +3081,160 @@ class FlowerPot(Object):
 #   Object: Radioactive Check Source
 #
 
+
+
+#
+#   Object: Chemical (Substance)
+#
+class Substance(Object):
+    # Constructor
+    def __init__(self, world, substanceName:str="unknownSubstance"):
+        # Default sprite name
+        Object.__init__(self, world, "substance", "substance", defaultSpriteName = "instruments_sample")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+        # Container
+        self.attributes['isContainer'] = False                     # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can not be opened (things are stored in the open pot)
+        self.attributes['isOpenContainer'] = False                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+        self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
+
+        # Substance properties
+        self.attributes["substanceName"] = substanceName          # Name of the substance
+        self.attributes['isSubstance'] = True                     # Is it a substance?
+        self.attributes['isAutoReacting'] = True                  # Does it react automatically with other substances?        
+
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
+        print("Substance tick: " + str(self.attributes["substanceName"]) + " (" + str(self.name) + ") UUID: " + str(self.uuid))
+
+        # The substance name is dependent on the contents of the substance. 
+
+        oldSubstanceName = self.attributes["substanceName"]
+        # Case 1: Empty substance
+        if (len(self.contents) == 0):
+            # Pure substance, keep current substance name
+            #self.attributes["substanceName"] = "unknown substance"
+            print("SUBSTANCE TICK: Pure substance")
+            pass
+        
+        # Case 2: Single substance
+        elif (len(self.contents) == 1):
+            # Check that the contents are a substance
+            obj = self.contents[0]
+            if (obj.attributes['isSubstance']):
+                self.attributes["substanceName"] = obj.attributes["substanceName"]
+            else:
+                self.attributes["substanceName"] = "unknown substance"
+
+            print("SUBSTANCE TICK: Only 1 substance")
+        # Case 3: Multiple substances
+        else:
+            # First, create a frequency counter of the substances
+            contentsFreq = {}
+            for obj in self.contents:
+                # Check if obj is a substance
+                if (obj.attributes['isSubstance']):
+                    subName = obj.attributes["substanceName"]
+                    if (subName in contentsFreq):
+                        contentsFreq[subName] += 1
+                    else:
+                        contentsFreq[subName] = 1
+
+            print("SUBSTANCE TICK: Multiple substances: " + str(contentsFreq) + " (old: " + str(oldSubstanceName) + ")")
+
+            # Check if there are zero keys in the frequency counter
+            if (len(contentsFreq) == 0):
+                self.attributes["substanceName"] = "unknown substance"
+                
+            # Check if there is only one key in the frequency counter
+            elif (len(contentsFreq) == 1):
+                self.attributes["substanceName"] = list(contentsFreq.keys())[0]
+            
+            # If there are multiple keys in the frequency counter, then we need to create a mixture name                        
+            else:            
+                # Next, sort by frequency
+                sortedContentsFreq = sorted(contentsFreq.items(), key=lambda x: x[1], reverse=True)
+                # Then, make a string of the form "X parts A, Y parts B, Z parts C, etc."
+                substanceName = "mixture ("
+                for i in range(len(sortedContentsFreq)):
+                    if (i > 0):
+                        substanceName += ", "
+                    substanceName += str(sortedContentsFreq[i][1]) + " parts " + str(sortedContentsFreq[i][0])
+                substanceName += ")"
+
+                self.attributes["substanceName"] = substanceName
+            
+        # Check if the sprite needs to be invalidated
+        if (oldSubstanceName != self.attributes["substanceName"]):
+            self.needsSpriteNameUpdate = True
+
+        # Set the name of the object to the substance name
+        self.name = self.attributes["substanceName"]
+
+        # Self-reacting substances
+        # Check if the substance is self-reacting
+        if (self.attributes['isAutoReacting']):
+
+            # Get a list of all substances in the same container as this substance (unless the container for this substance is also a Substance)
+            substancesInContainer = []
+            if (self.parentContainer is not None) and (self.parentContainer.attributes['isSubstance'] == False):
+                for obj in self.parentContainer.contents:
+                    if (obj.attributes['isSubstance']) and (obj.attributes["isAutoReacting"] == True):
+                        substancesInContainer.append(obj)
+
+            # Check to see that there is more than one different type of substance in the container (by 'substanceName' attribute)
+            substanceNames = set()
+            for sub in substancesInContainer:
+                substanceNames.add(sub.attributes["substanceName"])            
+                
+            # If the list of substances in the container is greater than 1, then we have a self-reacting substance
+            if (len(substanceNames) > 1):
+                # DEBUG: Show a list of names of the substances that are about to react
+                substancesNamesInContainer = [sub.attributes["substanceName"] for sub in substancesInContainer]
+                print("Self-reacting substance detected.  Reacting substances: " + str(substancesNamesInContainer))
+
+                # The way reactions are handled is by making a new Substance ("reacting substance"), and adding all the substances in the container to it.
+                reactingSubstance = Substance(self.world, "reacting substance")
+                # Add the 'reacting substance' to the parent container
+                self.parentContainer.addObject(reactingSubstance, force=True)
+                # Add all the substances in the container to the reacting substance
+                for sub in substancesInContainer:
+                    # Remove from current container
+                    self.world.removeObject(sub)
+                    # Add to reacting substance
+                    reactingSubstance.addObject(sub, force=True)
+                # (TODO: Also tick the reacting substances?)
+
+                # Call the tick on the reacting substance
+                reactingSubstance.tick()
+
+
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+        # # Infer sprite based on whether empty/non-empty
+        # if (len(self.contents) == 0):
+        #     self.curSpriteName = "placeholder_jar_empty"
+        # elif (len(self.contents) == 1):
+        #     self.curSpriteName = "placeholder_jar_full1"
+        # elif (len(self.contents) == 2):
+        #     self.curSpriteName = "placeholder_jar_full2"
+        # else:
+        #     self.curSpriteName = "placeholder_jar_full3"
+
+        self.curSpriteName = "instruments_sample"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+        

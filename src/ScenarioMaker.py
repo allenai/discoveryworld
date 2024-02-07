@@ -553,6 +553,12 @@ class ScenarioMaker:
         # Add to first table
         compoundTable1.addObject(mixingJar)
 
+        # Add substance
+        substance1 = world.createObject("TestSubstance")
+        substance2 = world.createObject("PurpleSubstance")
+        mixingJar.addObject(substance1)
+        mixingJar.addObject(substance2)
+
 
 
 #        seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)

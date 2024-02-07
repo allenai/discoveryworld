@@ -155,25 +155,30 @@ class ObjectMaker:
             # Return
             return obj
 
-    
-        elif (objectReferenceName in self.classIndex):
+        # Otherwise, assume it's a class name
+        #elif (objectReferenceName in self.classIndex):
+        else:
             # This object is in the classIndex dictionary. Create a new instance of the object, but do not add any new properties.
             print("Object reference name: " + objectReferenceName + " is in the classIndex dictionary.")
             className = objectReferenceName
             # Create a new instance of the class            
             obj = self._createObjectInstance(className)
 
+            if (obj is None):
+                print("Error: Could not create object instance for object name: " + className)
+                exit(1)
+
             # Special material initialization (if applicable)
             obj.initializeMaterialProperties(materialIndexDict=self.materialProperties)
 
             return obj
 
-        else:
-            # Unknown object
-            # Throw error
-            print("Unknown reference name: '" + objectReferenceName + "'")
-            exit(1)
-            return None
+        # else:
+        #     # Unknown object
+        #     # Throw error
+        #     print("Unknown reference name: '" + objectReferenceName + "'")
+        #     exit(1)
+        #     return None
             
 
 
@@ -223,24 +228,50 @@ class ObjectMaker:
             "PetriDish": PetriDish,
             "FertilizerPellet": FertilizerPellet,
             "FertilizerBag": FertilizerBag,
-            "ChemicalDispenser": ChemicalDispenser
+            "ChemicalDispenser": ChemicalDispenser,
+
+            # Substances
+            "TestSubstance": [Substance, "testSubstance"],
+            "PurpleSubstance": [Substance, "purpleSubstance"]
         }
 
         # Check that the class name is in the dictionary
         if (className not in objectClasses):
             # Unknown class -- throw error
             print("Unknown class: " + className)
-            exit(1)
+            return None
+            #exit(1)
 
         # Special case: Object (generic)
         if (className == "Object"):
             obj = Object(self.world, "", "", "")     # The name, type, and default sprite should get updated by the calling function
             return obj
+        
 
-
-        # General case: Create a new instance of the class
-        obj = objectClasses[className](self.world)
-        return obj
+        # Check if the class has arguments
+        if (type(objectClasses[className]) is list):
+            # Special case: Substance
+            # Create a new instance of the class
+            # 1 argument
+            if (len(objectClasses[className]) == 2):
+                obj = objectClasses[className][0](self.world, objectClasses[className][1])
+                return obj
+            # 2 arguments
+            elif (len(objectClasses[className]) == 3):
+                obj = objectClasses[className][0](self.world, objectClasses[className][1], objectClasses[className][2])
+                return obj
+            # 3 arguments
+            elif (len(objectClasses[className]) == 4):
+                obj = objectClasses[className][0](self.world, objectClasses[className][1], objectClasses[className][2], objectClasses[className][3])
+                return obj
+            # 4+ unsupported
+            else:
+                print("Unsupported number of arguments for class: " + className)
+                exit(1)
+        else:
+            # General case: Create a new instance of the class        
+            obj = objectClasses[className](self.world)
+            return obj
             
 
 
