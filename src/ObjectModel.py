@@ -2625,6 +2625,136 @@ class Jar(Object):
 
 
 #
+#   Object: Chemical Dispenser (container)
+#
+class ChemicalDispenser(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "dispenser", "dispenser", defaultSpriteName = "placeholder_jar_empty")
+
+        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isPassable"] = True                       # Agen't can't walk over this
+
+        # Container
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can not be opened (things are stored in the open pot)
+        self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+        self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
+
+        # Can be used (as a dispenser, into a container)
+        self.attributes["isUsable"] = True                        # Can it be used?
+
+        # Auto fill
+        self.autoFillCheckForObjectName = None
+        self.autoFillFillObjectName = None
+        self.lastAddedCount = 0
+        self.replenishTime = 5
+
+    # If we want this object to autofill (i.e. perpetually fill with a supply of an object), set it here. 
+    def setAutoFill(self, checkObjectName:str, fillObjectName:str, minCount:int, replenishTime:int=8):
+        self.autoFillCheckForObjectName = checkObjectName
+        self.autoFillFillObjectName = fillObjectName
+        self.autoFillMinCount = minCount
+        self.replenishTime = replenishTime
+        self.lastAddedCount = 0
+
+
+    #
+    #   Actions (use with)
+    #   TODO
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+
+        # Check if the patient object has the 'isShovelable' attribute
+        if (not patientObj.attributes["isContainer"]):
+            # Can't use the shovel on this object
+            return ActionSuccess(False, "You can't use the chemical dispenser on something that isn't a container (" + str(patientObj.name) + ").")
+
+        if (patientObj.attributes["isContainer"] == False):
+            # Can't use the shovel on this object
+            return ActionSuccess(False, "You can't use the chemical dispenser on something that isn't a container (" + str(patientObj.name) + ").")
+        
+        # Check that the container is open
+        if (patientObj.attributes["isOpenContainer"] == False):
+            return ActionSuccess(False, "You can't use the chemical dispenser on a container that isn't open (" + str(patientObj.name) + ").")
+
+        # Check that this dispenser isn't empty
+        if (len(self.contents) == 0):
+            return ActionSuccess(False, "The chemical dispenser is empty.")
+
+
+        # If we reach here, the patient object is a container, and it is open, and the dispenser is not empty.
+        # We can now dispense a single object of the contents into the container.
+
+        # Get the first object in the dispenser
+        objToAdd = self.contents[0]
+        # Add it to the patient object (container)        
+        self.world.removeObject(objToAdd)                   # Remove the object from the world
+        patientObj.addObject(objToAdd, force=True)          # Add the object to the patient container
+        # Invalidate the sprites for the container, and the dispenser
+        patientObj.invalidateSpritesThisWorldTile()
+        self.invalidateSpritesThisWorldTile()
+
+        # Return success
+        return ActionSuccess(True, "You dispense " + str(objToAdd.name) + " into the " + str(patientObj.name) + ".")
+    
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
+        # Auto fill
+        #if (self.autoFillObjectName != None and self.autoFillMinCount != None):
+        if (self.autoFillCheckForObjectName != None) and (self.autoFillFillObjectName != None) and (self.autoFillMinCount != None):
+            # Count how much of the object is contained within the root level of the contents
+            count = 0
+            for obj in self.contents:
+                if (obj.name == self.autoFillCheckForObjectName):
+                    count += 1
+            
+            # Fill up to the minimum count
+            if (count < self.autoFillMinCount):
+                # Check to see if the last added count is zero
+                if (self.lastAddedCount <= 0):
+                    # Add one more
+                    objToAdd = self.world.createObject(self.autoFillFillObjectName)
+                    self.addObject(objToAdd, force=True)
+                    # Tick the object to update its sprite
+                    objToAdd.tick()                    
+                    # Invalidate object sprite
+                    self.needsSpriteNameUpdate = True
+                    # Tick 
+                    self.lastAddedCount = self.replenishTime     # Wait a few ticks before adding the next one
+                else:
+                    self.lastAddedCount -= 1
+
+
+
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+        # Infer sprite based on whether empty/non-empty
+        if (len(self.contents) == 0):
+            self.curSpriteName = "placeholder_jar_empty"
+        elif (len(self.contents) == 1):
+            self.curSpriteName = "placeholder_jar_full1"
+        elif (len(self.contents) == 2):
+            self.curSpriteName = "placeholder_jar_full2"
+        else:
+            self.curSpriteName = "placeholder_jar_full3"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+
+#
 #   Object: Shovel (tool)
 #
 class Shovel(Object):

@@ -142,6 +142,8 @@ class World:
 
         # Remove the object from its current container
         object.removeSelfFromContainer()
+
+        ## TODO: Does it also have to be removed from the current grid location on the world grid? (e.g. 'addObject'ing the same object to two locations currently appears to render duplicate copies of the same object)
         
         # Set the object's position
         object.setWorldLocation(x, y)

@@ -512,3 +512,133 @@ class ScenarioMaker:
             world.addAgent(colonist)
 
             npcColonists.append(colonist)
+
+
+
+
+    # Storage shed
+    def mkStorageShed(self, x, y, world, buildingMaker):
+        # Create a small building
+        houseSizeX = 6
+        houseSizeY = 4
+        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Farm")
+
+        # Add a table in the farm house
+        compoundTable1 = world.createObject("Table")
+        compoundTable2 = world.createObject("Table")
+        compoundTable3 = world.createObject("Table")
+        compoundTable4 = world.createObject("Table")
+
+        # Create chemical dispensers
+        dispenser1 = world.createObject("ChemicalDispenser")
+        dispenser2 = world.createObject("ChemicalDispenser")
+        dispenser3 = world.createObject("ChemicalDispenser")
+
+        # Fill with chemicals
+        dispenser1.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
+
+        # Add dispensers to tables
+        compoundTable2.addObject(dispenser1)
+        compoundTable3.addObject(dispenser2)
+        compoundTable4.addObject(dispenser3)
+
+        # Add tables to world
+        world.addObject(x+2, y+1, Layer.FURNITURE, compoundTable1)
+        world.addObject(x+3, y+1, Layer.FURNITURE, compoundTable2)
+        world.addObject(x+4, y+1, Layer.FURNITURE, compoundTable3)
+        world.addObject(x+5, y+1, Layer.FURNITURE, compoundTable4)
+        #world.addObject(x+3, y+1, Layer.FURNITURE, compoundTable1)
+
+        mixingJar = world.createObject("Jar")            
+        # Add to first table
+        compoundTable1.addObject(mixingJar)
+
+
+
+#        seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
+#        seedJar.name = "seed jar"
+        #seedJar.addObject(Seed(world, "red"))
+
+        # Add 5 seeds to the jar
+        #for i in range(5):
+        #    seedJar.addObject( world.createObject("Seed") )
+
+#        seedTable.addObject(seedJar)
+#        world.addObject(x+3, y+1, Layer.FURNITURE, seedTable)
+
+        # Add a shovel in the farm house
+        #shovel = world.createObject("Shovel")
+        #world.addObject(x+2, y+1, Layer.FURNITURE, shovel)
+
+        # Add a bag of fertilizer
+        #fertilizer = world.createObject("FertilizerBag")
+        #world.addObject(x+2, y+2, Layer.FURNITURE, fertilizer)
+
+
+
+    # Make the town scenario
+    def makeScenarioStorageShed(self, world, numUserAgents=1):
+        # Set a limit for the number of user agents
+        MAX_NUM_AGENTS = 1
+        if (numUserAgents > MAX_NUM_AGENTS):
+            numUserAgents = MAX_NUM_AGENTS
+
+        # Populate with structures/objects
+        buildingMaker = BuildingMaker(world)
+
+        # Fill with grass
+        buildingMaker.mkGrassFill(world)
+        # Randomly place a few plants (plant1, plant2, plant3)
+        for i in range(0, 10):
+            randX = self.random.randint(0, world.sizeX - 1)
+            randY = self.random.randint(0, world.sizeY - 1)
+            ## world.addObject(randX, randY, Layer.OBJECTS, BuildingMaker.mkObject("plant", "plant", "forest1_plant" + str(i % 3 + 1)))
+
+        # Buildings
+        self.mkStorageShed(15, 10, world, buildingMaker)
+
+        # Paths
+        self.mkPathX(17, 15, 15, world)       # Town square to farm
+
+        # Add some plants
+        world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))
+
+        plantCount = 0
+        minPlants = 15
+        while (plantCount < minPlants):
+            # Pick a random location
+            randX = self.random.randint(0, world.sizeX - 1)
+            randY = self.random.randint(0, world.sizeY - 1)
+
+            # Check to see if there are any objects other than grass there
+            objs = world.getObjectsAt(randX, randY)
+            # Get types of objects
+            objTypes = [obj.type for obj in objs]
+            # Check to see that there is grass here
+            if ("grass" in objTypes):
+                # Check that there is not other things here
+                if (len(objTypes) == 1):
+                    # Add a plant
+                    world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
+                    plantCount += 1                
+
+
+        # DialogMaker
+        dialogMaker = DialogMaker()
+
+        # Add some number of user agents
+        for userAgentIdx in range(0, numUserAgents):
+            userAgent = Agent(world)
+            # TODO: Add starting tools for agent
+            # TODO: ADD KEY
+            
+            # Add the agent to a specfic location
+            #world.addObject(14+userAgentIdx, 14, Layer.AGENT, userAgent)      # In farm field
+            world.addObject(18+userAgentIdx, 12, Layer.AGENT, userAgent)      # Near farm
+            # Register the agent with the World so we can keep track of it
+            world.addAgent(userAgent)
+
+
+        # Add teleport locations to world            
+        world.addTeleportLocation("shed", 12, 13)
+

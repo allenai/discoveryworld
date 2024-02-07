@@ -222,8 +222,8 @@ class ObjectMaker:
             "NPKMeter": NPKMeter,
             "PetriDish": PetriDish,
             "FertilizerPellet": FertilizerPellet,
-            "FertilizerBag": FertilizerBag
-
+            "FertilizerBag": FertilizerBag,
+            "ChemicalDispenser": ChemicalDispenser
         }
 
         # Check that the class name is in the dictionary
