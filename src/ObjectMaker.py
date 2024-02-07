@@ -229,10 +229,12 @@ class ObjectMaker:
             "FertilizerPellet": FertilizerPellet,
             "FertilizerBag": FertilizerBag,
             "ChemicalDispenser": ChemicalDispenser,
+            "Key": Key,
 
             # Substances
             "TestSubstance": [Substance, "testSubstance"],
-            "PurpleSubstance": [Substance, "purpleSubstance"]
+            "PurpleSubstance": [Substance, "purpleSubstance"],
+            "substanceCleaner": [Substance, "cleaner"],
         }
 
         # Check that the class name is in the dictionary

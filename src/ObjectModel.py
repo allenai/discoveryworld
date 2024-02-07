@@ -2636,7 +2636,7 @@ class ChemicalDispenser(Object):
     # Constructor
     def __init__(self, world):
         # Default sprite name
-        Object.__init__(self, world, "dispenser", "dispenser", defaultSpriteName = "placeholder_jar_empty")
+        Object.__init__(self, world, "dispenser", "dispenser", defaultSpriteName = "instruments_chemical_dispenser")
 
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = True                       # Agen't can't walk over this
@@ -2744,15 +2744,18 @@ class ChemicalDispenser(Object):
         if (not self.needsSpriteNameUpdate and not force):
             # No need to update the sprite name
             return
-        # Infer sprite based on whether empty/non-empty
-        if (len(self.contents) == 0):
-            self.curSpriteName = "placeholder_jar_empty"
-        elif (len(self.contents) == 1):
-            self.curSpriteName = "placeholder_jar_full1"
-        elif (len(self.contents) == 2):
-            self.curSpriteName = "placeholder_jar_full2"
-        else:
-            self.curSpriteName = "placeholder_jar_full3"
+        
+        self.curSpriteName = "instruments_chemical_dispenser"
+
+        # # Infer sprite based on whether empty/non-empty
+        # if (len(self.contents) == 0):
+        #     self.curSpriteName = "placeholder_jar_empty"
+        # elif (len(self.contents) == 1):
+        #     self.curSpriteName = "placeholder_jar_full1"
+        # elif (len(self.contents) == 2):
+        #     self.curSpriteName = "placeholder_jar_full2"
+        # else:
+        #     self.curSpriteName = "placeholder_jar_full3"
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
@@ -3238,3 +3241,72 @@ class Substance(Object):
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
         
+
+
+#
+#   Object: Key
+#
+class Key(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "key", "key", defaultSpriteName = "instruments_key")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+        # Container
+        self.attributes['isContainer'] = False                      # Is it a container?
+
+        # Rusted
+        self.attributes['isRusted'] = True                        # Is the key rusted?
+
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
+        # Clean rust of key (if conditions are met)
+        # If the key is in a container, and that container contains SUBSTANCE TODO, and it's rusted, then remove the rust. 
+        # Check if the key is in a container
+        if (self.parentContainer is not None):
+            # Get parent container contents
+            parentContainerContents = self.parentContainer.contents
+            # Check if the parent container contains a specific substance
+            containsCleaner = False
+            for obj in parentContainerContents:
+                if (obj.type == "substance") and (obj.attributes["substanceName"] == "cleaner"):
+                    containsCleaner = True
+                    break
+            
+            # If the parent container contains the cleaner substance, then remove the rust from the key
+            if (containsCleaner):
+                self.attributes['isRusted'] = False
+                # Invalidate the sprite
+                self.needsSpriteNameUpdate = True
+
+
+        # Update key name based on whether it's rusted or not    
+        # If the key is rusted, then set it's name to key (rusted)
+        if (self.attributes['isRusted']) and (self.name != "rusted key"):
+            self.name = "rusted key"
+        elif (not self.attributes['isRusted']) and (self.name != "key"):
+            self.name = "key"
+
+
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+        
+        # If rusted, use the rusty sprite
+        if (self.attributes['isRusted']):
+            self.curSpriteName = "instruments_key_rusty"
+        else:
+            self.curSpriteName = "instruments_key"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName

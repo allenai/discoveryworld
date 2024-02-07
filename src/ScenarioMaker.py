@@ -554,10 +554,16 @@ class ScenarioMaker:
         compoundTable1.addObject(mixingJar)
 
         # Add substance
-        substance1 = world.createObject("TestSubstance")
-        substance2 = world.createObject("PurpleSubstance")
-        mixingJar.addObject(substance1)
-        mixingJar.addObject(substance2)
+        #substance1 = world.createObject("TestSubstance")
+        #substance2 = world.createObject("PurpleSubstance")
+        #mixingJar.addObject(substance1)
+        #mixingJar.addObject(substance2)
+        substanceCleaner = world.createObject("substanceCleaner")
+        mixingJar.addObject(substanceCleaner)
+
+        # Add rusty key
+        rustyKey = world.createObject("Key")
+        world.addObject(x+2, y+2, Layer.OBJECTS, rustyKey)
 
 
 
