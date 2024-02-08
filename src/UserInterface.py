@@ -406,13 +406,14 @@ class UserInterface:
 
         # Start rendering the grid (centered on the lower half of the viewport)
         scale = 2.0
+        #scale1 = 1.5
         scale1 = 1.5
         tileSize = 32        
         #offsetX = 32
         #offsetY = -32 * 10
         
         xAdj = ((tileSize*scale) - (tileSize*scale1))/2
-        yAdj = ((tileSize*scale) - (tileSize*scale1))/2
+        yAdj = ((tileSize*scale) - (tileSize*scale1))/2 + 16
 
         # Bound checking on the selected object index
 
@@ -457,7 +458,7 @@ class UserInterface:
 
             # Display the number
             label = self.fontBold.render(str(objIdx + 1), 1, (255, 255, 255))
-            self.window.blit(label, (x + 4, y + (tileSize * scale) - 24))
+            self.window.blit(label, (x + 4, y + (tileSize * scale) - 24 - 12 - yAdj))
 
             # Increment the object index
             objIdx += 1
@@ -471,7 +472,7 @@ class UserInterface:
         x = 0 * (32 * scale) + offsetX            
         y = self.window.get_height() + offsetY + (tileSize * scale)
         label = self.fontBold.render(labelPrefixStr + selectedObjectName, 1, (255, 255, 255))
-        self.window.blit(label, (x+4, y + (tileSize * scale) - 48))
+        self.window.blit(label, (x+4, y + (tileSize * scale) - 48 - 12 - yAdj))
 
         pass
 
