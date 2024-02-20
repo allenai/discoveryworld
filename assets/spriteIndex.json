@@ -247,6 +247,7 @@
                 "fertilizer_bag":       { "baseTile": [3, 3],  "size": [1, 1] },
 
                 "chemical_dispenser":   { "baseTile": [3, 4],  "size": [1, 1] },
+                "bottle_cleaner":       { "baseTile": [3, 5],  "size": [1, 1] },
                 "key_rusty":            { "baseTile": [2, 4],  "size": [1, 1] },
                 "key":                  { "baseTile": [2, 5],  "size": [1, 1] }
             },

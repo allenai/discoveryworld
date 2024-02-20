@@ -466,7 +466,7 @@ class UserInterface:
         # Render the selected object's name
         selectedObjectName = ""
         if (curSelectedObjIdx < len(objectList)):
-            selectedObjectName = objectList[curSelectedObjIdx].name + " : " + objectList[curSelectedObjIdx].getTextDescription()
+            selectedObjectName = objectList[curSelectedObjIdx].name + "[uuid: " + str(objectList[curSelectedObjIdx].uuid) + "] : " + objectList[curSelectedObjIdx].getTextDescription()
 
         # Render the name above the box
         x = 0 * (32 * scale) + offsetX            

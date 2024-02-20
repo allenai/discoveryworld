@@ -519,7 +519,7 @@ class ScenarioMaker:
     # Storage shed
     def mkStorageShed(self, x, y, world, buildingMaker):
         # Create a small building
-        houseSizeX = 6
+        houseSizeX = 7
         houseSizeY = 4
         buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Farm")
 
@@ -528,6 +528,7 @@ class ScenarioMaker:
         compoundTable2 = world.createObject("Table")
         compoundTable3 = world.createObject("Table")
         compoundTable4 = world.createObject("Table")
+        compoundTable5 = world.createObject("Table")
 
         # Create chemical dispensers
         dispenser1 = world.createObject("ChemicalDispenser")
@@ -535,19 +536,26 @@ class ScenarioMaker:
         dispenser3 = world.createObject("ChemicalDispenser")
 
         # Fill with chemicals
-        dispenser1.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
+        #dispenser1.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
+        dispenser1.setAutoFill(checkObjectName="Substance A", fillObjectName="SubstanceA", minCount=10, replenishTime=2)
+        dispenser2.setAutoFill(checkObjectName="Substance B", fillObjectName="SubstanceB", minCount=10, replenishTime=2)
+        dispenser3.setAutoFill(checkObjectName="Substance C", fillObjectName="SubstanceC", minCount=10, replenishTime=2)
 
         # Add dispensers to tables
         compoundTable2.addObject(dispenser1)
         compoundTable3.addObject(dispenser2)
         compoundTable4.addObject(dispenser3)
 
+        # Add bottle cleaner 
+        BottleCleaner = world.createObject("BottleCleaner")
+        compoundTable5.addObject(BottleCleaner)
+
         # Add tables to world
         world.addObject(x+2, y+1, Layer.FURNITURE, compoundTable1)
         world.addObject(x+3, y+1, Layer.FURNITURE, compoundTable2)
         world.addObject(x+4, y+1, Layer.FURNITURE, compoundTable3)
         world.addObject(x+5, y+1, Layer.FURNITURE, compoundTable4)
-        #world.addObject(x+3, y+1, Layer.FURNITURE, compoundTable1)
+        world.addObject(x+6, y+1, Layer.FURNITURE, compoundTable5)                
 
         mixingJar = world.createObject("Jar")            
         # Add to first table

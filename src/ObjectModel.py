@@ -181,7 +181,8 @@ class Object:
         obj.parentContainer = self
 
     # Remove an object from this container
-    def removeObject(self, obj):
+    # TODO: Should also remove it from specific world coordinates?
+    def removeObject(self, obj):        
         # Remove an object from this container
         if (obj in self.contents):
             self.contents.remove(obj)
@@ -3244,6 +3245,86 @@ class Substance(Object):
 
 
 #
+#   Object: Bottle Cleaning Device (container)
+#   Cleans all 'substances' out of a container
+#
+class BottleCleaningDevice(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "bottle cleaner", "bottle cleaner", defaultSpriteName = "instruments_bottle_cleaner")
+
+        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isPassable"] = True                       # Agen't can't walk over this
+
+        # Container
+        self.attributes['isContainer'] = False                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can not be opened (things are stored in the open pot)
+        self.attributes['isOpenContainer'] = False                 # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")            
+        self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
+
+        # Can be used (as a dispenser, into a container)
+        self.attributes["isUsable"] = True                        # Can it be used?
+
+    #
+    #   Actions (use with)    
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+
+        # Check if the patient object is a container
+        if (not patientObj.attributes["isContainer"]):            
+            return ActionSuccess(False, "You can't use the bottle cleaner on something that isn't a container (" + str(patientObj.name) + ").")
+
+        if (patientObj.attributes["isContainer"] == False):            
+            return ActionSuccess(False, "You can't use the bottle cleaner on something that isn't a container (" + str(patientObj.name) + ").")
+        
+        # Check that the container is open
+        if (patientObj.attributes["isOpenContainer"] == False):
+            return ActionSuccess(False, "You can't use the bottle cleaner on a container that isn't open (" + str(patientObj.name) + ").")
+
+        # Search for any instances of 'substance' in the contents of the patient object
+        substancesToRemove = []
+        for obj in patientObj.contents:
+            if ("isSubstance" in obj.attributes) and (obj.attributes["isSubstance"] == True):
+                substancesToRemove.append(obj)
+
+        # If there are no substances to remove, then return a failure
+        if (len(substancesToRemove) == 0):
+            return ActionSuccess(False, "The " + str(patientObj.name) + " has no substances to remove.")
+        
+        # If we reach here, the patient object is a container, it's open, and it contains substances.
+        # Now we can remove the substances from the container (and indeed the world).
+        for sub in substancesToRemove:
+            patientObj.removeObject(sub)
+            self.world.removeObject(sub)
+            patientObj.invalidateSpritesThisWorldTile()
+            self.invalidateSpritesThisWorldTile()
+
+        # Return success
+        return ActionSuccess(True, "You clean the " + str(patientObj.name) + " of all substances.")
+    
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)    
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+        
+        # Always the same sprite name        
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+
+#
 #   Object: Key
 #
 class Key(Object):
@@ -3256,7 +3337,7 @@ class Key(Object):
         self.attributes["isPassable"] = True                      # Agen't can't walk over this
 
         # Container
-        self.attributes['isContainer'] = False                      # Is it a container?
+        self.attributes['isContainer'] = False                    # Is it a container?
 
         # Rusted
         self.attributes['isRusted'] = True                        # Is the key rusted?
