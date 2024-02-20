@@ -366,6 +366,18 @@ class Object:
             # Next, call tick()
             obj.tick()
 
+    # Reset the tick flag for this object (and all contained objects and parts)
+    def resetTick(self):
+        # Reset the tick flag for this object
+        self.tickCompleted = False
+
+        # Also reset the tick flag for all contained objects
+        for obj in self.contents:
+            obj.resetTick()
+        # And all parts
+        for obj in self.parts:
+            obj.resetTick()
+
 
     #
     #   Text Observations
@@ -3117,9 +3129,13 @@ class Substance(Object):
         self.attributes['mixtureDict'] = {}                       # Dictionary of substances and their proportions in the mixture
 
     def tick(self):
+        # Stop if tick has already been completed
+        if (self.tickCompleted):
+            return
+
         # Call superclass
         Object.tick(self)    
-
+        
         print("Substance tick: " + str(self.attributes["substanceName"]) + " (" + str(self.name) + ") UUID: " + str(self.uuid))
 
         # The substance name is dependent on the contents of the substance. 
@@ -3241,7 +3257,7 @@ class Substance(Object):
                     
                 # If the list of substances in the container is greater than 1, then we have a self-reacting substance
                 #if (len(substanceNames) > 1):
-                
+
                 # DEBUG: Show a list of names of the substances that are about to react
                 substancesNamesInContainer = [sub.attributes["substanceName"] for sub in substancesInContainer]
                 print("Self-reacting substance detected.  Reacting substances: " + str(substancesNamesInContainer))
@@ -3251,7 +3267,10 @@ class Substance(Object):
                 # Add the 'reacting substance' to the parent container
                 self.parentContainer.addObject(reactingSubstance, force=True)
                 # Add all the substances in the container to the reacting substance
-                for sub in substancesInContainer:
+                for sub in substancesInContainer:                    
+                    # Set 'sub' to not tick (otherwise it will start spawning new substances in the world)
+                    #sub.tickCompleted = True
+
                     # Remove from current container
                     self.world.removeObject(sub)
                     # Add to reacting substance

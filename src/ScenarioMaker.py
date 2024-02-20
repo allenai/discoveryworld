@@ -537,9 +537,9 @@ class ScenarioMaker:
 
         # Fill with chemicals
         #dispenser1.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
-        dispenser1.setAutoFill(checkObjectName="Substance A", fillObjectName="SubstanceA", minCount=5, replenishTime=1)
-        dispenser2.setAutoFill(checkObjectName="Substance B", fillObjectName="SubstanceB", minCount=5, replenishTime=1)
-        dispenser3.setAutoFill(checkObjectName="Substance C", fillObjectName="SubstanceC", minCount=5, replenishTime=1)
+        dispenser1.setAutoFill(checkObjectName="Substance A", fillObjectName="SubstanceA", minCount=1, replenishTime=1)
+        dispenser2.setAutoFill(checkObjectName="Substance B", fillObjectName="SubstanceB", minCount=1, replenishTime=1)
+        dispenser3.setAutoFill(checkObjectName="Substance C", fillObjectName="SubstanceC", minCount=1, replenishTime=1)
 
         # Add dispensers to tables
         compoundTable2.addObject(dispenser1)

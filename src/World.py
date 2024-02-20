@@ -310,11 +310,13 @@ class World:
         # First, reset whether each object has had its tick() function called this tick
         for x in range(self.sizeX):
             for y in range(self.sizeY):
-                #for layer in Layer:
-                #    for object in self.grid[x][y]["layers"][layer]:                        
-                alObjs = self.getObjectsAt(x, y, respectContainerStatus=False, includeParts=True)   # We need to do it this way, to make sure we reset the tick for all the nested parts. 
-                for object in alObjs:
-                        object.tickCompleted = False
+                for layer in Layer:
+                    for object in self.grid[x][y]["layers"][layer]:                        
+                        object.resetTick()
+
+                # alObjs = self.getObjectsAt(x, y, respectContainerStatus=False, includeParts=True)   # We need to do it this way, to make sure we reset the tick for all the nested parts. 
+                # for object in alObjs:
+                #         object.tickCompleted = False
 
 
         # Then, call tick() on each object in the world
