@@ -537,9 +537,9 @@ class ScenarioMaker:
 
         # Fill with chemicals
         #dispenser1.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
-        dispenser1.setAutoFill(checkObjectName="Substance A", fillObjectName="SubstanceA", minCount=10, replenishTime=2)
-        dispenser2.setAutoFill(checkObjectName="Substance B", fillObjectName="SubstanceB", minCount=10, replenishTime=2)
-        dispenser3.setAutoFill(checkObjectName="Substance C", fillObjectName="SubstanceC", minCount=10, replenishTime=2)
+        dispenser1.setAutoFill(checkObjectName="Substance A", fillObjectName="SubstanceA", minCount=5, replenishTime=1)
+        dispenser2.setAutoFill(checkObjectName="Substance B", fillObjectName="SubstanceB", minCount=5, replenishTime=1)
+        dispenser3.setAutoFill(checkObjectName="Substance C", fillObjectName="SubstanceC", minCount=5, replenishTime=1)
 
         # Add dispensers to tables
         compoundTable2.addObject(dispenser1)
@@ -566,8 +566,9 @@ class ScenarioMaker:
         #substance2 = world.createObject("PurpleSubstance")
         #mixingJar.addObject(substance1)
         #mixingJar.addObject(substance2)
-        substanceCleaner = world.createObject("substanceCleaner")
-        mixingJar.addObject(substanceCleaner)
+        
+        #substanceCleaner = world.createObject("substanceCleaner")
+        #mixingJar.addObject(substanceCleaner)
 
         # Add rusty key
         rustyKey = world.createObject("Key")

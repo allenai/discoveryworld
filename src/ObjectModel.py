@@ -8,6 +8,9 @@ import random
 import json
 import copy
 
+import math
+from functools import reduce
+
 
 # Storage class for a single object
 class Object:
@@ -115,6 +118,7 @@ class Object:
         self.attributes["substanceName"] = ""                     # Name of the substance
         self.attributes['isSubstance'] = False                    # Is it a substance?
         self.attributes['isAutoReacting'] = False                 # Does it react automatically with other substances?        
+        self.attributes['mixtureDict'] = {}                       # Dictionary of substances and their proportions in the mixture
 
 
         # Force a first infer-sprite-name
@@ -3110,7 +3114,7 @@ class Substance(Object):
         self.attributes["substanceName"] = substanceName          # Name of the substance
         self.attributes['isSubstance'] = True                     # Is it a substance?
         self.attributes['isAutoReacting'] = True                  # Does it react automatically with other substances?        
-
+        self.attributes['mixtureDict'] = {}                       # Dictionary of substances and their proportions in the mixture
 
     def tick(self):
         # Call superclass
@@ -3125,6 +3129,7 @@ class Substance(Object):
         if (len(self.contents) == 0):
             # Pure substance, keep current substance name
             #self.attributes["substanceName"] = "unknown substance"
+            self.attributes['mixtureDict'] = {self.attributes["substanceName"]: 1.0}
             print("SUBSTANCE TICK: Pure substance")
             pass
         
@@ -3133,9 +3138,11 @@ class Substance(Object):
             # Check that the contents are a substance
             obj = self.contents[0]
             if (obj.attributes['isSubstance']):
-                self.attributes["substanceName"] = obj.attributes["substanceName"]
+                self.attributes["substanceName"] = obj.attributes["substanceName"]                
             else:
                 self.attributes["substanceName"] = "unknown substance"
+
+            self.attributes['mixtureDict'] = {self.attributes["substanceName"]: 1.0}
 
             print("SUBSTANCE TICK: Only 1 substance")
         # Case 3: Multiple substances
@@ -3156,24 +3163,47 @@ class Substance(Object):
             # Check if there are zero keys in the frequency counter
             if (len(contentsFreq) == 0):
                 self.attributes["substanceName"] = "unknown substance"
+                self.attributes['mixtureDict'] = {self.attributes["substanceName"]: 1.0}
                 
             # Check if there is only one key in the frequency counter
             elif (len(contentsFreq) == 1):
                 self.attributes["substanceName"] = list(contentsFreq.keys())[0]
+                self.attributes['mixtureDict'] = {self.attributes["substanceName"]: 1.0}
             
             # If there are multiple keys in the frequency counter, then we need to create a mixture name                        
             else:            
                 # Next, sort by frequency
                 sortedContentsFreq = sorted(contentsFreq.items(), key=lambda x: x[1], reverse=True)
                 # Then, make a string of the form "X parts A, Y parts B, Z parts C, etc."
+                self.attributes['mixtureDict'] = {}
+                parts = []
+
                 substanceName = "mixture ("
+
                 for i in range(len(sortedContentsFreq)):
                     if (i > 0):
                         substanceName += ", "
-                    substanceName += str(sortedContentsFreq[i][1]) + " parts " + str(sortedContentsFreq[i][0])
+                    name = str(sortedContentsFreq[i][0])
+                    numParts = sortedContentsFreq[i][1]
+                    substanceName += str(numParts) + " parts " + name
+                    self.attributes['mixtureDict'][substanceName] = numParts
+                    parts.append(numParts)
+
                 substanceName += ")"
 
                 self.attributes["substanceName"] = substanceName
+
+                # For the mixtureDict, try to determine if there's a lowest common denominator -- e.g. 5 parts X and 10 parts Y could be simplified to 1 part X and 2 parts Y
+                # This is a bit tricky, because we need to find the greatest common divisor of all the parts.
+                def findGCDList(listOfInts):
+                    return reduce(math.gcd, listOfInts)
+                gcd = findGCDList(parts)
+                # If the gcd is greater than 1, then we can simplify the mixtureDict
+                if (gcd > 1):
+                    for key in self.attributes['mixtureDict']:
+                        self.attributes['mixtureDict'][key] = self.attributes['mixtureDict'][key] // gcd
+
+
             
         # Check if the sprite needs to be invalidated
         if (oldSubstanceName != self.attributes["substanceName"]):
@@ -3188,18 +3218,30 @@ class Substance(Object):
 
             # Get a list of all substances in the same container as this substance (unless the container for this substance is also a Substance)
             substancesInContainer = []
+            numUnmixedFound = 0
             if (self.parentContainer is not None) and (self.parentContainer.attributes['isSubstance'] == False):
                 for obj in self.parentContainer.contents:
                     if (obj.attributes['isSubstance']) and (obj.attributes["isAutoReacting"] == True):
-                        substancesInContainer.append(obj)
+                        # If it 'contains' nothing, then it's a pure substance
+                        if (len(obj.contents) == 0):
+                            substancesInContainer.append(obj)
+                            numUnmixedFound += 1
+                        # If it contains something, then it's a mixture
+                        else:
+                            for sub in obj.contents:
+                                if (sub.attributes['isSubstance']):
+                                    substancesInContainer.append(sub)
+                            numUnmixedFound += 1
 
-            # Check to see that there is more than one different type of substance in the container (by 'substanceName' attribute)
-            substanceNames = set()
-            for sub in substancesInContainer:
-                substanceNames.add(sub.attributes["substanceName"])            
+            if (numUnmixedFound > 1):
+                # Check to see that there is more than one different type of substance in the container (by 'substanceName' attribute)
+                #substanceNames = set()
+                #for sub in substancesInContainer:
+                #    substanceNames.add(sub.attributes["substanceName"])            
+                    
+                # If the list of substances in the container is greater than 1, then we have a self-reacting substance
+                #if (len(substanceNames) > 1):
                 
-            # If the list of substances in the container is greater than 1, then we have a self-reacting substance
-            if (len(substanceNames) > 1):
                 # DEBUG: Show a list of names of the substances that are about to react
                 substancesNamesInContainer = [sub.attributes["substanceName"] for sub in substancesInContainer]
                 print("Self-reacting substance detected.  Reacting substances: " + str(substancesNamesInContainer))
@@ -3215,7 +3257,10 @@ class Substance(Object):
                     # Add to reacting substance
                     reactingSubstance.addObject(sub, force=True)
                 # (TODO: Also tick the reacting substances?)
-
+                    
+                print("Calling Tick() on new substance (reacting substance)")
+                import time
+                time.sleep(2)
                 # Call the tick on the reacting substance
                 reactingSubstance.tick()
 
@@ -3356,9 +3401,16 @@ class Key(Object):
             # Check if the parent container contains a specific substance
             containsCleaner = False
             for obj in parentContainerContents:
+                # Check for "Cleaner"
                 if (obj.type == "substance") and (obj.attributes["substanceName"] == "cleaner"):
                     containsCleaner = True
                     break
+                # Check for a specific mixture (1 part Substance A, 2 parts substance C)
+                if (obj.type == "substance") and (len(obj.attributes['mixtureDict']) == 2):
+                    if ("Substance A" in obj.attributes['mixtureDict']) and ("Substance B" in obj.attributes['mixtureDict']):
+                        if (obj.attributes['mixtureDict']["Substance A"] == 1) and (obj.attributes['mixtureDict']["Substance B"] == 2):                            
+                            containsCleaner = True
+                            break
             
             # If the parent container contains the cleaner substance, then remove the rust from the key
             if (containsCleaner):
