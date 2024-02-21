@@ -3133,10 +3133,10 @@ class Substance(Object):
         if (self.tickCompleted):
             return
 
+        print("## Substance tick: " + str(self.attributes["substanceName"]) + " (" + str(self.name) + ") UUID: " + str(self.uuid))
+
         # Call superclass
-        Object.tick(self)    
-        
-        print("Substance tick: " + str(self.attributes["substanceName"]) + " (" + str(self.name) + ") UUID: " + str(self.uuid))
+        Object.tick(self)            
 
         # The substance name is dependent on the contents of the substance. 
 
@@ -3234,6 +3234,7 @@ class Substance(Object):
 
             # Get a list of all substances in the same container as this substance (unless the container for this substance is also a Substance)
             substancesInContainer = []
+            mixturesToPossiblyRemove = []       # Only remove if they're combined with another substance/mixture.
             numUnmixedFound = 0
             if (self.parentContainer is not None) and (self.parentContainer.attributes['isSubstance'] == False):
                 for obj in self.parentContainer.contents:
@@ -3242,12 +3243,18 @@ class Substance(Object):
                         if (len(obj.contents) == 0):
                             substancesInContainer.append(obj)
                             numUnmixedFound += 1
+                            print("\t Looking for reactants: Pure substance found: " + str(obj.attributes["substanceName"]) + " (" + str(obj.name) + ", UUID: " + str(obj.uuid) + ")")
                         # If it contains something, then it's a mixture
                         else:
+                            found = False
                             for sub in obj.contents:
                                 if (sub.attributes['isSubstance']):
                                     substancesInContainer.append(sub)
-                            numUnmixedFound += 1
+                                    found = True                                
+                            if (found):
+                                numUnmixedFound += 1
+                                mixturesToPossiblyRemove.append(obj)
+                                print("\t Looking for reactants: Mixture found: " + str(obj.attributes["substanceName"]) + " (" + str(obj.name) + ", UUID: " + str(obj.uuid) + ")")
 
             if (numUnmixedFound > 1):
                 # Check to see that there is more than one different type of substance in the container (by 'substanceName' attribute)
@@ -3261,6 +3268,7 @@ class Substance(Object):
                 # DEBUG: Show a list of names of the substances that are about to react
                 substancesNamesInContainer = [sub.attributes["substanceName"] for sub in substancesInContainer]
                 print("Self-reacting substance detected.  Reacting substances: " + str(substancesNamesInContainer))
+                print("UUIDs of reacting substances: " + str([sub.uuid for sub in substancesInContainer]))
 
                 # The way reactions are handled is by making a new Substance ("reacting substance"), and adding all the substances in the container to it.
                 reactingSubstance = Substance(self.world, "reacting substance")
@@ -3269,17 +3277,21 @@ class Substance(Object):
                 # Add all the substances in the container to the reacting substance
                 for sub in substancesInContainer:                    
                     # Set 'sub' to not tick (otherwise it will start spawning new substances in the world)
-                    #sub.tickCompleted = True
-
+                    sub.tickCompleted = True
                     # Remove from current container
                     self.world.removeObject(sub)
                     # Add to reacting substance
                     reactingSubstance.addObject(sub, force=True)
+
+                # Remove the mixtures that were combined with other substances
+                for mix in mixturesToPossiblyRemove:
+                    self.world.removeObject(mix)
+
                 # (TODO: Also tick the reacting substances?)
-                    
-                print("Calling Tick() on new substance (reacting substance)")
-                import time
-                time.sleep(2)
+                print("Created new reacting substance (UUID: " + str(reactingSubstance.uuid) + ")")   
+                #print("Calling Tick() on new substance (reacting substance, UUID: " + str(reactingSubstance.uuid) + ")")
+                #import time
+                #time.sleep(1)
                 # Call the tick on the reacting substance
                 reactingSubstance.tick()
 
