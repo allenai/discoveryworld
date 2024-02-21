@@ -3224,9 +3224,12 @@ class Substance(Object):
                     return reduce(math.gcd, listOfInts)
                 gcd = findGCDList(parts)
                 # If the gcd is greater than 1, then we can simplify the mixtureDict
+                print("GCD: " + str(gcd) + " (mixtureDict: " + str(self.attributes['mixtureDict']) + ")")
                 if (gcd > 1):
-                    for key in self.attributes['mixtureDict']:
-                        self.attributes['mixtureDict'][key] = self.attributes['mixtureDict'][key] // gcd
+                    for key in self.attributes['mixtureDict'].keys():
+                        self.attributes['mixtureDict'][key] = self.attributes['mixtureDict'][key] / gcd
+                    print("Simplified mixtureDict: " + str(self.attributes['mixtureDict']))
+
 
 
             
@@ -3426,6 +3429,7 @@ class Key(Object):
 
         # Rusted
         self.attributes['isRusted'] = True                        # Is the key rusted?
+        self.attributes['rustLevel'] = 3                          # Description of the rust (0=none, 1=light, 2=medium, 3=heavy)
 
 
     def tick(self):
@@ -3441,13 +3445,26 @@ class Key(Object):
             # Check if the parent container contains a specific substance
             containsCleaner = False
             print("### KEY: Checking for cleaner substance in parent container")
+            partialEvidenceLevel = 0
+
+            # Check to make sure there are not more than 1 subtances in the container
+            numSubstances = 0
             for obj in parentContainerContents:
-                # Check for "Cleaner"
+                if (obj.type == "substance"):
+                    numSubstances += 1
+
+            if (numSubstances > 1):
+                print("## More than 1 substance in container.  Not evaluating rust reduction further, since those subtances may react later.")
+                return                
+
+            for obj in parentContainerContents:
+                print("## Key: Mixture dictionary: " + str(obj.attributes['mixtureDict']) + " (containsCleaner: " + str(containsCleaner) + ")")
+                # Check for "Cleaner"                
                 if (obj.type == "substance") and (obj.attributes["substanceName"] == "cleaner"):
                     containsCleaner = True
                     break
                 # Check for a specific mixture (1 part Substance A, 2 parts substance C)
-                if (obj.type == "substance") and (len(obj.attributes['mixtureDict']) == 2):
+                if (obj.type == "substance") and (len(obj.attributes['mixtureDict']) == 2):                    
                     print("### In container with substance  (mixtureDict: " + str(obj.attributes['mixtureDict']) + ")")
                     if ("Substance A" in obj.attributes['mixtureDict']) and ("Substance C" in obj.attributes['mixtureDict']):                        
                         print("### In container with Substance A and C")
@@ -3455,19 +3472,41 @@ class Key(Object):
                             print("### In container with Substance A and C, and the right proportions")
                             containsCleaner = True
                             break
-            
+                # Partial evidence -- give som[;[][e help for hill-climbing                
+                if ("Substance A" in obj.attributes['mixtureDict']) and ("Substance B" not in obj.attributes['mixtureDict']):
+                    partialEvidenceLevel += 1
+                    print("## Partial evidence (Substance A)")
+                if ("Substance C" in obj.attributes['mixtureDict']) and ("Substance B" not in obj.attributes['mixtureDict']):
+                    partialEvidenceLevel += 1                 
+                    print("## Partial evidence (Substance C)")   
+                                
             # If the parent container contains the cleaner substance, then remove the rust from the key
             if (containsCleaner):
                 self.attributes['isRusted'] = False
+                self.attributes['rustLevel'] = 0    # No more rust
                 # Invalidate the sprite
                 self.needsSpriteNameUpdate = True
 
+            # Handle partial evidence -- describe the key as less rusty, if certain combinations of substances are found
+            print("### Partial evidence level: " + str(partialEvidenceLevel))
+            if (partialEvidenceLevel > 0):                
+                # If the partial evidence level is high enough, then remove the rust from the key
+                newRustLevel = 3 - partialEvidenceLevel
+                if (newRustLevel < self.attributes['rustLevel']):
+                    self.attributes['rustLevel'] = newRustLevel
+                    self.needsSpriteNameUpdate = True
 
         # Update key name based on whether it's rusted or not    
         # If the key is rusted, then set it's name to key (rusted)
-        if (self.attributes['isRusted']) and (self.name != "rusted key"):
-            self.name = "rusted key"
-        elif (not self.attributes['isRusted']) and (self.name != "key"):
+        if (self.attributes['isRusted']):# and (self.name != "rusted key"):
+            if (self.attributes['rustLevel'] == 3):
+                self.name = "rusted key (heavily rusted)"
+            elif (self.attributes['rustLevel'] == 2):
+                self.name = "rusted key (moderately rusted)"
+            elif (self.attributes['rustLevel'] == 1):
+                self.name = "rusted key (lightly rusted)"
+            
+        elif (not self.attributes['isRusted']):
             self.name = "key"
 
 
