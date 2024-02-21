@@ -2719,15 +2719,15 @@ class ChemicalDispenser(Object):
         patientObj.invalidateSpritesThisWorldTile()
         self.invalidateSpritesThisWorldTile()
 
+        # If the autofill is set, then perform the autofill right now (after the object has been dispensed), so make sure there's always something in the dispenser. 
+        self.performAutoFill()
+
         # Return success
         return ActionSuccess(True, "You dispense " + str(objToAdd.name) + " into the " + str(patientObj.name) + ".")
-    
 
-    def tick(self):
-        # Call superclass
-        Object.tick(self)    
 
-        # Auto fill
+    # Auto-fill the dispenser back up, if set
+    def performAutoFill(self):        
         #if (self.autoFillObjectName != None and self.autoFillMinCount != None):
         if (self.autoFillCheckForObjectName != None) and (self.autoFillFillObjectName != None) and (self.autoFillMinCount != None):
             # Count how much of the object is contained within the root level of the contents
@@ -2751,6 +2751,15 @@ class ChemicalDispenser(Object):
                     self.lastAddedCount = self.replenishTime     # Wait a few ticks before adding the next one
                 else:
                     self.lastAddedCount -= 1
+
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self) 
+
+        # Perform auto fill
+        self.performAutoFill()   
+
 
 
 
@@ -3202,7 +3211,7 @@ class Substance(Object):
                     name = str(sortedContentsFreq[i][0])
                     numParts = sortedContentsFreq[i][1]
                     substanceName += str(numParts) + " parts " + name
-                    self.attributes['mixtureDict'][substanceName] = numParts
+                    self.attributes['mixtureDict'][name] = numParts
                     parts.append(numParts)
 
                 substanceName += ")"
@@ -3431,6 +3440,7 @@ class Key(Object):
             parentContainerContents = self.parentContainer.contents
             # Check if the parent container contains a specific substance
             containsCleaner = False
+            print("### KEY: Checking for cleaner substance in parent container")
             for obj in parentContainerContents:
                 # Check for "Cleaner"
                 if (obj.type == "substance") and (obj.attributes["substanceName"] == "cleaner"):
@@ -3438,8 +3448,11 @@ class Key(Object):
                     break
                 # Check for a specific mixture (1 part Substance A, 2 parts substance C)
                 if (obj.type == "substance") and (len(obj.attributes['mixtureDict']) == 2):
-                    if ("Substance A" in obj.attributes['mixtureDict']) and ("Substance B" in obj.attributes['mixtureDict']):
-                        if (obj.attributes['mixtureDict']["Substance A"] == 1) and (obj.attributes['mixtureDict']["Substance B"] == 2):                            
+                    print("### In container with substance  (mixtureDict: " + str(obj.attributes['mixtureDict']) + ")")
+                    if ("Substance A" in obj.attributes['mixtureDict']) and ("Substance C" in obj.attributes['mixtureDict']):                        
+                        print("### In container with Substance A and C")
+                        if (obj.attributes['mixtureDict']["Substance A"] == 1) and (obj.attributes['mixtureDict']["Substance C"] == 2):                            
+                            print("### In container with Substance A and C, and the right proportions")
                             containsCleaner = True
                             break
             
