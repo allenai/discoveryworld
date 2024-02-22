@@ -521,7 +521,7 @@ class ScenarioMaker:
         # Create a small building
         houseSizeX = 7
         houseSizeY = 4
-        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Farm")
+        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Storage Shed")
 
         # Add a table in the farm house
         compoundTable1 = world.createObject("Table")

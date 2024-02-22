@@ -145,6 +145,20 @@ class Object:
         # Get the world location of the object
         return (self.attributes["gridX"], self.attributes["gridY"])
 
+    # (x0, y0) should be the top-left corner of the object, and (x1, y1) should be the bottom-right corner
+    def isWithinLocationBounds(self, x0, y0, x1, y1):
+        # Swap the bounds if they're not in the right order
+        if (x0 > x1):
+            x0, x1 = x1, x0
+        if (y0 > y1):
+            y0, y1 = y1, y0        
+        # Check to see if the object is within the given bounds        
+        x, y = self.getWorldLocation()
+        if (x >= x0) and (x <= x1) and (y >= y0) and (y <= y1):
+            return True
+        
+        return False
+
     # Remove from world location -- this is analagous to the removeObject() method for containers, but removes the object from the world tile.
     def removeFromWorldLocation(self):
         # TODO: Depricated? use self.world.removeObject(obj) instead?

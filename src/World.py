@@ -210,6 +210,15 @@ class World:
 
         return objects
 
+    # Helper to get all world objects (for example, for scoring)
+    def getAllWorldObjects(self):
+        allObjects = []
+        for x in range(self.sizeX):
+            for y in range(self.sizeY):
+                allObjects += self.getObjectsAt(x, y)
+        return allObjects
+
+
     # Remove an object from the world
     def removeObject(self, object:Object):
         # First, get the object's position (stored internally in that object)
@@ -235,7 +244,7 @@ class World:
         #print("WARNING: Object could not be removed from the world (" + object.name + ") at (" + str(objX) + ", " + str(objY) + ")")
         return True
 
-
+    
 
     #
     #   Object Generation (light wrapper around ObjectMaker)
