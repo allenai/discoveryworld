@@ -3211,7 +3211,7 @@ class Substance(Object):
                 
             # Check if there is only one key in the frequency counter
             elif (len(contentsFreq) == 1):
-                self.attributes["substanceName"] = list(contentsFreq.keys())[0]
+                self.attributes["substanceName"] = list(contentsFreq.keys())[0] + " (" + str(contentsFreq[list(contentsFreq.keys())[0]]) + " measures)"
                 self.attributes['mixtureDict'] = {self.attributes["substanceName"]: 1.0}
             
             # If there are multiple keys in the frequency counter, then we need to create a mixture name                        
