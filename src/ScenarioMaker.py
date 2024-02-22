@@ -517,11 +517,11 @@ class ScenarioMaker:
 
 
     # Storage shed
-    def mkStorageShed(self, x, y, world, buildingMaker):
+    def mkStorageShed(self, x, y, world, buildingMaker, DOOR_KEY_ID):
         # Create a small building
         houseSizeX = 7
         houseSizeY = 4
-        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Storage Shed")
+        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Storage Shed", includeDoor=True, doorKeyID = DOOR_KEY_ID)        
 
         # Add a table in the farm house
         compoundTable1 = world.createObject("Table")
@@ -572,6 +572,7 @@ class ScenarioMaker:
 
         # Add rusty key
         rustyKey = world.createObject("Key")
+        rustyKey.setKeyID(DOOR_KEY_ID)
         world.addObject(x+2, y+2, Layer.OBJECTS, rustyKey)
 
 
@@ -599,6 +600,8 @@ class ScenarioMaker:
 
     # Make the town scenario
     def makeScenarioStorageShed(self, world, numUserAgents=1):
+        DOOR_KEY_ID = 123
+
         # Set a limit for the number of user agents
         MAX_NUM_AGENTS = 1
         if (numUserAgents > MAX_NUM_AGENTS):
@@ -616,7 +619,7 @@ class ScenarioMaker:
             ## world.addObject(randX, randY, Layer.OBJECTS, BuildingMaker.mkObject("plant", "plant", "forest1_plant" + str(i % 3 + 1)))
 
         # Buildings
-        self.mkStorageShed(15, 10, world, buildingMaker)
+        self.mkStorageShed(15, 10, world, buildingMaker, DOOR_KEY_ID)
 
         # Paths
         self.mkPathX(17, 15, 15, world)       # Town square to farm

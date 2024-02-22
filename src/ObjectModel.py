@@ -67,7 +67,7 @@ class Object:
         self.parentContainer = None                                 # Back-reference for the container that this object is in
         self.attributes['isContainer'] = False                      # Is it a container?
         self.attributes['isOpenable'] = False                       # If it's a container, can you open/close it?
-        self.attributes['isOpenContainer'] = False                  # If it's a container, then is it open?
+        self.attributes['isOpenContainer'] = False                  # If it's a container, then is it open?        
         self.attributes['containerPrefix'] = ""                     # Container prefix (e.g. "in" or "on")            
         self.attributes['isOpen'] = False                           # Closed by default
         self.attributes['contentsVisible2D'] = True                 # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
@@ -119,6 +119,10 @@ class Object:
         self.attributes['isSubstance'] = False                    # Is it a substance?
         self.attributes['isAutoReacting'] = False                 # Does it react automatically with other substances?        
         self.attributes['mixtureDict'] = {}                       # Dictionary of substances and their proportions in the mixture
+
+        # Keys
+        self.attributes['requiresKey'] = 0                        # If it requires a key to open/use, then this is a special ID for the key.  If the value is <=0, then it doesn't require a key.
+        self.attributes['keyID'] = 0                              # If this object acts as a key, here's it's ID (0 by default)
 
 
         # Force a first infer-sprite-name
@@ -1059,9 +1063,10 @@ class Door(Object):
         self.attributes['isPassage'] = True                       # Is this a passage?
         self.attributes['isOpenable'] = True                      # Can be opened
         self.attributes['isOpenPassage'] = False                  # If it's a passage, then is it open?
-        
+        self.attributes['requiresKey'] = 0                        # If it requires a key to open, then this is a special ID for the key.  If the value is <=0, then it doesn't require a key.
 
-
+    def setKeyID(self, keyID:int):
+        self.attributes['requiresKey'] = keyID
 
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
@@ -3444,6 +3449,13 @@ class Key(Object):
         # Rusted
         self.attributes['isRusted'] = True                        # Is the key rusted?
         self.attributes['rustLevel'] = 3                          # Description of the rust (0=none, 1=light, 2=medium, 3=heavy)
+
+        # Key ID
+        self.attributes['keyID'] = 1                              # Key ID (1 by default)
+
+
+    def setKeyID(self, keyID:int):
+        self.attributes['keyID'] = keyID
 
 
     def tick(self):

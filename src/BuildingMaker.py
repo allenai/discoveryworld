@@ -37,7 +37,7 @@ class BuildingMaker:
     #
     #   Houses
     #
-    def mkBuildingOneRoom(self, world, x, y, width, height, signText = "Default Sign Text", includeDoor=True):
+    def mkBuildingOneRoom(self, world, x, y, width, height, signText = "Default Sign Text", includeDoor=True, doorKeyID = 0):
         # Walls
         # Sprite names: ['house1_house_corner_b', 'house1_house_corner_bl', 'house1_house_corner_br', 'house1_house_corner_l', 'house1_house_corner_r', 'house1_house_corner_t', 'house1_house_corner_tl', 'house1_house_corner_tr']
         # Check that it has a minimum size (e.g. at least 4x4)
@@ -61,7 +61,10 @@ class BuildingMaker:
             # The middle of the bottom wall should be a door
             if (i == int(width / 2) and includeDoor):
                 world.addObject(x + i, y + height - 1, Layer.BUILDING, world.createObject("Floor"))
-                world.addObject(x + i, y + height - 1, Layer.FURNITURE, world.createObject("Door"))
+                door = world.createObject("Door")
+                if (doorKeyID > 0):
+                    door.setKeyID(doorKeyID)
+                world.addObject(x + i, y + height - 1, Layer.FURNITURE, door)
             else:
                 world.addObject(x + i, y + height - 1, Layer.BUILDING, world.createObject("Wall"))
         # Left wall

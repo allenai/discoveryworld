@@ -715,11 +715,41 @@ class Agent(Object):
                 self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
                 return result
 
+
             # If we reach here, the object is within reach and is openable.  Open/close it.
             if (whichAction == "open"):
+                # First, check if the passage requires a key
+                requiredKey = False
+                key = None
+                if (objToOpenOrClose.attributes["requiresKey"] > 0):
+                    # Check for the key in the agents inventory
+                    keyFound = False
+                    for obj in self.getAllContainedObjectsRecursive(respectContainerStatus=True):
+                        if (obj.attributes["keyID"] == objToOpenOrClose.attributes["requiresKey"]):
+                            keyFound = True
+                            key = obj
+                            break
+                    
+                    if (not keyFound):
+                        result = ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") requires a key to open.")
+                        self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+                        return result
+                    
+                    # Special cases -- e.g. disabled key
+                    if (key.attributes["isRusted"]):
+                        result = ActionSuccess(False, "The key is rusted and doesn't work.")
+                        self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+                        return result
+
+                                        
+                # Open the door
                 objToOpenOrClose.attributes["isOpenPassage"] = True
                 objToOpenOrClose.invalidateSpritesThisWorldTile()
-                result = ActionSuccess(True, "I opened the " + objToOpenOrClose.name + ".")
+                result = None
+                if (requiredKey):
+                    result = ActionSuccess(True, "I opened the " + objToOpenOrClose.name + " with a key.")
+                else:
+                    result = ActionSuccess(True, "I opened the " + objToOpenOrClose.name + ".")
                 self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
                 return result
 
