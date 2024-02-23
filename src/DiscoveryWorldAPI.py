@@ -66,6 +66,9 @@ class DiscoveryWorldAPI:
         # Which agents have already performed actions this step
         self.agentsThatHaveActedThisStep = set()
 
+        # Most recent task progress (updated from most recent observation)
+        self.taskProgress = []
+
 
     def getNameAndVersion(self):
         return self.NAME + " v" + self.VERSION
@@ -191,9 +194,26 @@ class DiscoveryWorldAPI:
         uiJSON = ui.renderJSON()
         response["ui"] = uiJSON        
 
+        # Store most recent task progress
+        self.taskProgress = uiJSON["taskProgress"]
+
         # Return response        
         return response
 
+    # Returns true if all tasks are marked as complete, and false otherwise.
+    def areTasksComplete(self):
+        # If no tasks are defined, then return incomplete
+        if (len(self.taskProgress) == 0):
+            return False
+        
+        # Check if all tasks are complete
+        for task in self.taskProgress:
+            if (task["completed"] == False):
+                return False
+            
+        # If we reach here, all tasks were marked as complete
+        return True
+        
 
     # Lists all known actions (as they are parsed by the JSON action interpreter), by directly enumerating the ActionType enum
     def listKnownActions(self, limited:bool=False):

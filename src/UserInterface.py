@@ -342,7 +342,9 @@ class UserInterface:
         out = {
             "taskName": task.taskName,
             "description": task.taskDescription,
-            "score": task.getScoreNormalized()
+            "score": task.getScoreNormalized(),
+            "completed": task.completed,
+            "completedSuccessfully": task.completedSuccessfully
         }
         return out
 
