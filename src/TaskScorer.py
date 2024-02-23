@@ -178,7 +178,9 @@ class RustedKeyTask(Task):
         taskDescription += "3. You can mix chemicals in the jar in the shed. Just use a chemical dispenser on the jar to add chemicals to the jar. \n"
         taskDescription += "4. Chemicals placed in the same jar will automatically mix, though it may take a step or two for this to happen. \n"
         taskDescription += "5. Placing the rusted key into the jar will automatically apply the chemicals to the key.  If the chemical mixture is correct, the rust will be removed, though it may take a step or two. \n"
-        taskDescription += "6. When you have successfully rerusted the key and opened the door, please leave the shed. \n"
+        taskDescription += "6. If you need to clean the jar of chemicals to try a new combination, use the bottle washer on the jar. \n"
+        taskDescription += "7. When you have successfully rerusted the key and opened the door, please leave the shed. \n"
+        taskDescription += "HERE'S A WALKTHROUGH/HINT: To complete this task, you need to pick up the jar, put 1 unit of Chemical A and 2 units of Chemical C into the jar, and then put the key into the jar.  The key will change from rusted to not rusted.  Then you can open the door, walk 3 steps out, and the task will be completed."
 
         Task.__init__(self, "RustedKeyTask", taskDescription, world)            
         self.score = 0

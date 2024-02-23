@@ -534,6 +534,9 @@ class ScenarioMaker:
         dispenser1 = world.createObject("ChemicalDispenser")
         dispenser2 = world.createObject("ChemicalDispenser")
         dispenser3 = world.createObject("ChemicalDispenser")
+        dispenser1.name = "Dispenser (Substance A)"
+        dispenser2.name = "Dispenser (Substance B)"
+        dispenser3.name = "Dispenser (Substance C)"
 
         # Fill with chemicals
         #dispenser1.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
@@ -664,5 +667,5 @@ class ScenarioMaker:
 
 
         # Add teleport locations to world            
-        world.addTeleportLocation("shed", 12, 13)
+        # world.addTeleportLocation("shed", 12, 13)
 

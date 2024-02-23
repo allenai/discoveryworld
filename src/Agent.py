@@ -541,6 +541,78 @@ class Agent(Object):
         self.actionHistory.add(actionType=ActionType.TELEPORT_TO_LOCATION, arg1=locationName, arg2=None, result=result)
         return result
 
+    # Teleport the agent to a specific named location
+    def actionTeleportAgentToObject(self, objectUUID):
+        # Sanitize objectUUID to the right type
+        try:
+            objectUUID = int(objectUUID)
+        except:
+            result = ActionSuccess(False, "That does not appear to be a valid UUID (" + str(objectUUID) + ").  UUIDs should be integers.")
+            self.actionHistory.add(actionType=ActionType.TELEPORT_TO_OBJECT, arg1=objectUUID, arg2=None, result=result)
+            return result
+
+        # First, find a reference to the object by its UUID
+        objToTeleportTo = None
+        for obj in self.world.getAllWorldObjects():
+            if (obj.uuid == objectUUID):
+                objToTeleportTo = obj
+                break
+        
+        # Check if the object was found
+        if (objToTeleportTo == None):
+            result = ActionSuccess(False, "No object with that UUID (" + str(objectUUID) + ") was found.")
+            self.actionHistory.add(actionType=ActionType.TELEPORT_TO_OBJECT, arg1=objectUUID, arg2=None, result=result)
+            return result
+        
+        # Get the object's world location
+        objLocation = objToTeleportTo.getWorldLocation()
+        # Make sure that the object has a valid location
+        if (objLocation[0] < 0) or (objLocation[1] < 0):
+            result = ActionSuccess(False, "The object with that UUID (" + str(objectUUID) + ") does not have a valid location.")
+            self.actionHistory.add(actionType=ActionType.TELEPORT_TO_OBJECT, arg1=objectUUID, arg2=None, result=result)
+            return result
+
+        # If we reach here, the object exists and has a valid location.  Now we need to find a valid location beside the object to teleport to.
+        # First we'll use the pathfinder to try and find a natural path.  If one doesn't exist, we'll just pick a location beside the object.
+                
+
+        # Strategy 2 (backoff) -- just find any location (N/E/S/W) that's passable        
+        newX = -1
+        newY = -1
+        # North        
+        if (self.world.isPassable(objLocation[0], objLocation[1] - 1)):
+            newX = objLocation[0]
+            newY = objLocation[1] - 1
+        # East
+        elif (self.world.isPassable(objLocation[0] + 1, objLocation[1])):
+            newX = objLocation[0] + 1
+            newY = objLocation[1]
+        # South
+        elif (self.world.isPassable(objLocation[0], objLocation[1] + 1)):
+            newX = objLocation[0]
+            newY = objLocation[1] + 1
+        # West
+        elif (self.world.isPassable(objLocation[0] - 1, objLocation[1])):
+            newX = objLocation[0] - 1
+            newY = objLocation[1]
+
+        # Check if we found a valid location
+        if (newX == -1 or newY == -1):
+            result = ActionSuccess(False, "I couldn't find a valid location beside the object to teleport to.")
+            self.actionHistory.add(actionType=ActionType.TELEPORT_TO_OBJECT, arg1=objectUUID, arg2=None, result=result)
+            return result
+        
+        # If we reach here, the new location is valid. Update the agent's location to the new location
+        self.world.removeObject(self)                           # First, remove the object from it's current location in the world grid
+        self.world.addObject(newX, newY, Layer.AGENT, self)     # Then, add the object to the new location in the world grid
+
+        # Invalidate sprite name
+        self.needsSpriteNameUpdate = True
+
+        result = ActionSuccess(True, "I teleported to the object with UUID " + str(objectUUID) + " at (" + str(newX) + ", " + str(newY) + ").")
+        self.actionHistory.add(actionType=ActionType.TELEPORT_TO_OBJECT, arg1=objectUUID, arg2=None, result=result)
+        return result
+    
 
     # Pick up an object, and add it to the agent's inventory
     def actionPickUp(self, objToPickUp):

@@ -84,10 +84,22 @@ class DiscoveryWorldAPI:
 
         # Create the town scenario
         scenarioMaker = ScenarioMaker(self.r)
-        scenarioMaker.makeScenarioTown(self.world, self.numUserAgents)
 
-        # Add tasks
-        self.world.addTaskByName("EatMushroomTask")
+        if (scenarioName == "Mushroom"):
+            # Add scenario
+            scenarioMaker.makeScenarioTown(self.world, self.numUserAgents)
+            # Add tasks
+            self.world.addTaskByName("EatMushroomTask")
+
+        elif (scenarioName == "RustedKey"):
+            # Add scenario
+            scenarioMaker.makeScenarioStorageShed(self.world, self.numUserAgents)
+            # Add tasks
+            self.world.addTaskByName("RustedKeyTask")
+        else:
+            print("Unknown scenario name: " + scenarioName)
+            exit(1)
+            return
 
         # Initialize and attach user interfaces to the agents
         userAgents = self.world.getUserAgents()
