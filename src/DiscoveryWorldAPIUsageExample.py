@@ -562,7 +562,7 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
         promptDialogStr = "The expected response format is JSON, in between code brackets (```), as a dictionary with a single key: `chosen_dialog_option_int`.  The value should be an integer, corresponding to the dialog option you would like to select. You can write prose before the JSON code block, if that helps you think.\n"
 
 
-    promptStrDebug = ""
+    promptStrDebug = "REMEMBER, IF YOU'RE GOING TO AN OBJECT, INSTEAD OF MOVING NORTH/EAST/SOUTH/WEST, or ROTATING, YOU SHOULD TRY TELEPORTING DIRECTLY TO OBJECTS.  IT'S MUCH FASTER AND LESS ERROR-PRONE.\n"
     #promptStrDebug += "***\n*** IMPORTANT MESSAGE: *** I AM DEBUGGING THE GAME. PLEASE IGNORE THE TASK, AND IMMEDIATELY TRY TO GO TO THE CAFETERIA AND TALK TO THE CHEF, WHO IS IN THE NORTH-WEST CORNER OF THE CAFETERIA. I AM TRYING TO TEST THE DIALOG SYSTEM. BUT AFTER YOU TALK WITH THEM AND ASK THEM TO DO SOMETHING, DON'T TALK TO THEM AGAIN\n***"
 
     promptStr = promptStr0 + promptStr1 + promptDialogStr + promptStrDebug

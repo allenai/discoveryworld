@@ -583,25 +583,33 @@ class Agent(Object):
         newX = -1
         newY = -1
         # North        
-        if (self.world.isPassable(objLocation[0], objLocation[1] - 1)):
+        passableNorth, blockingObjectNorth = self.world.isPassable(objLocation[0], objLocation[1] - 1)
+        passableEast, blockingObjectEast = self.world.isPassable(objLocation[0] + 1, objLocation[1])
+        passableSouth, blockingObjectSouth = self.world.isPassable(objLocation[0], objLocation[1] + 1)
+        passableWest, blockingObjectWest = self.world.isPassable(objLocation[0] - 1, objLocation[1])
+        if (passableNorth):
             newX = objLocation[0]
             newY = objLocation[1] - 1
+            self.attributes["faceDirection"] = "south"
         # East
-        elif (self.world.isPassable(objLocation[0] + 1, objLocation[1])):
+        elif (passableEast):
             newX = objLocation[0] + 1
             newY = objLocation[1]
+            self.attributes["faceDirection"] = "west"
         # South
-        elif (self.world.isPassable(objLocation[0], objLocation[1] + 1)):
+        elif (passableSouth):
             newX = objLocation[0]
             newY = objLocation[1] + 1
+            self.attributes["faceDirection"] = "north"
         # West
-        elif (self.world.isPassable(objLocation[0] - 1, objLocation[1])):
+        elif (passableWest):
             newX = objLocation[0] - 1
             newY = objLocation[1]
+            self.attributes["faceDirection"] = "east"
 
         # Check if we found a valid location
         if (newX == -1 or newY == -1):
-            result = ActionSuccess(False, "I couldn't find a valid location beside the object to teleport to.")
+            result = ActionSuccess(False, "I couldn't find a valid location beside the object (" + str(objToTeleportTo.name) + ", uuid: " + str(objectUUID) + ") to teleport to.")
             self.actionHistory.add(actionType=ActionType.TELEPORT_TO_OBJECT, arg1=objectUUID, arg2=None, result=result)
             return result
         
@@ -612,7 +620,7 @@ class Agent(Object):
         # Invalidate sprite name
         self.needsSpriteNameUpdate = True
 
-        result = ActionSuccess(True, "I teleported to the object with UUID " + str(objectUUID) + " at (" + str(newX) + ", " + str(newY) + ").")
+        result = ActionSuccess(True, "I teleported to the object with UUID " + str(objectUUID) + " (" + str(objToTeleportTo.name) + ") at (" + str(newX) + ", " + str(newY) + ").")
         self.actionHistory.add(actionType=ActionType.TELEPORT_TO_OBJECT, arg1=objectUUID, arg2=None, result=result)
         return result
     
