@@ -528,6 +528,8 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
     promptStr0 += json.dumps(api.listTeleportLocationsDict(), indent=4, sort_keys=True)
     promptStr0 += "```\n"
     promptStr0 += "\n"
+    promptStr0 += "VERY IMPORTANT: You can also teleport to OBJECTS.  This is probably the easiest way for you to move to new locations, because it's fast and error-free.  You can teleport to any object, including objects you can't see. In this case, 'arg1' is the UUID of the object you want to teleport to. An example teleport action would be: `{\"action\": \"TELEPORT_TO_OBJECT\", \"arg1\": 123}).\n"
+    promptStr0 += "\n"
     facingDirection = observation["ui"]["agentLocation"]["faceDirection"]
     validDirections = observation["ui"]["agentLocation"]["directions_you_can_move"]
     promptStr0 += "Navigation note: In the image, you are in the center, north is the top, south is the bottom, east is the right, and west is the left. Moving forward moves you in the direction you're facing. You are currently facing `" + facingDirection + "`. From your current location, the directions that you can move to (i.e. they don't have an object blocking them) are: " + str(validDirections) + ". You seen to confuse directions a lot.  Directions are relative to the center of the image. Things above the center are north of the agent. Things left of the center are east of the agent.\n"

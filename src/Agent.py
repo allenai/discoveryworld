@@ -574,7 +574,10 @@ class Agent(Object):
 
         # If we reach here, the object exists and has a valid location.  Now we need to find a valid location beside the object to teleport to.
         # First we'll use the pathfinder to try and find a natural path.  If one doesn't exist, we'll just pick a location beside the object.
-                
+
+        # TODO: Strategy 1: Pathfinding
+        # Try to find a path to the object, and then find a location beside the object to teleport to                
+
 
         # Strategy 2 (backoff) -- just find any location (N/E/S/W) that's passable        
         newX = -1
