@@ -3533,7 +3533,7 @@ class Key(Object):
                 self.name = "rusted key (lightly rusted)"
             
         elif (not self.attributes['isRusted']):
-            self.name = "key"
+            self.name = "key (no rust)"
 
 
 

@@ -228,7 +228,7 @@ class Agent(Object):
                     # Distance
                     distance = abs(obj.attributes["gridX"] - self.attributes["gridX"]) + abs(obj.attributes["gridY"] - self.attributes["gridY"])
                     # Round distance to 1 decimal place
-                    distance = round(distance, 1)
+                    distance = round(distance, 2)
 
                     # Add the actual object
                     visibleObjectsFull.append(obj)
@@ -250,7 +250,7 @@ class Agent(Object):
                     #for direction in directions:
                     direction = "-".join(directions)
                     #visibleObjectsByDirection[direction].append(obj.name)
-                    visibleObjectsByDirection[direction].append({"name": obj.name, "description": obj.getTextDescription(), "distance": distance})
+                    visibleObjectsByDirection[direction].append({"name": obj.name, "uuid": obj.uuid, "description": obj.getTextDescription(), "distance": distance})
 
         return visibleObjectsFull, visibleObjects, visibleObjectsByDirection
 
