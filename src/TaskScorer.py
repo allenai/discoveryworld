@@ -48,6 +48,8 @@ class TaskMaker():
             return EatMushroomTask(self.world)
         elif taskName == "RustedKeyTask":
             return RustedKeyTask(self.world)
+        elif taskName == "ArcheologyDigTask":
+            return ArcheologyDig(self.world)
         else:
             return None
 
@@ -233,3 +235,124 @@ class RustedKeyTask(Task):
         elif (self.score < self.maxScore):
             self.completed = False
             self.completedSuccessfully = False
+
+
+
+
+#
+#   Specific Task: Archeology dig task
+#
+class ArcheologyDig(Task):
+    # Constructor
+    def __init__(self, world):
+        taskDescription = "You are on an archeological dig on Planet X.  A number of ancient sites have been found. "
+        taskDescription += "Your task is to place the red flag beside the sign of the dig site with the oldest artifact. "        
+
+        Task.__init__(self, "ArcheologyDigTask", taskDescription, world)            
+        self.score = 0
+        self.maxScore = 1                       # Maximum score
+        self.flagToMonitor = None
+        self.goalSign = (0, 0)
+        self.artifacts = []
+        self.signs = []
+
+
+    # Task setup: Add any necessary objects to the world to perform the task.
+    def taskSetup(self):
+        # Add the colonists?
+        pass
+
+    def initialize(self):
+        # Find all the artifacts
+        self.artifacts = []
+        oldestArtifact = None
+        oldestAge = 0
+        for obj in self.world.getAllWorldObjects():
+            if obj.type == "ancient artifact":
+                self.artifacts.append(obj)
+                if obj.attributes['radiocarbonAge'] > oldestAge:
+                    oldestArtifact = obj
+                    oldestAge = obj.attributes['radiocarbonAge']
+
+        # Find all the signs
+        self.signs = []
+        closestSign = None
+        closestDistance = 1000000
+        for obj in self.world.getAllWorldObjects():
+            if obj.type == "sign":
+                self.signs.append(obj)
+                # Get distance between this sign and the oldest artifact
+                distance = obj.distanceTo(oldestArtifact)
+                if (distance < closestDistance):
+                    closestDistance = distance
+                    closestSign = obj
+        # Set the flag goal location to be the location of the closest sign
+        self.goalSign = closestSign
+
+        # Find the flag
+        for obj in self.world.getAllWorldObjects():
+            if obj.type == "flag":
+                self.flagToMonitor = obj
+                self.flagGoalLocation = obj.getWorldLocation()
+                break
+
+        # Set the maximum score
+        self.maxScore = len(self.artifacts) + 2
+
+        
+    # Update the task progress
+    def updateTick(self):
+        score = 0
+
+        # If 'artificts' is empty, then initialize the scorer        
+        if len(self.artifacts) == 0:
+            self.initialize()
+
+        # Monitoring task 1: Check to see how many artifacts have been found        
+        for artifact in self.artifacts:
+            # Get the parent container
+            parentContainer = artifact.parentContainer
+            # Check if the parent container is a soil tile
+            if (parentContainer != None) and (parentContainer.type == "soil"):
+                # Check that the soil tile "has a hold" (i.e. that the artifact has been exposed)
+                if (parentContainer.attributes["hasHole"] == True):
+                    score += 1
+
+            else:
+                # If the parent container is not a soil tile, then the container is something else, meaning the artifact was found and moved
+                score += 1
+        
+
+        # Monitoring task 2: Check to see if the flag has been placed near ANY of the signs (+/- 2 grid spaces).
+        # First, check that the flag has no parent container, meaning it's not being held by an agent
+        flagPlaced = False
+        if (self.flagToMonitor.parentContainer == None):
+            for sign in self.signs:
+                distance = sign.distanceTo(self.flagToMonitor)
+                if (distance <= 2):
+                    score += 1
+                    flagPlaced = True
+                    break
+            
+        # Monitoring task 3: Also check to see whether the flag has been placed near the CORRECT sign
+        if (flagPlaced == True):
+            distance = self.flagToMonitor.distanceTo(self.goalSign)
+            flagAtGoal = False
+            if (distance <= 2):
+                score += 1
+                flagAtGoal = True
+        
+        # Set the score
+        self.score = score
+
+        # If the flag has been placed, the task is complete
+        if (flagPlaced == True):
+            self.completed = True
+            if (flagAtGoal == True):
+                self.completedSuccessfully = True
+            else:
+                self.completedSuccessfully = False
+        else:
+            self.completed = False
+            self.completedSuccessfully = False
+            

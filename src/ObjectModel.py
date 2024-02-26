@@ -166,6 +166,13 @@ class Object:
             return True
         
         return False
+    
+    # Get the distance from this object to another object
+    def distanceTo(self, otherObj):
+        # Get the distance from this object to another object
+        x0, y0 = self.getWorldLocation()
+        x1, y1 = otherObj.getWorldLocation()
+        return math.sqrt( (x1 - x0)**2 + (y1 - y0)**2 )
 
     # Remove from world location -- this is analagous to the removeObject() method for containers, but removes the object from the world tile.
     def removeFromWorldLocation(self):

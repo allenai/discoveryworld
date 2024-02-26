@@ -88,8 +88,9 @@ def main():
     scenarioMaker.makeScenarioArchaeologicalDig(world)
 
     # Add tasks
-    world.addTaskByName("EatMushroomTask")
-    world.addTaskByName("RustedKeyTask")
+    #world.addTaskByName("EatMushroomTask")
+    #world.addTaskByName("RustedKeyTask")
+    world.addTaskByName("ArcheologyDigTask")
 
     # Initial world tick
     world.tick()
