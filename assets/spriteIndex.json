@@ -251,6 +251,7 @@
                 "key_rusty":            { "baseTile": [2, 4],  "size": [1, 1] },
                 "key":                  { "baseTile": [2, 5],  "size": [1, 1] },
 
+                "radiocarbon_meter":    { "baseTile": [4, 4],  "size": [1, 1] },
                 "flag":                 { "baseTile": [3, 6],  "size": [1, 1] }
             },
         "composites": 

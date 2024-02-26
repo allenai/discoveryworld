@@ -233,6 +233,7 @@ class ObjectMaker:
             "Key": Key,
             "AncientArtifact": AncientArtifact,
             "Flag": Flag,
+            "RadioCarbonMeter": RadioCarbonMeter,
 
             # Substances
             "TestSubstance": [Substance, "testSubstance"],

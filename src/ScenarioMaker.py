@@ -343,7 +343,7 @@ class ScenarioMaker:
 
 
     # Archeology Dig Site
-    def mkDigSite(self, x, y, world, buildingMaker, r, digSiteNum):    
+    def mkDigSite(self, x, y, world, buildingMaker, r, digSiteNum, artifactAge):    
         # Randomly make size of archeology dig site (x-y each between 1-2)
         digSiteSizeX = r.randint(1, 2)
         digSiteSizeY = r.randint(1, 2)
@@ -361,10 +361,15 @@ class ScenarioMaker:
 
                 # Randomly add an artifact to one of the soil tiles
                 if (count == locationOfArtifact):
-                    soilTile.addObject(world.createObject("AncientArtifact"), force=True)
+                    # Add an artifact
+                    artifact = world.createObject("AncientArtifact")
+                    # Add the age
+                    artifact.attributes['radiocarbonAge'] = artifactAge
+                    # Add the artifact to the hole
+                    soilTile.addObject(artifact, force=True)
 
                 # Add soil tile to world
-                world.addObject(x+i, y+j+1, Layer.WORLD, soilTile)
+                world.addObject(x+i, y+j+1, Layer.BUILDING, soilTile)
                 
                 count += 1
 
@@ -800,6 +805,8 @@ class ScenarioMaker:
     # Make the town scenario
     #
     def makeScenarioArchaeologicalDig(self, world, numUserAgents=1):        
+        numDigSites = 3
+
         # Set a limit for the number of user agents
         MAX_NUM_AGENTS = 5
         if (numUserAgents > MAX_NUM_AGENTS):
@@ -816,17 +823,26 @@ class ScenarioMaker:
             randY = self.random.randint(0, world.sizeY - 1)
             ## world.addObject(randX, randY, Layer.OBJECTS, BuildingMaker.mkObject("plant", "plant", "forest1_plant" + str(i % 3 + 1)))
 
+        # Possible artifact ages (in years). Ranges from 100k to 1 million years old, with even numbers. 
+        artifactAges = [150000, 230000, 370000, 410000, 500000, 675000, 725000, 890000, 930000, 1000000]
+        # Shuffle the artifact ages
+        self.random.shuffle(artifactAges)
+        # Trim to the first numDigSites
+        artifactAges = artifactAges[:numDigSites]            
 
         # List dig site locations
         digSiteLocations = [(10, 10), (20, 13), (12, 18)]
 
         # Add 3 dig sites
         for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
-            self.mkDigSite(digSiteLocation[0], digSiteLocation[1], world, buildingMaker, self.random, digSiteIdx+1)
+            self.mkDigSite(digSiteLocation[0], digSiteLocation[1], world, buildingMaker, self.random, digSiteIdx+1, artifactAges[digSiteIdx])
 
         # Add a table at the start of the dig site
-        seedTable = world.createObject("Table")        
-        world.addObject(15, 15, Layer.FURNITURE, seedTable)
+        instrumentTable = world.createObject("Table")        
+        world.addObject(15, 15, Layer.FURNITURE, instrumentTable)
+        # Add a radiocarbon meter to the table
+        instrumentTable.addObject( world.createObject("RadioCarbonMeter") )
+
 
         # Add a shovel at the start of the dig site
         shovel = world.createObject("Shovel")
@@ -835,6 +851,33 @@ class ScenarioMaker:
         # Add a flag at the start of the dig site
         flag = world.createObject("Flag")
         world.addObject(14, 16, Layer.FURNITURE, flag)
+
+        # Add some random holes
+        minHoles = 1
+        holeCount = 0
+        while (holeCount < minHoles):
+            # Pick a random locatio between 10-20
+            randX = self.random.randint(10, 20)
+            randY = self.random.randint(10, 20)
+
+            # Check to see if there are any objects other than grass there
+            objs = world.getObjectsAt(randX, randY)
+            # Get types of objects
+            objTypes = [obj.type for obj in objs]
+            # Check to see that there is grass here
+            if ("grass" in objTypes):
+                # Check that there is not other things here
+                if (len(objTypes) == 1):
+                    # Add a hole
+                    soilTile = world.createObject("SoilTile")                                        
+                    #soilTile.attributes['hasHole'] = True
+                    # Remove all soil tile contents (i.e. the dirt) -- this has the effect of making a hole
+                    for obj in soilTile.contents:
+                        soilTile.removeObject(obj)
+
+                    world.addObject(randX, randY, Layer.BUILDING, soilTile)
+                    holeCount += 1
+
 
         # Add some plants
         world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))

@@ -126,6 +126,8 @@ class Object:
         self.attributes['requiresKey'] = 0                        # If it requires a key to open/use, then this is a special ID for the key.  If the value is <=0, then it doesn't require a key.
         self.attributes['keyID'] = 0                              # If this object acts as a key, here's it's ID (0 by default)
 
+        # Radiocarbon dating age (in years)
+        self.attributes["radiocarbonAge"] = -1                    # Radiocarbon dating age (in years). -1 means it's not applicable/inconclusive.
 
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
@@ -3590,3 +3592,63 @@ class Flag(Object):
     def tick(self):
         # Call superclass
         Object.tick(self)
+
+
+#
+#   Object: Radio Carbon Meter
+#
+class RadioCarbonMeter(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "radiocarbon meter", "radiocarbon meter", defaultSpriteName = "instruments_radiocarbon_meter")
+
+        # Default attributes
+
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+        useDescriptionStr = "You use the radiocarbon meter to investigate the " + patientObj.name + ".\n"
+
+        # Check for a "radiocarbon_age" attribute in the patient object
+        radiocarbonAge = -1
+        if ("radiocarbonAge" in patientObj.attributes):
+            radiocarbonAge = patientObj.attributes["radiocarbonAge"]
+
+        # If the radiocarbon age is less than or equal to zero, then the results are inconclusive
+        if (radiocarbonAge <= 0):
+            useDescriptionStr += "The results are inconclusive.\n"
+            return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+        
+        # If the radiocarbon age is greater than zero, then report the age
+        useDescriptionStr += "The radiocarbon meter estimates an age of " + str(radiocarbonAge) + " years.\n"        
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
+
+    #
+    #   Tick
+    #
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+        
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
