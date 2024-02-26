@@ -197,6 +197,10 @@ class RustedKeyTask(Task):
 
     # Update the task progress
     def updateTick(self):
+        # Do not update the score if the task is already marked as completed
+        if (self.completed == True):
+            return
+
         # Monitoring task 1: Check to see whether there's a key that ISNT rusty
         score = 0
         if (self.keyToMonitor == None):
@@ -302,6 +306,10 @@ class ArcheologyDig(Task):
         
     # Update the task progress
     def updateTick(self):
+        # Do not update the score if the task is already marked as completed
+        if (self.completed == True):
+            return
+        
         score = 0
 
         # If 'artificts' is empty, then initialize the scorer        
