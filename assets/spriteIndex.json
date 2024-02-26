@@ -249,7 +249,9 @@
                 "chemical_dispenser":   { "baseTile": [3, 4],  "size": [1, 1] },
                 "bottle_cleaner":       { "baseTile": [3, 5],  "size": [1, 1] },
                 "key_rusty":            { "baseTile": [2, 4],  "size": [1, 1] },
-                "key":                  { "baseTile": [2, 5],  "size": [1, 1] }
+                "key":                  { "baseTile": [2, 5],  "size": [1, 1] },
+
+                "flag":                 { "baseTile": [3, 6],  "size": [1, 1] }
             },
         "composites": 
             {

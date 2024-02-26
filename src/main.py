@@ -84,7 +84,8 @@ def main():
     # Create the town scenario
     scenarioMaker = ScenarioMaker(r)
     #scenarioMaker.makeScenarioTown(world)
-    scenarioMaker.makeScenarioStorageShed(world)
+    #scenarioMaker.makeScenarioStorageShed(world)
+    scenarioMaker.makeScenarioArchaeologicalDig(world)
 
     # Add tasks
     world.addTaskByName("EatMushroomTask")

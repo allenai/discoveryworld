@@ -3562,3 +3562,31 @@ class Key(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+
+#
+#   Ancient Artifact
+#
+class AncientArtifact(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "ancient artifact", "ancient artifact", defaultSpriteName = "placeholder_jar_empty")
+    
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+#
+#   Objet: Dig flag
+#        
+class Flag(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "flag", "flag", defaultSpriteName = "instruments_flag")
+    
+    def tick(self):
+        # Call superclass
+        Object.tick(self)

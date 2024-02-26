@@ -342,6 +342,40 @@ class ScenarioMaker:
 
 
 
+    # Archeology Dig Site
+    def mkDigSite(self, x, y, world, buildingMaker, r, digSiteNum):    
+        # Randomly make size of archeology dig site (x-y each between 1-2)
+        digSiteSizeX = r.randint(1, 2)
+        digSiteSizeY = r.randint(1, 2)
+        totalLocations = digSiteSizeX * digSiteSizeY
+        locationOfArtifact = r.randint(0, totalLocations-1)
+
+        # Make the dig site soil (with one hole containing an artifact)
+        count = 0       # Counter for where to place the artifact
+        for i in range(0, digSiteSizeX):
+            for j in range(0, digSiteSizeY):                
+                soilTile = world.createObject("SoilTile")
+                # Randomly set the 'hasHole' attribute to True for some of the soil tiles
+                #if (random.randint(0, 2) == 0):
+                #    soilTile.attributes['hasHole'] = True
+
+                # Randomly add an artifact to one of the soil tiles
+                if (count == locationOfArtifact):
+                    soilTile.addObject(world.createObject("AncientArtifact"), force=True)
+
+                # Add soil tile to world
+                world.addObject(x+i, y+j+1, Layer.WORLD, soilTile)
+                
+                count += 1
+
+
+        # Add a sign to the dig site
+        sign = world.createObject("Sign")        
+        sign.setText("Dig Site " + str(digSiteNum))
+        world.addObject(x, y, Layer.FURNITURE, sign)
+                
+
+
 
 
     #
@@ -515,8 +549,9 @@ class ScenarioMaker:
 
 
 
-
-    # Storage shed
+    #
+    #   Storage shed scenario
+    #
     def mkStorageShed(self, x, y, world, buildingMaker, DOOR_KEY_ID):
         # Create a small building
         houseSizeX = 7
@@ -668,4 +703,177 @@ class ScenarioMaker:
 
         # Add teleport locations to world            
         # world.addTeleportLocation("shed", 12, 13)
+
+
+
+    #
+    #   Storage shed scenario
+    #
+    def mkStorageShed(self, x, y, world, buildingMaker, DOOR_KEY_ID):
+        # Create a small building
+        houseSizeX = 7
+        houseSizeY = 4
+        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Storage Shed", includeDoor=True, doorKeyID = DOOR_KEY_ID)        
+
+        # Add a table in the farm house
+        compoundTable1 = world.createObject("Table")
+        compoundTable2 = world.createObject("Table")
+        compoundTable3 = world.createObject("Table")
+        compoundTable4 = world.createObject("Table")
+        compoundTable5 = world.createObject("Table")
+
+        # Create chemical dispensers
+        dispenser1 = world.createObject("ChemicalDispenser")
+        dispenser2 = world.createObject("ChemicalDispenser")
+        dispenser3 = world.createObject("ChemicalDispenser")
+        dispenser1.name = "Dispenser (Substance A)"
+        dispenser2.name = "Dispenser (Substance B)"
+        dispenser3.name = "Dispenser (Substance C)"
+
+        # Fill with chemicals
+        #dispenser1.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
+        dispenser1.setAutoFill(checkObjectName="Substance A", fillObjectName="SubstanceA", minCount=1, replenishTime=0)
+        dispenser2.setAutoFill(checkObjectName="Substance B", fillObjectName="SubstanceB", minCount=1, replenishTime=0)
+        dispenser3.setAutoFill(checkObjectName="Substance C", fillObjectName="SubstanceC", minCount=1, replenishTime=0)
+
+        # Add dispensers to tables
+        compoundTable2.addObject(dispenser1)
+        compoundTable3.addObject(dispenser2)
+        compoundTable4.addObject(dispenser3)
+
+        # Add bottle cleaner 
+        BottleCleaner = world.createObject("BottleCleaner")
+        compoundTable5.addObject(BottleCleaner)
+
+        # Add tables to world
+        world.addObject(x+2, y+1, Layer.FURNITURE, compoundTable1)
+        world.addObject(x+3, y+1, Layer.FURNITURE, compoundTable2)
+        world.addObject(x+4, y+1, Layer.FURNITURE, compoundTable3)
+        world.addObject(x+5, y+1, Layer.FURNITURE, compoundTable4)
+        world.addObject(x+6, y+1, Layer.FURNITURE, compoundTable5)                
+
+        mixingJar = world.createObject("Jar")            
+        # Add to first table
+        compoundTable1.addObject(mixingJar)
+
+        # Add substance
+        #substance1 = world.createObject("TestSubstance")
+        #substance2 = world.createObject("PurpleSubstance")
+        #mixingJar.addObject(substance1)
+        #mixingJar.addObject(substance2)
+        
+        #substanceCleaner = world.createObject("substanceCleaner")
+        #mixingJar.addObject(substanceCleaner)
+
+        # Add rusty key
+        rustyKey = world.createObject("Key")
+        rustyKey.setKeyID(DOOR_KEY_ID)
+        world.addObject(x+2, y+2, Layer.OBJECTS, rustyKey)
+
+
+
+#        seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
+#        seedJar.name = "seed jar"
+        #seedJar.addObject(Seed(world, "red"))
+
+        # Add 5 seeds to the jar
+        #for i in range(5):
+        #    seedJar.addObject( world.createObject("Seed") )
+
+#        seedTable.addObject(seedJar)
+#        world.addObject(x+3, y+1, Layer.FURNITURE, seedTable)
+
+        # Add a shovel in the farm house
+        #shovel = world.createObject("Shovel")
+        #world.addObject(x+2, y+1, Layer.FURNITURE, shovel)
+
+        # Add a bag of fertilizer
+        #fertilizer = world.createObject("FertilizerBag")
+        #world.addObject(x+2, y+2, Layer.FURNITURE, fertilizer)
+
+
+
+
+
+
+    #
+    # Make the town scenario
+    #
+    def makeScenarioArchaeologicalDig(self, world, numUserAgents=1):        
+        # Set a limit for the number of user agents
+        MAX_NUM_AGENTS = 5
+        if (numUserAgents > MAX_NUM_AGENTS):
+            numUserAgents = MAX_NUM_AGENTS
+
+        # Populate with structures/objects
+        buildingMaker = BuildingMaker(world)
+
+        # Fill with grass
+        buildingMaker.mkGrassFill(world)
+        # Randomly place a few plants (plant1, plant2, plant3)
+        for i in range(0, 10):
+            randX = self.random.randint(0, world.sizeX - 1)
+            randY = self.random.randint(0, world.sizeY - 1)
+            ## world.addObject(randX, randY, Layer.OBJECTS, BuildingMaker.mkObject("plant", "plant", "forest1_plant" + str(i % 3 + 1)))
+
+
+        # List dig site locations
+        digSiteLocations = [(10, 10), (20, 13), (12, 18)]
+
+        # Add 3 dig sites
+        for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
+            self.mkDigSite(digSiteLocation[0], digSiteLocation[1], world, buildingMaker, self.random, digSiteIdx+1)
+
+        # Add a table at the start of the dig site
+        seedTable = world.createObject("Table")        
+        world.addObject(15, 15, Layer.FURNITURE, seedTable)
+
+        # Add a shovel at the start of the dig site
+        shovel = world.createObject("Shovel")
+        world.addObject(14, 15, Layer.FURNITURE, shovel)
+
+        # Add a flag at the start of the dig site
+        flag = world.createObject("Flag")
+        world.addObject(14, 16, Layer.FURNITURE, flag)
+
+        # Add some plants
+        world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))
+
+        plantCount = 0
+        minPlants = 15
+        while (plantCount < minPlants):
+            # Pick a random location
+            randX = self.random.randint(0, world.sizeX - 1)
+            randY = self.random.randint(0, world.sizeY - 1)
+
+            # Check to see if there are any objects other than grass there
+            objs = world.getObjectsAt(randX, randY)
+            # Get types of objects
+            objTypes = [obj.type for obj in objs]
+            # Check to see that there is grass here
+            if ("grass" in objTypes):
+                # Check that there is not other things here
+                if (len(objTypes) == 1):
+                    # Add a plant
+                    world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
+                    plantCount += 1                
+
+
+        # DialogMaker
+        dialogMaker = DialogMaker()
+
+        # Add some number of user agents
+        for userAgentIdx in range(0, numUserAgents):
+            userAgent = Agent(world)
+            # TODO: Add starting tools for agent
+            # Add the agent to a specfic location        
+            world.addObject(13+userAgentIdx, 14, Layer.AGENT, userAgent)      # Near center of dig site
+            # Register the agent with the World so we can keep track of it
+            world.addAgent(userAgent)
+
+
+        # Add teleport locations to world            
+        # world.addTeleportLocation("shed", 12, 13)
+        for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
+            world.addTeleportLocation("dig site " + str(digSiteIdx+1), digSiteLocation[0]-1, digSiteLocation[1]+1)
 

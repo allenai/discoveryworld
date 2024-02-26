@@ -231,6 +231,8 @@ class ObjectMaker:
             "ChemicalDispenser": ChemicalDispenser,
             "BottleCleaner": BottleCleaningDevice,
             "Key": Key,
+            "AncientArtifact": AncientArtifact,
+            "Flag": Flag,
 
             # Substances
             "TestSubstance": [Substance, "testSubstance"],
