@@ -58,6 +58,8 @@ class Object:
         self.attributes["isMovable"] = True                         # Can it be moved?
         self.attributes["isPassable"] = True                        # Can an agent walk over this?
 
+        # Whether this object obscures objects on lower layers (like a floor tile on the furniture layer obscuring grass or soil on the world layer)
+        self.attributes["obscuresObjectsBelow"] = False            # Does it obscure/hide objects on layers below it?
 
 
         # Materials
@@ -612,7 +614,7 @@ class Grass(Object):
         # Default sprite name
         Object.__init__(self, world, "grass", "grass", defaultSpriteName = "forest1_grass")
 
-        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isMovable"] = False                       # Can it be moved?        
     
     def tick(self):
         # Call superclass
@@ -630,6 +632,8 @@ class Wall(Object):
 
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+        self.attributes["obscuresObjectsBelow"] = True             # Does it obscure/hide objects on layers below it?
 
         # Rendering attribute (wall direction, "tl", "tr", "bl", "br", "l", "r", "t", "b")     
         self.wallShape = ""
@@ -802,6 +806,8 @@ class Floor(Object):
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
 
+        self.attributes["obscuresObjectsBelow"] = True             # Does it obscure/hide objects on layers below it?
+
         # Material type?
 
     def tick(self):
@@ -842,6 +848,8 @@ class CaveWall(Object):
 
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+        self.attributes["obscuresObjectsBelow"] = True             # Does it obscure/hide objects on layers below it?
 
         # Rendering attribute (wall direction, "tl", "tr", "bl", "br", "l", "r", "t", "b")     
         self.wallShape = ""
@@ -1022,6 +1030,8 @@ class CaveFloor(Object):
 
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
+
+        self.attributes["obscuresObjectsBelow"] = True             # Does it obscure/hide objects on layers below it?
 
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change

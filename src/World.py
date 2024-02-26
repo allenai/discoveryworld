@@ -167,9 +167,8 @@ class World:
             print("Error: Invalid layer: " + str(layer))
             return False
 
-
     # Get all objects at a given position
-    def getObjectsAt(self, x, y, respectContainerStatus=False, includeParts=False, excludeObjectsOnAgents=False):
+    def getObjectsAt(self, x, y, respectContainerStatus=False, includeParts=False, excludeObjectsOnAgents=False, respectObscuringLowerLayers=False):
         # Bound checking: Make sure the object is within the world bounds
         if x < 0 or x >= self.sizeX or y < 0 or y >= self.sizeY:
             print("Error: Object out of bounds: " + str(x) + ", " + str(y))
@@ -178,13 +177,21 @@ class World:
         #print("\t\t\tGetting objects at (" + str(x) + ", " + str(y) + ")")
         # Get the objects
         objects = []
-        for layer in Layer:            
+        #for layer in Layer:            
+        for layer in reversed(list(Layer)):         # Reverse the order of layers, so that the top layer is processed first, to handle obscuring objects
             #objects += self.grid[x][y]["layers"][layer]
             objsToAdd = self.grid[x][y]["layers"][layer]
             if (len(objsToAdd) > 0):
                 #print("\t\t\t\tLayer: " + str(layer) + " (" + str(len(objsToAdd)) + " objects)") 
+                foundObscuringObject = False
+
                 for obj in objsToAdd:
                     objects.append(obj)
+
+                    # If this object obscures objects below it, then stop adding objects to the list
+                    if (obj.attributes["obscuresObjectsBelow"] == True):                        
+                        foundObscuringObject = True
+                        
                     contents = []
                     # Check if this object is an agent (i.e. is an instance of Agent)
                     if (excludeObjectsOnAgents == True) and (obj.attributes["isAgent"] == True):
@@ -198,9 +205,14 @@ class World:
                         contents = obj.getAllContainedObjectsAndParts(includeContents=True, includeParts=True)
                     if (len(contents) > 0):
                         #print("Contents of " + obj.name + ": " + str(contents))
-                        objects += contents
+                        for cObj in contents:
+                            if (cObj.attributes["obscuresObjectsBelow"] == True):
+                                foundObscuringObject = True
+                            objects.append(cObj)                        
                     
-                    
+                # If we found an object that obscures objects below it, then stop adding objects to the list
+                if ((respectObscuringLowerLayers == True) and (foundObscuringObject == True)):
+                    break
 
             #objects += objsToAdd
 

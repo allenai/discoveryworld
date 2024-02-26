@@ -131,10 +131,11 @@ class Agent(Object):
             return []
 
         # Get objects at location
-        objs = self.world.getObjectsAt(facingLocation[0], facingLocation[1], respectContainerStatus=respectContainerStatus)                    
+        #objs = self.world.getObjectsAt(facingLocation[0], facingLocation[1], respectContainerStatus=respectContainerStatus)                    
+        objs = self.world.getObjectsAt(facingLocation[0], facingLocation[1], respectContainerStatus=respectContainerStatus, respectObscuringLowerLayers=True)                            
 
-        # Also try to get objects at the agent's location
-        objsAtAgentLocation = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"], respectContainerStatus=respectContainerStatus)
+        ## NEW: Also include objects at the agent's current location
+        objsAtAgentLocation = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"], respectContainerStatus=respectContainerStatus, respectObscuringLowerLayers=True)
         # But do not add itself
         objsAtAgentLocation = [obj for obj in objsAtAgentLocation if (obj != self)]
         objs += objsAtAgentLocation
@@ -206,7 +207,8 @@ class Agent(Object):
                 objsAtLocation = []
                 if (self.world.isWithinBounds(x, y)):
                     # Get objects at location
-                    objs = self.world.getObjectsAt(x, y, respectContainerStatus=True, includeParts=False)
+                    #objs = self.world.getObjectsAt(x, y, respectContainerStatus=True, includeParts=False)
+                    objs = self.world.getObjectsAt(x, y, respectContainerStatus=True, includeParts=False, respectObscuringLowerLayers=True)
                     # Add them to the list
                     objsAtLocation += objs
                 

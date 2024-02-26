@@ -989,7 +989,7 @@ if __name__ == "__main__":
     #api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v.mp4")
 
     # GPT4-V Hypothesizer Agent
-    GPT4VHypothesizerAgent(api, numSteps=250)
+    GPT4VHypothesizerAgent(api, numSteps=500)
     api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v_hypothesizer.rustykey.mp4")
 
     # Random agent
