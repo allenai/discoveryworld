@@ -249,8 +249,8 @@ class RustedKeyTask(Task):
 class ArcheologyDig(Task):
     # Constructor
     def __init__(self, world):
-        taskDescription = "You are on an archeological dig on Planet X.  A number of ancient sites have been found. "
-        taskDescription += "Your task is to place the red flag beside the sign of the dig site with the oldest artifact. "        
+        taskDescription = "You are on an archeological dig on Planet X.  3 ancient sites have been found. "
+        taskDescription += "Your task is to excavate the sites, and date any artifacts with the radiocarbon meter.  Then, once completed, place the red flag beside the sign of the dig site with the oldest artifact. "        
 
         Task.__init__(self, "ArcheologyDigTask", taskDescription, world)            
         self.score = 0

@@ -99,6 +99,13 @@ class DiscoveryWorldAPI:
             scenarioMaker.makeScenarioStorageShed(self.world, self.numUserAgents)
             # Add tasks
             self.world.addTaskByName("RustedKeyTask")
+
+        elif (scenarioName == "AncientDig"):
+            # Add scenario
+            scenarioMaker.makeScenarioArchaeologicalDig(self.world, self.numUserAgents)
+            # Add tasks
+            self.world.addTaskByName("ArcheologyDigTask")       
+                 
         else:
             print("Unknown scenario name: " + scenarioName)
             exit(1)

@@ -344,10 +344,13 @@ class ScenarioMaker:
 
     # Archeology Dig Site
     def mkDigSite(self, x, y, world, buildingMaker, r, digSiteNum, artifactAge):    
+        minSize = 2
         # Randomly make size of archeology dig site (x-y each between 1-2)
-        digSiteSizeX = r.randint(1, 2)
-        digSiteSizeY = r.randint(1, 2)
-        totalLocations = digSiteSizeX * digSiteSizeY
+        totalLocations = 0
+        while (totalLocations < minSize):       # Keep trying until we get a big enough dig site (at least 2 squares)
+            digSiteSizeX = r.randint(1, 2)
+            digSiteSizeY = r.randint(1, 2)
+            totalLocations = digSiteSizeX * digSiteSizeY
         locationOfArtifact = r.randint(0, totalLocations-1)
 
         # Make the dig site soil (with one hole containing an artifact)
@@ -379,6 +382,48 @@ class ScenarioMaker:
         sign.setText("Dig Site " + str(digSiteNum))
         world.addObject(x, y, Layer.FURNITURE, sign)
                 
+
+
+    # Archeology Dig Site
+    def mkDigSiteWithObj(self, x, y, world, buildingMaker, r, digSiteNum, artifactObj, artifactExposed=False):    
+        minSize = 2
+        # Randomly make size of archeology dig site (x-y each between 1-2)
+        totalLocations = 0
+        while (totalLocations < minSize):       # Keep trying until we get a big enough dig site (at least 2 squares)
+            digSiteSizeX = r.randint(1, 2)
+            digSiteSizeY = r.randint(1, 2)
+            totalLocations = digSiteSizeX * digSiteSizeY
+        locationOfArtifact = r.randint(0, totalLocations-1)
+
+        # Make the dig site soil (with one hole containing an artifact)
+        count = 0       # Counter for where to place the artifact
+        for i in range(0, digSiteSizeX):
+            for j in range(0, digSiteSizeY):                
+                soilTile = world.createObject("SoilTile")
+                # Randomly set the 'hasHole' attribute to True for some of the soil tiles
+                #if (random.randint(0, 2) == 0):
+                #    soilTile.attributes['hasHole'] = True
+
+                # Randomly add an artifact to one of the soil tiles
+                if (count == locationOfArtifact):
+                    # If 'artifactExposed' is True, then remove the soil from the hole
+                    if (artifactExposed):
+                        for obj in soilTile.contents:                        
+                            soilTile.removeObject(obj)
+
+                    # Add the artifact to the hole
+                    soilTile.addObject(artifactObj, force=True)
+            
+                # Add soil tile to world
+                world.addObject(x+i, y+j+1, Layer.BUILDING, soilTile)
+                
+                count += 1
+
+
+        # Add a sign to the dig site
+        sign = world.createObject("Sign")        
+        sign.setText("Dig Site " + str(digSiteNum))
+        world.addObject(x, y, Layer.FURNITURE, sign)
 
 
 
@@ -802,7 +847,7 @@ class ScenarioMaker:
 
 
     #
-    # Make the town scenario
+    # Make the archeological dig scenario
     #
     def makeScenarioArchaeologicalDig(self, world, numUserAgents=1):        
         numDigSites = 3
@@ -916,7 +961,196 @@ class ScenarioMaker:
 
 
         # Add teleport locations to world            
-        # world.addTeleportLocation("shed", 12, 13)
+        world.addTeleportLocation("base camp", 13, 14)
         for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
             world.addTeleportLocation("dig site " + str(digSiteIdx+1), digSiteLocation[0]-1, digSiteLocation[1]+1)
 
+
+
+    #
+    # Make the archeological dig scenario
+    #
+    def makeScenarioArchaeologicalDigGenericRadioisotope(self, world, numUserAgents=1):        
+        numDigSites = 3
+
+        # Set a limit for the number of user agents
+        MAX_NUM_AGENTS = 5
+        if (numUserAgents > MAX_NUM_AGENTS):
+            numUserAgents = MAX_NUM_AGENTS
+
+        # Populate with structures/objects
+        buildingMaker = BuildingMaker(world)
+
+        # Fill with grass
+        buildingMaker.mkGrassFill(world)
+        # Randomly place a few plants (plant1, plant2, plant3)
+        for i in range(0, 10):
+            randX = self.random.randint(0, world.sizeX - 1)
+            randY = self.random.randint(0, world.sizeY - 1)
+            ## world.addObject(randX, randY, Layer.OBJECTS, BuildingMaker.mkObject("plant", "plant", "forest1_plant" + str(i % 3 + 1)))
+
+        # Possible artifact ages (in years). Ranges from 100k to 1 million years old, with even numbers. 
+        artifactAges = [150000, 230000, 370000, 410000, 500000, 675000, 725000, 890000, 930000, 1000000]
+        # Shuffle the artifact ages
+        self.random.shuffle(artifactAges)
+        # Trim to the first numDigSites
+        #artifactAges = artifactAges[:numDigSites]            
+
+        # List dig site locations
+        #seedSiteLocations = [(10, 10), (20, 13), (12, 18)]
+        #experimentalSiteLocations = [(16, 8), (18, 18), (8, 15)]
+        digSiteLocations = [(10, 10), (20, 13), (12, 18)] + [(16, 8), (18, 18), (8, 15)]
+        # Shuffle
+        self.random.shuffle(digSiteLocations)
+
+        #"ArtifactStoneHammer": ArtifactStoneHammer,
+        #"ArtifactBrassChisel": ArtifactBrassChisel,
+        #"ArtifactIronTongs": ArtifactIronTongs,
+        knownArtifactAges = [10000, 3000, 1000]
+        oldArtifactAge = self.random.choice([40000, 35000, 30000, 20000])
+        mediumArtifactAge = self.random.choice([5000, 4000, 3000, 2000])
+        youngArtifactAge = self.random.choice([1700, 1500, 1200])
+
+        print("oldArtifactAge: " + str(oldArtifactAge))
+        print("mediumArtifactAge: " + str(mediumArtifactAge))
+        print("youngArtifactAge: " + str(youngArtifactAge))
+
+        # Make up 4 faux radioisotope values.  For the real one, it should strongly correlate with the age of the artifact.  For the others, the correlation should be very weak.
+        # The real one should be the first one.
+        realRadioisotopeValues = knownArtifactAges + [oldArtifactAge, mediumArtifactAge, youngArtifactAge]
+        # divide each value by 50,000
+        realRadioisotopeValues = [val/50000 for val in realRadioisotopeValues]
+        # Add some noise (+/- 0.01) to each value
+        realRadioisotopeValues = [val + self.random.uniform(-0.01, 0.01) for val in realRadioisotopeValues]
+        # Round to 3 decimal places
+        realRadioisotopeValues = [round(val, 3) for val in realRadioisotopeValues]
+
+        # For the other radioisotope values, just make them random, between 0 and 1
+        fakeRadioisotope1Values = [self.random.uniform(0, 1) for i in range(0, len(realRadioisotopeValues))]
+        fakeRadioisotope2Values = [self.random.uniform(0, 1) for i in range(0, len(realRadioisotopeValues))]
+        fakeRadioisotope3Values = [self.random.uniform(0, 1) for i in range(0, len(realRadioisotopeValues))]
+
+        # Assign the radioisotope values to the artifacts
+        seedOldArtifact = world.createObject("ArtifactStoneHammer")
+        radioisotopeValues = [realRadioisotopeValues[0], fakeRadioisotope1Values[0], fakeRadioisotope2Values[0], fakeRadioisotope3Values[0]]
+        seedOldArtifact.attributes["radioisotopeValues"] = radioisotopeValues
+
+        seedMediumArtifact = world.createObject("ArtifactBrassChisel")
+        radioisotopeValues = [realRadioisotopeValues[1], fakeRadioisotope1Values[1], fakeRadioisotope2Values[1], fakeRadioisotope3Values[1]]
+        seedMediumArtifact.attributes["radioisotopeValues"] = radioisotopeValues
+
+        seedYoungArtifact = world.createObject("ArtifactIronTongs")
+        radioisotopeValues = [realRadioisotopeValues[2], fakeRadioisotope1Values[2], fakeRadioisotope2Values[2], fakeRadioisotope3Values[2]]
+        seedYoungArtifact.attributes["radioisotopeValues"] = radioisotopeValues
+
+        # Now the 3 unknown artifacts
+        unknownArtifacts = []
+        for i in range(0, 3):
+            unknownArtifact = world.createObject("AncientArtifact")
+            radioisotopeValues = [realRadioisotopeValues[3+i], fakeRadioisotope1Values[3+i], fakeRadioisotope2Values[3+i], fakeRadioisotope3Values[3+i]]
+            unknownArtifact.attributes["radioisotopeValues"] = radioisotopeValues
+            unknownArtifacts.append(unknownArtifact)
+        
+        # Shuffle the order of the unknown artifacts
+        self.random.shuffle(unknownArtifacts)
+
+        # Shuffle the order of the seed artifacts
+        seedArtifacts = [seedOldArtifact, seedMediumArtifact, seedYoungArtifact]
+        self.random.shuffle(seedArtifacts)
+
+
+        # Add dig sites
+        for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
+            if (digSiteIdx < 3):
+                # Seed artifact
+                artifact = seedArtifacts[digSiteIdx]
+                self.mkDigSiteWithObj(digSiteLocation[0], digSiteLocation[1], world, buildingMaker, self.random, digSiteIdx+1, artifact, artifactExposed=True)
+            else:
+                # Unknown artifact
+                artifact = unknownArtifacts[digSiteIdx-3]
+                self.mkDigSiteWithObj(digSiteLocation[0], digSiteLocation[1], world, buildingMaker, self.random, digSiteIdx+1, artifact, artifactExposed=True)
+                #self.mkDigSite(digSiteLocation[0], digSiteLocation[1], world, buildingMaker, self.random, digSiteIdx+1, artifactAges[digSiteIdx])
+            
+
+        # Add a table at the start of the dig site
+        instrumentTable = world.createObject("Table")        
+        world.addObject(15, 15, Layer.FURNITURE, instrumentTable)
+        # Add a radiocarbon meter to the table
+        instrumentTable.addObject( world.createObject("RadioisotopeMeter") )
+
+
+        # Add a shovel at the start of the dig site
+        shovel = world.createObject("Shovel")
+        world.addObject(14, 15, Layer.FURNITURE, shovel)
+
+        # Add a flag at the start of the dig site
+        flag = world.createObject("Flag")
+        world.addObject(14, 16, Layer.FURNITURE, flag)
+
+        # Add some random holes
+        minHoles = 1
+        holeCount = 0
+        while (holeCount < minHoles):
+            # Pick a random locatio between 10-20
+            randX = self.random.randint(10, 20)
+            randY = self.random.randint(10, 20)
+
+            # Check to see if there are any objects other than grass there
+            objs = world.getObjectsAt(randX, randY)
+            # Get types of objects
+            objTypes = [obj.type for obj in objs]
+            # Check to see that there is grass here
+            if ("grass" in objTypes):
+                # Check that there is not other things here
+                if (len(objTypes) == 1):
+                    # Add a hole
+                    soilTile = world.createObject("SoilTile")                                        
+                    #soilTile.attributes['hasHole'] = True
+                    # Remove all soil tile contents (i.e. the dirt) -- this has the effect of making a hole
+                    for obj in soilTile.contents:
+                        soilTile.removeObject(obj)
+
+                    world.addObject(randX, randY, Layer.BUILDING, soilTile)
+                    holeCount += 1
+
+
+        # Add some plants
+        world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))
+
+        plantCount = 0
+        minPlants = 15
+        while (plantCount < minPlants):
+            # Pick a random location
+            randX = self.random.randint(0, world.sizeX - 1)
+            randY = self.random.randint(0, world.sizeY - 1)
+
+            # Check to see if there are any objects other than grass there
+            objs = world.getObjectsAt(randX, randY)
+            # Get types of objects
+            objTypes = [obj.type for obj in objs]
+            # Check to see that there is grass here
+            if ("grass" in objTypes):
+                # Check that there is not other things here
+                if (len(objTypes) == 1):
+                    # Add a plant
+                    world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
+                    plantCount += 1                
+
+
+        # DialogMaker
+        dialogMaker = DialogMaker()
+
+        # Add some number of user agents
+        for userAgentIdx in range(0, numUserAgents):
+            userAgent = Agent(world)
+            # TODO: Add starting tools for agent
+            # Add the agent to a specfic location        
+            world.addObject(13+userAgentIdx, 14, Layer.AGENT, userAgent)      # Near center of dig site
+            # Register the agent with the World so we can keep track of it
+            world.addAgent(userAgent)
+
+
+        # Add teleport locations to world            
+        world.addTeleportLocation("base camp", 13, 14)
+        for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
+            world.addTeleportLocation("dig site " + str(digSiteIdx+1), digSiteLocation[0]-1, digSiteLocation[1]+1)

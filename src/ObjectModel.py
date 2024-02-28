@@ -128,6 +128,7 @@ class Object:
 
         # Radiocarbon dating age (in years)
         self.attributes["radiocarbonAge"] = -1                    # Radiocarbon dating age (in years). -1 means it's not applicable/inconclusive.
+        self.attributes["radioisotopeValues"] = []                # Radioisotope values.  If empty, then it's not applicable/inconclusive.
 
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
@@ -3587,6 +3588,43 @@ class AncientArtifact(Object):
         # Call superclass
         Object.tick(self)
 
+
+#
+#   Ancient Artifacts
+#
+class ArtifactStoneHammer(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "ancient stone hammer", "ancient stone hammer", defaultSpriteName = "instruments_stone_hammer")
+    
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+
+class ArtifactBrassChisel(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "ancient brass chisel", "ancient brass chisel", defaultSpriteName = "instruments_brass_chisel")
+    
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+
+class ArtifactIronTongs(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "ancient iron tongs", "ancient iron tongs", defaultSpriteName = "instruments_iron_tongs")
+    
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+
 #
 #   Objet: Dig flag
 #        
@@ -3633,6 +3671,74 @@ class RadioCarbonMeter(Object):
         
         # If the radiocarbon age is greater than zero, then report the age
         useDescriptionStr += "The radiocarbon meter estimates an age of " + str(radiocarbonAge) + " years.\n"        
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
+
+    #
+    #   Tick
+    #
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+        
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: Radioisotope Meter
+#
+class RadioisotopeMeter(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "radioisotope meter", "radioisotope meter", defaultSpriteName = "instruments_generic_meter")
+
+        # Default attributes
+
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        pass        
+        
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        ### TODO: CURRENTLY JUST COPIED/PASTED FROM THE SPECTROMETER. 
+
+        # Use this object on the patient object
+        useDescriptionStr = "You use the radioisotope meter to view the " + patientObj.name + ".\n"
+
+        # seedMediumArtifact.attributes["radioisotopeValues"]
+        # Check for a "radioisotopeValues" attribute in the patient object
+        if ("radioisotopeValues" not in patientObj.attributes):
+            useDescriptionStr += "The results are inconclusive.\n"
+            return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+        
+        # If the list is empty, then the results are inconclusive
+        if (len(patientObj.attributes["radioisotopeValues"]) == 0):
+            useDescriptionStr += "The results are inconclusive.\n"
+            return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+        
+        # If there are values, then report the values
+        useDescriptionStr += "The results are as follows:\n"
+        for i in range(len(patientObj.attributes["radioisotopeValues"])):
+            useDescriptionStr += "- Radioisotope " + str(i+1) + ": " + "{:.3f}".format(patientObj.attributes["radioisotopeValues"][i]) + "\n"
+
         return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
 
     #

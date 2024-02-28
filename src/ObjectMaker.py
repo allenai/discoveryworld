@@ -234,6 +234,10 @@ class ObjectMaker:
             "AncientArtifact": AncientArtifact,
             "Flag": Flag,
             "RadioCarbonMeter": RadioCarbonMeter,
+            "RadioisotopeMeter": RadioisotopeMeter,
+            "ArtifactStoneHammer": ArtifactStoneHammer,
+            "ArtifactBrassChisel": ArtifactBrassChisel,
+            "ArtifactIronTongs": ArtifactIronTongs,
 
             # Substances
             "TestSubstance": [Substance, "testSubstance"],

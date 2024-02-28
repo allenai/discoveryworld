@@ -978,8 +978,8 @@ if __name__ == "__main__":
 
     # Load the scenario
     #api.loadScenario(scenarioName="Mushroom", numUserAgents=1, randomSeed=0)
-    api.loadScenario(scenarioName="RustedKey", numUserAgents=1, randomSeed=0)
-
+    #api.loadScenario(scenarioName="RustedKey", numUserAgents=1, randomSeed=0)    
+    api.loadScenario(scenarioName="AncientDig", numUserAgents=1, randomSeed=0)
 
     # Test the API
     #testAgent(api)
@@ -990,7 +990,7 @@ if __name__ == "__main__":
 
     # GPT4-V Hypothesizer Agent
     GPT4VHypothesizerAgent(api, numSteps=500)
-    api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v_hypothesizer.rustykey.mp4")
+    api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v_hypothesizer.ancientdig.mp4")
 
     # Random agent
     #randomAgent(api, numSteps=10)

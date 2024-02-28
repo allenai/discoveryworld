@@ -252,7 +252,12 @@
                 "key":                  { "baseTile": [2, 5],  "size": [1, 1] },
 
                 "radiocarbon_meter":    { "baseTile": [4, 4],  "size": [1, 1] },
-                "flag":                 { "baseTile": [3, 6],  "size": [1, 1] }
+                "generic_meter":        { "baseTile": [4, 5],  "size": [1, 1] },
+                "flag":                 { "baseTile": [3, 6],  "size": [1, 1] },
+
+                "stone_hammer":         { "baseTile": [5, 4],  "size": [1, 1] },
+                "brass_chisel":         { "baseTile": [5, 5],  "size": [1, 1] },
+                "iron_tongs":           { "baseTile": [5, 6],  "size": [1, 1] }
             },
         "composites": 
             {
