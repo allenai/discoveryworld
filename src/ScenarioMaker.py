@@ -1070,26 +1070,37 @@ class ScenarioMaker:
         #print("Fake radioisotope 3 values: " + str(fakeRadioisotope3Values))
         #print("Correlation: " + str(correlation[0][1]))
         #exit(1)
+                
+        # Figure out which channel (1, 2, 3, or 4) should be the "real" one
+        channelShift = self.random.choice([0, 1, 2, 3])
 
         # Assign the radioisotope values to the artifacts
         seedOldArtifact = world.createObject("ArtifactStoneHammer")
-        radioisotopeValues = [realRadioisotopeValues[0], fakeRadioisotope1Values[0], fakeRadioisotope2Values[0], fakeRadioisotope3Values[0]]
+        radioisotopeValues = [realRadioisotopeValues[0], fakeRadioisotope1Values[0], fakeRadioisotope2Values[0], fakeRadioisotope3Values[0]]        
+        radioisotopeValues = radioisotopeValues[-channelShift:] + radioisotopeValues[:-channelShift]        # Shift the list so that the real radioisotope value is in the real channel
         seedOldArtifact.attributes["radioisotopeValues"] = radioisotopeValues
+        seedOldArtifact.attributes["radiocarbonAge"] = knownArtifactAges[0]
 
         seedMediumArtifact = world.createObject("ArtifactBrassChisel")
         radioisotopeValues = [realRadioisotopeValues[1], fakeRadioisotope1Values[1], fakeRadioisotope2Values[1], fakeRadioisotope3Values[1]]
+        radioisotopeValues = radioisotopeValues[-channelShift:] + radioisotopeValues[:-channelShift]        # Shift the list so that the real radioisotope value is in the real channel
         seedMediumArtifact.attributes["radioisotopeValues"] = radioisotopeValues
+        seedMediumArtifact.attributes["radiocarbonAge"] = knownArtifactAges[1]        
 
         seedYoungArtifact = world.createObject("ArtifactIronTongs")
         radioisotopeValues = [realRadioisotopeValues[2], fakeRadioisotope1Values[2], fakeRadioisotope2Values[2], fakeRadioisotope3Values[2]]
+        radioisotopeValues = radioisotopeValues[-channelShift:] + radioisotopeValues[:-channelShift]        # Shift the list so that the real radioisotope value is in the real channel
         seedYoungArtifact.attributes["radioisotopeValues"] = radioisotopeValues
+        seedYoungArtifact.attributes["radiocarbonAge"] = knownArtifactAges[2]
 
         # Now the 3 unknown artifacts
         unknownArtifacts = []
         for i in range(0, 3):
             unknownArtifact = world.createObject("AncientArtifact")
             radioisotopeValues = [realRadioisotopeValues[3+i], fakeRadioisotope1Values[3+i], fakeRadioisotope2Values[3+i], fakeRadioisotope3Values[3+i]]
+            radioisotopeValues = radioisotopeValues[-channelShift:] + radioisotopeValues[:-channelShift]        # Shift the list so that the real radioisotope value is in the real channel
             unknownArtifact.attributes["radioisotopeValues"] = radioisotopeValues
+            unknownArtifact.attributes["radiocarbonAge"] = artifactAges[i]
             unknownArtifacts.append(unknownArtifact)
         
         # Shuffle the order of the unknown artifacts
