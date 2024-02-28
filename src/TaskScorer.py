@@ -50,6 +50,8 @@ class TaskMaker():
             return RustedKeyTask(self.world)
         elif taskName == "ArcheologyDigTask":
             return ArcheologyDig(self.world)
+        elif taskName == "ArcheologyDigTaskGenericRadioisotope":
+            return ArcheologyDigGenericRadioisotopes(self.world)
         else:
             return None
 
@@ -381,7 +383,7 @@ class ArcheologyDigGenericRadioisotopes(Task):
         self.score = 0
         self.maxScore = 1                       # Maximum score
         self.flagToMonitor = None
-        self.goalSign = (0, 0)
+        self.goalSign = None
         self.artifacts = []
         self.signs = []
 
@@ -435,11 +437,13 @@ class ArcheologyDigGenericRadioisotopes(Task):
         if (self.completed == True):
             return
         
-        score = 0
+        score = 0        
 
         # If 'artificts' is empty, then initialize the scorer        
         if len(self.artifacts) == 0:
             self.initialize()
+
+        #print("GOAL SIGN: " + str(self.goalSign.uuid))
 
         # Monitoring task 1: Check to see how many artifacts have been found        
         for artifact in self.artifacts:

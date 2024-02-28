@@ -92,7 +92,8 @@ def main():
     #world.addTaskByName("EatMushroomTask")
     #world.addTaskByName("RustedKeyTask")
     #world.addTaskByName("ArcheologyDigTask")
-    
+    world.addTaskByName("ArcheologyDigTaskGenericRadioisotope")
+
 
     # Initial world tick
     world.tick()

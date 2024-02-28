@@ -3589,6 +3589,8 @@ class AncientArtifact(Object):
         # Call superclass
         Object.tick(self)
 
+        #self.name = "ancient artifact (" + str(self.attributes['radiocarbonAge']) + " years old)"
+
 
 #
 #   Ancient Artifacts

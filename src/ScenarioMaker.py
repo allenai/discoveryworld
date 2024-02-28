@@ -990,9 +990,9 @@ class ScenarioMaker:
             ## world.addObject(randX, randY, Layer.OBJECTS, BuildingMaker.mkObject("plant", "plant", "forest1_plant" + str(i % 3 + 1)))
 
         # Possible artifact ages (in years). Ranges from 100k to 1 million years old, with even numbers. 
-        artifactAges = [150000, 230000, 370000, 410000, 500000, 675000, 725000, 890000, 930000, 1000000]
+        #artifactAges = [150000, 230000, 370000, 410000, 500000, 675000, 725000, 890000, 930000, 1000000]
         # Shuffle the artifact ages
-        self.random.shuffle(artifactAges)
+        #self.random.shuffle(artifactAges)
         # Trim to the first numDigSites
         #artifactAges = artifactAges[:numDigSites]            
 
@@ -1095,12 +1095,13 @@ class ScenarioMaker:
 
         # Now the 3 unknown artifacts
         unknownArtifacts = []
+        unknownArtifactAges = [oldArtifactAge, mediumArtifactAge, youngArtifactAge]
         for i in range(0, 3):
             unknownArtifact = world.createObject("AncientArtifact")
             radioisotopeValues = [realRadioisotopeValues[3+i], fakeRadioisotope1Values[3+i], fakeRadioisotope2Values[3+i], fakeRadioisotope3Values[3+i]]
             radioisotopeValues = radioisotopeValues[-channelShift:] + radioisotopeValues[:-channelShift]        # Shift the list so that the real radioisotope value is in the real channel
             unknownArtifact.attributes["radioisotopeValues"] = radioisotopeValues
-            unknownArtifact.attributes["radiocarbonAge"] = artifactAges[i]
+            unknownArtifact.attributes["radiocarbonAge"] = unknownArtifactAges[i]
             unknownArtifacts.append(unknownArtifact)
         
         # Shuffle the order of the unknown artifacts
@@ -1120,7 +1121,7 @@ class ScenarioMaker:
             else:
                 # Unknown artifact
                 artifact = unknownArtifacts[digSiteIdx-3]
-                self.mkDigSiteWithObj(digSiteLocation[0], digSiteLocation[1], world, buildingMaker, self.random, digSiteIdx+1, artifact, artifactExposed=True)
+                self.mkDigSiteWithObj(digSiteLocation[0], digSiteLocation[1], world, buildingMaker, self.random, digSiteIdx+1, artifact, artifactExposed=False)
                 #self.mkDigSite(digSiteLocation[0], digSiteLocation[1], world, buildingMaker, self.random, digSiteIdx+1, artifactAges[digSiteIdx])
             
 
