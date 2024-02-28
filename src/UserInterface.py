@@ -1,5 +1,5 @@
 # UserInterface.py
-
+import os
 import pygame
 import SpriteLibrary
 from Layer import Layer
@@ -10,10 +10,9 @@ from ActionHistory import *
 import random
 import math
 
-#ActionSuccess
 
-
-
+ARROWS_FACE_AND_MOVE = os.environ.get("MARC", False)
+NUMBERS_TO_CHANGE_ITEMS = os.environ.get("MARC", False)
 
 class UserInterface:
     # Constructor
@@ -83,6 +82,26 @@ class UserInterface:
 
     def updateArgumentObjects(self, objList):
         self.argObjectsList = objList
+
+    def selectArgumentBox(self, idx, whichBox):
+        if idx < 0 or idx >= len(self.argObjectsList):
+            return  # Invalid item slots. Nothing to do.
+
+        if (whichBox == 1):
+            self.curSelectedArgument1Idx = idx
+            self.curSelectedArgument1Obj = self.argObjectsList[self.curSelectedArgument1Idx]
+        elif (whichBox == 2):
+            self.curSelectedArgument2Idx = idx
+            self.curSelectedArgument2Obj = self.argObjectsList[self.curSelectedArgument2Idx]
+        else:
+            print("ERROR: Invalid argument box: " + str(whichBox))
+            exit(1)
+
+        # Update the agent 'objectToShow' based on arg1
+        if (self.currentAgent != None):
+            self.currentAgent.updateLastInteractedObject([self.curSelectedArgument1Obj])
+
+
 
     def changeArgumentBox(self, delta, whichBox):
         # Increment/decrement box
@@ -612,6 +631,13 @@ class UserInterface:
         success = self.currentAgent.actionRotateAgentFacingDirection(direction=-1)
         return success
 
+    def actionRotateAndMoveAgentForward(self, direction):
+        success = self.currentAgent.actionRotateAgentFacingDirectionAbsolute(direction)
+        if not success.success:
+            return success
+
+        return self.actionMoveAgentForward()
+
 
     # Pick up an object
     def actionPickupObject(self, objToPickUp):
@@ -817,25 +843,42 @@ class UserInterface:
         else:
             self.dialogToDisplay = None
 
-        # Move the agent forward
-        if (keys[pygame.K_UP]):
-            return (True, self.actionMoveAgentForward())
 
-        # Move the agent backward
-        elif (keys[pygame.K_DOWN]):
-            return (True, self.actionMoveAgentBackward())
+        if ARROWS_FACE_AND_MOVE:
+            # Rotate agent and move forward
+            if (keys[pygame.K_UP]):
+                return (True, self.actionRotateAndMoveAgentForward("north"))
 
-        # Rotate the agent counterclockwise
-        elif (keys[pygame.K_LEFT]):
-            return (True, self.actionRotateAgentCounterclockwise())
+            elif (keys[pygame.K_DOWN]):
+                return (True, self.actionRotateAndMoveAgentForward("south"))
 
-        # Rotate the agent clockwise
-        elif (keys[pygame.K_RIGHT]):
-            return (True, self.actionRotateAgentClockwise())
+            # Rotate the agent counterclockwise
+            elif (keys[pygame.K_LEFT]):
+                return (True, self.actionRotateAndMoveAgentForward("west"))
 
+            # Rotate the agent clockwise
+            elif (keys[pygame.K_RIGHT]):
+                return (True, self.actionRotateAndMoveAgentForward("east"))
+
+        else:
+            # Move the agent forward
+            if (keys[pygame.K_UP]):
+                return (True, self.actionMoveAgentForward())
+
+            # Move the agent backward
+            elif (keys[pygame.K_DOWN]):
+                return (True, self.actionMoveAgentBackward())
+
+            # Rotate the agent counterclockwise
+            elif (keys[pygame.K_LEFT]):
+                return (True, self.actionRotateAgentCounterclockwise())
+
+            # Rotate the agent clockwise
+            elif (keys[pygame.K_RIGHT]):
+                return (True, self.actionRotateAgentClockwise())
 
         # Pick-up Object in arg1 slot
-        elif (keys[pygame.K_SPACE]):
+        if (keys[pygame.K_SPACE]):
             checkArgSuccess = self._checkArgs(actionName = "pick up object", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -940,28 +983,65 @@ class UserInterface:
 
             return (True, result)
 
+        if NUMBERS_TO_CHANGE_ITEMS:
+            whichBox = 1
+            message = lambda: f"Changed argument box 1 to {self.curSelectedArgument1Obj.name if self.curSelectedArgument1Obj else None}"
+            if keys[pygame.K_LSHIFT]:
+                whichBox = 2
+                message = lambda: f"Changed argument box 2 to {self.curSelectedArgument2Obj.name if self.curSelectedArgument2Obj else None}"
 
-        # UI element (incrementing argument boxes with [, ], ;, and ')
-        elif (keys[pygame.K_LEFTBRACKET]):
-            self.changeArgumentBox(delta=-1, whichBox=1)
-            return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
+            if (keys[pygame.K_1]):
+                self.selectArgumentBox(0, whichBox)
+                return (False, ActionSuccess(success=True, message=message()))
+            elif (keys[pygame.K_2]):
+                self.selectArgumentBox(1, whichBox)
+                return (False, ActionSuccess(success=True, message=message()))
+            elif (keys[pygame.K_3]):
+                self.selectArgumentBox(2, whichBox)
+                return (False, ActionSuccess(success=True, message=message()))
+            elif (keys[pygame.K_4]):
+                self.selectArgumentBox(3, whichBox)
+                return (False, ActionSuccess(success=True, message=message()))
+            elif (keys[pygame.K_5]):
+                self.selectArgumentBox(4, whichBox)
+                return (False, ActionSuccess(success=True, message=message()))
+            elif (keys[pygame.K_6]):
+                self.selectArgumentBox(5, whichBox)
+                return (False, ActionSuccess(success=True, message=message()))
+            elif (keys[pygame.K_7]):
+                self.selectArgumentBox(6, whichBox)
+                return (False, ActionSuccess(success=True, message=message()))
+            elif (keys[pygame.K_8]):
+                self.selectArgumentBox(7, whichBox)
+                return (False, ActionSuccess(success=True, message=message()))
+            elif (keys[pygame.K_9]):
+                self.selectArgumentBox(8, whichBox)
+                return (False, ActionSuccess(success=True, message=message()))
+            elif (keys[pygame.K_0]):
+                self.selectArgumentBox(9, whichBox)
+                return (False, ActionSuccess(success=True, message=message()))
 
-        elif (keys[pygame.K_RIGHTBRACKET]):
-            self.changeArgumentBox(delta=1, whichBox=1)
-            return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
+        else:
+            # UI element (incrementing argument boxes with [, ], ;, and ')
+            if (keys[pygame.K_LEFTBRACKET]):
+                self.changeArgumentBox(delta=-1, whichBox=1)
+                return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
 
-        elif (keys[pygame.K_SEMICOLON]):
-            self.changeArgumentBox(delta=-1, whichBox=2)
-            return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
+            elif (keys[pygame.K_RIGHTBRACKET]):
+                self.changeArgumentBox(delta=1, whichBox=1)
+                return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
 
-        elif (keys[pygame.K_QUOTE]):
-            self.changeArgumentBox(delta=1, whichBox=2)
-            return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
+            elif (keys[pygame.K_SEMICOLON]):
+                self.changeArgumentBox(delta=-1, whichBox=2)
+                return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
 
+            elif (keys[pygame.K_QUOTE]):
+                self.changeArgumentBox(delta=1, whichBox=2)
+                return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
 
         # DiscoveryFeed Actions
         # Reading articles
-        elif (keys[pygame.K_v]):
+        if (keys[pygame.K_v]):
             return (False, self.getDiscoveryFeedUpdates(startFromID=0))
         elif (keys[pygame.K_b]):
             return (False, self.getDiscoveryFeedArticles(startFromID=0))
