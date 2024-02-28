@@ -2,3 +2,4 @@ pygame
 pathfinding
 psutil
 openai
+numpy

@@ -1006,7 +1006,7 @@ class ScenarioMaker:
         #"ArtifactStoneHammer": ArtifactStoneHammer,
         #"ArtifactBrassChisel": ArtifactBrassChisel,
         #"ArtifactIronTongs": ArtifactIronTongs,
-        knownArtifactAges = [10000, 3000, 1000]
+        knownArtifactAges = [10000, 4000, 1000]
         oldArtifactAge = self.random.choice([40000, 35000, 30000, 20000])
         mediumArtifactAge = self.random.choice([5000, 4000, 3000, 2000])
         youngArtifactAge = self.random.choice([1700, 1500, 1200])
@@ -1025,10 +1025,51 @@ class ScenarioMaker:
         # Round to 3 decimal places
         realRadioisotopeValues = [round(val, 3) for val in realRadioisotopeValues]
 
+        # Use numpy to calculate the correlation between the real radioisotope values and the artifact ages
+        correlation = np.corrcoef(knownArtifactAges + [oldArtifactAge, mediumArtifactAge, youngArtifactAge], realRadioisotopeValues)
+        #print ("Ages: " + str(knownArtifactAges + [oldArtifactAge, mediumArtifactAge, youngArtifactAge]))
+        #print ("Real radioisotope values: " + str(realRadioisotopeValues))
+        #print ("Correlation: " + str(correlation[0][1]))
+
         # For the other radioisotope values, just make them random, between 0 and 1
-        fakeRadioisotope1Values = [self.random.uniform(0, 1) for i in range(0, len(realRadioisotopeValues))]
-        fakeRadioisotope2Values = [self.random.uniform(0, 1) for i in range(0, len(realRadioisotopeValues))]
-        fakeRadioisotope3Values = [self.random.uniform(0, 1) for i in range(0, len(realRadioisotopeValues))]
+        
+        # Make a fake radioisotope value that has a weak correlation with the artifact ages
+        done = False
+        fakeRadioisotope1Values = []
+        while (not done):
+            fakeRadioisotope1Values = [self.random.uniform(0, 1) for i in range(0, len(realRadioisotopeValues))]
+            # Round to 3 decimal places
+            fakeRadioisotope1Values = [round(val, 3) for val in fakeRadioisotope1Values]
+            correlation = np.corrcoef(knownArtifactAges, fakeRadioisotope1Values[:len(knownArtifactAges)])
+            if (abs(correlation[0][1]) < 0.1):
+                done = True
+        #print("Fake radioisotope 1 values: " + str(fakeRadioisotope1Values))
+        #print("Correlation: " + str(correlation[0][1]))
+
+        done = False
+        fakeRadioisotope2Values = []
+        while (not done):
+            fakeRadioisotope2Values = [self.random.uniform(0, 1) for i in range(0, len(realRadioisotopeValues))]
+            # Round to 3 decimal places
+            fakeRadioisotope2Values = [round(val, 3) for val in fakeRadioisotope2Values]            
+            correlation = np.corrcoef(knownArtifactAges, fakeRadioisotope2Values[:len(knownArtifactAges)])
+            if (abs(correlation[0][1]) < 0.1):
+                done = True
+        #print("Fake radioisotope 2 values: " + str(fakeRadioisotope2Values))
+        #print("Correlation: " + str(correlation[0][1]))
+
+        done = False
+        fakeRadioisotope3Values = []
+        while (not done):
+            fakeRadioisotope3Values = [self.random.uniform(0, 1) for i in range(0, len(realRadioisotopeValues))]
+            # Round to 3 decimal places
+            fakeRadioisotope3Values = [round(val, 3) for val in fakeRadioisotope3Values]            
+            correlation = np.corrcoef(knownArtifactAges + [oldArtifactAge, mediumArtifactAge, youngArtifactAge], fakeRadioisotope3Values)
+            if (abs(correlation[0][1]) < 0.1):
+                done = True
+        #print("Fake radioisotope 3 values: " + str(fakeRadioisotope3Values))
+        #print("Correlation: " + str(correlation[0][1]))
+        #exit(1)
 
         # Assign the radioisotope values to the artifacts
         seedOldArtifact = world.createObject("ArtifactStoneHammer")
