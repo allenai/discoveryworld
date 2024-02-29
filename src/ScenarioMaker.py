@@ -1294,7 +1294,8 @@ class ScenarioMaker:
             for j in range(0, pilotFieldSizeY):
                 world.addObject(pilotFieldStartX+i, pilotFieldStartY+j, Layer.BUILDING, world.createObject("SoilTile"))
                 # TODO: Add plants, etc. 
-                
+
+        # Sign for the pilot field                
         sign = world.createObject("Sign")        
         sign.setText("Pilot Field")
         world.addObject(pilotFieldStartX, pilotFieldStartY+pilotFieldSizeY, Layer.FURNITURE, sign)        
@@ -1319,6 +1320,11 @@ class ScenarioMaker:
         self.mkFenceY(25, 6, 15, world)     # Right
         self.mkFenceX(3, 21, 11, world)     # Bottom (left)
         self.mkFenceX(17, 21, 9, world)     # Bottom (right)
+
+        # Sign for the whole research facility
+        sign = world.createObject("Sign")        
+        sign.setText("Botanical Research Facility")
+        world.addObject(13, 22, Layer.FURNITURE, sign)        
 
 
         # Randomly place a few plants (plant1, plant2, plant3)
