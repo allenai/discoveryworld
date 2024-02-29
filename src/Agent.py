@@ -115,6 +115,10 @@ class Agent(Object):
         else:
             return False
 
+    # Returns True if the agent has a particular state, False otherwise
+    def hasState(self, stateName):
+        return stateName in self.attributes['states']
+
     #
     #   Get inventory
     #

@@ -64,9 +64,9 @@ class DialogTree():
         # Add and remove states associated with this node
         currentNode = self.getCurrentNode(nodeName)
         for stateToAdd in currentNode.statesToAdd:
-            self.agent.attributes['states'].add(stateToAdd)
+            self.agent.addState(stateToAdd)
         for stateToRemove in currentNode.statesToRemove:
-            self.agent.attributes['states'].remove(stateToRemove)            
+            self.agent.removeState(stateToRemove)            
 
 
     # Get the current node in the dialog tree
@@ -83,11 +83,30 @@ class DialogTree():
 
         # Get the options of what the user can say to this agent 
         dialogOptions = currentNode.dialogOptions
-        # Filter to include only 'thingsToSay'
-        dialogOptions = [dialogOption["thingToSay"] for dialogOption in dialogOptions]
+        # Old: Filter to include only 'thingsToSay'        
+        #dialogOptions = [dialogOption["thingToSay"] for dialogOption in dialogOptions]
+        # New: Filter to include only 'thingsToSay', but make sure that the state requirements are met
+        dialogOptionsStrs = []
+        for dialogOption in dialogOptions:
+            # Check if the state requirements are met
+            requiresStates = dialogOption["requiresStates"]
+            antiStates = dialogOption["antiStates"]
+
+            hasAllRequired = True
+            for state in requiresStates:
+                if (not self.agent.hasState(state)):
+                    hasAllRequired = False
+                    break
+            hasNoAnti = True
+            for state in antiStates:
+                if (self.agent.hasState(state)):
+                    hasNoAnti = False
+                    break
+            if (hasAllRequired and hasNoAnti):
+                dialogOptionsStrs.append(dialogOption["thingToSay"])
 
         # Return the dialog options, and the states to add and remove
-        return currentNodeText, dialogOptions
+        return currentNodeText, dialogOptionsStrs
 
     # Say something to the agent
     def say(self, thingToSay, agentEngaging):
@@ -130,13 +149,15 @@ class DialogNode():
         self.statesToRemove = statesToRemove
         self.dialogOptions = []
     
-    def addDialogOption(self, thingToSay, nextNodeName):
+    def addDialogOption(self, thingToSay, nextNodeName, requiresStates = [], antiStates = []):
         packed = {
             "thingToSay": thingToSay,
             "nextNodeName": nextNodeName,
+            "requiresStates": requiresStates,
+            "antiStates": antiStates
         }
 
-        self.dialogOptions.append(packed)
+        self.dialogOptions.append(packed)    
 
     def __str__(self):
         return "DialogNode(" + str(self.name) + ", " + str(self.currentNodeText) + ", " + str(self.statesToAdd) + ", " + str(self.statesToRemove) + ", " + str(self.dialogOptions) + ")"
@@ -241,17 +262,44 @@ class DialogMaker():
     def mkDialogSoilNutrientController(self, agent, fieldNum):
         tree = DialogTree(agent)
 
+        # ["potassium", "titanium", "lithium", "thorium", "barium"]:
+
         # Root node (introduce the soil nutrient controller, give options to ask to change the nutrient levels)
         rootNode = DialogNode("rootNode", "Hello, I am the soil nutrient controller. I can change the nutrient levels in the soil.", statesToAdd = [], statesToRemove = [])
-        rootNode.addDialogOption("Set Potassium Level", "changePotassiumLevel")
-        rootNode.addDialogOption("Set Titanium Level", "changeTitaniumLevel")
+        # Potassium
+        rootNode.addDialogOption("Set Potassium Level (Current: Low)", "changePotassiumLevel", requiresStates=["potassiumLowSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Potassium Level (Current: Medium)", "changePotassiumLevel", requiresStates=["potassiumMediumSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Potassium Level (Current: High)", "changePotassiumLevel", requiresStates=["potassiumHighSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Potassium Level (Current: Unset)", "changePotassiumLevel", antiStates=["potassiumLowSignal_field" + str(fieldNum), "potassiumMediumSignal_field" + str(fieldNum), "potassiumHighSignal_field" + str(fieldNum)])        
+        # Titanium
+        rootNode.addDialogOption("Set Titanium Level (Current: Low)", "changeTitaniumLevel", requiresStates=["titaniumLowSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Titanium Level (Current: Medium)", "changeTitaniumLevel", requiresStates=["titaniumMediumSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Titanium Level (Current: High)", "changeTitaniumLevel", requiresStates=["titaniumHighSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Titanium Level (Current: Unset)", "changeTitaniumLevel", antiStates=["titaniumLowSignal_field" + str(fieldNum), "titaniumMediumSignal_field" + str(fieldNum), "titaniumHighSignal_field" + str(fieldNum)])
+        # Lithium
+        rootNode.addDialogOption("Set Lithium Level (Current: Low)", "changeLithiumLevel", requiresStates=["lithiumLowSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Lithium Level (Current: Medium)", "changeLithiumLevel", requiresStates=["lithiumMediumSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Lithium Level (Current: High)", "changeLithiumLevel", requiresStates=["lithiumHighSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Lithium Level (Current: Unset)", "changeLithiumLevel", antiStates=["lithiumLowSignal_field" + str(fieldNum), "lithiumMediumSignal_field" + str(fieldNum), "lithiumHighSignal_field" + str(fieldNum)])
+        # Thorium
+        rootNode.addDialogOption("Set Thorium Level (Current: Low)", "changeThoriumLevel", requiresStates=["thoriumLowSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Thorium Level (Current: Medium)", "changeThoriumLevel", requiresStates=["thoriumMediumSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Thorium Level (Current: High)", "changeThoriumLevel", requiresStates=["thoriumHighSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Thorium Level (Current: Unset)", "changeThoriumLevel", antiStates=["thoriumLowSignal_field" + str(fieldNum), "thoriumMediumSignal_field" + str(fieldNum), "thoriumHighSignal_field" + str(fieldNum)])
+        # Barium
+        rootNode.addDialogOption("Set Barium Level (Current: Low)", "changeBariumLevel", requiresStates=["bariumLowSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Barium Level (Current: Medium)", "changeBariumLevel", requiresStates=["bariumMediumSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Barium Level (Current: High)", "changeBariumLevel", requiresStates=["bariumHighSignal_field" + str(fieldNum)])
+        rootNode.addDialogOption("Set Barium Level (Current: Unset)", "changeBariumLevel", antiStates=["bariumLowSignal_field" + str(fieldNum), "bariumMediumSignal_field" + str(fieldNum), "bariumHighSignal_field" + str(fieldNum)])
+        # OK
         rootNode.addDialogOption("Imprint current selections on this field (Note: can't be changed)", "endNodeOK")        
+        # Cancel
         rootNode.addDialogOption("Cancel and exit", "endNodeCancel")        
         tree.addNode(rootNode)
         tree.setRoot(rootNode.name)
 
         # Change nutrient levels node (Potassium)
-        changeNutrientLevelsNodePot = DialogNode("changePotassiumLevel", "What level would you like the Potassium to be at in this field?", statesToAdd = [""], statesToRemove = [])        
+        changeNutrientLevelsNodePot = DialogNode("changePotassiumLevel", "What level would you like the Potassium to be at in field #" + str(fieldNum) + "?", statesToAdd = [""], statesToRemove = [])        
         changeNutrientLevelsNodePot.addDialogOption("Potassium level: low", "nodePotassiumLow")
         changeNutrientLevelsNodePot.addDialogOption("Potassium level: medium", "nodePotassiumMedium")
         changeNutrientLevelsNodePot.addDialogOption("Potassium level: high", "nodePotassiumHigh")
@@ -259,20 +307,20 @@ class DialogMaker():
         tree.addNode(changeNutrientLevelsNodePot)
 
         # Potassium low node
-        potassiumLowNode = DialogNode("nodePotassiumLow", "Potassium level now set to low.", statesToAdd = ["potassiumLowSignal_field" + str(fieldNum)], statesToRemove = [])
+        potassiumLowNode = DialogNode("nodePotassiumLow", "Potassium level now set to low.", statesToAdd = ["potassiumLowSignal_field" + str(fieldNum)], statesToRemove = ["potassiumMediumSignal_field" + str(fieldNum), "potassiumHighSignal_field" + str(fieldNum)])
         potassiumLowNode.addDialogOption("Back to main menu", "rootNode")
         tree.addNode(potassiumLowNode)
         # Potassium medium node
-        potassiumMediumNode = DialogNode("nodePotassiumMedium", "Potassium level now set to medium.", statesToAdd = ["potassiumMediumSignal_field" + str(fieldNum)], statesToRemove = [])
+        potassiumMediumNode = DialogNode("nodePotassiumMedium", "Potassium level now set to medium.", statesToAdd = ["potassiumMediumSignal_field" + str(fieldNum)], statesToRemove = ["potassiumLowSignal_field" + str(fieldNum), "potassiumHighSignal_field" + str(fieldNum)])
         potassiumMediumNode.addDialogOption("Back to main menu", "rootNode")
         tree.addNode(potassiumMediumNode)
         # Potassium high node
-        potassiumHighNode = DialogNode("nodePotassiumHigh", "Potassium level now set to high.", statesToAdd = ["potassiumHighSignal_field" + str(fieldNum)], statesToRemove = [])
+        potassiumHighNode = DialogNode("nodePotassiumHigh", "Potassium level now set to high.", statesToAdd = ["potassiumHighSignal_field" + str(fieldNum)], statesToRemove = ["potassiumLowSignal_field" + str(fieldNum), "potassiumMediumSignal_field" + str(fieldNum)])
         potassiumHighNode.addDialogOption("Back to main menu", "rootNode")
         tree.addNode(potassiumHighNode)
 
         # Change nutrient levels node (Titanium)
-        changeNutrientLevelsNodeTit = DialogNode("changeTitaniumLevel", "What level would you like the Titanium to be at in this field?", statesToAdd = [""], statesToRemove = [])
+        changeNutrientLevelsNodeTit = DialogNode("changeTitaniumLevel", "What level would you like the Titanium to be at in field #" + str(fieldNum) + "?", statesToAdd = [""], statesToRemove = [])
         changeNutrientLevelsNodeTit.addDialogOption("Titanium level: low", "nodeTitaniumLow")
         changeNutrientLevelsNodeTit.addDialogOption("Titanium level: medium", "nodeTitaniumMedium")
         changeNutrientLevelsNodeTit.addDialogOption("Titanium level: high", "nodeTitaniumHigh")
@@ -280,23 +328,85 @@ class DialogMaker():
         tree.addNode(changeNutrientLevelsNodeTit)
 
         # Titanium low node
-        titaniumLowNode = DialogNode("nodeTitaniumLow", "Titanium level now set to low.", statesToAdd = ["titaniumLowSignal_field" + str(fieldNum)], statesToRemove = [])
+        titaniumLowNode = DialogNode("nodeTitaniumLow", "Titanium level now set to low.", statesToAdd = ["titaniumLowSignal_field" + str(fieldNum)], statesToRemove = ["titaniumMediumSignal_field" + str(fieldNum), "titaniumHighSignal_field" + str(fieldNum)])
         titaniumLowNode.addDialogOption("Back to main menu", "rootNode")
         tree.addNode(titaniumLowNode)
         # Titanium medium node
-        titaniumMediumNode = DialogNode("nodeTitaniumMedium", "Titanium level now set to medium.", statesToAdd = ["titaniumMediumSignal_field" + str(fieldNum)], statesToRemove = [])
+        titaniumMediumNode = DialogNode("nodeTitaniumMedium", "Titanium level now set to medium.", statesToAdd = ["titaniumMediumSignal_field" + str(fieldNum)], statesToRemove = ["titaniumLowSignal_field" + str(fieldNum), "titaniumHighSignal_field" + str(fieldNum)])
         titaniumMediumNode.addDialogOption("Back to main menu", "rootNode")
         tree.addNode(titaniumMediumNode)
         # Titanium high node
-        titaniumHighNode = DialogNode("nodeTitaniumHigh", "Titanium level now set to high.", statesToAdd = ["titaniumHighSignal_field" + str(fieldNum)], statesToRemove = [])
+        titaniumHighNode = DialogNode("nodeTitaniumHigh", "Titanium level now set to high.", statesToAdd = ["titaniumHighSignal_field" + str(fieldNum)], statesToRemove = ["titaniumLowSignal_field" + str(fieldNum), "titaniumMediumSignal_field" + str(fieldNum)])
         titaniumHighNode.addDialogOption("Back to main menu", "rootNode")
         tree.addNode(titaniumHighNode)
 
+        # Change nutrient levels node (Lithium)
+        changeNutrientLevelsNodeLit = DialogNode("changeLithiumLevel", "What level would you like the Lithium to be at in field #" + str(fieldNum) + "?", statesToAdd = [""], statesToRemove = [])
+        changeNutrientLevelsNodeLit.addDialogOption("Lithium level: low", "nodeLithiumLow")
+        changeNutrientLevelsNodeLit.addDialogOption("Lithium level: medium", "nodeLithiumMedium")
+        changeNutrientLevelsNodeLit.addDialogOption("Lithium level: high", "nodeLithiumHigh")
+        changeNutrientLevelsNodeLit.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(changeNutrientLevelsNodeLit)
 
-        # End node
+        # Lithium low node
+        lithiumLowNode = DialogNode("nodeLithiumLow", "Lithium level now set to low.", statesToAdd = ["lithiumLowSignal_field" + str(fieldNum)], statesToRemove = ["lithiumMediumSignal_field" + str(fieldNum), "lithiumHighSignal_field" + str(fieldNum)])
+        lithiumLowNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(lithiumLowNode)
+        # Lithium medium node
+        lithiumMediumNode = DialogNode("nodeLithiumMedium", "Lithium level now set to medium.", statesToAdd = ["lithiumMediumSignal_field" + str(fieldNum)], statesToRemove = ["lithiumLowSignal_field" + str(fieldNum), "lithiumHighSignal_field" + str(fieldNum)])
+        lithiumMediumNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(lithiumMediumNode)
+        # Lithium high node
+        lithiumHighNode = DialogNode("nodeLithiumHigh", "Lithium level now set to high.", statesToAdd = ["lithiumHighSignal_field" + str(fieldNum)], statesToRemove = ["lithiumLowSignal_field" + str(fieldNum), "lithiumMediumSignal_field" + str(fieldNum)])
+        lithiumHighNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(lithiumHighNode)
+
+        # Change nutrient levels node (Thorium)
+        changeNutrientLevelsNodeTho = DialogNode("changeThoriumLevel", "What level would you like the Thorium to be at in field #" + str(fieldNum) + "?", statesToAdd = [""], statesToRemove = [])
+        changeNutrientLevelsNodeTho.addDialogOption("Thorium level: low", "nodeThoriumLow")
+        changeNutrientLevelsNodeTho.addDialogOption("Thorium level: medium", "nodeThoriumMedium")
+        changeNutrientLevelsNodeTho.addDialogOption("Thorium level: high", "nodeThoriumHigh")
+        changeNutrientLevelsNodeTho.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(changeNutrientLevelsNodeTho)
+
+        # Thorium low node
+        thoriumLowNode = DialogNode("nodeThoriumLow", "Thorium level now set to low.", statesToAdd = ["thoriumLowSignal_field" + str(fieldNum)], statesToRemove = ["thoriumMediumSignal_field" + str(fieldNum), "thoriumHighSignal_field" + str(fieldNum)])
+        thoriumLowNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(thoriumLowNode)
+        # Thorium medium node
+        thoriumMediumNode = DialogNode("nodeThoriumMedium", "Thorium level now set to medium.", statesToAdd = ["thoriumMediumSignal_field" + str(fieldNum)], statesToRemove = ["thoriumLowSignal_field" + str(fieldNum), "thoriumHighSignal_field" + str(fieldNum)])
+        thoriumMediumNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(thoriumMediumNode)
+        # Thorium high node
+        thoriumHighNode = DialogNode("nodeThoriumHigh", "Thorium level now set to high.", statesToAdd = ["thoriumHighSignal_field" + str(fieldNum)], statesToRemove = ["thoriumLowSignal_field" + str(fieldNum), "thoriumMediumSignal_field" + str(fieldNum)])
+        thoriumHighNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(thoriumHighNode)
+
+        # Change nutrient levels node (Barium)
+        changeNutrientLevelsNodeBar = DialogNode("changeBariumLevel", "What level would you like the Barium to be at in field #" + str(fieldNum) + "?", statesToAdd = [""], statesToRemove = [])
+        changeNutrientLevelsNodeBar.addDialogOption("Barium level: low", "nodeBariumLow")
+        changeNutrientLevelsNodeBar.addDialogOption("Barium level: medium", "nodeBariumMedium")
+        changeNutrientLevelsNodeBar.addDialogOption("Barium level: high", "nodeBariumHigh")
+        changeNutrientLevelsNodeBar.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(changeNutrientLevelsNodeBar)
+
+        # Barium low node
+        bariumLowNode = DialogNode("nodeBariumLow", "Barium level now set to low.", statesToAdd = ["bariumLowSignal_field" + str(fieldNum)], statesToRemove = ["bariumMediumSignal_field" + str(fieldNum), "bariumHighSignal_field" + str(fieldNum)])
+        bariumLowNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(bariumLowNode)
+        # Barium medium node
+        bariumMediumNode = DialogNode("nodeBariumMedium", "Barium level now set to medium.", statesToAdd = ["bariumMediumSignal_field" + str(fieldNum)], statesToRemove = ["bariumLowSignal_field" + str(fieldNum), "bariumHighSignal_field" + str(fieldNum)])
+        bariumMediumNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(bariumMediumNode)
+        # Barium high node
+        bariumHighNode = DialogNode("nodeBariumHigh", "Barium level now set to high.", statesToAdd = ["bariumHighSignal_field" + str(fieldNum)], statesToRemove = ["bariumLowSignal_field" + str(fieldNum), "bariumMediumSignal_field" + str(fieldNum)])
+        bariumHighNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(bariumHighNode)
+
+        # OK node
         endNodeOK = DialogNode("endNodeOK", "Setting the nutrient levels in field " + str(fieldNum) + " to your selections.", statesToAdd = ["soilNutrientController_OK"], statesToRemove = [])
         tree.addNode(endNodeOK)
-
+        # Cancel node
         endNodeCancel = DialogNode("endNodeCancel", "Selections have been canceled.", statesToAdd = ["soilNutrientController_Cancel"], statesToRemove = [])
         tree.addNode(endNodeCancel)
 

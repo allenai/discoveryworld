@@ -158,7 +158,7 @@ class UserInterface:
         if (self.currentAgent != None):
             objsInv = self.currentAgent.getInventory()
             objsEnv += self.currentAgent.getObjectsAgentFacing(respectContainerStatus=True)
-            
+
         objsEnv = self._filterEnvObjects(objsInv, objsEnv)      # Filter any env objects that are also in the inventory
         allObjs = objsInv + objsEnv
         allObjs = self._filterDuplicateObjects(allObjs)     # Filter out any duplicates (e.g. the 'agent facing objects' function is sometimes setup to also return objects in the agent's current square, including its own inventory)
@@ -869,6 +869,7 @@ class UserInterface:
         if (self.currentAgent.isInDialog()):
             # If so, we need to parse the dialog keys
             print("### IS IN DIALOG")
+            print(self.currentAgent.attributes["states"])
             return self._parseDialogKeys(keys)
         else:
             self.dialogToDisplay = None
