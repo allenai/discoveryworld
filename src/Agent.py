@@ -19,7 +19,7 @@ class Agent(Object):
     # Constructor
     def __init__(self, world, objectType="agent", objectName="agent", defaultSpriteName="character18_agent_facing_south"):
         # Default sprite name
-        Object.__init__(self, world, objectType, objectName, defaultSpriteName = "character18_agent_facing_south")
+        Object.__init__(self, world, objectType, objectName, defaultSpriteName = defaultSpriteName)
 
         # Rendering
         self.attributes["faceDirection"] = "south"
@@ -2772,8 +2772,9 @@ class SoilController(NPC):
         #Object.__init__(self, world, "soil controller", "soil controller", defaultSpriteName = "instruments_soil_controller")        
         Agent.__init__(self, world, "soil controller", "soil controller", defaultSpriteName = "instruments_soil_controller")
 
-        # Default attributes
+        self.spriteCharacterPrefix = ""         # Disable the character prefix for this object (just use the default sprite)
 
+        # Default attributes
         self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
         self.attributes['isMovable'] = False                       # Can it be moved?
         
@@ -2874,27 +2875,15 @@ class SoilController(NPC):
             self.removeState("soilNutrientController_Cancel")
                         
 
-        # elif ("serveDinner" in self.attributes['states']):
-        #     # Remove the "waiting" state
-        #     if ("waiting" in self.attributes['states']):
-        #         self.removeState("waiting")
-        #     # Head to the cafeteria kitchen, beside the table with the pot
-        #     self.attributes["goalLocation"] = (21, 21)
-        #     # remove "eatSignal" from external signals
-        #     self.removeState("serveDinner")
-        #     # Add "movingToCafeteria" to external signals
-        #     self.addState("pickupFoodFromCafeteria")
-
+        # Hack to keep the sprite constant (since otherwise it will update based on perceived facing direction)
+        #self.inferSpriteName()
+        print("DEFAULT SPRITE NAME: " + self.defaultSpriteName)
 
 
 
     # Sprite
     # Updates the current sprite name based on the current state of the object
     def inferSpriteName(self, force:bool=False):
-        if (not self.needsSpriteNameUpdate and not force):
-            # No need to update the sprite name
-            return
-
         self.curSpriteName = self.defaultSpriteName
 
         # This will be the next last sprite name (when we flip the backbuffer)
