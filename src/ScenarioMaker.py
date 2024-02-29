@@ -25,7 +25,7 @@ class ScenarioMaker:
         #buildingMaker.mkTableAndChairs(world, x=6, y=9, chairsPresent=["n", "s", "e", "w"])
         buildingMaker.mkTableAndChairs(world, x=x+1, y=y+4, chairsPresent=["n", "s", "", ""])
 
-        world.addObject(x+1, y+1, Layer.FURNITURE, world.createObject("Fridge"))    
+        world.addObject(x+1, y+1, Layer.FURNITURE, world.createObject("Fridge"))
         world.addObject(x+2, y+1, Layer.FURNITURE, world.createObject("Sink"))
         world.addObject(x+3, y+1, Layer.FURNITURE, world.createObject("Stove"))
 
@@ -76,7 +76,7 @@ class ScenarioMaker:
         world.addObject(x+5, y+1, Layer.FURNITURE, world.createObject("Table"))
         # Fridge
         world.addObject(x+6, y+1, Layer.FURNITURE, world.createObject("Fridge"))
-        
+
     def mkCafeteria(self, x, y, world, buildingMaker):
         # Create an L-shaped building (cafeteria)
         #buildingMaker.mkBuildingLDivided(world, x=x, y=y, width=10, height=8, dividerX=5)
@@ -102,7 +102,7 @@ class ScenarioMaker:
                 tableToAdd.addObject(world.createObject("mushroom1"))
             else:
                 tableToAdd.addObject(world.createObject("mushroom2"))
-            
+
             world.addObject(x+i+2, y+3, Layer.FURNITURE, tableToAdd)
             tables.append(tableToAdd)
 
@@ -113,7 +113,7 @@ class ScenarioMaker:
         # add 5 mushrooms to pot
         #for i in range(5):
         #    pot.addObject(Mushroom(world))
-        # Put the pot on a table    
+        # Put the pot on a table
         kitchenPrepTable = world.createObject("Table")
         kitchenPrepTable.addObject(pot)
         world.addObject(x+3, y+1, Layer.FURNITURE, kitchenPrepTable)
@@ -195,11 +195,11 @@ class ScenarioMaker:
         statue = world.createObject("Statue")
         statue.addReadableText("A statue of the colony founder.")
         world.addObject(x+1, y+1, Layer.OBJECTS, statue)
-        
+
         # Create a square that's made out of "Path" tiles
         for i in range(0, 3):
             for j in range(0, 3):
-                if (not self._hasObj(x+i, y+j, world, "path")):                
+                if (not self._hasObj(x+i, y+j, world, "path")):
                     world.addObject(x+i, y+j, Layer.WORLD, world.createObject("Path"))
 
 
@@ -211,7 +211,7 @@ class ScenarioMaker:
 
         # Add a table in the farm house
         seedTable = world.createObject("Table")
-        seedJar = world.createObject("Jar")    
+        seedJar = world.createObject("Jar")
         seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
         seedJar.name = "seed jar"
         #seedJar.addObject(Seed(world, "red"))
@@ -245,7 +245,7 @@ class ScenarioMaker:
                     #if (random.randint(0, 2) == 0):
                     #    soilTile.attributes['hasHole'] = True
 
-                    # # Randomly add seeds to some of the soil tiles                
+                    # # Randomly add seeds to some of the soil tiles
                     # if (random.randint(0, 2) == 0):
                     #     soilTile.addObject(world.createObject("Seed"), force=True)
 
@@ -256,7 +256,7 @@ class ScenarioMaker:
         # Add dirt beside the hole
         #world.addObject(x, y+houseSizeY+1, Layer.OBJECTS, world.createObject("Dirt"))
 
-        
+
 
 
         # Randomly add a number of Mushrooms to the soil
@@ -264,14 +264,14 @@ class ScenarioMaker:
         numMushroomsAdded = 0
         attempts = 0
         mushroomsAdded = []
-        while (numMushroomsAdded < numMushroomsToAdd):    
+        while (numMushroomsAdded < numMushroomsToAdd):
             # Pick a random location
             randX = self.random.randint(x, x+soilPlotSizeX-1)
             randY = self.random.randint(y+houseSizeY+1, y+houseSizeY+soilPlotSizeY-1)
 
             # If there isn't already a mushroom there, add one
             if (not self._hasObj(randX, randY, world, "mushroom")):
-                # Add a mushroom 
+                # Add a mushroom
                 mushroomTypes = ["mushroom1", "mushroom2", "mushroom3", "mushroom4"]
                 # Randomly pick a mushroom type
                 mushroomType = mushroomTypes[self.random.randint(0, len(mushroomTypes)-1)]
@@ -288,7 +288,7 @@ class ScenarioMaker:
                 break
 
 
-        # add a fertilizer pellet    
+        # add a fertilizer pellet
         #world.addObject(x, y+4, Layer.OBJECTS, world.createObject("FertilizerPellet"))
         #world.addObject(x-1, y+4, Layer.OBJECTS, world.createObject("FertilizerPellet"))
         #world.addObject(x-2, y+4, Layer.OBJECTS, world.createObject("FertilizerPellet"))
@@ -296,15 +296,15 @@ class ScenarioMaker:
 
         ## Debug, gives references to mushrooms added for agents to pick up
         return mushroomsAdded
-        
+
 
     # Cave
     def mkCave(self, x, y, world, buildingMaker):
         # Make the cave
         buildingMaker.mkCaveOneRoom(world, x, y, 6, 5, signText="Cave")
-        
+
         # Add some rocks
-        world.addObject(x+1, y+1, Layer.OBJECTS, world.createObject("rock_lg"))    
+        world.addObject(x+1, y+1, Layer.OBJECTS, world.createObject("rock_lg"))
         world.addObject(x+4, y+1, Layer.OBJECTS, world.createObject("rock_med"))
         world.addObject(x+4, y+2, Layer.OBJECTS, world.createObject("rock_lg"))
         world.addObject(x+4, y+3, Layer.OBJECTS, world.createObject("rock_sm"))
@@ -343,7 +343,7 @@ class ScenarioMaker:
 
 
     # Archeology Dig Site
-    def mkDigSite(self, x, y, world, buildingMaker, r, digSiteNum, artifactAge):    
+    def mkDigSite(self, x, y, world, buildingMaker, r, digSiteNum, artifactAge):
         minSize = 2
         # Randomly make size of archeology dig site (x-y each between 1-2)
         totalLocations = 0
@@ -356,7 +356,7 @@ class ScenarioMaker:
         # Make the dig site soil (with one hole containing an artifact)
         count = 0       # Counter for where to place the artifact
         for i in range(0, digSiteSizeX):
-            for j in range(0, digSiteSizeY):                
+            for j in range(0, digSiteSizeY):
                 soilTile = world.createObject("SoilTile")
                 # Randomly set the 'hasHole' attribute to True for some of the soil tiles
                 #if (random.randint(0, 2) == 0):
@@ -373,19 +373,19 @@ class ScenarioMaker:
 
                 # Add soil tile to world
                 world.addObject(x+i, y+j+1, Layer.BUILDING, soilTile)
-                
+
                 count += 1
 
 
         # Add a sign to the dig site
-        sign = world.createObject("Sign")        
+        sign = world.createObject("Sign")
         sign.setText("Dig Site " + str(digSiteNum))
         world.addObject(x, y, Layer.FURNITURE, sign)
-                
+
 
 
     # Archeology Dig Site
-    def mkDigSiteWithObj(self, x, y, world, buildingMaker, r, digSiteNum, artifactObj, artifactExposed=False):    
+    def mkDigSiteWithObj(self, x, y, world, buildingMaker, r, digSiteNum, artifactObj, artifactExposed=False):
         minSize = 2
         # Randomly make size of archeology dig site (x-y each between 1-2)
         totalLocations = 0
@@ -398,7 +398,7 @@ class ScenarioMaker:
         # Make the dig site soil (with one hole containing an artifact)
         count = 0       # Counter for where to place the artifact
         for i in range(0, digSiteSizeX):
-            for j in range(0, digSiteSizeY):                
+            for j in range(0, digSiteSizeY):
                 soilTile = world.createObject("SoilTile")
                 # Randomly set the 'hasHole' attribute to True for some of the soil tiles
                 #if (random.randint(0, 2) == 0):
@@ -408,20 +408,20 @@ class ScenarioMaker:
                 if (count == locationOfArtifact):
                     # If 'artifactExposed' is True, then remove the soil from the hole
                     if (artifactExposed):
-                        for obj in soilTile.contents:                        
+                        for obj in soilTile.contents:
                             soilTile.removeObject(obj)
 
                     # Add the artifact to the hole
                     soilTile.addObject(artifactObj, force=True)
-            
+
                 # Add soil tile to world
                 world.addObject(x+i, y+j+1, Layer.BUILDING, soilTile)
-                
+
                 count += 1
 
 
         # Add a sign to the dig site
-        sign = world.createObject("Sign")        
+        sign = world.createObject("Sign")
         sign.setText("Dig Site " + str(digSiteNum))
         world.addObject(x, y, Layer.FURNITURE, sign)
 
@@ -454,13 +454,13 @@ class ScenarioMaker:
 
         # Buildings
         #mkHouse(4, 4, world, buildingMaker)
-        
+
         self.mkScienceLab(8, 21, world, buildingMaker)
 
         self.mkInfirmary(19, 4, world, buildingMaker)
 
         self.mkBarracks(19, 11, world, buildingMaker)
-        
+
         tables, pot = self.mkCafeteria(19, 20, world, buildingMaker)
 
         self.mkTownSquare(16, 18, world, buildingMaker)
@@ -485,12 +485,12 @@ class ScenarioMaker:
 
         # Fences
         # Top-left corner
-        self.mkFenceY(6, 2, 16, world)        
-        self.mkFenceX(6, 2, 10, world)        
+        self.mkFenceY(6, 2, 16, world)
+        self.mkFenceX(6, 2, 10, world)
 
         # Bottom-left corner
-        self.mkFenceY(6, 21, 8, world)        
-        self.mkFenceX(6, 29, 10, world)        
+        self.mkFenceY(6, 21, 8, world)
+        self.mkFenceX(6, 29, 10, world)
 
         # Bottom-right corner
         self.mkFenceX(19, 29, 10, world)
@@ -525,7 +525,7 @@ class ScenarioMaker:
                 if (len(objTypes) == 1):
                     # Add a plant
                     world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
-                    plantCount += 1                
+                    plantCount += 1
 
 
         # DialogMaker
@@ -544,7 +544,7 @@ class ScenarioMaker:
             world.addAgent(userAgent)
 
 
-        # Add teleport locations to world            
+        # Add teleport locations to world
         world.addTeleportLocation("science lab", 10, 24)
         world.addTeleportLocation("cafeteria", 20, 23)
         world.addTeleportLocation("farm", 12, 13)
@@ -591,7 +591,7 @@ class ScenarioMaker:
         npcColonists = []
         for i in range(0, 5):
             colonist = NPCColonistAuto2(world, "Colonist " + str(i))
-            dialogMaker.mkDialogColonist(colonist)        
+            dialogMaker.mkDialogColonist(colonist)
             world.addObject(13+i, 19, Layer.AGENT, colonist)
             world.addAgent(colonist)
 
@@ -606,7 +606,7 @@ class ScenarioMaker:
         # Create a small building
         houseSizeX = 7
         houseSizeY = 4
-        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Storage Shed", includeDoor=True, doorKeyID = DOOR_KEY_ID)        
+        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Storage Shed", includeDoor=True, doorKeyID = DOOR_KEY_ID)
 
         # Add a table in the farm house
         compoundTable1 = world.createObject("Table")
@@ -634,7 +634,7 @@ class ScenarioMaker:
         compoundTable3.addObject(dispenser2)
         compoundTable4.addObject(dispenser3)
 
-        # Add bottle cleaner 
+        # Add bottle cleaner
         BottleCleaner = world.createObject("BottleCleaner")
         compoundTable5.addObject(BottleCleaner)
 
@@ -643,9 +643,9 @@ class ScenarioMaker:
         world.addObject(x+3, y+1, Layer.FURNITURE, compoundTable2)
         world.addObject(x+4, y+1, Layer.FURNITURE, compoundTable3)
         world.addObject(x+5, y+1, Layer.FURNITURE, compoundTable4)
-        world.addObject(x+6, y+1, Layer.FURNITURE, compoundTable5)                
+        world.addObject(x+6, y+1, Layer.FURNITURE, compoundTable5)
 
-        mixingJar = world.createObject("Jar")            
+        mixingJar = world.createObject("Jar")
         # Add to first table
         compoundTable1.addObject(mixingJar)
 
@@ -654,7 +654,7 @@ class ScenarioMaker:
         #substance2 = world.createObject("PurpleSubstance")
         #mixingJar.addObject(substance1)
         #mixingJar.addObject(substance2)
-        
+
         #substanceCleaner = world.createObject("substanceCleaner")
         #mixingJar.addObject(substanceCleaner)
 
@@ -732,7 +732,7 @@ class ScenarioMaker:
                 if (len(objTypes) == 1):
                     # Add a plant
                     world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
-                    plantCount += 1                
+                    plantCount += 1
 
 
         # DialogMaker
@@ -743,7 +743,7 @@ class ScenarioMaker:
             userAgent = Agent(world)
             # TODO: Add starting tools for agent
             # TODO: ADD KEY
-            
+
             # Add the agent to a specfic location
             #world.addObject(14+userAgentIdx, 14, Layer.AGENT, userAgent)      # In farm field
             world.addObject(18+userAgentIdx, 12, Layer.AGENT, userAgent)      # Near farm
@@ -751,7 +751,7 @@ class ScenarioMaker:
             world.addAgent(userAgent)
 
 
-        # Add teleport locations to world            
+        # Add teleport locations to world
         # world.addTeleportLocation("shed", 12, 13)
 
 
@@ -763,7 +763,7 @@ class ScenarioMaker:
         # Create a small building
         houseSizeX = 7
         houseSizeY = 4
-        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Storage Shed", includeDoor=True, doorKeyID = DOOR_KEY_ID)        
+        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Storage Shed", includeDoor=True, doorKeyID = DOOR_KEY_ID)
 
         # Add a table in the farm house
         compoundTable1 = world.createObject("Table")
@@ -791,7 +791,7 @@ class ScenarioMaker:
         compoundTable3.addObject(dispenser2)
         compoundTable4.addObject(dispenser3)
 
-        # Add bottle cleaner 
+        # Add bottle cleaner
         BottleCleaner = world.createObject("BottleCleaner")
         compoundTable5.addObject(BottleCleaner)
 
@@ -800,9 +800,9 @@ class ScenarioMaker:
         world.addObject(x+3, y+1, Layer.FURNITURE, compoundTable2)
         world.addObject(x+4, y+1, Layer.FURNITURE, compoundTable3)
         world.addObject(x+5, y+1, Layer.FURNITURE, compoundTable4)
-        world.addObject(x+6, y+1, Layer.FURNITURE, compoundTable5)                
+        world.addObject(x+6, y+1, Layer.FURNITURE, compoundTable5)
 
-        mixingJar = world.createObject("Jar")            
+        mixingJar = world.createObject("Jar")
         # Add to first table
         compoundTable1.addObject(mixingJar)
 
@@ -811,7 +811,7 @@ class ScenarioMaker:
         #substance2 = world.createObject("PurpleSubstance")
         #mixingJar.addObject(substance1)
         #mixingJar.addObject(substance2)
-        
+
         #substanceCleaner = world.createObject("substanceCleaner")
         #mixingJar.addObject(substanceCleaner)
 
@@ -849,7 +849,7 @@ class ScenarioMaker:
     #
     # Make the archeological dig scenario
     #
-    def makeScenarioArchaeologicalDig(self, world, numUserAgents=1):        
+    def makeScenarioArchaeologicalDig(self, world, numUserAgents=1):
         numDigSites = 3
 
         # Set a limit for the number of user agents
@@ -868,12 +868,12 @@ class ScenarioMaker:
             randY = self.random.randint(0, world.sizeY - 1)
             ## world.addObject(randX, randY, Layer.OBJECTS, BuildingMaker.mkObject("plant", "plant", "forest1_plant" + str(i % 3 + 1)))
 
-        # Possible artifact ages (in years). Ranges from 100k to 1 million years old, with even numbers. 
+        # Possible artifact ages (in years). Ranges from 100k to 1 million years old, with even numbers.
         artifactAges = [150000, 230000, 370000, 410000, 500000, 675000, 725000, 890000, 930000, 1000000]
         # Shuffle the artifact ages
         self.random.shuffle(artifactAges)
         # Trim to the first numDigSites
-        artifactAges = artifactAges[:numDigSites]            
+        artifactAges = artifactAges[:numDigSites]
 
         # List dig site locations
         digSiteLocations = [(10, 10), (20, 13), (12, 18)]
@@ -883,7 +883,7 @@ class ScenarioMaker:
             self.mkDigSite(digSiteLocation[0], digSiteLocation[1], world, buildingMaker, self.random, digSiteIdx+1, artifactAges[digSiteIdx])
 
         # Add a table at the start of the dig site
-        instrumentTable = world.createObject("Table")        
+        instrumentTable = world.createObject("Table")
         world.addObject(15, 15, Layer.FURNITURE, instrumentTable)
         # Add a radiocarbon meter to the table
         instrumentTable.addObject( world.createObject("RadioCarbonMeter") )
@@ -914,7 +914,7 @@ class ScenarioMaker:
                 # Check that there is not other things here
                 if (len(objTypes) == 1):
                     # Add a hole
-                    soilTile = world.createObject("SoilTile")                                        
+                    soilTile = world.createObject("SoilTile")
                     #soilTile.attributes['hasHole'] = True
                     # Remove all soil tile contents (i.e. the dirt) -- this has the effect of making a hole
                     for obj in soilTile.contents:
@@ -944,7 +944,7 @@ class ScenarioMaker:
                 if (len(objTypes) == 1):
                     # Add a plant
                     world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
-                    plantCount += 1                
+                    plantCount += 1
 
 
         # DialogMaker
@@ -954,13 +954,13 @@ class ScenarioMaker:
         for userAgentIdx in range(0, numUserAgents):
             userAgent = Agent(world)
             # TODO: Add starting tools for agent
-            # Add the agent to a specfic location        
+            # Add the agent to a specfic location
             world.addObject(13+userAgentIdx, 14, Layer.AGENT, userAgent)      # Near center of dig site
             # Register the agent with the World so we can keep track of it
             world.addAgent(userAgent)
 
 
-        # Add teleport locations to world            
+        # Add teleport locations to world
         world.addTeleportLocation("base camp", 13, 14)
         for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
             world.addTeleportLocation("dig site " + str(digSiteIdx+1), digSiteLocation[0]-1, digSiteLocation[1]+1)
@@ -970,7 +970,7 @@ class ScenarioMaker:
     #
     # Make the archeological dig scenario
     #
-    def makeScenarioArchaeologicalDigGenericRadioisotope(self, world, numUserAgents=1):        
+    def makeScenarioArchaeologicalDigGenericRadioisotope(self, world, numUserAgents=1):
         numDigSites = 3
 
         # Set a limit for the number of user agents
@@ -989,12 +989,12 @@ class ScenarioMaker:
             randY = self.random.randint(0, world.sizeY - 1)
             ## world.addObject(randX, randY, Layer.OBJECTS, BuildingMaker.mkObject("plant", "plant", "forest1_plant" + str(i % 3 + 1)))
 
-        # Possible artifact ages (in years). Ranges from 100k to 1 million years old, with even numbers. 
+        # Possible artifact ages (in years). Ranges from 100k to 1 million years old, with even numbers.
         #artifactAges = [150000, 230000, 370000, 410000, 500000, 675000, 725000, 890000, 930000, 1000000]
         # Shuffle the artifact ages
         #self.random.shuffle(artifactAges)
         # Trim to the first numDigSites
-        #artifactAges = artifactAges[:numDigSites]            
+        #artifactAges = artifactAges[:numDigSites]
 
         # List dig site locations
         #seedSiteLocations = [(10, 10), (20, 13), (12, 18)]
@@ -1032,7 +1032,7 @@ class ScenarioMaker:
         #print ("Correlation: " + str(correlation[0][1]))
 
         # For the other radioisotope values, just make them random, between 0 and 1
-        
+
         # Make a fake radioisotope value that has a weak correlation with the artifact ages
         done = False
         fakeRadioisotope1Values = []
@@ -1051,7 +1051,7 @@ class ScenarioMaker:
         while (not done):
             fakeRadioisotope2Values = [self.random.uniform(0, 1) for i in range(0, len(realRadioisotopeValues))]
             # Round to 3 decimal places
-            fakeRadioisotope2Values = [round(val, 3) for val in fakeRadioisotope2Values]            
+            fakeRadioisotope2Values = [round(val, 3) for val in fakeRadioisotope2Values]
             correlation = np.corrcoef(knownArtifactAges, fakeRadioisotope2Values[:len(knownArtifactAges)])
             if (abs(correlation[0][1]) < 0.1):
                 done = True
@@ -1063,20 +1063,20 @@ class ScenarioMaker:
         while (not done):
             fakeRadioisotope3Values = [self.random.uniform(0, 1) for i in range(0, len(realRadioisotopeValues))]
             # Round to 3 decimal places
-            fakeRadioisotope3Values = [round(val, 3) for val in fakeRadioisotope3Values]            
+            fakeRadioisotope3Values = [round(val, 3) for val in fakeRadioisotope3Values]
             correlation = np.corrcoef(knownArtifactAges + [oldArtifactAge, mediumArtifactAge, youngArtifactAge], fakeRadioisotope3Values)
             if (abs(correlation[0][1]) < 0.1):
                 done = True
         #print("Fake radioisotope 3 values: " + str(fakeRadioisotope3Values))
         #print("Correlation: " + str(correlation[0][1]))
         #exit(1)
-                
+
         # Figure out which channel (1, 2, 3, or 4) should be the "real" one
         channelShift = self.random.choice([0, 1, 2, 3])
 
         # Assign the radioisotope values to the artifacts
         seedOldArtifact = world.createObject("ArtifactStoneHammer")
-        radioisotopeValues = [realRadioisotopeValues[0], fakeRadioisotope1Values[0], fakeRadioisotope2Values[0], fakeRadioisotope3Values[0]]        
+        radioisotopeValues = [realRadioisotopeValues[0], fakeRadioisotope1Values[0], fakeRadioisotope2Values[0], fakeRadioisotope3Values[0]]
         radioisotopeValues = radioisotopeValues[-channelShift:] + radioisotopeValues[:-channelShift]        # Shift the list so that the real radioisotope value is in the real channel
         seedOldArtifact.attributes["radioisotopeValues"] = radioisotopeValues
         seedOldArtifact.attributes["radiocarbonAge"] = knownArtifactAges[0]
@@ -1085,7 +1085,7 @@ class ScenarioMaker:
         radioisotopeValues = [realRadioisotopeValues[1], fakeRadioisotope1Values[1], fakeRadioisotope2Values[1], fakeRadioisotope3Values[1]]
         radioisotopeValues = radioisotopeValues[-channelShift:] + radioisotopeValues[:-channelShift]        # Shift the list so that the real radioisotope value is in the real channel
         seedMediumArtifact.attributes["radioisotopeValues"] = radioisotopeValues
-        seedMediumArtifact.attributes["radiocarbonAge"] = knownArtifactAges[1]        
+        seedMediumArtifact.attributes["radiocarbonAge"] = knownArtifactAges[1]
 
         seedYoungArtifact = world.createObject("ArtifactIronTongs")
         radioisotopeValues = [realRadioisotopeValues[2], fakeRadioisotope1Values[2], fakeRadioisotope2Values[2], fakeRadioisotope3Values[2]]
@@ -1103,7 +1103,7 @@ class ScenarioMaker:
             unknownArtifact.attributes["radioisotopeValues"] = radioisotopeValues
             unknownArtifact.attributes["radiocarbonAge"] = unknownArtifactAges[i]
             unknownArtifacts.append(unknownArtifact)
-        
+
         # Shuffle the order of the unknown artifacts
         self.random.shuffle(unknownArtifacts)
 
@@ -1123,10 +1123,10 @@ class ScenarioMaker:
                 artifact = unknownArtifacts[digSiteIdx-3]
                 self.mkDigSiteWithObj(digSiteLocation[0], digSiteLocation[1], world, buildingMaker, self.random, digSiteIdx+1, artifact, artifactExposed=False)
                 #self.mkDigSite(digSiteLocation[0], digSiteLocation[1], world, buildingMaker, self.random, digSiteIdx+1, artifactAges[digSiteIdx])
-            
+
 
         # Add a table at the start of the dig site
-        instrumentTable = world.createObject("Table")        
+        instrumentTable = world.createObject("Table")
         world.addObject(15, 15, Layer.FURNITURE, instrumentTable)
         # Add a radiocarbon meter to the table
         instrumentTable.addObject( world.createObject("RadioisotopeMeter") )
@@ -1157,7 +1157,7 @@ class ScenarioMaker:
                 # Check that there is not other things here
                 if (len(objTypes) == 1):
                     # Add a hole
-                    soilTile = world.createObject("SoilTile")                                        
+                    soilTile = world.createObject("SoilTile")
                     #soilTile.attributes['hasHole'] = True
                     # Remove all soil tile contents (i.e. the dirt) -- this has the effect of making a hole
                     for obj in soilTile.contents:
@@ -1187,7 +1187,7 @@ class ScenarioMaker:
                 if (len(objTypes) == 1):
                     # Add a plant
                     world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
-                    plantCount += 1                
+                    plantCount += 1
 
 
         # DialogMaker
@@ -1197,13 +1197,13 @@ class ScenarioMaker:
         for userAgentIdx in range(0, numUserAgents):
             userAgent = Agent(world)
             # TODO: Add starting tools for agent
-            # Add the agent to a specfic location        
+            # Add the agent to a specfic location
             world.addObject(13+userAgentIdx, 14, Layer.AGENT, userAgent)      # Near center of dig site
             # Register the agent with the World so we can keep track of it
             world.addAgent(userAgent)
 
 
-        # Add teleport locations to world            
+        # Add teleport locations to world
         world.addTeleportLocation("base camp", 13, 14)
         for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
             world.addTeleportLocation("dig site " + str(digSiteIdx+1), digSiteLocation[0]-1, digSiteLocation[1]+1)
