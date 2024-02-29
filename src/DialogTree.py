@@ -235,3 +235,102 @@ class DialogMaker():
         # Store dialog tree in agent
         agent.setDialogTree(tree)
 
+
+
+    # Dialog tree for the soil nutrient controller
+    def mkDialogSoilNutrientController(self, agent, fieldNum):
+        tree = DialogTree(agent)
+
+        # Root node (introduce the soil nutrient controller, give options to ask to change the nutrient levels)
+        rootNode = DialogNode("rootNode", "Hello, I am the soil nutrient controller. I can change the nutrient levels in the soil.", statesToAdd = [], statesToRemove = [])
+        rootNode.addDialogOption("Set Potassium Level", "changePotassiumLevel")
+        rootNode.addDialogOption("Set Titanium Level", "changeTitaniumLevel")
+        rootNode.addDialogOption("Imprint current selections on this field (Note: can't be changed)", "endNodeOK")        
+        rootNode.addDialogOption("Cancel and exit", "endNodeCancel")        
+        tree.addNode(rootNode)
+        tree.setRoot(rootNode.name)
+
+        # Change nutrient levels node (Potassium)
+        changeNutrientLevelsNodePot = DialogNode("changePotassiumLevel", "What level would you like the Potassium to be at in this field?", statesToAdd = [""], statesToRemove = [])        
+        changeNutrientLevelsNodePot.addDialogOption("Potassium level: low", "nodePotassiumLow")
+        changeNutrientLevelsNodePot.addDialogOption("Potassium level: medium", "nodePotassiumMedium")
+        changeNutrientLevelsNodePot.addDialogOption("Potassium level: high", "nodePotassiumHigh")
+        changeNutrientLevelsNodePot.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(changeNutrientLevelsNodePot)
+
+        # Potassium low node
+        potassiumLowNode = DialogNode("nodePotassiumLow", "Potassium level now set to low.", statesToAdd = ["potassiumLowSignal_field" + str(fieldNum)], statesToRemove = [])
+        potassiumLowNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(potassiumLowNode)
+        # Potassium medium node
+        potassiumMediumNode = DialogNode("nodePotassiumMedium", "Potassium level now set to medium.", statesToAdd = ["potassiumMediumSignal_field" + str(fieldNum)], statesToRemove = [])
+        potassiumMediumNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(potassiumMediumNode)
+        # Potassium high node
+        potassiumHighNode = DialogNode("nodePotassiumHigh", "Potassium level now set to high.", statesToAdd = ["potassiumHighSignal_field" + str(fieldNum)], statesToRemove = [])
+        potassiumHighNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(potassiumHighNode)
+
+        # Change nutrient levels node (Titanium)
+        changeNutrientLevelsNodeTit = DialogNode("changeTitaniumLevel", "What level would you like the Titanium to be at in this field?", statesToAdd = [""], statesToRemove = [])
+        changeNutrientLevelsNodeTit.addDialogOption("Titanium level: low", "nodeTitaniumLow")
+        changeNutrientLevelsNodeTit.addDialogOption("Titanium level: medium", "nodeTitaniumMedium")
+        changeNutrientLevelsNodeTit.addDialogOption("Titanium level: high", "nodeTitaniumHigh")
+        changeNutrientLevelsNodeTit.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(changeNutrientLevelsNodeTit)
+
+        # Titanium low node
+        titaniumLowNode = DialogNode("nodeTitaniumLow", "Titanium level now set to low.", statesToAdd = ["titaniumLowSignal_field" + str(fieldNum)], statesToRemove = [])
+        titaniumLowNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(titaniumLowNode)
+        # Titanium medium node
+        titaniumMediumNode = DialogNode("nodeTitaniumMedium", "Titanium level now set to medium.", statesToAdd = ["titaniumMediumSignal_field" + str(fieldNum)], statesToRemove = [])
+        titaniumMediumNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(titaniumMediumNode)
+        # Titanium high node
+        titaniumHighNode = DialogNode("nodeTitaniumHigh", "Titanium level now set to high.", statesToAdd = ["titaniumHighSignal_field" + str(fieldNum)], statesToRemove = [])
+        titaniumHighNode.addDialogOption("Back to main menu", "rootNode")
+        tree.addNode(titaniumHighNode)
+
+
+        # End node
+        endNodeOK = DialogNode("endNodeOK", "Setting the nutrient levels in field " + str(fieldNum) + " to your selections.", statesToAdd = ["soilNutrientController_OK"], statesToRemove = [])
+        tree.addNode(endNodeOK)
+
+        endNodeCancel = DialogNode("endNodeCancel", "Selections have been canceled.", statesToAdd = ["soilNutrientController_Cancel"], statesToRemove = [])
+        tree.addNode(endNodeCancel)
+
+        # Store dialog tree in agent
+        agent.setDialogTree(tree)
+
+
+    # Dialog that shows what the current nutrient levels are in the soil
+    def mkDialogSoilNutrientControllerCompleted(self, agent, fieldNum, nutrientSettings):
+        tree = DialogTree(agent)
+
+        # Root node (introduce the soil nutrient controller, give options to ask to change the nutrient levels)
+        infoText = "Hello, I am the soil nutrient controller. The nutrient levels in the soil in Field " + str(fieldNum) + " have already been set, and can not be changed further. They are:\n\n"
+        for nutrient in nutrientSettings:
+            nutrientLevelStr = "unknown"
+            if (nutrientSettings[nutrient] == 1):
+                nutrientLevelStr = "low"
+            elif (nutrientSettings[nutrient] == 2):
+                nutrientLevelStr = "medium"
+            elif (nutrientSettings[nutrient] == 3):
+                nutrientLevelStr = "high"
+
+            infoText += "- " + str(nutrient) + ": " + nutrientLevelStr + "\n"
+
+        rootNode = DialogNode("rootNode", infoText, statesToAdd = [], statesToRemove = [])            
+        rootNode.addDialogOption("Exit", "endNode")
+        tree.addNode(rootNode)
+        tree.setRoot(rootNode.name)
+
+        # End node        
+        endNode = DialogNode("endNode", "Goodbye.", statesToAdd = [], statesToRemove = [])
+        tree.addNode(endNode)
+
+
+        # Store dialog tree in agent
+        agent.setDialogTree(tree)
+        

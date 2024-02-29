@@ -10,6 +10,7 @@ import os
 import json
 import inspect
 from ObjectModel import *
+from Agent import *
 
 class ObjectMaker:
     # Constructor

@@ -1219,12 +1219,14 @@ class ScenarioMaker:
     def mkSoilFieldControlled(self, x, y, world, buildingMaker, fieldNumber, width=2, height=2, ):
 
         # Create the field
+        fieldTiles = []
         for i in range(0, width):
             for j in range(0, height):
                 soilTile = world.createObject("SoilTile")
                 # Set a baseline soil nutrient level
                 nutrientLevels = self.packSoilNutrients(potassium=1, titanium=1, lithium=1, thorium=2, barium=1)
                 soilTile.attributes["soilNutrients"] = nutrientLevels
+                fieldTiles.append(soilTile)     # Keep track of the soil tiles, so we can let the soil nutrient manager know which tiles it controls
 
                 world.addObject(x+i, y+j, Layer.BUILDING, soilTile)
 
@@ -1238,6 +1240,7 @@ class ScenarioMaker:
 
         # Add the soil controller
         soilController = world.createObject("SoilController")
+        soilController.setFieldNum(fieldNumber, fieldTiles = fieldTiles)
         # TODO: Set the soil that this field controls
 
         # Put the soil controller on a table
@@ -1256,7 +1259,7 @@ class ScenarioMaker:
         # Add a seed jar
         seedJar = world.createObject("Jar")
         #seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)        
-        seedJar.setAutoFill(checkObjectName="seed", fillObjectName="SeedRequiringNutrients", minCount=5)
+        seedJar.setAutoFill(checkObjectName="seed", fillObjectName="SeedRequiringNutrients", minCount=1, replenishTime=0)
         seedJar.name = "seed jar"        
 
         # Table for seed jar

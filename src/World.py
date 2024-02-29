@@ -229,6 +229,16 @@ class World:
             for y in range(self.sizeY):
                 allObjects += self.getObjectsAt(x, y)
         return allObjects
+    
+    # Helper to get a specific world object, by its UUID
+    def getObjectByUUID(self, uuid):
+        for x in range(self.sizeX):
+            for y in range(self.sizeY):
+                allObjectsThisTile = self.getObjectsAt(x, y)
+                for obj in allObjectsThisTile:
+                    if obj.uuid == uuid:
+                        return obj
+        return None
 
 
     # Remove an object from the world

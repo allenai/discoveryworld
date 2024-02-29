@@ -8,6 +8,7 @@ from ActionSuccess import *
 from Pathfinding import *
 from ActionHistory import *
 from KnowledgeScorer import KnowledgeScorer
+from DialogTree import DialogMaker
 
 import time
 
@@ -2758,3 +2759,143 @@ class NPCFarmer1(NPC):
         # DEBUG: End of tick -- display the agent's current state
         print("NPC States (name: " + self.name + "): " + str(self.attributes))
         print("--------------------\n")
+
+
+
+
+#
+#   Object: Soil Controller
+#
+class SoilController(NPC):
+    # Constructor
+    def __init__(self, world):
+        #Object.__init__(self, world, "soil controller", "soil controller", defaultSpriteName = "instruments_soil_controller")        
+        Agent.__init__(self, world, "soil controller", "soil controller", defaultSpriteName = "instruments_soil_controller")
+
+        # Default attributes
+
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+        self.attributes['isMovable'] = False                       # Can it be moved?
+        
+        # Default set field number
+        self.setFieldNum(-1, fieldTiles=[])
+
+
+    # This should be called immediately after initialization
+    def setFieldNum(self, fieldNum, fieldTiles:list=[]):
+        self.attributes['fieldNum'] = fieldNum
+        dialogMaker = DialogMaker()
+        dialogMaker.mkDialogSoilNutrientController(self, self.attributes['fieldNum'])    # Sets the dialog tree
+        tileUUIDs = [x.uuid for x in fieldTiles]
+        self.attributes['fieldTileUUIDs'] = tileUUIDs                                    # The tile UUIDs that this controller is responsible for
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        ### TODO: CURRENTLY JUST COPIED/PASTED FROM THE SPECTROMETER. 
+
+        # # Use this object on the patient object
+        # useDescriptionStr = "You use the radioisotope meter to view the " + patientObj.name + ".\n"
+
+        # # seedMediumArtifact.attributes["radioisotopeValues"]
+        # # Check for a "radioisotopeValues" attribute in the patient object
+        # if ("radioisotopeValues" not in patientObj.attributes):
+        #     useDescriptionStr += "The results are inconclusive.\n"
+        #     return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+        
+        # # If the list is empty, then the results are inconclusive
+        # if (len(patientObj.attributes["radioisotopeValues"]) == 0):
+        #     useDescriptionStr += "The results are inconclusive.\n"
+        #     return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+        
+        # # If there are values, then report the values
+        # useDescriptionStr += "The results are as follows:\n"
+        # for i in range(len(patientObj.attributes["radioisotopeValues"])):
+        #     useDescriptionStr += "- Radioisotope " + str(i+1) + ": " + "{:.3f}".format(patientObj.attributes["radioisotopeValues"][i]) + "\n"
+
+        # return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
+        pass
+
+
+    #
+    #   Tick
+    #
+    def tick(self):      
+        # Call superclass
+        NPC.tick(self)  
+        #Object.tick(self)
+
+        # Check to see if any of the soil control signals have been set
+        # e.g. titaniumLowSignal_field + fieldNum
+
+        if ("soilNutrientController_OK" in self.attributes['states']):
+            currentNutrientLevels = {}
+            # The soil nutrient settings have been set -- make the changes
+            for nutrient in ["potassium", "titanium", "lithium", "thorium", "barium"]:
+                for level in ["Low", "Medium", "High"]:
+                    signal = nutrient + level + "Signal_field" + str(self.attributes['fieldNum'])
+                    # Check to see if this signal is set
+                    if (signal in self.attributes['states']):
+                        print("## SIGNAL SET: " + signal)
+                        for soilTileUUID in self.attributes['fieldTileUUIDs']:
+                            # Set the nutrient level
+                            soilObj = self.world.getObjectByUUID(soilTileUUID)
+                            levelNum = 0
+                            if (level == "Low"):
+                                levelNum = 1
+                            elif (level == "Medium"):
+                                levelNum = 2
+                            elif (level == "High"):
+                                levelNum = 3
+
+                            if (soilObj is not None):
+                                soilObj.attributes["soilNutrients"][nutrient] = levelNum
+                            
+                            currentNutrientLevels = soilObj.attributes["soilNutrients"]
+
+                        # Remove the signal
+                        self.removeState(signal)
+            # Set the nutrient controller to no longer allow modifications            
+            dialogMaker = DialogMaker()                        
+            dialogMaker.mkDialogSoilNutrientControllerCompleted(self, fieldNum=self.attributes["fieldNum"], nutrientSettings=currentNutrientLevels)
+            # Remove the "soilNutrientController_OK" state
+            self.removeState("soilNutrientController_OK")
+        
+        if ("soilNutrientController_Cancel" in self.attributes['states']):
+            # The soil nutrient settings have been canceled -- clear them
+            for nutrient in ["potassium", "titanium", "lithium", "thorium", "barium"]:
+                for level in ["Low", "Medium", "High"]:
+                    signal = nutrient + level + "Signal_field" + str(self.attributes['fieldNum'])
+                    # Check to see if this signal is set
+                    if (signal in self.attributes['states']):
+                        # Remove the signal
+                        self.removeState(signal)
+            self.removeState("soilNutrientController_Cancel")
+                        
+
+        # elif ("serveDinner" in self.attributes['states']):
+        #     # Remove the "waiting" state
+        #     if ("waiting" in self.attributes['states']):
+        #         self.removeState("waiting")
+        #     # Head to the cafeteria kitchen, beside the table with the pot
+        #     self.attributes["goalLocation"] = (21, 21)
+        #     # remove "eatSignal" from external signals
+        #     self.removeState("serveDinner")
+        #     # Add "movingToCafeteria" to external signals
+        #     self.addState("pickupFoodFromCafeteria")
+
+
+
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
