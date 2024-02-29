@@ -103,6 +103,8 @@
                 "plant2":   { "baseTile": [7, 5],  "size": [1, 1] },
                 "plant3":   { "baseTile": [7, 9],  "size": [1, 1] },
 
+                "tree_big":      { "baseTile": [16, 2],  "size": [1, 2] },
+
                 "mushroom_yellow":  { "baseTile": [5, 8],  "size": [1, 1] },
                 "mushroom_pink":    { "baseTile": [7, 8],  "size": [1, 1] },
                 "mushroom_red":     { "baseTile": [9, 8],  "size": [1, 1] },

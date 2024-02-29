@@ -1211,6 +1211,10 @@ class ScenarioMaker:
 
 
 
+    #
+    #   Helpers for soil research scenario
+    #
+
     # Make a field of soil that can be controlled by a soil nutrient manager
     def mkSoilFieldControlled(self, x, y, world, buildingMaker, fieldNumber, width=2, height=2, ):
 
@@ -1218,6 +1222,10 @@ class ScenarioMaker:
         for i in range(0, width):
             for j in range(0, height):
                 soilTile = world.createObject("SoilTile")
+                # Set a baseline soil nutrient level
+                nutrientLevels = self.packSoilNutrients(potassium=1, titanium=1, lithium=1, thorium=2, barium=1)
+                soilTile.attributes["soilNutrients"] = nutrientLevels
+
                 world.addObject(x+i, y+j, Layer.BUILDING, soilTile)
 
         # Add a soil nutrient manager
@@ -1247,7 +1255,8 @@ class ScenarioMaker:
 
         # Add a seed jar
         seedJar = world.createObject("Jar")
-        seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
+        #seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)        
+        seedJar.setAutoFill(checkObjectName="seed", fillObjectName="SeedRequiringNutrients", minCount=5)
         seedJar.name = "seed jar"        
 
         # Table for seed jar
@@ -1255,14 +1264,39 @@ class ScenarioMaker:
         seedTable.addObject(seedJar)
         world.addObject(x+3, y+1, Layer.FURNITURE, seedTable)
 
+        # Add a soil nutrient meter
+        soilMeter = world.createObject("SoilNutrientMeter")
+        # Table for soil meter
+        soilMeterTable = world.createObject("Table")
+        soilMeterTable.addObject(soilMeter)
+        world.addObject(x+2, y+1, Layer.FURNITURE, soilMeterTable)
+
         # Add a shovel in the farm house
         shovel = world.createObject("Shovel")
-        world.addObject(x+2, y+1, Layer.FURNITURE, shovel)
-
-        # Add a meter for measuring soil properties 
-        # TODO
+        world.addObject(x+2, y+2, Layer.FURNITURE, shovel)
 
 
+
+    # Packing soil nutrients (potassium, titanium, lithium, thorium, barium)
+    def packSoilNutrients(self, potassium, titanium, lithium, thorium, barium):
+        packed = {
+            "potassium": potassium,
+            "titanium": titanium,
+            "lithium": lithium,
+            "thorium": thorium,
+            "barium": barium            
+        }
+        return packed
+    
+    def packSoilNutrientsList(self, nutrients:list):
+        packed = {
+            "potassium": nutrients[0],
+            "titanium": nutrients[1],
+            "lithium": nutrients[2],
+            "thorium": nutrients[3],
+            "barium": nutrients[4]            
+        }
+        return packed
 
 
     #
@@ -1286,7 +1320,7 @@ class ScenarioMaker:
         self.mkSoilResearchBuilding(12, 8, world, buildingMaker)
 
         # Primary pilot field area
-        pilotFieldStartX = 5
+        pilotFieldStartX = 6
         pilotFieldStartY = 14
         pilotFieldSizeX = 4
         pilotFieldSizeY = 3
@@ -1310,29 +1344,51 @@ class ScenarioMaker:
 
 
         # Make path along fields
-        self.mkPathX(5, 18, 19, world)
+        self.mkPathX(6, 18, 18, world)
         # Make path to research building
         self.mkPathY(15, 12, 12, world)
 
         # Make fence around entire research station + fields
-        self.mkFenceX(3, 6, 23, world)      # Top
-        self.mkFenceY(3, 6, 15, world)      # Left
+        self.mkFenceX(4, 6, 22, world)      # Top
+        self.mkFenceY(4, 6, 14, world)      # Left
         self.mkFenceY(25, 6, 15, world)     # Right
-        self.mkFenceX(3, 21, 11, world)     # Bottom (left)
-        self.mkFenceX(17, 21, 9, world)     # Bottom (right)
+        self.mkFenceX(4, 20, 10, world)     # Bottom (left)
+        self.mkFenceX(17, 20, 9, world)     # Bottom (right)
 
         # Sign for the whole research facility
         sign = world.createObject("Sign")        
         sign.setText("Botanical Research Facility")
-        world.addObject(13, 22, Layer.FURNITURE, sign)        
+        world.addObject(13, 21, Layer.FURNITURE, sign)        
+
+        # Add big trees to either side of the research facility        
+        world.addObject(11, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+        world.addObject(9, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+        world.addObject(7, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+
+        world.addObject(18, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+        world.addObject(20, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+        world.addObject(22, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
 
 
-        # Randomly place a few plants (plant1, plant2, plant3)
-        for i in range(0, 10):
+        # Randomly place a few decorative plants
+        plantCount = 0
+        minPlants = 15
+        while (plantCount < minPlants):
+            # Pick a random location
             randX = self.random.randint(0, world.sizeX - 1)
             randY = self.random.randint(0, world.sizeY - 1)
-            ## world.addObject(randX, randY, Layer.OBJECTS, BuildingMaker.mkObject("plant", "plant", "forest1_plant" + str(i % 3 + 1)))
 
+            # Check to see if there are any objects other than grass there
+            objs = world.getObjectsAt(randX, randY)
+            # Get types of objects
+            objTypes = [obj.type for obj in objs]
+            # Check to see that there is grass here
+            if ("grass" in objTypes):
+                # Check that there is not other things here
+                if (len(objTypes) == 1):
+                    # Add a plant
+                    world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
+                    plantCount += 1
 
 
         # DialogMaker

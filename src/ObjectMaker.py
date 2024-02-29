@@ -239,6 +239,9 @@ class ObjectMaker:
             "ArtifactBrassChisel": ArtifactBrassChisel,
             "ArtifactIronTongs": ArtifactIronTongs,
             "SoilController": SoilController,
+            "PlantTreeBig": PlantTreeBig,
+            "SoilNutrientMeter": SoilNutrientMeter,
+            "SeedRequiringNutrients": SeedRequiringNutrients,
 
             # Substances
             "TestSubstance": [Substance, "testSubstance"],
