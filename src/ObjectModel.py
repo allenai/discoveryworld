@@ -3768,3 +3768,65 @@ class RadioisotopeMeter(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Object: Soil Controller
+#
+class SoilController(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "soil controller", "soil controller", defaultSpriteName = "instruments_soil_controller")
+
+        # Default attributes
+
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+        self.attributes['isMovable'] = False                       # Can it be moved?
+        
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        ### TODO: CURRENTLY JUST COPIED/PASTED FROM THE SPECTROMETER. 
+
+        # # Use this object on the patient object
+        # useDescriptionStr = "You use the radioisotope meter to view the " + patientObj.name + ".\n"
+
+        # # seedMediumArtifact.attributes["radioisotopeValues"]
+        # # Check for a "radioisotopeValues" attribute in the patient object
+        # if ("radioisotopeValues" not in patientObj.attributes):
+        #     useDescriptionStr += "The results are inconclusive.\n"
+        #     return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+        
+        # # If the list is empty, then the results are inconclusive
+        # if (len(patientObj.attributes["radioisotopeValues"]) == 0):
+        #     useDescriptionStr += "The results are inconclusive.\n"
+        #     return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+        
+        # # If there are values, then report the values
+        # useDescriptionStr += "The results are as follows:\n"
+        # for i in range(len(patientObj.attributes["radioisotopeValues"])):
+        #     useDescriptionStr += "- Radioisotope " + str(i+1) + ": " + "{:.3f}".format(patientObj.attributes["radioisotopeValues"][i]) + "\n"
+
+        # return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)        
+        pass
+    
+
+    #
+    #   Tick
+    #
+    def tick(self):        
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName

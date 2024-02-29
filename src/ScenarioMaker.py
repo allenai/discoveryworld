@@ -1228,6 +1228,16 @@ class ScenarioMaker:
         sign.setText("Soil Field #" + str(fieldNumber))
         world.addObject(x, y+2, Layer.FURNITURE, sign)        
 
+        # Add the soil controller
+        soilController = world.createObject("SoilController")
+        # TODO: Set the soil that this field controls
+
+        # Put the soil controller on a table
+        soilControllerTable = world.createObject("Table")
+        soilControllerTable.addObject(soilController)
+        world.addObject(x+1, y+2, Layer.FURNITURE, soilControllerTable)
+
+
 
     def mkSoilResearchBuilding(self, x, y, world, buildingMaker):
         # Create a small building
@@ -1273,11 +1283,11 @@ class ScenarioMaker:
         buildingMaker.mkGrassFill(world)
 
         # Soil research building
-        self.mkSoilResearchBuilding(15, 8, world, buildingMaker)
+        self.mkSoilResearchBuilding(12, 8, world, buildingMaker)
 
         # Primary pilot field area
-        pilotFieldStartX = 8
-        pilotFieldStartY = 15
+        pilotFieldStartX = 5
+        pilotFieldStartY = 14
         pilotFieldSizeX = 4
         pilotFieldSizeY = 3
         for i in range(0, pilotFieldSizeX):
@@ -1291,12 +1301,24 @@ class ScenarioMaker:
 
 
         # Make 3 test fields
-        testFieldStartX = 15
+        testFieldStartX = 12
         testFieldStartY = 15
 
         for i in range(0, numPlantSites):
             self.mkSoilFieldControlled(testFieldStartX + i*5, testFieldStartY, world, buildingMaker, i+1)
 
+
+        # Make path along fields
+        self.mkPathX(5, 18, 19, world)
+        # Make path to research building
+        self.mkPathY(15, 12, 12, world)
+
+        # Make fence around entire research station + fields
+        self.mkFenceX(3, 6, 23, world)      # Top
+        self.mkFenceY(3, 6, 15, world)      # Left
+        self.mkFenceY(25, 6, 15, world)     # Right
+        self.mkFenceX(3, 21, 11, world)     # Bottom (left)
+        self.mkFenceX(17, 21, 9, world)     # Bottom (right)
 
 
         # Randomly place a few plants (plant1, plant2, plant3)

@@ -238,6 +238,7 @@ class ObjectMaker:
             "ArtifactStoneHammer": ArtifactStoneHammer,
             "ArtifactBrassChisel": ArtifactBrassChisel,
             "ArtifactIronTongs": ArtifactIronTongs,
+            "SoilController": SoilController,
 
             # Substances
             "TestSubstance": [Substance, "testSubstance"],
