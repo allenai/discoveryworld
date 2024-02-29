@@ -158,7 +158,10 @@ class UserInterface:
         if (self.currentAgent != None):
             objsInv = self.currentAgent.getInventory()
             objsEnv += self.currentAgent.getObjectsAgentFacing(respectContainerStatus=True)
+            
+        objsEnv = self._filterEnvObjects(objsInv, objsEnv)      # Filter any env objects that are also in the inventory
         allObjs = objsInv + objsEnv
+        allObjs = self._filterDuplicateObjects(allObjs)     # Filter out any duplicates (e.g. the 'agent facing objects' function is sometimes setup to also return objects in the agent's current square, including its own inventory)
 
         # Update the list of objects that can be used as arguments
         self.updateArgumentObjects(allObjs)
@@ -243,6 +246,7 @@ class UserInterface:
             objsInv = self.currentAgent.getInventory()
             objsEnv += self.currentAgent.getObjectsAgentFacing(respectContainerStatus=True)
 
+        objsEnv = self._filterEnvObjects(objsInv, objsEnv)      # Filter any env objects that are also in the inventory
         invAndEnvObjs = self.renderObjectSelectionBoxJSON(objsInv, objsEnv)
         out.update(invAndEnvObjs)
 
@@ -501,6 +505,9 @@ class UserInterface:
     def renderObjectSelectionBoxJSON(self, objsInv, objsEnv):
         invOut = []
         envOut = []
+        # First, filter out any objsEnv that are also mentioned in objsInv (this can happen when the objsEnv is setup to include the space in front of the agent, AND the agent's current space, which also includes the agent and its inventory)
+        objsEnv = self._filterEnvObjects(objsInv, objsEnv)
+
         # Populate
         for obj in objsInv:
             invOut.append({"uuid": obj.uuid, "name": obj.name, "description": obj.getTextDescription()})
@@ -608,6 +615,29 @@ class UserInterface:
         label = self.fontBold.render(lineToWrite, 1, (255, 255, 255))
         self.window.blit(label, (x, y))
 
+
+    #
+    #   Helpers
+    #
+        
+    # Filter out duplicate objects from a list (but maintain presentation order of original list)
+    def _filterDuplicateObjects(self, objList):
+        numStart = len(objList)
+        out = []
+        for obj in objList:
+            if obj not in out:
+                out.append(obj)
+
+        numEnd = len(out)        
+        return out
+    
+    # Filter out any objects in objsEnv that are also in objsInv
+    def _filterEnvObjects(self, objsInv, objsEnv):    
+        out = []
+        for obj in objsEnv:
+            if obj not in objsInv:
+                out.append(obj)
+        return out
 
     #
     # Action abstraction layer
