@@ -86,13 +86,15 @@ def main():
     #scenarioMaker.makeScenarioTown(world)
     #scenarioMaker.makeScenarioStorageShed(world)
     #scenarioMaker.makeScenarioArchaeologicalDig(world)
-    scenarioMaker.makeScenarioArchaeologicalDigGenericRadioisotope(world)
+    #scenarioMaker.makeScenarioArchaeologicalDigGenericRadioisotope(world)
+    scenarioMaker.makeScenarioPlantGrowing(world)
 
     # Add tasks
     #world.addTaskByName("EatMushroomTask")
     #world.addTaskByName("RustedKeyTask")
     #world.addTaskByName("ArcheologyDigTask")
-    world.addTaskByName("ArcheologyDigTaskGenericRadioisotope")
+    #world.addTaskByName("ArcheologyDigTaskGenericRadioisotope")
+    
 
 
     # Initial world tick

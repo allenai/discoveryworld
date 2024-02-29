@@ -1207,3 +1207,120 @@ class ScenarioMaker:
         world.addTeleportLocation("base camp", 13, 14)
         for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
             world.addTeleportLocation("dig site " + str(digSiteIdx+1), digSiteLocation[0]-1, digSiteLocation[1]+1)
+
+
+
+
+    # Make a field of soil that can be controlled by a soil nutrient manager
+    def mkSoilFieldControlled(self, x, y, world, buildingMaker, fieldNumber, width=2, height=2, ):
+
+        # Create the field
+        for i in range(0, width):
+            for j in range(0, height):
+                soilTile = world.createObject("SoilTile")
+                world.addObject(x+i, y+j, Layer.BUILDING, soilTile)
+
+        # Add a soil nutrient manager
+        # TODO
+
+        # Add a sign saying what field this is
+        sign = world.createObject("Sign")        
+        sign.setText("Soil Field #" + str(fieldNumber))
+        world.addObject(x, y+2, Layer.FURNITURE, sign)        
+
+
+    def mkSoilResearchBuilding(self, x, y, world, buildingMaker):
+        # Create a small building
+        houseSizeX = 4
+        houseSizeY = 4
+        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Soil Research Facility")
+
+        # Add a seed jar
+        seedJar = world.createObject("Jar")
+        seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
+        seedJar.name = "seed jar"        
+
+        # Table for seed jar
+        seedTable = world.createObject("Table")
+        seedTable.addObject(seedJar)
+        world.addObject(x+3, y+1, Layer.FURNITURE, seedTable)
+
+        # Add a shovel in the farm house
+        shovel = world.createObject("Shovel")
+        world.addObject(x+2, y+1, Layer.FURNITURE, shovel)
+
+        # Add a meter for measuring soil properties 
+        # TODO
+
+
+
+
+    #
+    # Make the plant growing scenario
+    #
+    def makeScenarioPlantGrowing(self, world, numUserAgents=1):
+        numPlantSites = 3
+
+        # Set a limit for the number of user agents
+        MAX_NUM_AGENTS = 5
+        if (numUserAgents > MAX_NUM_AGENTS):
+            numUserAgents = MAX_NUM_AGENTS
+
+        # Populate with structures/objects
+        buildingMaker = BuildingMaker(world)
+
+        # Fill with grass
+        buildingMaker.mkGrassFill(world)
+
+        # Soil research building
+        self.mkSoilResearchBuilding(15, 8, world, buildingMaker)
+
+        # Primary pilot field area
+        pilotFieldStartX = 8
+        pilotFieldStartY = 15
+        pilotFieldSizeX = 4
+        pilotFieldSizeY = 3
+        for i in range(0, pilotFieldSizeX):
+            for j in range(0, pilotFieldSizeY):
+                world.addObject(pilotFieldStartX+i, pilotFieldStartY+j, Layer.BUILDING, world.createObject("SoilTile"))
+                # TODO: Add plants, etc. 
+                
+        sign = world.createObject("Sign")        
+        sign.setText("Pilot Field")
+        world.addObject(pilotFieldStartX, pilotFieldStartY+pilotFieldSizeY, Layer.FURNITURE, sign)        
+
+
+        # Make 3 test fields
+        testFieldStartX = 15
+        testFieldStartY = 15
+
+        for i in range(0, numPlantSites):
+            self.mkSoilFieldControlled(testFieldStartX + i*5, testFieldStartY, world, buildingMaker, i+1)
+
+
+
+        # Randomly place a few plants (plant1, plant2, plant3)
+        for i in range(0, 10):
+            randX = self.random.randint(0, world.sizeX - 1)
+            randY = self.random.randint(0, world.sizeY - 1)
+            ## world.addObject(randX, randY, Layer.OBJECTS, BuildingMaker.mkObject("plant", "plant", "forest1_plant" + str(i % 3 + 1)))
+
+
+
+        # DialogMaker
+        dialogMaker = DialogMaker()
+
+        # Add some number of user agents
+        for userAgentIdx in range(0, numUserAgents):
+            userAgent = Agent(world)
+            # TODO: Add starting tools for agent
+            # Add the agent to a specfic location
+            world.addObject(13+userAgentIdx, 14, Layer.AGENT, userAgent)      # Near center of dig site
+            # Register the agent with the World so we can keep track of it
+            world.addAgent(userAgent)
+
+
+        # Add teleport locations to world
+        #world.addTeleportLocation("base camp", 13, 14)
+        #for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
+        #    world.addTeleportLocation("dig site " + str(digSiteIdx+1), digSiteLocation[0]-1, digSiteLocation[1]+1)
