@@ -1241,6 +1241,7 @@ class ScenarioMaker:
         # Add the soil controller
         soilController = world.createObject("SoilController")
         soilController.setFieldNum(fieldNumber, fieldTiles = fieldTiles)
+        soilController.name = "soil nutrient controller (field #" + str(fieldNumber) + ")"
         # TODO: Set the soil that this field controls
 
         # Put the soil controller on a table

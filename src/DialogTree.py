@@ -265,7 +265,7 @@ class DialogMaker():
         # ["potassium", "titanium", "lithium", "thorium", "barium"]:
 
         # Root node (introduce the soil nutrient controller, give options to ask to change the nutrient levels)
-        rootNode = DialogNode("rootNode", "Hello, I am the soil nutrient controller. I can change the nutrient levels in the soil.", statesToAdd = [], statesToRemove = [])
+        rootNode = DialogNode("rootNode", "Hello, I am the soil nutrient controller for Field #" + str(fieldNum) + ". I can change the nutrient levels in the soil.", statesToAdd = [], statesToRemove = [])
         # Potassium
         rootNode.addDialogOption("Set Potassium Level (Current: Low)", "changePotassiumLevel", requiresStates=["potassiumLowSignal_field" + str(fieldNum)])
         rootNode.addDialogOption("Set Potassium Level (Current: Medium)", "changePotassiumLevel", requiresStates=["potassiumMediumSignal_field" + str(fieldNum)])
@@ -419,7 +419,7 @@ class DialogMaker():
         tree = DialogTree(agent)
 
         # Root node (introduce the soil nutrient controller, give options to ask to change the nutrient levels)
-        infoText = "Hello, I am the soil nutrient controller. The nutrient levels in the soil in Field " + str(fieldNum) + " have already been set, and can not be changed further. They are:\n\n"
+        infoText = "Hello, I am the soil nutrient controller for Field #" + str(fieldNum) + ". The nutrient levels in the soil in Field #" + str(fieldNum) + " have already been set, and can not be changed further. They are:\n\n"
         for nutrient in nutrientSettings:
             nutrientLevelStr = "unknown"
             if (nutrientSettings[nutrient] == 1):
