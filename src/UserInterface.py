@@ -43,14 +43,14 @@ class UserInterface:
         self.inModal = False
 
         # What spot in the argument boxes is currently selected
-        self.curSelectedArgument1Idx = 0        
+        self.curSelectedArgument1Idx = 0
         self.curSelectedArgument2Idx = 0
         self.curSelectedArgument1Obj = None
         self.curSelectedArgument2Obj = None
 
         self.argObjectsList = []        # The (most recently updated) list of all objects that can be selected as arguments
-    
-    
+
+
     # Set the agent
     def setAgent(self, agent):
         self.currentAgent = agent
@@ -77,7 +77,7 @@ class UserInterface:
         self.lastActionMessage = messageStr
 
 
-    # 
+    #
     #   Argument boxes
     #
 
@@ -87,7 +87,7 @@ class UserInterface:
     def changeArgumentBox(self, delta, whichBox):
         # Increment/decrement box
         if (whichBox == 1):
-            self.curSelectedArgument1Idx += delta            
+            self.curSelectedArgument1Idx += delta
         elif (whichBox == 2):
             self.curSelectedArgument2Idx += delta
         else:
@@ -119,20 +119,20 @@ class UserInterface:
         if (self.currentAgent != None):
             self.currentAgent.updateLastInteractedObject([self.curSelectedArgument1Obj])
 
-        
+
     #
     #   Rendering
     #
 
-    def render(self):        
+    def render(self):
         # Reset the modal flag
         self.inModal = False
 
-        # Step 1: Render the inventory        
+        # Step 1: Render the inventory
         #self.renderInventory()
 
         # Step 1: Render argument boxes
-        
+
         # Step 1A: First, collect all objects (inventory, objects in front of the agent)
         objsInv = []
         objsEnv = []
@@ -171,17 +171,17 @@ class UserInterface:
             # Render the dialog box
             self.renderTextBox(dialogBoxStr)
             # Not in a modal
-            self.inModal = False            
-            
+            self.inModal = False
+
         elif (len(self.messageQueueText) > 0):
             # Render the top message in the message queue
             nextMessage = self.messageQueueText[0]
-            self.renderTextBox(nextMessage)            
+            self.renderTextBox(nextMessage)
             # Set the modal flag
             self.inModal = True
 
-        
-            
+
+
 
         # Render the last action message
         self.renderLastActionMessage()
@@ -195,7 +195,7 @@ class UserInterface:
                 x = self.window.get_width() - 200
                 y = self.window.get_height() - 120
                 self.renderTaskProgress(x, y, task)
-                                
+
         pass
 
     # A JSON version of the user interface
@@ -224,7 +224,7 @@ class UserInterface:
             objsInv = self.currentAgent.getInventory()
             objsEnv += self.currentAgent.getObjectsAgentFacing(respectContainerStatus=True)
 
-        invAndEnvObjs = self.renderObjectSelectionBoxJSON(objsInv, objsEnv)        
+        invAndEnvObjs = self.renderObjectSelectionBoxJSON(objsInv, objsEnv)
         out.update(invAndEnvObjs)
 
 
@@ -238,24 +238,24 @@ class UserInterface:
             "objects": nearbyObjectsByDirection
         }
 
-        # For any agents in the nearby objects list, show their recent action history to the user, to show what they're doing. 
+        # For any agents in the nearby objects list, show their recent action history to the user, to show what they're doing.
         out["nearbyAgents"] = self.getRecentActionHistoryOfAgents(nearbyObjectsFull)
 
         # Recent posts on Discovery Feed
         out["discoveryFeed"] = self.currentAgent.world.discoveryFeed.getRecentPosts(curStep=self.currentAgent.world.getStepCounter(), lastNSteps=3)
 
-        # Pop-up boxes/Dialog          
+        # Pop-up boxes/Dialog
         dialogBoxDict = {}
         dialogBoxDict = {"is_in_dialog": False}
         if (self.dialogToDisplay != None):
             dialogBoxDict = {"is_in_dialog": True}
             dialogBoxDict["dialogIn"] = self.dialogToDisplay['dialogText']
-            dialogBoxDict["dialogOptions"] = {}            
+            dialogBoxDict["dialogOptions"] = {}
             # Then, add the options the user can say back
             for idx, option in enumerate(self.dialogToDisplay['dialogOptions']):
-                dialogBoxDict["dialogOptions"][idx+1] = option   
-            
-        out["dialog_box"] = dialogBoxDict         
+                dialogBoxDict["dialogOptions"][idx+1] = option
+
+        out["dialog_box"] = dialogBoxDict
 
 
         out.update(invAndEnvObjs)
@@ -278,7 +278,7 @@ class UserInterface:
             taskList = self.currentAgent.world.taskScorer.tasks
             for idx, task in enumerate(taskList):
                 taskProgressList.append(self.renderTaskProgressJSON(task))
-        out["taskProgress"] = taskProgressList    
+        out["taskProgress"] = taskProgressList
 
         # Return the JSON
         return out
@@ -311,7 +311,7 @@ class UserInterface:
     #
     #   User interface elements
     #
-    
+
     def renderTaskProgress(self, x, y, task):
         # Write the task name and normalized score (0-1).
         # The background color is based on the task score -- red for 0, green for 1, and a gradient in between.
@@ -351,16 +351,16 @@ class UserInterface:
 
     # Render a long section of boxes at the bottom of the screen that show items in the agent's inventory
     def renderInventory(self):
-        offsetX = 32        
+        offsetX = 32
         offsetY = -32
-        
+
         # If no agent is currently selected, then exit
         if (self.currentAgent == None):
             return
 
         # Get the agent's inventory
         inventory = self.currentAgent.getInventory()
-        
+
         # Render the inventory
         scale = 2.0
         inventorySlots = 10
@@ -372,10 +372,10 @@ class UserInterface:
             if (idx < len(inventory)):
                 item = inventory[idx]
 
-            # Get the X and Y coordinates of the inventory box (starting from the bottom left corner)            
+            # Get the X and Y coordinates of the inventory box (starting from the bottom left corner)
             x = idx * (32 * scale) + offsetX
             y = self.window.get_height() - (32 * scale) + offsetY
-                        
+
             # First, draw a box around this sprite area
             #pygame.draw.rect(self.window, (128, 128, 128), (x, y, 32 * scale, 32 * scale), 1)
             if (idx == self.curSelectedInventoryIdx):
@@ -384,42 +384,42 @@ class UserInterface:
                 self.spriteLibrary.renderSprite(self.window, "ui_inventory_background", x, y - tileSize, scale)
 
             # Next, draw the sprite
-            if (item != None):                
+            if (item != None):
                 self._renderObjectSprite(item, x, y - tileSize, scale)
-            
-            # Add a number to the box            
+
+            # Add a number to the box
             label = self.fontBold.render(str(idx + 1), 1, (255, 255, 255))
             self.window.blit(label, (x + 2, y + 2))
 
-            
+
     # Helper to render an object's sprite(s) at a given x/y location
     def _renderObjectSprite(self, object, x, y, scale=1.0):
         for spriteName in object.getSpriteNamesWithContents():
             self.spriteLibrary.renderSprite(self.window, spriteName, x, y, scale, adjustY=True)
 
 
-    # Render a box that shows (graphically) a set of objects the agent might select from.  
-    # Should look similar to the inventory box, only with the potential to hold more objects. 
+    # Render a box that shows (graphically) a set of objects the agent might select from.
+    # Should look similar to the inventory box, only with the potential to hold more objects.
     def renderObjectSelectionBox(self, objsInv, objsEnv, curSelectedObjIdx, offsetX, offsetY, labelPrefixStr=""):
-        # The object selection box is a single row with 10 columns.  If there are more than 10 objects, then the user can scroll through them.        
+        # The object selection box is a single row with 10 columns.  If there are more than 10 objects, then the user can scroll through them.
         objectList = objsInv + objsEnv
         numObjs = len(objectList)
-        numCols = 10        
+        numCols = 10
 
         # Start rendering the grid (centered on the lower half of the viewport)
         scale = 2.0
         #scale1 = 1.5
         scale1 = 1.5
-        tileSize = 32        
+        tileSize = 32
         #offsetX = 32
         #offsetY = -32 * 10
-        
+
         xAdj = ((tileSize*scale) - (tileSize*scale1))/2
         yAdj = ((tileSize*scale) - (tileSize*scale1))/2 + 16
 
         # Bound checking on the selected object index
 
-        # Calculate the starting and ending object indices (total window size should be 10).            
+        # Calculate the starting and ending object indices (total window size should be 10).
         startIdx = 0
         if (curSelectedObjIdx > 5):
             startIdx = curSelectedObjIdx - 5
@@ -429,12 +429,12 @@ class UserInterface:
             startIdx = endIdx - 10
             if (startIdx < 0):
                 startIdx = 0
-                
-        objIdx = startIdx        
+
+        objIdx = startIdx
         # For each column
         for col in range(numCols):
             # Get the X and Y coordinates of the inventory box (starting from the bottom left corner)
-            x = col * (32 * scale) + offsetX            
+            x = col * (32 * scale) + offsetX
             y = self.window.get_height() + offsetY + (tileSize * scale)
 
             # Display the background sprite
@@ -448,10 +448,10 @@ class UserInterface:
                     # Environmental inventory spot (slightly different background)
                     self.spriteLibrary.renderSprite(self.window, "ui_inventory_background_env", x, y, scale)
                 else:
-                    # Inventory spot                    
+                    # Inventory spot
                     self.spriteLibrary.renderSprite(self.window, "ui_inventory_background", x, y, scale)
 
-            # Display the object's sprite                
+            # Display the object's sprite
             if (objIdx < endIdx):
                 obj = objectList[objIdx]
                 #print("Object " + str(objIdx) + " name: " + obj.name + "  Sprite name: " + obj.getSpriteName())
@@ -471,7 +471,7 @@ class UserInterface:
             selectedObjectName = objectList[curSelectedObjIdx].name + "[uuid: " + str(objectList[curSelectedObjIdx].uuid) + "] : " + objectList[curSelectedObjIdx].getTextDescription()
 
         # Render the name above the box
-        x = 0 * (32 * scale) + offsetX            
+        x = 0 * (32 * scale) + offsetX
         y = self.window.get_height() + offsetY + (tileSize * scale)
         label = self.fontBold.render(labelPrefixStr + selectedObjectName, 1, (255, 255, 255))
         self.window.blit(label, (x+4, y + (tileSize * scale) - 48 - 12 - yAdj))
@@ -479,7 +479,7 @@ class UserInterface:
         pass
 
     # As above, but renders in JSON format
-    def renderObjectSelectionBoxJSON(self, objsInv, objsEnv):        
+    def renderObjectSelectionBoxJSON(self, objsInv, objsEnv):
         invOut = []
         envOut = []
         # Populate
@@ -499,7 +499,7 @@ class UserInterface:
         return out
 
     # Split a line of text into multiple lines, if it exceeds a maximum length
-    def _splitLongTextLines(self, line, MAX_LENGTH=80):        
+    def _splitLongTextLines(self, line, MAX_LENGTH=80):
         lines = []
 
         curLine = line
@@ -527,7 +527,7 @@ class UserInterface:
 
                 # Remove the line up to the maximum length
                 curLine = curLine[MAX_LENGTH:]
-        
+
         return lines
 
 
@@ -536,10 +536,10 @@ class UserInterface:
     def renderTextBox(self, text):
         # The text can be multiple lines. Each line is separated by a newline character.
         # Automatically clip any lines with more than 80 characters by adding a newline character at the first space before the 80th character.
-        lines = text.split("\n")        
+        lines = text.split("\n")
         linesToRender = []
         for line in lines:
-            linesToRender.extend(self._splitLongTextLines(line))        
+            linesToRender.extend(self._splitLongTextLines(line))
 
         # Text box should be centered in X, and 1/3 of the way down the screen in Y
         x = self.window.get_width() / 2
@@ -564,16 +564,16 @@ class UserInterface:
             self.window.blit(label, (startX, startY + (idx * 16)))
 
         pass
-    
 
-    # Render the last action message, as a (maximum) single line message at the bottom of the screen. 
+
+    # Render the last action message, as a (maximum) single line message at the bottom of the screen.
     # If the message is too long, it will be truncated.
     def renderLastActionMessage(self):
         # If the last action message is empty, don't render anything
         if (self.lastActionMessage == ""):
             return
 
-        # Replace newlines with spaces, to merge the message into a single line        
+        # Replace newlines with spaces, to merge the message into a single line
         oneLine = self.lastActionMessage.replace("\n", " ")
         lines = self._splitLongTextLines(oneLine, MAX_LENGTH=80)
         lineToWrite = lines[0]
@@ -599,7 +599,7 @@ class UserInterface:
     def actionMoveAgentForward(self):
         success = self.currentAgent.actionMoveAgentForwardBackward(direction=+1)
         return success
-    
+
     def actionMoveAgentBackward(self):
         success = self.currentAgent.actionMoveAgentForwardBackward(direction=-1)
         return success
@@ -612,14 +612,14 @@ class UserInterface:
         success = self.currentAgent.actionRotateAgentFacingDirection(direction=-1)
         return success
 
-    
+
     # Pick up an object
     def actionPickupObject(self, objToPickUp):
         success = self.currentAgent.actionPickUp(objToPickUp)
         return success
 
     # Put an object in a specific container
-    def actionPutObjectInContainer(self, objToPut, container):        
+    def actionPutObjectInContainer(self, objToPut, container):
         success = self.currentAgent.actionPut(objToPut, container)
         return success
 
@@ -673,15 +673,15 @@ class UserInterface:
 
     # DiscoveryFeed actions
     def getDiscoveryFeedUpdates(self, startFromID=0):
-        # Show the last 10 updates        
+        # Show the last 10 updates
         success = self.currentAgent.actionDiscoveryFeedGetPosts(startFromID)
-        return success        
+        return success
 
     def getDiscoveryFeedArticles(self, startFromID=0):
         # Show the last 10 articles
         success = self.currentAgent.actionDiscoveryFeedGetArticleTitles(startFromID)
         return success
-    
+
     def getSpecificDiscoveryFeedPost(self, postID):
         # Show the post with the given ID
         success = self.currentAgent.actionDiscoveryFeedGetByID(postID)
@@ -689,9 +689,9 @@ class UserInterface:
 
     def createDiscoveryFeedUpdate(self, contentStr, signals:list=[]):
         # Create a new update post
-        success = self.currentAgent.actionDiscoveryFeedMakeUpdatePost(contentStr, signals)    
+        success = self.currentAgent.actionDiscoveryFeedMakeUpdatePost(contentStr, signals)
         return success
-    
+
     def createDiscoveryFeedArticle(self, titleStr, contentStr):
         # Create a new article
         success = self.currentAgent.actionDiscoveryFeedMakeArticle(titleStr, contentStr)
@@ -704,10 +704,10 @@ class UserInterface:
 
     def _parseDialogKeys(self, keys):
         # If we're in the middle of a dialog, we need to parse the dialog keys
-        # Valid keys are 0-9. 
+        # Valid keys are 0-9.
         # 0-9: Select the corresponding dialog option
         # ESC: Cancel the dialog
-        
+
         # If the agent is not in a dialog, then return
         if (self.currentAgent.isInDialog() == False):
             return ActionSuccess(success=False, message="Agent is not in a dialog.")
@@ -753,7 +753,7 @@ class UserInterface:
         # Say that response back to the NPC
         actionResult = self.currentAgent.actionDialog(agentToTalkTo = agentInDialogWith, dialogStrToSay = selectedDialogOption)
 
-        # Also note that if the new dialog tree state has no options, then we need to exit the dialog. 
+        # Also note that if the new dialog tree state has no options, then we need to exit the dialog.
         npcResponse, nextDialogOptions = agentInDialogWith.dialogTree.getCurrentDialog()
         self.dialogToDisplay = {}
         self.dialogToDisplay['dialogText'] = npcResponse
@@ -805,7 +805,7 @@ class UserInterface:
         return (True, actionResult)
 
 
-        
+
 
     # returns (doTick, success)
     def parseKeys(self, keys):
@@ -816,21 +816,21 @@ class UserInterface:
             return self._parseDialogKeys(keys)
         else:
             self.dialogToDisplay = None
-        
+
         # Move the agent forward
-        if (keys[pygame.K_UP]):            
+        if (keys[pygame.K_UP]):
             return (True, self.actionMoveAgentForward())
 
         # Move the agent backward
-        elif (keys[pygame.K_DOWN]):            
+        elif (keys[pygame.K_DOWN]):
             return (True, self.actionMoveAgentBackward())
 
         # Rotate the agent counterclockwise
-        elif (keys[pygame.K_LEFT]):            
+        elif (keys[pygame.K_LEFT]):
             return (True, self.actionRotateAgentCounterclockwise())
 
         # Rotate the agent clockwise
-        elif (keys[pygame.K_RIGHT]):            
+        elif (keys[pygame.K_RIGHT]):
             return (True, self.actionRotateAgentClockwise())
 
 
@@ -843,7 +843,7 @@ class UserInterface:
             return (True, self.actionPickupObject(objToPickUp = self.curSelectedArgument1Obj)            )
 
         # Drop an inventory item in arg1 slot at the agents current location
-        elif (keys[pygame.K_d]):        
+        elif (keys[pygame.K_d]):
             checkArgSuccess = self._checkArgs(actionName = "drop item", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
@@ -851,21 +851,21 @@ class UserInterface:
             return (True, self.actionDropObject(objToDrop = self.curSelectedArgument1Obj))
 
         # Put an item (arg1) in a specific container (arg2)
-        elif (keys[pygame.K_p]):            
+        elif (keys[pygame.K_p]):
             checkArgSuccess = self._checkArgs(actionName = "put item in container", arg1 = True, arg2 = True)
             if (checkArgSuccess == False):
                 return (False, False)
 
             return (True, self.actionPutObjectInContainer(objToPut = self.curSelectedArgument1Obj, container = self.curSelectedArgument2Obj))
 
-        # Open a container or passage (arg1) 
+        # Open a container or passage (arg1)
         elif (keys[pygame.K_o]):
             checkArgSuccess = self._checkArgs(actionName = "open", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
 
             return (True, self.actionOpenObject(objToOpen = self.curSelectedArgument1Obj))
-        
+
         # Close a container or passage (arg1)
         elif (keys[pygame.K_c]):
             checkArgSuccess = self._checkArgs(actionName = "close", arg1 = True, arg2 = False)
@@ -873,25 +873,25 @@ class UserInterface:
                 return (False, False)
 
             return (True, self.actionCloseObject(objToClose = self.curSelectedArgument1Obj))
-        
-        # Activate an object (arg1) 
+
+        # Activate an object (arg1)
         elif (keys[pygame.K_a]):
             checkArgSuccess = self._checkArgs(actionName = "activate", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
 
             return (True, self.actionActivateObject(objToActivate = self.curSelectedArgument1Obj))
-            
-        # For some read K_d doesn't work. 
+
+        # For some read K_d doesn't work.
         # Should be D key here
         # Deactivate an object (arg1)
-        elif (keys[pygame.K_s]):            
+        elif (keys[pygame.K_s]):
             checkArgSuccess = self._checkArgs(actionName = "deactivate", arg1 = True, arg2 = False)
             if (checkArgSuccess == False):
                 return (False, False)
 
             return (True, self.actionDeactivateObject(objToDeactivate = self.curSelectedArgument1Obj))
-            
+
         # Dialog/talk with agent specified in arg1
         elif (keys[pygame.K_t]):
             checkArgSuccess = self._checkArgs(actionName = "talk", arg1 = True, arg2 = False)
@@ -933,7 +933,7 @@ class UserInterface:
 
             result = self.actionUse(objToUse = self.curSelectedArgument1Obj, objToUseWith = self.curSelectedArgument2Obj)
 
-            # # If there is a .generatedItems populated in this result, then process it            
+            # # If there is a .generatedItems populated in this result, then process it
             # if ('generatedItems' in result.data):
             #     for item in result.data['generatedItems']:
             #         self.currentAgent.addObject(item)
@@ -945,19 +945,19 @@ class UserInterface:
         elif (keys[pygame.K_LEFTBRACKET]):
             self.changeArgumentBox(delta=-1, whichBox=1)
             return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
-            
+
         elif (keys[pygame.K_RIGHTBRACKET]):
             self.changeArgumentBox(delta=1, whichBox=1)
             return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
-            
+
         elif (keys[pygame.K_SEMICOLON]):
             self.changeArgumentBox(delta=-1, whichBox=2)
             return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
-            
+
         elif (keys[pygame.K_QUOTE]):
             self.changeArgumentBox(delta=1, whichBox=2)
             return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
-            
+
 
         # DiscoveryFeed Actions
         # Reading articles
@@ -967,10 +967,10 @@ class UserInterface:
             return (False, self.getDiscoveryFeedArticles(startFromID=0))
         elif (keys[pygame.K_n]):
             # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
-            randPostID = math.floor(random.random() * 10) + 1            
+            randPostID = math.floor(random.random() * 10) + 1
             return (False, self.getSpecificDiscoveryFeedPost(postID=randPostID))
         # Creating articles
-        elif (keys[pygame.K_m]):            
+        elif (keys[pygame.K_m]):
             return (False, self.createDiscoveryFeedUpdate(contentStr="This is a test update."))
         elif (keys[pygame.K_COMMA]):
             return (False, self.createDiscoveryFeedArticle(titleStr="Test Article", contentStr="This is a test article."))
@@ -980,23 +980,23 @@ class UserInterface:
         return (False, None)
 
 
-    # Check the arguments for the current action, to make sure they're valid. 
+    # Check the arguments for the current action, to make sure they're valid.
     # Returns None if valid, and a failure ActionSuccess object if not valid
     def _checkArgs(self, actionName:str, arg1:bool, arg2:bool):
         # Both arguments are required
         if (arg1 and arg2):
-            if (self.curSelectedArgument1Obj == None and self.curSelectedArgument2Obj == None):                
+            if (self.curSelectedArgument1Obj == None and self.curSelectedArgument2Obj == None):
                 return ActionSuccess(success=False, message="Action '" + actionName + "' requires two argument objects. Missing both arguments.")
             if (self.curSelectedArgument1Obj == None):
                 return ActionSuccess(success=False, message="Action '" + actionName + "' requires two argument objects. Missing argument 1.")
             if (self.curSelectedArgument2Obj == None):
                 return ActionSuccess(success=False, message="Action '" + actionName + "' requires two argument objects. Missing argument 2.")
-        
+
         # Only argument 1 is required
         elif (arg1):
             if (self.curSelectedArgument1Obj == None):
                 return ActionSuccess(success=False, message="Action '" + actionName + "' requires argument 1.")
-        
+
         # Only argument 2 is required
         elif (arg2):
             if (self.curSelectedArgument2Obj == None):
@@ -1025,19 +1025,19 @@ class UserInterface:
             # If we reach here and the object is still None, then the object was not found
             if (arg1Obj == None):
                 errors.append("arg1: Could not find object with UUID '" + str(jsonIn['arg1']) + "'. Are you sure it's accessible (i.e in your inventory, or directly in front of you?)")
-        # So things don't break, if arg1 is not specified (or not found), set it to the first object. 
+        # So things don't break, if arg1 is not specified (or not found), set it to the first object.
         # if (arg1Obj == None):
         #     if (len(accessibleObjs) > 0):
         #         arg1Obj = accessibleObjs[0]
         #         errors.append("arg1: No object specified. Defaulting to first accessible object.")
         #     else:
-        #         errors.append("arg1: No object specified, and no accessible objects found.")                
+        #         errors.append("arg1: No object specified, and no accessible objects found.")
 
         if ('arg2' in jsonIn) and (jsonIn['arg2'] != None):
             for obj in accessibleObjs:
                 if (obj.uuid == jsonIn['arg2']):
                     arg2Obj = obj
-                    break        
+                    break
             # If we reach here and the object is still None, then the object was not found
             if (arg2Obj == None):
                 errors.append("arg2: Could not find object with UUID '" + str(jsonIn['arg2']) + "' Are you sure it's accessible (i.e in your inventory, or directly in front of you?)")
@@ -1058,14 +1058,14 @@ class UserInterface:
 
         # Return any errors
         return errors
-        
+
 
     #
     #   Parse actions from JSON
     #
     def parseActionJSON(self, jsonIn):
         # jsonIn format: {"action": "EAT", "arg1": uuid, "arg2": uuid}
-        # Except dialog actions, which don't take arg1/arg2, but specific dialog options.                 
+        # Except dialog actions, which don't take arg1/arg2, but specific dialog options.
         # Action names (from enumeration)
         # Enumeration for layer types
         # class ActionType(Enum):
@@ -1075,7 +1075,7 @@ class UserInterface:
         #     ROTATE_CCW      = 3
         #     PICKUP          = 4
         #     PUT             = 5
-        #     DROP            = 6 
+        #     DROP            = 6
         #     OPEN            = 7
         #     CLOSE           = 8
         #     ACTIVATE        = 9
@@ -1106,9 +1106,9 @@ class UserInterface:
             return (True, "", result)
         else:
             self.dialogToDisplay = None
-        
+
         # Move the agent forward
-        if (jsonIn["action"] == ActionType.MOVE_FORWARD.name):            
+        if (jsonIn["action"] == ActionType.MOVE_FORWARD.name):
             return (True, jsonParseErrors, self.actionMoveAgentForward())
 
         # Move the agent backward
@@ -1135,7 +1135,7 @@ class UserInterface:
             if (jsonIn['arg1'] not in ['north', 'east', 'south', 'west']):
                 jsonParseErrors.append("Invalid direction '" + str(jsonIn['arg1']) + "' specified in JSON.")
                 return (False, jsonParseErrors, ActionSuccess(False, "Invalid direction '" + str(jsonIn['arg1']) + "' specified in JSON."))
-        
+
             # Get the direction from the argument
             direction = jsonIn['arg1']
             return (True, jsonParseErrors, self.currentAgent.actionMoveAgentNorthEastSouthWest(direction))
@@ -1149,7 +1149,7 @@ class UserInterface:
             if (jsonIn['arg1'] not in ['north', 'east', 'south', 'west']):
                 jsonParseErrors.append("Invalid direction '" + str(jsonIn['arg1']) + "' specified in JSON.")
                 return (False, jsonParseErrors, ActionSuccess(False, "Invalid direction '" + str(jsonIn['arg1']) + "' specified in JSON."))
-        
+
             # Get the direction from the argument
             direction = jsonIn['arg1']
             return (True, jsonParseErrors, self.currentAgent.actionRotateAgentFacingDirectionAbsolute(direction))
@@ -1160,18 +1160,18 @@ class UserInterface:
             if ('arg1' not in jsonIn):
                 jsonParseErrors.append("Missing 'arg1' key in JSON.")
                 return (False, jsonParseErrors, ActionSuccess(False, "Missing 'arg1' key in JSON."))
-            
+
             # Get the location from the argument
             location = jsonIn['arg1']
-            return (True, jsonParseErrors, self.currentAgent.actionTeleportAgentToLocation(location))            
-        
+            return (True, jsonParseErrors, self.currentAgent.actionTeleportAgentToLocation(location))
+
         # Teleport action (teleport to a specific object)
         elif (jsonIn["action"] == ActionType.TELEPORT_TO_OBJECT.name):
             # Check if there is a key 'arg1' that lists the object to teleport to
             if ('arg1' not in jsonIn):
                 jsonParseErrors.append("Missing 'arg1' key in JSON.")
                 return (False, jsonParseErrors, ActionSuccess(False, "Missing 'arg1' key in JSON."))
-            
+
             # Get the object from the argument
             obj = jsonIn['arg1']
             return (True, jsonParseErrors, self.currentAgent.actionTeleportAgentToObject(obj))
@@ -1200,14 +1200,14 @@ class UserInterface:
 
             return (True, jsonParseErrors, self.actionPutObjectInContainer(objToPut = self.curSelectedArgument1Obj, container = self.curSelectedArgument2Obj))
 
-        # Open a container or passage (arg1) 
+        # Open a container or passage (arg1)
         elif (jsonIn["action"] == ActionType.OPEN.name):
             checkArgSuccess = self._checkArgs(actionName = "open", arg1 = True, arg2 = False)
             if (checkArgSuccess != None):
                 return (False, jsonParseErrors, checkArgSuccess)
 
             return (True, jsonParseErrors, self.actionOpenObject(objToOpen = self.curSelectedArgument1Obj))
-        
+
         # Close a container or passage (arg1)
         elif (jsonIn["action"] == ActionType.CLOSE.name):
             checkArgSuccess = self._checkArgs(actionName = "close", arg1 = True, arg2 = False)
@@ -1215,16 +1215,16 @@ class UserInterface:
                 return (False, jsonParseErrors, checkArgSuccess)
 
             return (True, jsonParseErrors, self.actionCloseObject(objToClose = self.curSelectedArgument1Obj))
-        
-        # Activate an object (arg1) 
+
+        # Activate an object (arg1)
         elif (jsonIn["action"] == ActionType.ACTIVATE.name):
             checkArgSuccess = self._checkArgs(actionName = "activate", arg1 = True, arg2 = False)
             if (checkArgSuccess != None):
                 return (False, jsonParseErrors, checkArgSuccess)
 
             return (True, jsonParseErrors, self.actionActivateObject(objToActivate = self.curSelectedArgument1Obj))
-            
-        # For some read K_d doesn't work. 
+
+        # For some read K_d doesn't work.
         # Should be D key here
         # Deactivate an object (arg1)
         elif (jsonIn["action"] == ActionType.DEACTIVATE.name):
@@ -1233,7 +1233,7 @@ class UserInterface:
                 return (False, jsonParseErrors, checkArgSuccess)
 
             return (True, jsonParseErrors, self.actionDeactivateObject(objToDeactivate = self.curSelectedArgument1Obj))
-            
+
         # Dialog/talk with agent specified in arg1
         elif (jsonIn["action"] == ActionType.TALK.name):
             checkArgSuccess = self._checkArgs(actionName = "talk", arg1 = True, arg2 = False)
@@ -1283,7 +1283,7 @@ class UserInterface:
                     # Append a message saying the arguments were switched
                     result.message += "\n Note, the original action failed (USE, arg1:" + self.curSelectedArgument1Obj.name + ", arg2:" + self.curSelectedArgument2Obj.name + "), but the arguments were switched and the action succeeded (USE, arg1:" + self.curSelectedArgument2Obj.name + ", arg2:" + self.curSelectedArgument1Obj.name + "). Try to enter the arguments in the correct order next time."
 
-            # # If there is a .generatedItems populated in this result, then process it            
+            # # If there is a .generatedItems populated in this result, then process it
             # if ('generatedItems' in result.data):
             #     for item in result.data['generatedItems']:
             #         self.currentAgent.addObject(item)
@@ -1295,19 +1295,19 @@ class UserInterface:
         # elif (keys[pygame.K_LEFTBRACKET]):
         #     self.changeArgumentBox(delta=-1, whichBox=1)
         #     return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
-            
+
         # elif (keys[pygame.K_RIGHTBRACKET]):
         #     self.changeArgumentBox(delta=1, whichBox=1)
         #     return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
-            
+
         # elif (keys[pygame.K_SEMICOLON]):
         #     self.changeArgumentBox(delta=-1, whichBox=2)
         #     return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
-            
+
         # elif (keys[pygame.K_QUOTE]):
         #     self.changeArgumentBox(delta=1, whichBox=2)
         #     return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
-            
+
 
         # DiscoveryFeed Actions
         # TODO: These need to be updated to take their arguments from the JSON
@@ -1318,7 +1318,7 @@ class UserInterface:
             return (False, jsonParseErrors, self.getDiscoveryFeedArticles(startFromID=0))
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name):
             # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
-            randPostID = math.floor(random.random() * 10) + 1            
+            randPostID = math.floor(random.random() * 10) + 1
             return (False, jsonParseErrors, self.getSpecificDiscoveryFeedPost(postID=randPostID))
         # Creating articles
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_CREATE_UPDATE.name):
@@ -1329,4 +1329,3 @@ class UserInterface:
 
         # If we reach here, then no known key was pressed
         return (False, jsonParseErrors, ActionSuccess(success=False, message="Unknown action '" + str(jsonIn["action"]) + "'."))
-

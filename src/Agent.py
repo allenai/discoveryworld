@@ -3,7 +3,7 @@
 import SpriteLibrary
 import random
 from ObjectModel import *
-from Layer import * 
+from Layer import *
 from ActionSuccess import *
 from Pathfinding import *
 from ActionHistory import *
@@ -19,9 +19,9 @@ class Agent(Object):
     def __init__(self, world, objectType="agent", objectName="agent", defaultSpriteName="character18_agent_facing_south"):
         # Default sprite name
         Object.__init__(self, world, objectType, objectName, defaultSpriteName = "character18_agent_facing_south")
-    
+
         # Rendering
-        self.attributes["faceDirection"] = "south"        
+        self.attributes["faceDirection"] = "south"
         self.spriteCharacterPrefix = "character18_"                 # Prefix for the sprite character name (e.g. "character18_")
 
         # Agent action history
@@ -31,7 +31,7 @@ class Agent(Object):
         self.knowledgeScorer = KnowledgeScorer(self.world)
 
         # Autopilot action queue and pathfinder
-        self.autopilotActionQueue = []                              # Queue of autopilot actions        
+        self.autopilotActionQueue = []                              # Queue of autopilot actions
         self.pathfinder = Pathfinder()
         self.actionTimestampCounter = 0                             # Counter for the timestamp of the last action
 
@@ -40,14 +40,14 @@ class Agent(Object):
         self.attributes["isNPC"] = False                            # Is this agent an NPC?
 
         # Default attributes
-        self.attributes["isMovable"] = False                       # Can it be moved?        
+        self.attributes["isMovable"] = False                       # Can it be moved?
 
         # Agent is a container for its inventory
         # Container attributes
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = False                      # Can be opened
         self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
-        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")            
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
         self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
 
         # Dialog attributes
@@ -68,14 +68,14 @@ class Agent(Object):
 
         # Object visibility for agents (i.e. the last object(s) they interacted with)
         self.attributes["objectToShow"] = None                     # The object to show the agent carrying
-        
+
         # Alive/dead
         self.attributes["isLiving"] = True                          # Is the agent alive?
 
-    #   
+    #
     #   Accessors/helpers
     #
-    
+
     # Get the grid location (x, y) that the agent is facing
     def getWorldLocationAgentIsFacing(self):
         # Get the current location
@@ -106,7 +106,7 @@ class Agent(Object):
     def addState(self, stateName):
         self.attributes['states'].add(stateName)
 
-    # Savely remov a state (fails gracefully if the state doesn't exist)    
+    # Savely remov a state (fails gracefully if the state doesn't exist)
     def removeState(self, stateName):
         if (stateName in self.attributes['states']):
             self.attributes['states'].remove(stateName)
@@ -114,8 +114,8 @@ class Agent(Object):
         else:
             return False
 
-    # 
-    #   Get inventory    
+    #
+    #   Get inventory
     #
 
     # Helper to get inventory
@@ -131,8 +131,8 @@ class Agent(Object):
             return []
 
         # Get objects at location
-        #objs = self.world.getObjectsAt(facingLocation[0], facingLocation[1], respectContainerStatus=respectContainerStatus)                    
-        objs = self.world.getObjectsAt(facingLocation[0], facingLocation[1], respectContainerStatus=respectContainerStatus, respectObscuringLowerLayers=True)                            
+        #objs = self.world.getObjectsAt(facingLocation[0], facingLocation[1], respectContainerStatus=respectContainerStatus)
+        objs = self.world.getObjectsAt(facingLocation[0], facingLocation[1], respectContainerStatus=respectContainerStatus, respectObscuringLowerLayers=True)
 
         ## NEW: Also include objects at the agent's current location
         objsAtAgentLocation = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"], respectContainerStatus=respectContainerStatus, respectObscuringLowerLayers=True)
@@ -144,7 +144,7 @@ class Agent(Object):
         return objs
 
     #
-    #   Get a list of nearby directions (north, east, south, west) that can be moved to -- i.e. that do not contain untraversable objects. 
+    #   Get a list of nearby directions (north, east, south, west) that can be moved to -- i.e. that do not contain untraversable objects.
     #
     def getValidDirectionsToMoveTo(self):
         validDirections = []
@@ -169,7 +169,7 @@ class Agent(Object):
             if (newX < 0 or newX >= self.world.sizeX or newY < 0 or newY >= self.world.sizeY):
                 # Invalid location
                 continue
-            
+
             # Check 2: Check if the new location is passable
             isPassable, blockingObject = self.world.isPassable(newX, newY)
             if (not isPassable):
@@ -185,8 +185,8 @@ class Agent(Object):
     #   Get nearby objects
     #
 
-    # Get a list of all objects within a certain number of grid locations of the agent. 
-    # This should respect the container status. 
+    # Get a list of all objects within a certain number of grid locations of the agent.
+    # This should respect the container status.
     def getNearbyVisibleObjects(self, maxDistance=2):
         visibleObjectsFull = [] # The actual objects rather than dicts representing them, for downstream processing
         visibleObjects = []
@@ -211,7 +211,7 @@ class Agent(Object):
                     objs = self.world.getObjectsAt(x, y, respectContainerStatus=True, includeParts=False, respectObscuringLowerLayers=True)
                     # Add them to the list
                     objsAtLocation += objs
-                
+
                 # Pack the objects into the list, using a more minimal representation containing the name, uuid, description, and direction relative to the agent (north/east/south/west, or 'same' if the object is at the same location as the agent)
                 for obj in objsAtLocation:
                     # Get the direction relative to the agent
@@ -260,7 +260,7 @@ class Agent(Object):
     #
     #   Tick
     #
-        
+
     # Tick
     def tick(self):
         print("")
@@ -281,7 +281,7 @@ class Agent(Object):
             # Decrement the poisoned counter
             self.attributes['poisonedCounter'] -= 1
 
-            # Poisoning is initially silent, and only starts to affect the agent when the poisonedCounter reaches -50. 
+            # Poisoning is initially silent, and only starts to affect the agent when the poisonedCounter reaches -50.
             if (self.attributes['poisonedCounter'] < -POISON_INCUBATION_PERIOD):
                 self.attributes['poisonedCounter'] = POISON_DURATION     # Duration of poison
                 self.attributes['isPoisoned'] = True
@@ -298,7 +298,7 @@ class Agent(Object):
             if (self.attributes['isPoisoned'] == True):
                 self.actionDiscoveryFeedMakeUpdatePost("I'm feeling better.", signals=[])
                 self.attributes['isPoisoned'] = False
-            
+
 
 
 
@@ -330,14 +330,14 @@ class Agent(Object):
     #     self.needsSpriteNameUpdate = True
 
     #     # Check if the new location is valid
-    #     # Check 1: Is the new location within the bounds of the world?        
+    #     # Check 1: Is the new location within the bounds of the world?
     #     if (newX < 0 or newX >= self.world.sizeX or newY < 0 or newY >= self.world.sizeY):
     #         # Invalid location
     #         return ActionSuccess(False, "That would take me beyond the edge of the world.")
 
     #     # Check 2: Check if the new location is passable
     #     isPassable, blockingObject = self.world.isPassable(newX, newY)
-    #     if (not isPassable):            
+    #     if (not isPassable):
     #         return ActionSuccess(False, "I can't move there. There is something in the way (" + blockingObject.name + ").")
 
     #     # If we reach here, the new location is valid. Update the agent's location to the new location
@@ -400,14 +400,14 @@ class Agent(Object):
         result = ActionSuccess(True, "I rotated to face " + direction + ".")
         self.actionHistory.add(actionType=ActionType.ROTATE_DIRECTION, arg1=direction, arg2=None, result=result)
         return result
-    
+
 
     # Move forward (or backward) in the direction the agent is facing
     # Direction: +1 = forward, -1 = backward
     def actionMoveAgentForwardBackward(self, direction=+1):
         actionType = ActionType.MOVE_FORWARD if (direction == +1) else ActionType.MOVE_BACKWARD
         # Get the current direction
-        currentDirection = self.attributes["faceDirection"]        
+        currentDirection = self.attributes["faceDirection"]
 
         # Get the new location
         if (direction == +1):
@@ -436,7 +436,7 @@ class Agent(Object):
             elif (currentDirection == "west"):
                 newX = self.attributes["gridX"] + 1
                 newY = self.attributes["gridY"]
-        
+
         # Check if the new location is valid
         # Check 1: Is the new location within the bounds of the world?
         if (newX < 0 or newX >= self.world.sizeX or newY < 0 or newY >= self.world.sizeY):
@@ -444,7 +444,7 @@ class Agent(Object):
             result = ActionSuccess(False, "That would take me beyond the edge of the world.")
             self.actionHistory.add(actionType=actionType, arg1=None, arg2=None, result=result)
             return result
-        
+
         # Check 2: Check if the new location is passable
         isPassable, blockingObject = self.world.isPassable(newX, newY)
         if (not isPassable):
@@ -492,7 +492,7 @@ class Agent(Object):
             result = ActionSuccess(False, "That would take me beyond the edge of the world.")
             self.actionHistory.add(actionType=actionType, arg1=direction, arg2=None, result=result)
             return result
-        
+
         # Check 2: Check if the new location is passable
         isPassable, blockingObject = self.world.isPassable(newX, newY)
         if (not isPassable):
@@ -514,7 +514,7 @@ class Agent(Object):
         result = ActionSuccess(True, "I moved to (" + str(newX) + ", " + str(newY) + ").")
         self.actionHistory.add(actionType=actionType, arg1=direction, arg2=None, result=result)
         return result
-            
+
     # Teleport the agent to a specific named location
     def actionTeleportAgentToLocation(self, locationName):
         # Get a list of known teleport locations
@@ -559,13 +559,13 @@ class Agent(Object):
             if (obj.uuid == objectUUID):
                 objToTeleportTo = obj
                 break
-        
+
         # Check if the object was found
         if (objToTeleportTo == None):
             result = ActionSuccess(False, "No object with that UUID (" + str(objectUUID) + ") was found.")
             self.actionHistory.add(actionType=ActionType.TELEPORT_TO_OBJECT, arg1=objectUUID, arg2=None, result=result)
             return result
-        
+
         # Get the object's world location
         objLocation = objToTeleportTo.getWorldLocation()
         # Make sure that the object has a valid location
@@ -578,13 +578,13 @@ class Agent(Object):
         # First we'll use the pathfinder to try and find a natural path.  If one doesn't exist, we'll just pick a location beside the object.
 
         # TODO: Strategy 1: Pathfinding
-        # Try to find a path to the object, and then find a location beside the object to teleport to                
+        # Try to find a path to the object, and then find a location beside the object to teleport to
 
 
-        # Strategy 2 (backoff) -- just find any location (N/E/S/W) that's passable        
+        # Strategy 2 (backoff) -- just find any location (N/E/S/W) that's passable
         newX = -1
         newY = -1
-        # North        
+        # North
         passableNorth, blockingObjectNorth = self.world.isPassable(objLocation[0], objLocation[1] - 1)
         passableEast, blockingObjectEast = self.world.isPassable(objLocation[0] + 1, objLocation[1])
         passableSouth, blockingObjectSouth = self.world.isPassable(objLocation[0], objLocation[1] + 1)
@@ -614,7 +614,7 @@ class Agent(Object):
             result = ActionSuccess(False, "I couldn't find a valid location beside the object (" + str(objToTeleportTo.name) + ", uuid: " + str(objectUUID) + ") to teleport to.")
             self.actionHistory.add(actionType=ActionType.TELEPORT_TO_OBJECT, arg1=objectUUID, arg2=None, result=result)
             return result
-        
+
         # If we reach here, the new location is valid. Update the agent's location to the new location
         self.world.removeObject(self)                           # First, remove the object from it's current location in the world grid
         self.world.addObject(newX, newY, Layer.AGENT, self)     # Then, add the object to the new location in the world grid
@@ -625,7 +625,7 @@ class Agent(Object):
         result = ActionSuccess(True, "I teleported to the object with UUID " + str(objectUUID) + " (" + str(objToTeleportTo.name) + ") at (" + str(newX) + ", " + str(newY) + ").")
         self.actionHistory.add(actionType=ActionType.TELEPORT_TO_OBJECT, arg1=objectUUID, arg2=None, result=result)
         return result
-    
+
 
     # Pick up an object, and add it to the agent's inventory
     def actionPickUp(self, objToPickUp):
@@ -641,7 +641,7 @@ class Agent(Object):
         distY = abs(objToPickUp.attributes["gridY"] - self.attributes["gridY"])
         if (distX > 1 or distY > 1):
             # Object is not within reach
-            result = ActionSuccess(False, "That object (" + objToPickUp.name + ") is not within reach. I can only pick up objects that are within +/- 1 grid location.")            
+            result = ActionSuccess(False, "That object (" + objToPickUp.name + ") is not within reach. I can only pick up objects that are within +/- 1 grid location.")
             self.actionHistory.add(actionType=ActionType.PICKUP, arg1=objToPickUp, arg2=None, result=result)
             return result
 
@@ -702,7 +702,7 @@ class Agent(Object):
 
         # Next, check to see if the container is a container
         if (not newContainer.attributes["isContainer"]):
-            # Container is not a container            
+            # Container is not a container
             result = ActionSuccess(False, "That object (" + newContainer.name + ") is not a container.")
             self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
             return result
@@ -750,7 +750,7 @@ class Agent(Object):
             result = ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") is not openable/closeable.")
             self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
             return result
-        
+
         # Next, check to see whether we're dealing with a container or a passage
         if (objToOpenOrClose.attributes["isContainer"]):
             # Open a container
@@ -814,19 +814,19 @@ class Agent(Object):
                             keyFound = True
                             key = obj
                             break
-                    
+
                     if (not keyFound):
                         result = ActionSuccess(False, "That object (" + objToOpenOrClose.name + ") requires a key to open.")
                         self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
                         return result
-                    
+
                     # Special cases -- e.g. disabled key
                     if (key.attributes["isRusted"]):
                         result = ActionSuccess(False, "The key is rusted and doesn't work.")
                         self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
                         return result
 
-                                        
+
                 # Open the door
                 objToOpenOrClose.attributes["isOpenPassage"] = True
                 objToOpenOrClose.invalidateSpritesThisWorldTile()
@@ -866,7 +866,7 @@ class Agent(Object):
             result = ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is not activatable/deactivatable.")
             self.actionHistory.add(actionType=actionType, arg1=objToActivateOrDeactivate, arg2=None, result=result)
             return result
-                
+
         # Next, check if the object is already in the desired state
         if (whichAction == "activate" and objToActivateOrDeactivate.attributes["isActivated"]):
             # Object is already activated
@@ -879,7 +879,7 @@ class Agent(Object):
             result = ActionSuccess(False, "That object (" + objToActivateOrDeactivate.name + ") is already deactivated.")
             self.actionHistory.add(actionType=actionType, arg1=objToActivateOrDeactivate, arg2=None, result=result)
             return result
-        
+
         # If we reach here, the object is within reach and is activatable.  Activate/deactivate it.
         if (whichAction == "activate"):
             objToActivateOrDeactivate.attributes["isActivated"] = True
@@ -897,7 +897,7 @@ class Agent(Object):
             self.actionHistory.add(actionType=actionType, arg1=objToActivateOrDeactivate, arg2=None, result=result)
             return result
 
-            
+
 
     # Eat an object
     def actionEat(self, objToEat):
@@ -919,16 +919,16 @@ class Agent(Object):
 
         # If we reach here, the object is edible and within reach.  Eat it.
         objToEat.invalidateSpritesThisWorldTile()            # Invalidate the sprites at the object's current location
-        print("EATEN OBJECT PARENT CONTAINER: " + str(objToEat.parentContainer))    
+        print("EATEN OBJECT PARENT CONTAINER: " + str(objToEat.parentContainer))
         self.world.removeObject(objToEat)                    # Remove the object from the world
         print("EATEN OBJECT PARENT CONTAINER: " + str(objToEat.parentContainer))
 
-        # When the agent eats something, it eats all of that object's contained objects (and, parts). 
+        # When the agent eats something, it eats all of that object's contained objects (and, parts).
         # First, collect all the parts that are being consumed
         allObjs = objToEat.getAllContainedObjectsRecursive(respectContainerStatus=False)
         allObjs.append(objToEat)
         objsAndParts = []
-        for obj in allObjs:            
+        for obj in allObjs:
             objsAndParts.append(obj)
             objParts = obj.parts
             for part in objParts:
@@ -936,7 +936,7 @@ class Agent(Object):
                 allPartContents = part.getAllContainedObjectsRecursive(respectContainerStatus=False)
                 # add to objAndParts
                 objsAndParts.extend(allPartContents)
-        
+
         # Process any of the attributes of the objects being eaten
         for eatenObj in objsAndParts:
             print("## Eating object: " + eatenObj.name + " with attributes: " + str(eatenObj.attributes))
@@ -944,7 +944,7 @@ class Agent(Object):
             if (eatenObj.attributes["isPoisonous"] == True):
                 print("DEBUG: POISONED! (from " + eatenObj.name + ")")
                 self.attributes["poisonedCounter"] = random.randint(-20, -2)
-        
+
         result = ActionSuccess(True, "I ate the " + objToEat.name + ".")
         self.actionHistory.add(actionType=ActionType.EAT, arg1=objToEat, arg2=None, result=result)
         return result
@@ -961,7 +961,7 @@ class Agent(Object):
             result = ActionSuccess(False, "That object (" + objToRead.name + ") is not within reach. I can only read objects that are within +/- 1 grid location.")
             self.actionHistory.add(actionType=ActionType.READ, arg1=objToRead, arg2=None, result=result)
             return result
-            
+
         # Next, check if the object to read is readable
         if (not objToRead.attributes["isReadable"]):
             # Object is not readable
@@ -994,14 +994,14 @@ class Agent(Object):
         if (distX > 1 or distY > 1):
             # Object is not within reach
             result = ActionSuccess(False, "That object (" + objToUse.name + ") is not within reach. I can only use objects that are within +/- 1 grid location.")
-            self.actionHistory.add(actionType=ActionType.USE, arg1=objToUse, arg2=objToUseOn, result=result)        
+            self.actionHistory.add(actionType=ActionType.USE, arg1=objToUse, arg2=objToUseOn, result=result)
             return result
 
         # Next, check if the object to use is usable
         if (not objToUse.attributes["isUsable"]):
             # Object is not usable
             result = ActionSuccess(False, "That object (" + objToUse.name + ") is not usable.")
-            self.actionHistory.add(actionType=ActionType.USE, arg1=objToUse, arg2=objToUseOn, result=result)        
+            self.actionHistory.add(actionType=ActionType.USE, arg1=objToUse, arg2=objToUseOn, result=result)
             return result
 
         # Next, check if the patient object is within reach (i.e. +/- 1 grid location)
@@ -1010,25 +1010,25 @@ class Agent(Object):
         if (distX > 1 or distY > 1):
             # Object is not within reach
             result = ActionSuccess(False, "That object (" + objToUseOn.name + ") is not within reach. I can only use objects on other objects that are within +/- 1 grid location.")
-            self.actionHistory.add(actionType=ActionType.USE, arg1=objToUse, arg2=objToUseOn, result=result)        
+            self.actionHistory.add(actionType=ActionType.USE, arg1=objToUse, arg2=objToUseOn, result=result)
             return result
 
-        # If we reach here, the object is usable, and both the device and patient object are within reach. Use it. 
+        # If we reach here, the object is usable, and both the device and patient object are within reach. Use it.
         result = objToUse.actionUseWith(objToUseOn)
 
-        # If there is a .generatedItems populated in this result, then process it            
+        # If there is a .generatedItems populated in this result, then process it
         if ('generatedItems' in result.data):
             for item in result.data['generatedItems']:
                 self.addObject(item)
 
-        # Invalidate the sprites of all objects at these locations. 
+        # Invalidate the sprites of all objects at these locations.
         objToUse.invalidateSpritesThisWorldTile()
         objToUseOn.invalidateSpritesThisWorldTile()
 
         self.updateLastInteractedObject([objToUse, objToUseOn])
 
         # Return result
-        self.actionHistory.add(actionType=ActionType.USE, arg1=objToUse, arg2=objToUseOn, result=result)        
+        self.actionHistory.add(actionType=ActionType.USE, arg1=objToUse, arg2=objToUseOn, result=result)
         return result
 
 
@@ -1040,7 +1040,7 @@ class Agent(Object):
     def actionDiscoveryFeedGetPosts(self, startFromID=0):
         numPostsToRetrieve = 8 # Number of posts to retrieve
         postDelimiter = "---\n"
-        allPosts = self.world.discoveryFeed.getPosts()                
+        allPosts = self.world.discoveryFeed.getPosts()
         lastPosts = []
         notificationStr = ""
         if (startFromID <= 0):
@@ -1048,7 +1048,7 @@ class Agent(Object):
             lastPosts = allPosts[-numPostsToRetrieve:]
             notificationStr = "Showing the most recent " + str(len(lastPosts)) + " posts."
         else:
-            # Get the last N posts starting from the specified ID.  Posts are sorted in ascending order. 
+            # Get the last N posts starting from the specified ID.  Posts are sorted in ascending order.
             postLocation = -1
             for post in allPosts:
                 if (post["postID"] >= startFromID):
@@ -1058,7 +1058,7 @@ class Agent(Object):
                 postEnd = postLocation + numPostsToRetrieve
                 if (postEnd > len(allPosts)):
                     postEnd = len(allPosts)
-                
+
                 lastPosts = allPosts[postLocation:postEnd]
 
                 notificationStr = "Showing the most recent " + str(len(lastPosts)) + " posts starting from post ID " + str(startFromID) + "."
@@ -1068,7 +1068,7 @@ class Agent(Object):
                 notificationStr = "Failed to find update posts with ID " + str(startFromID) + ", showing the most recent " + str(len(lastPosts)) + " posts."
 
 
-        # Create a string to display the posts        
+        # Create a string to display the posts
         postStrings = []
         for post in lastPosts:
             postStr = "Post " + str(post["postID"]) + "\nPosted by " + post["author"] + " on Step " + str(post["step"]) + ":\n"
@@ -1083,17 +1083,17 @@ class Agent(Object):
         outStr += postDelimiter.join(postStrings)
 
         # Generate result
-        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)        
+        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)
         # Add to action history
         self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_UPDATES, arg1=None, arg2=None, result=result)
         return result
-    
+
     # Get the most recent updates from the discovery feed
     def actionDiscoveryFeedGetArticleTitles(self, startFromID=0):
         numArticlesToRetrieve = 5 # Number of posts to retrieve
         postDelimiter = "---\n"
-        allArticles = self.world.discoveryFeed.getArticles()        
-        
+        allArticles = self.world.discoveryFeed.getArticles()
+
         lastArticles = []
         notificationStr = ""
         if (startFromID <= 0):
@@ -1101,7 +1101,7 @@ class Agent(Object):
             lastArticles = allArticles[-numArticlesToRetrieve:]
             notificationStr = "Showing the most recent " + str(len(lastArticles)) + " articles."
         else:
-            # Get the last N posts starting from the specified ID.  Posts are sorted in ascending order. 
+            # Get the last N posts starting from the specified ID.  Posts are sorted in ascending order.
             postLocation = -1
             for post in allArticles:
                 if (post["postID"] >= startFromID):
@@ -1111,7 +1111,7 @@ class Agent(Object):
                 postEnd = postLocation + numArticlesToRetrieve
                 if (postEnd > len(allArticles)):
                     postEnd = len(allArticles)
-                
+
                 lastArticles = allArticles[postLocation:postEnd]
 
                 notificationStr = "Showing the most recent " + str(len(lastArticles)) + " articles starting from document ID " + str(startFromID) + "."
@@ -1121,7 +1121,7 @@ class Agent(Object):
                 notificationStr = "Failed to find articles with ID " + str(startFromID) + ", showing the most recent " + str(len(lastArticles)) + " articles."
 
 
-        # Create a string to display the posts        
+        # Create a string to display the posts
         postStrings = []
         for post in lastArticles:
             postStr = "Article " + str(post["postID"]) + " Title: " + post["title"] + "\n"
@@ -1137,7 +1137,7 @@ class Agent(Object):
         outStr += postDelimiter.join(postStrings)
 
         # Generate result
-        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)        
+        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)
         # Add to action history
         self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_ARTICLES, arg1=None, arg2=None, result=result)
         return result
@@ -1153,7 +1153,7 @@ class Agent(Object):
             result = ActionSuccess(False, outStr, importance=MessageImportance.HIGH)
             self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_POST_BY_ID, arg1=postID, arg2=None, result=result)
             return result
-        
+
         postStr = ""
         if (post["type"] == "update"):
             postStr = "Post " + str(post["postID"]) + "\nPosted by " + post["author"] + " on Step " + str(post["step"]) + ":\n"
@@ -1169,11 +1169,11 @@ class Agent(Object):
         outStr += postStr
 
         # Generate result
-        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)        
+        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)
         # Add to action history
         self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_GET_POST_BY_ID, arg1=postID, arg2=None, result=result)
         return result
-            
+
     # Make a post
     def actionDiscoveryFeedMakeUpdatePost(self, contentStr, signals:list=[]):
         # Create the post
@@ -1187,12 +1187,12 @@ class Agent(Object):
         outStr += postStr
 
         # Generate result
-        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)        
+        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)
 
         # Add to action history
         self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_CREATE_UPDATE, arg1=post, arg2=None, result=result)
         return result
-    
+
     # Make an article
     def actionDiscoveryFeedMakeArticle(self, titleStr, contentStr):
         # Create the article
@@ -1207,12 +1207,12 @@ class Agent(Object):
         outStr += postStr
 
         # Generate result
-        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)        
+        result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)
 
         # Add to action history
         self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_CREATE_ARTICLE, arg1=post, arg2=None, result=result)
         return result
-        
+
 
     #
     #   Autopilot helpers
@@ -1257,7 +1257,7 @@ class Agent(Object):
         nextMovement = movementLUT[curDirection + ":" + directionToFace]
         # Take the action
         self.actionRotateAgentFacingDirection(nextMovement)
-        
+
         return ActionSuccess(True, "I am rotating towards facing the requested direction (" + directionToFace + ").")
 
     # Convert x/y deltas (e.g. (0, -1 ) to a direction (e.g. "north", "east")
@@ -1278,7 +1278,7 @@ class Agent(Object):
     #   Autopilot: Adding actions to the queue
     #
     def addAutopilotActionToQueue(self, action):
-        # Add a timestamp to the action 
+        # Add a timestamp to the action
         action.timestamp = self.actionTimestampCounter
 
         # Add the action to the queue
@@ -1289,8 +1289,8 @@ class Agent(Object):
 
         # Sort the autopilot action queue by priority (highest priority first).  Sort by two fields: first priority, then time added to queue 'timestamp')
         #  Note: The 'timestamp' field is used to break ties in priority
-        self.autopilotActionQueue.sort(key=lambda x: (x.priority, -x.timestamp), reverse=True)                        
-        
+        self.autopilotActionQueue.sort(key=lambda x: (x.priority, -x.timestamp), reverse=True)
+
     # Returns TRUE if there are one or more actions in the autopilot queue with a priority greater than 1
     def isBusyAutopilot(self):
         for action in self.autopilotActionQueue:
@@ -1303,7 +1303,7 @@ class Agent(Object):
     def displayAutopilotQueueStr(self):
         outStr = "Autopilot Action Queue:\n"
 
-        for idx, action in enumerate(self.autopilotActionQueue):            
+        for idx, action in enumerate(self.autopilotActionQueue):
             outStr += "  #" + str(idx) + " (priority " + str(action.priority) + "): " + str(action) + "\n"
 
         return outStr
@@ -1324,27 +1324,27 @@ class Agent(Object):
 
     # Is this agent currently in dialog?
     def isInDialog(self):
-        return ('inDialogWith' in self.attributes) and (self.attributes['inDialogWith'] != None)        
+        return ('inDialogWith' in self.attributes) and (self.attributes['inDialogWith'] != None)
 
     def getAgentInDialogWith(self):
         return self.attributes['inDialogWith']
 
-    # Exit whatever dialog we're in 
+    # Exit whatever dialog we're in
     def exitDialog(self):
         # If we're in dialog, then exit it
         if (self.isInDialog()):
             self.attributes['inDialogWith'].dialogTree.endDialog()
         self.setNotInDialog()
-                
 
-        
+
+
 
     # If 'dialogStrToSay' is None, then it will stop the dialog with 'agentToTalkTo'
     def actionDialog(self, agentToTalkTo, dialogStrToSay=None):
         # Check if dialogable
         if ('isDialogable' in agentToTalkTo.attributes) and (agentToTalkTo.attributes["isDialogable"] == False):
             return ActionSuccess(False, "You can't talk to that (" + agentToTalkTo.name + ").")
-        
+
         # Check if the other agent is busy, and we're not already talking to it
         if (agentToTalkTo.isBusyAutopilot()) and (agentToTalkTo.dialogTree.getAgentTalkingTo() != self):
             return ActionSuccess(False, "That agent (" + agentToTalkTo.name + ") is busy, try again later.")
@@ -1360,12 +1360,12 @@ class Agent(Object):
             # Check if te action is to stop the dialog
             if (dialogStrToSay == None):
                 # Stop the dialog
-                agentToTalkTo.dialogTree.endDialog()                                
-                self.setNotInDialog()                
+                agentToTalkTo.dialogTree.endDialog()
+                self.setNotInDialog()
 
                 return ActionSuccess(True, "Finished talking to " + str(agentToTalkTo.name) + ".")
 
-            # We're currently in the middle of a dialog -- send the dialogStrToSay. 
+            # We're currently in the middle of a dialog -- send the dialogStrToSay.
             success = agentToTalkTo.dialogTree.say(thingToSay=dialogStrToSay, agentEngaging=self)
             if (success == False):
                 agentToTalkTo.dialogTree.endDialog()
@@ -1380,7 +1380,7 @@ class Agent(Object):
             agentToTalkTo.setInDialogWith(self)
             return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
 
-        else: 
+        else:
             # We're not currently talking to the agent.  Try to initiate conversation.
             if (agentToTalkTo.dialogTree.isBusy() == True):
                 # The NPC is busy talking to another agent
@@ -1404,23 +1404,23 @@ class Agent(Object):
                 self.setInDialogWith(agentToTalkTo)
                 agentToTalkTo.setInDialogWith(self)
                 return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
-            
+
 
         # Return a dialog placeholder
         #return ActionSuccess(True, "We are talking.  You said: " + str(dialogStrToSay), MessageImportance.HIGH)
-                
+
 
     #
     # Sprite
     #
 
-    # This function updates what object the agent should be shown "holding". 
-    # It takes a list of objects (nominally from the last action the agent took), and will pick one that the agent is currently carying. 
+    # This function updates what object the agent should be shown "holding".
+    # It takes a list of objects (nominally from the last action the agent took), and will pick one that the agent is currently carying.
     # If the agent is not carrying any, then it will set 'objectToShow' to None.
-    # If the agent is carrying more than one, it will show the first one it finds. 
+    # If the agent is carrying more than one, it will show the first one it finds.
     def updateLastInteractedObject(self, objList:list):
-        self.attributes["objectToShow"] = None                     # The object to show the agent carrying        
-        
+        self.attributes["objectToShow"] = None                     # The object to show the agent carrying
+
         # Filter the object list to remove any Nones
         objList = [x for x in objList if x != None]
         # Stop if there are no objects in the list
@@ -1430,7 +1430,7 @@ class Agent(Object):
 
         # Filter the list of objects to show only those that are in the agent's inventory
         accessibleInventoryObjects = self.getAllContainedObjectsRecursive(respectContainerStatus=True)
-        
+
         filteredInInventory = []
         for obj in objList:
             if (obj in accessibleInventoryObjects):
@@ -1442,12 +1442,12 @@ class Agent(Object):
             return
 
         # Otherwise, take the first object
-        self.attributes["objectToShow"] = filteredInInventory[0]        
+        self.attributes["objectToShow"] = filteredInInventory[0]
 
 
     def clearLastInteractedObject(self):
         self.attributes["objectToShow"] = None
-        
+
 
     # Updates the current sprite name based on the current state of the object
     def inferSpriteName(self, force:bool=False):
@@ -1494,9 +1494,9 @@ class NPC(Agent):
         # Default sprite name
         Agent.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
         #Object.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
-    
+
         # Rendering
-        self.attributes["faceDirection"] = "south"        
+        self.attributes["faceDirection"] = "south"
         self.spriteCharacterPrefix = "character17_"
 
         # Is this a user-controlled agent, or NPC?
@@ -1510,8 +1510,8 @@ class NPC(Agent):
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = False                      # Can be opened
         self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
-        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")            
-    
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
+
         # Dialog attributes
         self.attributes['isDialogable'] = True                     # Can it be dialoged with?
 
@@ -1540,7 +1540,7 @@ class NPC(Agent):
 
     #
     #   NPC Auto-navigation
-    #   
+    #
     def _doNPCAutonavigation(self):
         # Check to see if there's a goal location attribute
         if ("goalLocation" not in self.attributes):
@@ -1549,7 +1549,7 @@ class NPC(Agent):
             #self.attributes["goalLocation"] = (10, 10)
 
         pathSuccess, nextX, nextY, pathLength = self.pathfinder.findPathNextStep(self.world, self.attributes["gridX"], self.attributes["gridY"], self.attributes["goalLocation"][0], self.attributes["goalLocation"][1])
-        
+
         if (not pathSuccess):
             print("_doNPCAutonavigation: No path found to goal location.  Exiting. (agent: " + self.name + ")")
             return False
@@ -1579,7 +1579,7 @@ class NPC(Agent):
             allObjs = self.world.getObjectsAt(nextX, nextY)
             # Get a list of objects that are not passable (isPassable == False)
             allObjsNotPassable = [obj for obj in allObjs if (obj.attributes["isPassable"] == False)]
-            
+
             # If there are no impassable objects, then move the agent one step in the forward direction
             if (len(allObjsNotPassable) == 0):
                 # Move agent one step in the forward direction
@@ -1601,7 +1601,7 @@ class NPC(Agent):
                         break
 
         return True
-        
+
         # else:
         #     # No success -- means either (a) we're already in the goal location, or (b) there's no path to the goal location
         #     # In either case, we'll just pick a new goal location
@@ -1619,9 +1619,9 @@ class NPCChef(NPC):
     def __init__(self, world, name):
         # Default sprite name
         Agent.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south", tables=None, pot=None)
-    
+
         # Rendering
-        self.attributes["faceDirection"] = "south"        
+        self.attributes["faceDirection"] = "south"
         self.spriteCharacterPrefix = "character17_"
 
 
@@ -1646,7 +1646,7 @@ class NPCChef(NPC):
     #
     #   Tick
     #
-        
+
     # Tick
     def tick(self):
         # # Randomly move agent
@@ -1685,7 +1685,7 @@ class NPCChef(NPC):
             self.attributes["goalLocation"] = (20, 21)
         elif ("moveToPutPotPack" in self.attributes['states']):
             # Move to the starting location
-            self.attributes["goalLocation"] = (21, 21)    
+            self.attributes["goalLocation"] = (21, 21)
         elif ("putPotBack" in self.attributes['states']):
             # Get pot from inventory
             pot = self.attributes["foodContainer"]
@@ -1815,7 +1815,7 @@ class NPCChef(NPC):
                     self.addState("moveToPutPotPack")
                 else:
                     print("NO FOOD IN CONTAINER!")
-    
+
 
 
 
@@ -1846,7 +1846,7 @@ class NPCChef(NPC):
                 self.addState("waiting")
 
 
-        # Pathfinding/Auto-navigation        
+        # Pathfinding/Auto-navigation
         if ("goalLocation" in self.attributes):
             success = self._doNPCAutonavigation()
             if (not success):
@@ -1902,7 +1902,7 @@ class NPCChef(NPC):
 
 
                 elif ("wandering" in self.attributes['states']):
-                    self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))   
+                    self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
 
 
                 # We failed to find a path to the goal location -- pick a new goal location
@@ -1924,9 +1924,9 @@ class NPCColonist(NPC):
     def __init__(self, world, name):
         # Default sprite name
         Agent.__init__(self, world, "agent", name, defaultSpriteName = "character16_agent_facing_south")
-    
+
         # Rendering
-        self.attributes["faceDirection"] = "south"        
+        self.attributes["faceDirection"] = "south"
         self.spriteCharacterPrefix = "character16_"
 
         # Default attributes
@@ -1937,8 +1937,8 @@ class NPCColonist(NPC):
         self.attributes['isContainer'] = True                      # Is it a container?
         self.attributes['isOpenable'] = False                      # Can be opened
         self.attributes['isOpenContainer'] = True                 # If it's a container, then is it open?
-        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")            
-    
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
+
         # Dialog attributes
         self.attributes['isDialogable'] = True                     # Can it be dialoged with?
 
@@ -1963,13 +1963,13 @@ class NPCColonist(NPC):
     #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
 
     #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
 
-    
+
     #
     #   Tick
     #
-        
+
     # Tick
     def tick(self):
         # # Randomly move agent
@@ -2069,7 +2069,7 @@ class NPCColonist(NPC):
                 self.addState("wandering")
 
 
-        # Pathfinding/Auto-navigation        
+        # Pathfinding/Auto-navigation
         if ("goalLocation" in self.attributes):
             success = self._doNPCAutonavigation()
             if (not success):
@@ -2083,7 +2083,7 @@ class NPCColonist(NPC):
                         del self.attributes["goalLocation"]
 
                 elif ("wandering" in self.attributes['states']):
-                    self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))   
+                    self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
 
 
                 # We failed to find a path to the goal location -- pick a new goal location
@@ -2105,13 +2105,13 @@ class NPCColonist1(NPC):
     def __init__(self, world, name, thingsToPickup=None, whereToPlace=None):        ## DEBUG: thingToPickUp is a placeholder
         # Default sprite name
         Agent.__init__(self, world, "agent", name, defaultSpriteName = "character15_agent_facing_south")
-    
+
         # Rendering
-        self.attributes["faceDirection"] = "south"        
+        self.attributes["faceDirection"] = "south"
         self.spriteCharacterPrefix = "character15_"
 
         # Below is the original farm behavior (picking up mushrooms and taking them to the kitchen)
-        # # Add a default action into the action queue 
+        # # Add a default action into the action queue
         # if (thingsToPickup is not None):
         #     for thingToPickup in thingsToPickup:
         #         self.autopilotActionQueue.append( AutopilotAction_PickupObj(thingToPickup) )
@@ -2133,7 +2133,7 @@ class NPCColonist1(NPC):
         container = whereToPlace
         self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(fieldX, fieldY, fieldWidth, fieldHeight, objectTypes, container) )
 
-        
+
 
     #
     #   Dialog Actions
@@ -2149,13 +2149,13 @@ class NPCColonist1(NPC):
     #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
 
     #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
 
-    
+
     #
     #   Tick
     #
-        
+
     # Tick
     def tick(self):
         # # Randomly move agent
@@ -2194,7 +2194,7 @@ class NPCColonist1(NPC):
             # TODO: Add the action sequence to go to the cafeteria and eat
             pass
 
-    
+
         # Call the NPC's action interpreter
         #self.autopilotActionQueue = []                              # Queue of autopilot actions
         #self.pathfinder = Pathfinder()
@@ -2203,7 +2203,7 @@ class NPCColonist1(NPC):
         print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
-        if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):            
+        if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
@@ -2223,7 +2223,7 @@ class NPCColonist1(NPC):
             elif (result == ActionResult.INVALID):
                 self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
-            
+
             # If the result is "success", then do nothing -- the action is still in progress.
 
 
@@ -2239,10 +2239,10 @@ class NPCChef1(NPC):
         self.tables = tables
 
         # Rendering
-        self.attributes["faceDirection"] = "south"        
+        self.attributes["faceDirection"] = "south"
         self.spriteCharacterPrefix = "character15_"
 
-        # # Add a default action into the action queue 
+        # # Add a default action into the action queue
         # if (tables is not None) and (pot is not None):
         #     self.potParentContainer = pot.parentContainer
 
@@ -2264,13 +2264,13 @@ class NPCChef1(NPC):
     #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
 
     #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
 
-    
+
     #
     #   Tick
     #
-        
+
     # Tick
     def tick(self):
         # # Randomly move agent
@@ -2314,12 +2314,12 @@ class NPCChef1(NPC):
             # First, remove the call colonists signal
             self.removeState("callColonistsSignal")
 
-            # Send the signal via a Discovery Feed update. 
+            # Send the signal via a Discovery Feed update.
             self.actionDiscoveryFeedMakeUpdatePost("Food is being served in the cafeteria.", signals=["eatSignal"])
 
 
 
-    
+
         # Call the NPC's action interpreter
         #self.autopilotActionQueue = []                              # Queue of autopilot actions
         #self.pathfinder = Pathfinder()
@@ -2353,7 +2353,7 @@ class NPCChef1(NPC):
             # Then, travel back to your starting location
             self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=20, y=21, priority=5) )
 
-        
+
         elif ("serveSignal" in self.attributes['states']):
             # Serve the food
             # First, remove the serve signal
@@ -2370,12 +2370,12 @@ class NPCChef1(NPC):
             edibleContents = [x for x in potContents if x.attributes['isEdible']]
             for i in range(0, min(5, len(edibleContents))):
                 self.addAutopilotActionToQueue( AutopilotAction_PlaceObjInContainer(edibleContents[i], self.tables[i], priority=5) )
-            
+
             # Then, put the pot back down on the original table
             self.addAutopilotActionToQueue( AutopilotAction_PlaceObjInContainer(self.pot, potContainer, priority=5) )
 
             # Then, travel back to your starting location
-            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=20, y=21, priority=5) )                        
+            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=20, y=21, priority=5) )
 
 
         # Run the autopilot action queue
@@ -2384,7 +2384,7 @@ class NPCChef1(NPC):
         print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
-        if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):            
+        if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
@@ -2404,7 +2404,7 @@ class NPCChef1(NPC):
             elif (result == ActionResult.INVALID):
                 self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
-            
+
             # If the result is "success", then do nothing -- the action is still in progress.
         # DEBUG: End of tick -- display the agent's current state
         print("NPC States (name: " + self.name + "): " + str(self.attributes))
@@ -2419,10 +2419,10 @@ class NPCColonistAuto2(NPC):
         Agent.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
 
         # Rendering
-        self.attributes["faceDirection"] = "south"        
+        self.attributes["faceDirection"] = "south"
         self.spriteCharacterPrefix = "character17_"
 
-        # # Add a default action into the action queue 
+        # # Add a default action into the action queue
         # if (tables is not None) and (pot is not None):
         #     self.potParentContainer = pot.parentContainer
 
@@ -2447,13 +2447,13 @@ class NPCColonistAuto2(NPC):
     #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
 
     #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
 
-    
+
     #
     #   Tick
     #
-        
+
     # Tick
     def tick(self):
         # # Randomly move agent
@@ -2490,7 +2490,7 @@ class NPCColonistAuto2(NPC):
         #    # TODO: Add the action sequence to go to the cafeteria and eat
         #    pass
 
-    
+
         # Call the NPC's action interpreter
         #self.autopilotActionQueue = []                              # Queue of autopilot actions
         #self.pathfinder = Pathfinder()
@@ -2507,8 +2507,8 @@ class NPCColonistAuto2(NPC):
             # First, record the agent's starting location
             agentStartingLocation = self.getWorldLocation()
 
-            # First, travel to the cafeteria 
-            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=23, y=25, priority=5) )            
+            # First, travel to the cafeteria
+            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=23, y=25, priority=5) )
 
             # Then, pick up one mushroom
             fieldX = 21
@@ -2520,11 +2520,11 @@ class NPCColonistAuto2(NPC):
             self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(fieldX, fieldY, fieldWidth, fieldHeight, objectTypes, container, maxToTake=1, priority=5) )
 
             # Then, eat the object
-            # Find the object in the agent's inventory            
+            # Find the object in the agent's inventory
             self.addAutopilotActionToQueue( AutopilotAction_EatObjectInInventory(objectNamesOrTypesToEat=["mushroom"], priority=5) )
 
             # Then, travel back to your starting location
-            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=agentStartingLocation[0], y=agentStartingLocation[1], priority=5) )            
+            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=agentStartingLocation[0], y=agentStartingLocation[1], priority=5) )
 
 
 
@@ -2534,7 +2534,7 @@ class NPCColonistAuto2(NPC):
         print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
-        if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):            
+        if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
@@ -2554,7 +2554,7 @@ class NPCColonistAuto2(NPC):
             elif (result == ActionResult.INVALID):
                 self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
-            
+
             # If the result is "success", then do nothing -- the action is still in progress.
 
         # DEBUG: End of tick -- display the agent's current state
@@ -2575,10 +2575,10 @@ class NPCFarmer1(NPC):
         self.tables = tables
 
         # Rendering
-        self.attributes["faceDirection"] = "south"        
+        self.attributes["faceDirection"] = "south"
         self.spriteCharacterPrefix = "character15_"
 
-        # # Add a default action into the action queue 
+        # # Add a default action into the action queue
         # if (tables is not None) and (pot is not None):
         #     self.potParentContainer = pot.parentContainer
 
@@ -2600,13 +2600,13 @@ class NPCFarmer1(NPC):
     #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
 
     #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."    
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
 
-    
+
     #
     #   Tick
     #
-        
+
     # Tick
     def tick(self):
         # # Randomly move agent
@@ -2645,7 +2645,7 @@ class NPCFarmer1(NPC):
             # TODO: Add the action sequence to go to the cafeteria and eat
             pass
 
-    
+
         # Call the NPC's action interpreter
         #self.autopilotActionQueue = []                              # Queue of autopilot actions
         #self.pathfinder = Pathfinder()
@@ -2664,7 +2664,7 @@ class NPCFarmer1(NPC):
             farmWidth = 6
             farmHeight = 5+5
             objectTypes = ["shovel"]
-            container = self            
+            container = self
             self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, maxToTake=1, priority=5) )
             #self.addAutopilotActionToQueue( AutopilotAction_PickupObj(self.pot, priority=5) )
 
@@ -2672,13 +2672,13 @@ class NPCFarmer1(NPC):
             objectTypes = ["seed"]
             self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, maxToTake=numSeedsToPlant, priority=5) )
 
-            # Then, pick 5 unoccupied spots in the field 
+            # Then, pick 5 unoccupied spots in the field
             # Then, go to each spot, dig the hole, plant the seed, and put dirt back in the hole
             tileTypesToFind = ["soil"]
-            allowedContentTypes = ["dirt"]    
+            allowedContentTypes = ["dirt"]
             for i in range(numSeedsToPlant):
                 self.addAutopilotActionToQueue( AutopilotAction_LocateBlankTileInArea(farmX, farmY, farmWidth, farmHeight, tileTypesToFind, allowedContentTypes, priority=5) )
-                self.addAutopilotActionToQueue( AutoPilotAction_BuryInFrontOfAgent(objectNamesOrTypesToDig=["soil"], objectNamesOrTypesToBury=["seed"], priority=5) )            
+                self.addAutopilotActionToQueue( AutoPilotAction_BuryInFrontOfAgent(objectNamesOrTypesToDig=["soil"], objectNamesOrTypesToBury=["seed"], priority=5) )
 
             # Then, return any remaining seeds to the container
             # TODO
@@ -2704,7 +2704,7 @@ class NPCFarmer1(NPC):
             # Then, travel back to your starting location
             self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=11, y=12, finalDirection="south", priority=5) )
 
-        
+
         elif ("serveSignal" in self.attributes['states']):
             # # Serve the food
             # # First, remove the serve signal
@@ -2719,7 +2719,7 @@ class NPCFarmer1(NPC):
             # edibleContents = [x for x in potContents if x.attributes['isEdible']]
             # for i in range(0, min(5, len(edibleContents))):
             #     self.addAutopilotActionToQueue( AutopilotAction_PlaceObjInContainer(edibleContents[i], self.tables[i], priority=5) )
-            
+
             # # Then, put the pot back down on the original table
             # self.addAutopilotActionToQueue( AutopilotAction_PlaceObjInContainer(self.pot, potContainer, priority=5) )
 
@@ -2733,7 +2733,7 @@ class NPCFarmer1(NPC):
         print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
-        if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):            
+        if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
@@ -2753,10 +2753,8 @@ class NPCFarmer1(NPC):
             elif (result == ActionResult.INVALID):
                 self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
-            
+
             # If the result is "success", then do nothing -- the action is still in progress.
         # DEBUG: End of tick -- display the agent's current state
         print("NPC States (name: " + self.name + "): " + str(self.attributes))
         print("--------------------\n")
-
-
