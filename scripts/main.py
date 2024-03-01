@@ -9,8 +9,11 @@ import psutil
 from discoveryworld.ActionSuccess import MessageImportance
 from discoveryworld.KnowledgeScorer import Measurement
 from discoveryworld.UserInterface import UserInterface
+from discoveryworld.ScenarioMaker import ScenarioMaker
 
 from discoveryworld.World import World
+
+
 
 # Sprite library
 # import SpriteLibrary
@@ -86,26 +89,15 @@ def main():
     # Create a new random number generator (for deterministic behavior) with a specific seed
     r = random.Random()
 
-    # Create the town scenario
-    import discoveryworld.scenarios
-    #scenarioMaker = ScenarioMaker(r)
-    #scenarioMaker.makeScenarioTown(world)
-    #scenarioMaker.makeScenarioStorageShed(world)
-    #scenarioMaker.makeScenarioArchaeologicalDig(world)
-    #scenarioMaker.makeScenarioArchaeologicalDigGenericRadioisotope(world)
-    discoveryworld.scenarios.makeScenarioPlantGrowing(world, rng=r)
-
-    # Add tasks
-    #world.addTaskByName("EatMushroomTask")
-    #world.addTaskByName("RustedKeyTask")
-    #world.addTaskByName("ArcheologyDigTask")
-    #world.addTaskByName("ArcheologyDigTaskGenericRadioisotope")
-
+    scenarioMaker = ScenarioMaker(world, rng=r)
+    #scenarioMaker.setupScenario("food_illness")
+    #scenarioMaker.setupScenario("combinatorial_chemistry")
+    #scenarioMaker.setupScenario("archaeology_dating")
+    scenarioMaker.setupScenario("plant_nutrients")
 
 
     # Initial world tick
     world.tick()
-
 
     # Find a user agent
     userAgents = world.getUserAgents()

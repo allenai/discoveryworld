@@ -6,6 +6,8 @@ from discoveryworld.Layer import Layer
 from discoveryworld.buildings.soil_research import mkRandomSoilNutrientsWithSetValues, mkSoilFieldControlled, mkSoilResearchBuilding
 from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mkPathX, mkPathY
 
+from discoveryworld.objects import *
+
 
 
 def mapSeedToObjectName(nutrientName, nutrientValue):
@@ -27,6 +29,7 @@ def mapSeedToObjectName(nutrientName, nutrientValue):
 
 
 def makeScenarioPlantGrowing(world, numUserAgents=1, rng=None):
+    scoringInfo = {}
     rng = rng or random.Random()
     numPlantSites = 3
 
@@ -86,9 +89,11 @@ def makeScenarioPlantGrowing(world, numUserAgents=1, rng=None):
         soilTile.attributes["soilNutrients"] = mkRandomSoilNutrientsWithSetValues(setValuesDict=setValueDict, rng=rng)
 
     # Add seeds to the pilot field
+    scoringInfo["startingSeeds"] = []
     for soilTile in pilotSoilTiles:
         seed = world.createObject(whichSeedName)
         soilTile.addObject(seed)
+        scoringInfo["startingSeeds"].append(seed)
 
     # Sign for the pilot field
     sign = world.createObject("Sign")
@@ -174,3 +179,22 @@ def makeScenarioPlantGrowing(world, numUserAgents=1, rng=None):
     # Should tick the environment 10 times, to make sure the pilot seeds grow and are ready for the user to view.
     for i in range(0, 10):
         world.tick()
+
+
+    # Keep track of starting plants that have grown
+    scoringInfo["startingPlants"] = []
+    # Get all objects in the world
+    allObjects = world.getAllWorldObjects()
+    for obj in allObjects:
+        # If the object is an instance of the "Mushroom" class, then add it to the list of starting mushrooms
+        if (isinstance(obj, Mushroom)):
+            scoringInfo["startingPlants"].append(obj)
+        if (isinstance(obj, SoilNutrientMeter)):
+            scoringInfo["soilNutrientMeter"] = obj
+        if (isinstance(obj, Shovel)):
+            scoringInfo["shovel"] = obj
+        if (isinstance(obj, Jar)):
+            scoringInfo["jar"] = obj            # Seed jar
+
+    # Return the helpful info for scoring
+    return scoringInfo
