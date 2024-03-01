@@ -109,7 +109,7 @@ class ObjectMaker:
     #
     #   Creating new instances of objects
     #
-    def createObject(self, objectReferenceName):
+    def createObject(self, objectReferenceName, *args, **kwargs):
         # Step 1: Check to see if the objectReferenceName is in the objectProperties dictionary, or whether it's a bare class name in the classIndex.
         if (objectReferenceName in self.objectProperties):
             # This object is in the objectProperties dictionary. Create a new instance of the object, then set its properties.
@@ -117,7 +117,7 @@ class ObjectMaker:
             # Create a new instance of the base class
             baseClass = self.objectProperties[objectReferenceName]["BaseClass"]
             # Create a new instance of the class
-            obj = self._createObjectInstance(baseClass)
+            obj = self._createObjectInstance(baseClass, *args, **kwargs)
 
             # Populate with general properties
             specialProperties = ["referencename", "objectname", "objecttype", "baseclass", "defaultSpriteName", "parts", "contents"]
@@ -166,7 +166,7 @@ class ObjectMaker:
             print("Object reference name: " + objectReferenceName + " is in the classIndex dictionary.")
             className = objectReferenceName
             # Create a new instance of the class
-            obj = self._createObjectInstance(className)
+            obj = self._createObjectInstance(className, *args, **kwargs)
 
             if (obj is None):
                 print("Error: Could not create object instance for object name: " + className)
@@ -191,7 +191,7 @@ class ObjectMaker:
     #   Create object instance
     #   This is a helper function that creates a new instance of an object, and sets its properties.
     #   Safer than using eval() to create a new instance of an object.
-    def _createObjectInstance(self, className):
+    def _createObjectInstance(self, className, *args, **kwargs):
         objectClasses = {
             "Object": Object,
             "Wall": Wall,
@@ -246,6 +246,9 @@ class ObjectMaker:
             "PlantTreeBig": PlantTreeBig,
             "SoilNutrientMeter": SoilNutrientMeter,
             "SeedRequiringNutrients": SeedRequiringNutrients,
+
+            # Colored objects
+            "PaintBucket": PaintBucket,
 
             # Seeds # possibleNutrients = ["potassium", "titanium", "lithium", "thorium", "barium"]
             "SeedNutrientPot1": [SeedRequiringNutrients, {"potassium": 1}],
@@ -309,7 +312,7 @@ class ObjectMaker:
                 exit(1)
         else:
             # General case: Create a new instance of the class
-            obj = objectClasses[className](self.world)
+            obj = objectClasses[className](self.world, *args, **kwargs)
             return obj
 
 

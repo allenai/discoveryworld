@@ -418,16 +418,10 @@ class Object:
     #
     def getTextDescription(self):
         # Get a text description of this object
-        containerName = ""
+        outStr = self.name
         if (self.parentContainer != None):
             containerName = self.parentContainer.name + ( " [uuid: " + str(self.parentContainer.uuid) + "]")
-
-        outStr = self.name
-        if (containerName != ""):
-            containerPrefix = "in"
-            if ("containerPrefix" in self.attributes) and (self.attributes['containerPrefix'] != ""):
-                containerPrefix = self.attributes['containerPrefix']
-
+            containerPrefix = self.parentContainer.attributes.get("containerPrefix", "in")
             outStr += " (" + containerPrefix + " " + containerName + ")"
 
         return outStr

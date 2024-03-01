@@ -94,9 +94,6 @@ class Jar(Object):
                 else:
                     self.lastAddedCount -= 1
 
-
-
-
     # Sprite
     # Updates the current sprite name based on the current state of the object
     def inferSpriteName(self, force:bool=False):
@@ -119,9 +116,12 @@ class Jar(Object):
 
 class Key(Object):
     # Constructor
-    def __init__(self, world):
+    def __init__(self, world, color=None, isRusted=True):
         # Default sprite name
-        Object.__init__(self, world, "key", "key", defaultSpriteName = "instruments_key")
+        self.color = color
+        name = "key" if self.color is None else f"{self.color} key"
+        defaultSpriteName = "instruments_key" if self.color is None else f"instruments_key_{self.color}"
+        Object.__init__(self, world, "key", name, defaultSpriteName)
 
         self.attributes["isMovable"] = True                       # Can it be moved?
         self.attributes["isPassable"] = True                      # Agen't can't walk over this
@@ -130,8 +130,8 @@ class Key(Object):
         self.attributes['isContainer'] = False                    # Is it a container?
 
         # Rusted
-        self.attributes['isRusted'] = True                        # Is the key rusted?
-        self.attributes['rustLevel'] = 3                          # Description of the rust (0=none, 1=light, 2=medium, 3=heavy)
+        self.attributes['isRusted'] = isRusted                    # Is the key rusted?
+        self.attributes['rustLevel'] = 3 if isRusted else 0       # Description of the rust (0=none, 1=light, 2=medium, 3=heavy)
 
         # Key ID
         self.attributes['keyID'] = 1                              # Key ID (1 by default)
@@ -218,7 +218,8 @@ class Key(Object):
         elif (not self.attributes['isRusted']):
             self.name = "key (no rust)"
 
-
+        if self.color:
+            self.name = f"{self.color} {self.name}"
 
     # Sprite
     # Updates the current sprite name based on the current state of the object
@@ -231,10 +232,25 @@ class Key(Object):
         if (self.attributes['isRusted']):
             self.curSpriteName = "instruments_key_rusty"
         else:
-            self.curSpriteName = "instruments_key"
+            self.curSpriteName = "instruments_key" if self.color is None else f"instruments_key_{self.color}"
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+class PaintBucket(Object):
+    # Constructor
+    def __init__(self, world, color):
+        super().__init__(world, "paint bucket", f"{color} paint bucket", defaultSpriteName = "placeholder_pot_empty")
+        self.color = color
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+        self.attributes['isContainer'] = False                    # Is it a container?
+
+    def tick(self):
+        super().tick()
+        self.curSpriteModifiers.add(f"placeholder_paint_{self.color}")
 
 
 class Pot(Object):

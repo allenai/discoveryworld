@@ -83,6 +83,8 @@ class SpriteLibrary:
             # Sprite size
             spriteWidthInTiles = sprite["size"][0]
             spriteHeightInTiles = sprite["size"][1]
+            # Sprite tint color
+            spriteColor = sprite.get("color", None)
 
             # Get the sprite from the spritesheet
             #spriteRect = pygame.Rect(spriteX * tileSize[0], spriteY * tileSize[1], tileSize[0], tileSize[1])
@@ -105,6 +107,13 @@ class SpriteLibrary:
                 newSpriteImage.blit(spriteImage, (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
                 # Set the new surface as the sprite
                 spriteImage = newSpriteImage
+
+            if spriteColor is not None:
+                # Tint the sprite
+                colorImage = pygame.Surface(spriteImage.get_size()).convert_alpha()
+                colorImage.fill(pygame.Color(spriteColor))
+                colorImage.blit(spriteImage, (0,0), special_flags=pygame.BLEND_RGBA_MULT)
+                spriteImage = colorImage
 
 
             # Debug: Print the color at pixel 0,0 within the sprite
