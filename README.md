@@ -30,7 +30,7 @@ pip install -r requirements.txt
 
 The graphical interface can be run with the following command from the `discoveryworld` root:
 ```
-python src/main.py
+python scripts/main.py
 ```
 
 
@@ -48,13 +48,13 @@ The following controls are supported:
 * **Talk:** `t` will attempt to talk to the agent in `arg1`
 * **Read:** `r` will read the object in `arg1`
 * **Eat:** `e` will eat `arg1`
-* **Wait:** `w` will do nothing. 
+* **Wait:** `w` will do nothing.
 * **Quit:** `ESC` will exit.
 
 
 ## Events
 
-This scenario is won by having 10 agents successfully eat non-poisonous mushrooms (which is evidenced by them going about 100 steps after eating a mushroom without getting sick).  If they get sick, you'll notice this by the unhappy face on the agent, and them walking themselves to the infirmary (top-right building). 
+This scenario is won by having 10 agents successfully eat non-poisonous mushrooms (which is evidenced by them going about 100 steps after eating a mushroom without getting sick).  If they get sick, you'll notice this by the unhappy face on the agent, and them walking themselves to the infirmary (top-right building).
 
 Agents can be controlled through dialoging with them:
 - Cook: Can ask to (a) collect mushrooms from the farm and put them in the pot, and (b) ask to serve the mushrooms in the pot to the tables.
@@ -66,8 +66,8 @@ Manually engaging the hooks (helpful for debugging):
 - 1: Causes the colonists to come to the kitchen and try to eat food.
 - 2: Causes the cook to try to collect mushrooms from the farm into the pot
 - 3: Causes the cook to try to serve mushrooms from the pot
-- 4: Causes the farmer to try and plant more mushroom seeds (which will eventually grow into new mushrooms). 
-- 0: This will "auto-run" for 100 steps. 
+- 4: Causes the farmer to try and plant more mushroom seeds (which will eventually grow into new mushrooms).
+- 0: This will "auto-run" for 100 steps.
 
 
 ## Contact
