@@ -1,5 +1,7 @@
 # TaskScorer.py
+from discoveryworld.objects import *
 from discoveryworld.ActionHistory import *
+
 
 #
 #   Task Scorer
@@ -518,12 +520,15 @@ class SoilNutrientTask(Task):
 
         Task.__init__(self, "SoilNutrientTask", taskDescription, world, scoringInfo)
         self.score = 0
-        self.maxScore = 1                       # Maximum score
-        self.existingPlantsAtStart = None
-        self.existingSeedsInGroundAtStart = None
-        self.artifacts = []
-        self.signs = []
+        self.maxScore = 6                       # Maximum score
 
+        self.atLeastOneSeedPlanted = False      # Has at least one seed ever been planted
+
+    # scoringInfo["startingPlants"] = []
+    # scoringInfo["startingSeeds"].append(seed)
+    # scoringInfo["soilNutrientMeter"] = obj
+    # scoringInfo["shovel"] = obj
+    # scoringInfo["jar"] = obj            # Seed jar
 
     # Task setup: Add any necessary objects to the world to perform the task.
     def taskSetup(self):
@@ -540,6 +545,60 @@ class SoilNutrientTask(Task):
             return
 
         score = 0
+
+        # Check if they have the soil nutrient meter in an agent's inventory
+        soilNutrientMeterContainer = self.scoringInfo["soilNutrientMeter"].parentContainer
+        if (soilNutrientMeterContainer != None):
+            if (soilNutrientMeterContainer.type == "agent"):
+                score += 1
+
+        # Check if the shovel is in an agent's inventory
+        shovelContainer = self.scoringInfo["shovel"].parentContainer
+        if (shovelContainer != None):
+            if (shovelContainer.type == "agent"):
+                score += 1
+
+        # Check if the jar is in an agent's inventory
+        jarContainer = self.scoringInfo["jar"].parentContainer
+        if (jarContainer != None):
+            if (jarContainer.type == "agent"):
+                score += 1
+
+        # Check for at least one seed that is not a starting seed to be in the ground
+        # First, get all objects
+        allObjects = self.world.getAllWorldObjects()
+
+        if (self.atLeastOneSeedPlanted == False):
+            for obj in allObjects:
+                if (obj.type == "seed"):
+                    # Make sure this seed isn't in the list of starting seeds
+                    if (obj not in self.scoringInfo["startingSeeds"]):
+                        # Check if the seed is in the ground
+                        parentContainer = obj.parentContainer
+                        if (parentContainer != None):
+                            if (parentContainer.type == "soil"):
+                                # Make sure there's no hole in the soil (i.e. the hole is filled in/the seed is planted)
+                                if (parentContainer.attributes['hasHole'] == False):
+                                    self.atLeastOneSeedPlanted = True
+                                    break
+
+        if (self.atLeastOneSeedPlanted == True):
+            score += 1
+
+        # Check for at least 2 new plants (Mushrooms) to exist
+        maturePlants = 0
+        for obj in allObjects:
+            if (isinstance(obj, Mushroom)):
+                if (obj not in self.scoringInfo["startingPlants"]):
+                    maturePlants += 1
+        if (maturePlants >= 2):
+            score += 2
+        elif (maturePlants == 1):
+            score += 1
+
+        # Update the score
+        self.score = score
+
 
         pass
         # # If the flag has been placed, the task is complete

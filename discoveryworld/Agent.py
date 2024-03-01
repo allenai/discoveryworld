@@ -1382,7 +1382,7 @@ class Agent(Object):
             # Return the NPC's response
             self.setInDialogWith(agentToTalkTo)
             agentToTalkTo.setInDialogWith(self)
-            return ActionSuccess.DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
+            return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
 
         else:
             # We're not currently talking to the agent.  Try to initiate conversation.

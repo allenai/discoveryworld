@@ -89,7 +89,10 @@ def main(args):
     r = random.Random()
 
     scenarioMaker = ScenarioMaker(world, rng=r)
-    scenarioMaker.setupScenario(args.scenario)
+    smSuccess, smErrorStr = scenarioMaker.setupScenario(args.scenario)
+    if (not smSuccess):
+        print("ERROR: ScenarioMaker failed to setup scenario: " + smErrorStr)
+        exit(1)
 
     # Initial world tick
     world.tick()
