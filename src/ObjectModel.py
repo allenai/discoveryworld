@@ -3870,7 +3870,7 @@ class SoilNutrientMeter(Object):
 #
 class SeedRequiringNutrients(Object):
     # Constructor
-    def __init__(self, world):
+    def __init__(self, world, needsNutrientLevels:dict={}):
         # Default sprite name
         Object.__init__(self, world, "seed", "seed", defaultSpriteName = "placeholder_seed")
 
@@ -3880,7 +3880,8 @@ class SeedRequiringNutrients(Object):
         self.attributes["sproutTime"] = -1                        # How many ticks until the seed sprouts?
 
         # Nutrient requirements
-        self.attributes["needsNutrientLevels"] = {"potassium": 1, "thorium": 2}                    # Soil nutrients.  If empty, then it's not applicable/inconclusive.
+        #self.attributes["needsNutrientLevels"] = {"potassium": 1, "thorium": 2}                    # Soil nutrients.  If empty, then it's not applicable/inconclusive.
+        self.attributes["needsNutrientLevels"] = needsNutrientLevels              # For seeds/plants: What nutrient levels do they need to grow?
 
     def tick(self):
         # Call superclass

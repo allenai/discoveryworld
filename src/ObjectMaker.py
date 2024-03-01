@@ -244,6 +244,23 @@ class ObjectMaker:
             "SoilNutrientMeter": SoilNutrientMeter,
             "SeedRequiringNutrients": SeedRequiringNutrients,
 
+            # Seeds # possibleNutrients = ["potassium", "titanium", "lithium", "thorium", "barium"]
+            "SeedNutrientPot1": [SeedRequiringNutrients, {"potassium": 1}],
+            "SeedNutrientPot2": [SeedRequiringNutrients, {"potassium": 2}],
+            "SeedNutrientPot3": [SeedRequiringNutrients, {"potassium": 3}],
+            "SeedNutrientTit1": [SeedRequiringNutrients, {"titanium": 1}],
+            "SeedNutrientTit2": [SeedRequiringNutrients, {"titanium": 2}],
+            "SeedNutrientTit3": [SeedRequiringNutrients, {"titanium": 3}],
+            "SeedNutrientLit1": [SeedRequiringNutrients, {"lithium": 1}],
+            "SeedNutrientLit2": [SeedRequiringNutrients, {"lithium": 2}],
+            "SeedNutrientLit3": [SeedRequiringNutrients, {"lithium": 3}],
+            "SeedNutrientTho1": [SeedRequiringNutrients, {"thorium": 1}],
+            "SeedNutrientTho2": [SeedRequiringNutrients, {"thorium": 2}],
+            "SeedNutrientTho3": [SeedRequiringNutrients, {"thorium": 3}],
+            "SeedNutrientBar1": [SeedRequiringNutrients, {"barium": 1}],
+            "SeedNutrientBar2": [SeedRequiringNutrients, {"barium": 2}],
+            "SeedNutrientBar3": [SeedRequiringNutrients, {"barium": 3}],
+
             # Substances
             "TestSubstance": [Substance, "testSubstance"],
             "PurpleSubstance": [Substance, "purpleSubstance"],
@@ -252,6 +269,7 @@ class ObjectMaker:
             "SubstanceB": [Substance, "Substance B"],
             "SubstanceC": [Substance, "Substance C"]
         }
+
 
         # Check that the class name is in the dictionary
         if (className not in objectClasses):

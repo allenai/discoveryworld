@@ -1217,21 +1217,17 @@ class ScenarioMaker:
 
     # Make a field of soil that can be controlled by a soil nutrient manager
     def mkSoilFieldControlled(self, x, y, world, buildingMaker, fieldNumber, width=2, height=2, ):
-
         # Create the field
         fieldTiles = []
         for i in range(0, width):
             for j in range(0, height):
                 soilTile = world.createObject("SoilTile")
                 # Set a baseline soil nutrient level
-                nutrientLevels = self.packSoilNutrients(potassium=1, titanium=1, lithium=1, thorium=2, barium=1)
+                nutrientLevels = self.packSoilNutrients(potassium=1, titanium=1, lithium=1, thorium=1, barium=1)
                 soilTile.attributes["soilNutrients"] = nutrientLevels
                 fieldTiles.append(soilTile)     # Keep track of the soil tiles, so we can let the soil nutrient manager know which tiles it controls
 
                 world.addObject(x+i, y+j, Layer.BUILDING, soilTile)
-
-        # Add a soil nutrient manager
-        # TODO
 
         # Add a sign saying what field this is
         sign = world.createObject("Sign")        
@@ -1251,7 +1247,7 @@ class ScenarioMaker:
 
 
 
-    def mkSoilResearchBuilding(self, x, y, world, buildingMaker):
+    def mkSoilResearchBuilding(self, x, y, world, buildingMaker, whichSeedName):
         # Create a small building
         houseSizeX = 4
         houseSizeY = 4
@@ -1260,7 +1256,7 @@ class ScenarioMaker:
         # Add a seed jar
         seedJar = world.createObject("Jar")
         #seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)        
-        seedJar.setAutoFill(checkObjectName="seed", fillObjectName="SeedRequiringNutrients", minCount=1, replenishTime=0)
+        seedJar.setAutoFill(checkObjectName="seed", fillObjectName=whichSeedName, minCount=1, replenishTime=0)
         seedJar.name = "seed jar"        
 
         # Table for seed jar
@@ -1302,12 +1298,51 @@ class ScenarioMaker:
         }
         return packed
 
+    # Randomly set the soil nutrients for each parameter
+    def mkRandomSoilNutrientsWithSetValues(self, setValuesDict:dict):
+        # Randomly set the soil nutrients for each parameter
+        out = {}        
+        possibleValues = [1, 2, 3]
+        for nutrientName in ["potassium", "titanium", "lithium", "thorium", "barium"]:
+            out[nutrientName] = self.random.choice(possibleValues)
+
+        # Then, for any nutrient that is in the setValuesDict, set it to the value in the setValuesDict
+        for nutrientName in setValuesDict:
+            out[nutrientName] = setValuesDict[nutrientName]
+
+        return out
+    
+
+    def mapSeedToObjectName(self, nutrientName, nutrientValue):
+        # List of seed types
+        #seedTypes = ["SeedNutrientsPot1", "SeedNutrientsPot2", "SeedNutrientsPot3", "SeedNutrientsTit1", "SeedNutrientsTit2", "SeedNutrientsTit3", "SeedNutrientsLit1", "SeedNutrientsLit2", "SeedNutrientsLit3", "SeedNutrientsTho1", "SeedNutrientsTho2", "SeedNutrientsTho3", "SeedNutrientsBar1", "SeedNutrientsBar2", "SeedNutrientsBar3"]
+        if (nutrientName == "potassium"):
+            return "SeedNutrientPot" + str(nutrientValue)
+        elif (nutrientName == "titanium"):
+            return "SeedNutrientTit" + str(nutrientValue)
+        elif (nutrientName == "lithium"):
+            return "SeedNutrientLit" + str(nutrientValue)
+        elif (nutrientName == "thorium"):
+            return "SeedNutrientTho" + str(nutrientValue)
+        elif (nutrientName == "barium"):
+            return "SeedNutrientBar" + str(nutrientValue)
+        
+        print("ERROR: mapSeedToObjectName: nutrientName not recognized: " + nutrientName)
+        return None
+
 
     #
     # Make the plant growing scenario
     #
     def makeScenarioPlantGrowing(self, world, numUserAgents=1):
         numPlantSites = 3
+
+        # Randomly choose what value is helpful for growing plants
+        possibleNutrients = ["potassium", "titanium", "lithium", "thorium", "barium"]
+        possibleValues = [1, 2, 3]
+        whichNutrientPositive = self.random.choice(possibleNutrients)
+        whichValuePositive = self.random.choice(possibleValues)
+        whichSeedName = self.mapSeedToObjectName(whichNutrientPositive, whichValuePositive)
 
         # Set a limit for the number of user agents
         MAX_NUM_AGENTS = 5
@@ -1321,17 +1356,46 @@ class ScenarioMaker:
         buildingMaker.mkGrassFill(world)
 
         # Soil research building
-        self.mkSoilResearchBuilding(12, 8, world, buildingMaker)
+        self.mkSoilResearchBuilding(12, 8, world, buildingMaker, whichSeedName)
 
         # Primary pilot field area
         pilotFieldStartX = 6
         pilotFieldStartY = 14
         pilotFieldSizeX = 4
         pilotFieldSizeY = 3
+        pilotSoilTiles = []
         for i in range(0, pilotFieldSizeX):
             for j in range(0, pilotFieldSizeY):
-                world.addObject(pilotFieldStartX+i, pilotFieldStartY+j, Layer.BUILDING, world.createObject("SoilTile"))
+                soilTile = world.createObject("SoilTile")
+                # Randomize nutrient levels in this soil tile
+                soilTile.attributes["soilNutrients"] = self.mkRandomSoilNutrientsWithSetValues(setValuesDict={})
+                world.addObject(pilotFieldStartX+i, pilotFieldStartY+j, Layer.BUILDING, soilTile)
                 # TODO: Add plants, etc. 
+                pilotSoilTiles.append(soilTile)
+
+        
+        # Randomly set 3 of the tiles to have positive examples of the required soil nutrients, and 3 to have negative examples
+        # Positive (first 3)
+        self.random.shuffle(pilotSoilTiles)
+        for i in range(0, 3):            
+            setValueDict = {}
+            setValueDict[whichNutrientPositive] = whichValuePositive
+            pilotSoilTiles[i].attributes["soilNutrients"] = self.mkRandomSoilNutrientsWithSetValues(setValuesDict=setValueDict)
+
+        # Negative (next 3)
+        for i in range(3, 6):
+            soilTile = pilotSoilTiles[i]
+            setValueDict = {}            
+            # Select a random negative value for the nutrient (by negative, we mean not the positive value)
+            setValueDict[whichNutrientPositive] = random.choice(possibleValues)
+            while (setValueDict[whichNutrientPositive] == whichValuePositive):
+                setValueDict[whichNutrientPositive] = random.choice(possibleValues)
+            soilTile.attributes["soilNutrients"] = self.mkRandomSoilNutrientsWithSetValues(setValuesDict=setValueDict)
+
+        # Add seeds to the pilot field
+        for soilTile in pilotSoilTiles:
+            seed = world.createObject(whichSeedName)
+            soilTile.addObject(seed)            
 
         # Sign for the pilot field                
         sign = world.createObject("Sign")        
