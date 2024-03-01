@@ -274,8 +274,8 @@ class World:
     #   Object Generation (light wrapper around ObjectMaker)
     #
 
-    def createObject(self, objectReferenceName):
-        return self.objectMaker.createObject(objectReferenceName)
+    def createObject(self, objectReferenceName, *args, **kwargs):
+        return self.objectMaker.createObject(objectReferenceName, *args, **kwargs)
 
 
     #

@@ -19,8 +19,9 @@ def mkTownSquare(x, y, world):
     # Create a square that's made out of "Path" tiles
     for i in range(0, 3):
         for j in range(0, 3):
-            if (not world.hasObj(x+i, y+j, world, "path")):
+            if (not world.hasObj(x+i, y+j, "path")):
                 world.addObject(x+i, y+j, Layer.WORLD, world.createObject("Path"))
+
 
 
 # Path making

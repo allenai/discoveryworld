@@ -1,4 +1,5 @@
 
+import argparse
 import pygame
 import os
 import json
@@ -9,11 +10,9 @@ import psutil
 from discoveryworld.ActionSuccess import MessageImportance
 from discoveryworld.KnowledgeScorer import Measurement
 from discoveryworld.UserInterface import UserInterface
-from discoveryworld.ScenarioMaker import ScenarioMaker
+from discoveryworld.ScenarioMaker import ScenarioMaker, SCENARIOS
 
 from discoveryworld.World import World
-
-
 
 # Sprite library
 # import SpriteLibrary
@@ -32,7 +31,7 @@ from discoveryworld.World import World
 # from JSONEncoder import CustomJSONEncoder
 
 
-def main():
+def main(args):
     print("Initializing...")
 
 
@@ -90,14 +89,11 @@ def main():
     r = random.Random()
 
     scenarioMaker = ScenarioMaker(world, rng=r)
-    #scenarioMaker.setupScenario("food_illness")
-    #scenarioMaker.setupScenario("combinatorial_chemistry")
-    #scenarioMaker.setupScenario("archaeology_dating")
-    scenarioMaker.setupScenario("plant_nutrients")
-
+    scenarioMaker.setupScenario(args.scenario)
 
     # Initial world tick
     world.tick()
+
 
     # Find a user agent
     userAgents = world.getUserAgents()
@@ -384,5 +380,11 @@ def main():
 
 # Main
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description="Play DiscoveryWorld.")
+    parser.add_argument('--scenario', choices=SCENARIOS, default=SCENARIOS[0])
+
+    args = parser.parse_args()
+
     # Main function
-    main()
+    main(args)

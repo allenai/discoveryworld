@@ -212,3 +212,46 @@ def mkStorageShed(x, y, world, DOOR_KEY_ID):
     rustyKey = world.createObject("Key")
     rustyKey.setKeyID(DOOR_KEY_ID)
     world.addObject(x+2, y+2, Layer.OBJECTS, rustyKey)
+
+
+def mkKeyShop(x, y, world):
+    # Create a building (shop sellings colored keys)
+    signText = "Magasin de clés\n[The logo is a key]"
+    mkBuildingOneRoom(world, x=x, y=y, width=7, height=6, signText=signText)
+
+    COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "k": "black", "w": "white", "o": "orange"}
+    layout = [
+        "xxxxxxx",
+        "xxxyxxx",
+        "xbxxxwx",
+        "xgxxxox",
+        "xrxxxkx",
+        "xxxxxxx",
+    ]
+    for i, row in enumerate(layout):
+        for j, c in enumerate(row):
+            if c in COLORS.keys():
+                table = world.createObject("Table")
+                world.addObject(x+j, y+i, Layer.FURNITURE, table)
+                table.addObject( world.createObject("Key", color=COLORS[c], isRusted=False) )
+
+
+def mkPaintShop(x, y, world):
+    signText = "Magasin de peinture\n[The logo is a paint bucket]"
+    mkBuildingOneRoom(world, x=x, y=y, width=7, height=6, signText=signText)
+
+    COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "k": "black", "w": "white", "o": "orange"}
+    layout = [
+        "xxxxxxx",
+        "xxxyxxx",
+        "xbxxxwx",
+        "xgxxxox",
+        "xrxxxkx",
+        "xxxxxxx",
+    ]
+    for i, row in enumerate(layout):
+        for j, c in enumerate(row):
+            if c in COLORS.keys():
+                table = world.createObject("Table")
+                world.addObject(x+j, y+i, Layer.FURNITURE, table)
+                table.addObject( world.createObject("PaintBucket", color=COLORS[c]) )

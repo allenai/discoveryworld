@@ -4,9 +4,7 @@ from discoveryworld.scenarios import *
 
 import random
 
-#
-#   Scenario Maker
-#
+SCENARIOS = ["food_illness", "combinatorial_chemistry", "archaeology_dating", "plant_nutrients", "lost_in_translation"]
 
 class ScenarioMaker():
     # Constructor
@@ -35,6 +33,11 @@ class ScenarioMaker():
         elif (scenarioName == "plant_nutrients"):
             scoringInfo = makeScenarioPlantGrowing(self.world, numUserAgents, rng=self.rng)
             self.world.addTaskByName("SoilNutrientTask", scoringInfo)
+            return (True, "")
+
+        elif (scenarioName == "lost_in_translation"):
+            makeScenarioRosettaStone(self.world, numUserAgents, rng=self.rng)
+            #self.world.addTaskByName("RosettaStoneTask")
             return (True, "")
 
         # If we reach here, the scenario was not recognized
