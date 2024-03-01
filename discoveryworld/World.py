@@ -98,8 +98,8 @@ class World:
                 npcAgents.append(agent)
         return npcAgents
 
-    def addTaskByName(self, taskName):
-        task = self.taskMaker.makeTask(taskName)
+    def addTaskByName(self, taskName, scoringInfo):
+        task = self.taskMaker.makeTask(taskName, scoringInfo)
         if task != None:
             self.taskScorer.addTask(task)
             task.taskSetup()

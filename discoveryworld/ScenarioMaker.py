@@ -18,23 +18,23 @@ class ScenarioMaker():
     # Make a scenario
     def setupScenario(self, scenarioName:str, numUserAgents:int=1):
         if (scenarioName == "food_illness"):
-            makeScenarioTown(self.world, numUserAgents, rng=self.rng)
-            self.world.addTaskByName("EatMushroomTask")
+            scoringInfo = makeScenarioTown(self.world, numUserAgents, rng=self.rng)
+            self.world.addTaskByName("EatMushroomTask", scoringInfo)
             return (True, "")
 
         elif (scenarioName == "combinatorial_chemistry"):
-            makeScenarioStorageShed(self.world, numUserAgents, rng=self.rng)
-            self.world.addTaskByName("RustedKeyTask")
+            scoringInfo = makeScenarioStorageShed(self.world, numUserAgents, rng=self.rng)
+            self.world.addTaskByName("RustedKeyTask", scoringInfo)
             return (True, "")
 
         elif (scenarioName == "archaeology_dating"):
-            makeScenarioArchaeologicalDig(self.world, numUserAgents, rng=self.rng)
-            self.world.addTaskByName("ArcheologyDigTask")
+            scoringInfo = makeScenarioArchaeologicalDig(self.world, numUserAgents, rng=self.rng)
+            self.world.addTaskByName("ArcheologyDigTask", scoringInfo)
             return (True, "")
 
         elif (scenarioName == "plant_nutrients"):
-            makeScenarioPlantGrowing(self.world, numUserAgents, rng=self.rng)
-            self.world.addTaskByName("SoilNutrientTask")
+            scoringInfo = makeScenarioPlantGrowing(self.world, numUserAgents, rng=self.rng)
+            self.world.addTaskByName("SoilNutrientTask", scoringInfo)
             return (True, "")
 
         # If we reach here, the scenario was not recognized

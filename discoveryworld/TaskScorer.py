@@ -43,17 +43,17 @@ class TaskMaker():
         self.world = world
 
     # Make a task
-    def makeTask(self, taskName:str):
+    def makeTask(self, taskName:str, scoringInfo:dict=None):
         if taskName == "EatMushroomTask":
-            return EatMushroomTask(self.world)
+            return EatMushroomTask(self.world, scoringInfo)
         elif taskName == "RustedKeyTask":
-            return RustedKeyTask(self.world)
+            return RustedKeyTask(self.world, scoringInfo)
         elif taskName == "ArcheologyDigTask":
-            return ArcheologyDig(self.world)
+            return ArcheologyDig(self.world, scoringInfo)
         elif taskName == "ArcheologyDigTaskGenericRadioisotope":
-            return ArcheologyDigGenericRadioisotopes(self.world)
+            return ArcheologyDigGenericRadioisotopes(self.world, scoringInfo)
         elif taskName == "SoilNutrientTask":
-            return SoilNutrientTask(self.world)
+            return SoilNutrientTask(self.world, scoringInfo)
         else:
             return None
 
@@ -62,10 +62,11 @@ class TaskMaker():
 #
 class Task():
     # Constructor
-    def __init__(self, taskName:str, taskDescription:str, world):
+    def __init__(self, taskName:str, taskDescription:str, world, scoringInfo:dict):
         self.taskName = taskName
         self.taskDescription = taskDescription
         self.world = world
+        self.scoringInfo = scoringInfo
         self.score = 0                          # Current task score
         self.maxScore = 1                       # Maximum score
         self.completed = False                  # Is this task over?
@@ -106,10 +107,10 @@ class Task():
 #
 class EatMushroomTask(Task):
     # Constructor
-    def __init__(self, world):
+    def __init__(self, world, scoringInfo):
         taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist are sometimes getting sick.  Your task is to figure out why people are getting sick, and to prevent it.  You must demonstrate this by having 10 colonists successfully eat mushrooms without eventually getting sick."
         taskDescription += "Since the food causes only mild illness, and getting the colony established is important, the colonists have volunteered to be test subjects.  The Chef in the Cafeteria can help you collect mushrooms, serve mushrooms from the cafeteria pot to the tables, and let the colonists know a meal is ready to eat, when you're ready."
-        Task.__init__(self, "EatMushroomTask", taskDescription, world)
+        Task.__init__(self, "EatMushroomTask", taskDescription, world, scoringInfo)
         self.score = 0
         self.maxScore = 10                       # Maximum score
         self.agentsToMonitorForSickness = {}        # Key: agent name, value: step they were added
@@ -173,7 +174,7 @@ class EatMushroomTask(Task):
 #
 class RustedKeyTask(Task):
     # Constructor
-    def __init__(self, world):
+    def __init__(self, world, scoringInfo):
         taskDescription = "You were venturing into the wilderness of Planet X to a storage shed to fetch some supplies. The shed door locked behind you, and your key appears too rusted to work in the lock. "
         taskDescription += "You remember one of the other colonists mentioning that some combination of the chemicals in the shed could make a rust remover, but you can't remember the details. "
         taskDescription += "You need to figure out a way to remove the rust from the key, and use it to open the shed door, and make your way back to the colony. "
@@ -188,7 +189,7 @@ class RustedKeyTask(Task):
         taskDescription += "7. When you have successfully rerusted the key and opened the door, please leave the shed. \n"
         ## taskDescription += "HERE'S A WALKTHROUGH/HINT: To complete this task, you need to pick up the jar, put 1 unit of Chemical A and 2 units of Chemical C into the jar, and then put the key into the jar.  The key will change from rusted to not rusted.  Then you can open the door, walk 3 steps out, and the task will be completed."
 
-        Task.__init__(self, "RustedKeyTask", taskDescription, world)
+        Task.__init__(self, "RustedKeyTask", taskDescription, world, scoringInfo)
         self.score = 0
         self.maxScore = 2                       # Maximum score
         self.keyToMonitor = None
@@ -252,11 +253,11 @@ class RustedKeyTask(Task):
 #
 class ArcheologyDig(Task):
     # Constructor
-    def __init__(self, world):
+    def __init__(self, world, scoringInfo):
         taskDescription = "You are on an archeological dig on Planet X.  3 ancient sites have been found. "
         taskDescription += "Your task is to excavate the sites, and date any artifacts with the radiocarbon meter.  Then, once completed, place the red flag beside the sign of the dig site with the oldest artifact. "
 
-        Task.__init__(self, "ArcheologyDigTask", taskDescription, world)
+        Task.__init__(self, "ArcheologyDigTask", taskDescription, world, scoringInfo)
         self.score = 0
         self.maxScore = 1                       # Maximum score
         self.flagToMonitor = None
@@ -375,13 +376,13 @@ class ArcheologyDig(Task):
 #
 class ArcheologyDigGenericRadioisotopes(Task):
     # Constructor
-    def __init__(self, world):
+    def __init__(self, world, scoringInfo):
         # TODO: modify description
         taskDescription = "You are on an archeological dig on Planet X.  6 sites of suspected ancient artifacts have been found, 3 of which have already been uncovered. "
         taskDescription += "It's not clear how or if radioisotope dating works on Planet X, or how it would differ from Earth, but your task is to figure out if it can be used. "
         taskDescription += "Your task is to excavate the remaining sites, and figure out a way to use the radioisotope meter to approximately date the artifacts.  Then, once completed, place the red flag beside the sign of the dig site with the oldest artifact. "
 
-        Task.__init__(self, "ArcheologyDigTaskGenericRadioisotope", taskDescription, world)
+        Task.__init__(self, "ArcheologyDigTaskGenericRadioisotope", taskDescription, world, scoringInfo)
         self.score = 0
         self.maxScore = 1                       # Maximum score
         self.flagToMonitor = None
@@ -502,7 +503,7 @@ class ArcheologyDigGenericRadioisotopes(Task):
 #
 class SoilNutrientTask(Task):
     # Constructor
-    def __init__(self, world):
+    def __init__(self, world, scoringInfo):
         # TODO: modify description
         # ["potassium", "titanium", "lithium", "thorium", "barium"]
         taskDescription = "You are at a botanical research station on Planet X.  An species of plant has been identified that appears to grow very quickly in the presence of an unusual nutrient uncommon on Earth. "
@@ -515,7 +516,7 @@ class SoilNutrientTask(Task):
         taskDescription += "To plant the seeds, dig a hole in the soil, place a seed in the hole, then put the soil back into the hole.  If the conditions are correct, the plant will grow from the seed. "
         taskDescription += "As part of your discovery process, you should grow at least 2 new plants to maturity. "
 
-        Task.__init__(self, "SoilNutrientTask", taskDescription, world)
+        Task.__init__(self, "SoilNutrientTask", taskDescription, world, scoringInfo)
         self.score = 0
         self.maxScore = 1                       # Maximum score
         self.existingPlantsAtStart = None
