@@ -615,15 +615,6 @@ class SoilTile(Object):
             self.attributes["isOpenContainer"] = False
 
 
-    # Check if a tile already contains a "path"
-    def _hasObj(self, x, y, type):
-        objects = self.world.getObjectsAt(x, y)
-        # Then, check to see if any of them are walls
-        for object in objects:
-            if (object.type == type):
-                return True
-        return False
-
     # Sprite
     # Updates the current sprite name based on the current state of the object
     def inferSpriteName(self, force:bool=False):
@@ -632,10 +623,10 @@ class SoilTile(Object):
             return
 
         # Check to see if the neighbouring tiles have paths
-        hasPathNorth = self._hasObj(self.attributes["gridX"], self.attributes["gridY"] - 1, "soil")
-        hasPathSouth = self._hasObj(self.attributes["gridX"], self.attributes["gridY"] + 1, "soil")
-        hasPathWest = self._hasObj(self.attributes["gridX"] - 1, self.attributes["gridY"], "soil")
-        hasPathEast = self._hasObj(self.attributes["gridX"] + 1, self.attributes["gridY"], "soil")
+        hasPathNorth = self.world.hasObj(self.attributes["gridX"], self.attributes["gridY"] - 1, "soil")
+        hasPathSouth = self.world.hasObj(self.attributes["gridX"], self.attributes["gridY"] + 1, "soil")
+        hasPathWest = self.world.hasObj(self.attributes["gridX"] - 1, self.attributes["gridY"], "soil")
+        hasPathEast = self.world.hasObj(self.attributes["gridX"] + 1, self.attributes["gridY"], "soil")
 
         # 4 positives
         if (hasPathNorth and hasPathSouth and hasPathEast and hasPathWest):

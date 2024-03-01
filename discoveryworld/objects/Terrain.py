@@ -284,15 +284,6 @@ class Fence(Object):
         # Call superclass
         Object.tick(self)
 
-    # Check if a tile already contains a "path"
-    def _hasObj(self, x, y, type):
-        objects = self.world.getObjectsAt(x, y)
-        # Then, check to see if any of them are walls
-        for object in objects:
-            if (object.type == type):
-                return True
-        return False
-
     # Sprite
     # Updates the current sprite name based on the current state of the object
     def inferSpriteName(self, force:bool=False):
@@ -301,10 +292,10 @@ class Fence(Object):
             return
 
         # Check to see if the neighbouring tiles have paths
-        hasFenceNorth = self._hasObj(self.attributes["gridX"], self.attributes["gridY"] - 1, "fence")
-        hasFenceSouth = self._hasObj(self.attributes["gridX"], self.attributes["gridY"] + 1, "fence")
-        hasFenceWest = self._hasObj(self.attributes["gridX"] - 1, self.attributes["gridY"], "fence")
-        hasFenceEast = self._hasObj(self.attributes["gridX"] + 1, self.attributes["gridY"], "fence")
+        hasFenceNorth = self.world.hasObj(self.attributes["gridX"], self.attributes["gridY"] - 1, "fence")
+        hasFenceSouth = self.world.hasObj(self.attributes["gridX"], self.attributes["gridY"] + 1, "fence")
+        hasFenceWest = self.world.hasObj(self.attributes["gridX"] - 1, self.attributes["gridY"], "fence")
+        hasFenceEast = self.world.hasObj(self.attributes["gridX"] + 1, self.attributes["gridY"], "fence")
 
         # 4 positives (should never happen unless something is wonky -- just in case, place a single fence)
         if (hasFenceNorth and hasFenceSouth and hasFenceEast and hasFenceWest):
@@ -416,14 +407,6 @@ class Path(Object):
         # Call superclass
         Object.tick(self)
 
-    # Check if a tile already contains a "path"
-    def _hasObj(self, x, y, type):
-        objects = self.world.getObjectsAt(x, y)
-        # Then, check to see if any of them are walls
-        for object in objects:
-            if (object.type == type):
-                return True
-        return False
 
     # Sprite
     # Updates the current sprite name based on the current state of the object
@@ -433,10 +416,10 @@ class Path(Object):
             return
 
         # Check to see if the neighbouring tiles have paths
-        hasPathNorth = self._hasObj(self.attributes["gridX"], self.attributes["gridY"] - 1, "path")
-        hasPathSouth = self._hasObj(self.attributes["gridX"], self.attributes["gridY"] + 1, "path")
-        hasPathWest = self._hasObj(self.attributes["gridX"] - 1, self.attributes["gridY"], "path")
-        hasPathEast = self._hasObj(self.attributes["gridX"] + 1, self.attributes["gridY"], "path")
+        hasPathNorth = self.world.hasObj(self.attributes["gridX"], self.attributes["gridY"] - 1, "path")
+        hasPathSouth = self.world.hasObj(self.attributes["gridX"], self.attributes["gridY"] + 1, "path")
+        hasPathWest = self.world.hasObj(self.attributes["gridX"] - 1, self.attributes["gridY"], "path")
+        hasPathEast = self.world.hasObj(self.attributes["gridX"] + 1, self.attributes["gridY"], "path")
 
         # 4 positives
         if (hasPathNorth and hasPathSouth and hasPathEast and hasPathWest):

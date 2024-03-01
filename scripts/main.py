@@ -8,7 +8,6 @@ import subprocess
 import psutil
 from discoveryworld.ActionSuccess import MessageImportance
 from discoveryworld.KnowledgeScorer import Measurement
-from discoveryworld.ScenarioMaker import ScenarioMaker
 from discoveryworld.UserInterface import UserInterface
 
 from discoveryworld.World import World
@@ -88,12 +87,13 @@ def main():
     r = random.Random()
 
     # Create the town scenario
-    scenarioMaker = ScenarioMaker(r)
+    import discoveryworld.scenarios
+    #scenarioMaker = ScenarioMaker(r)
     #scenarioMaker.makeScenarioTown(world)
     #scenarioMaker.makeScenarioStorageShed(world)
     #scenarioMaker.makeScenarioArchaeologicalDig(world)
     #scenarioMaker.makeScenarioArchaeologicalDigGenericRadioisotope(world)
-    scenarioMaker.makeScenarioPlantGrowing(world)
+    discoveryworld.scenarios.makeScenarioPlantGrowing(world, rng=r)
 
     # Add tasks
     #world.addTaskByName("EatMushroomTask")

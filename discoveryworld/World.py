@@ -580,6 +580,13 @@ class World:
         return self.teleportLocations
 
 
+    def hasObj(self, x, y, type):
+        objects = self.getObjectsAt(x, y)
+        # Then, check to see if any of them are walls
+        for object in objects:
+            if (object.type == type):
+                return True
+        return False
 
 
     #

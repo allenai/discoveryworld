@@ -1,0 +1,5 @@
+from discoveryworld.scenarios.archaeology import makeScenarioArchaeologicalDig
+from discoveryworld.scenarios.archaeology import makeScenarioArchaeologicalDigGenericRadioisotope
+from discoveryworld.scenarios.plant_growing import makeScenarioPlantGrowing
+from discoveryworld.scenarios.storage_shed import makeScenarioStorageShed
+from discoveryworld.scenarios.town import makeScenarioTown
