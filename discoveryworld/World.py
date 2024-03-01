@@ -3,6 +3,7 @@
 import time
 import zlib
 import pickle
+from os.path import join as pjoin
 
 import pygame
 
@@ -12,6 +13,7 @@ from discoveryworld.Layer import Layer
 from discoveryworld.TaskScorer import *
 from discoveryworld.UUIDGenerator import *
 from discoveryworld.DiscoveryFeed import *
+from discoveryworld.constants import DATA_PATH
 
 # Storage class for the world (including the full environment grid)
 class World:
@@ -42,7 +44,7 @@ class World:
         self.agents = []
 
         # Initialize DiscoveryFeed, and load any pre-existing articles and update posts
-        self.discoveryFeed = DiscoveryFeed(dataPath + "/" + filenameDiscoveryFeed)
+        self.discoveryFeed = DiscoveryFeed(pjoin(dataPath or DATA_PATH, filenameDiscoveryFeed))
 
         # Initialize task generator and scorer
         self.taskMaker = TaskMaker(world=self)

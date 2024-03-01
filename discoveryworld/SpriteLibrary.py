@@ -4,20 +4,23 @@
 # The name is used to retrieve the sprite from the library.
 
 import json
+from os.path import join as pjoin
 
 import pygame
+
+from discoveryworld.constants import ASSETS_PATH
 
 
 class SpriteLibrary:
     # Constructor
     def __init__(self, assetPath, filenameIndex):
-        self.assetPath = assetPath
+        self.assetPath = assetPath or ASSETS_PATH
         self.filenameIndex = filenameIndex
         self.sprites = {}
         self.warnings = []
 
         # Load sprites from index
-        self.loadIndex(assetPath + "/" + filenameIndex)
+        self.loadIndex(pjoin(self.assetPath, filenameIndex))
 
         # Print warnings
         if len(self.warnings) > 0:

@@ -6,7 +6,7 @@ from discoveryworld.KnowledgeScorer import KnowledgeScorer
 from discoveryworld.DialogTree import DialogMaker
 
 from discoveryworld.objects import Object
-from discoveryworld.ActionSuccess import ActionSuccess, MessageImportance
+from discoveryworld.ActionSuccess import ActionSuccess, DialogSuccess, MessageImportance
 from discoveryworld.Layer import Layer
 from discoveryworld.ActionHistory import ActionHistory, ActionType
 from discoveryworld.Pathfinding import *

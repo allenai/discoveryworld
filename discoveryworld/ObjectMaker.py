@@ -7,16 +7,19 @@
 
 import os
 import inspect
+from os.path import join as pjoin
 
 from discoveryworld.objects import *
 from discoveryworld.Agent import *
 
+from discoveryworld.constants import DATA_PATH
+
 
 class ObjectMaker:
     # Constructor
-    def __init__(self, _assetPath, _filenameObjs, _filenameMaterials, world, knownSpriteNames=None):
-        self.filenameObjs = _assetPath + "/" + _filenameObjs
-        self.filenameMaterials = _assetPath + "/" + _filenameMaterials
+    def __init__(self, _dataPath, _filenameObjs, _filenameMaterials, world, knownSpriteNames=None):
+        self.filenameObjs = pjoin(_dataPath or DATA_PATH, _filenameObjs)
+        self.filenameMaterials = pjoin(_dataPath or DATA_PATH, _filenameMaterials)
         self.objects = {}
         self.warnings = []
         self.errors = []
