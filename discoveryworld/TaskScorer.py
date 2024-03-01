@@ -511,6 +511,7 @@ class SoilNutrientTask(Task):
         taskDescription += "Under the right conditions, the plant tends to grow very quickly, so you should be able to see the results of your work within a few steps. "
         taskDescription += "Inside the storage facility are some tools that may be helpful for you work, including a soil nutrient meter, a jar of seeds, and a shovel. "
         taskDescription += "To plant the seeds, dig a hole in the soil, place a seed in the hole, then put the soil back into the hole.  If the conditions are correct, the plant will grow from the seed. "
+        taskDescription += "As part of your discovery process, you should grow at least 2 new plants to maturity. "
 
         Task.__init__(self, "SoilNutrientTask", taskDescription, world)
         self.score = 0
