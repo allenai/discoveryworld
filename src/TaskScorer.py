@@ -515,8 +515,8 @@ class SoilNutrientTask(Task):
         Task.__init__(self, "SoilNutrientTask", taskDescription, world)            
         self.score = 0
         self.maxScore = 1                       # Maximum score
-        self.flagToMonitor = None
-        self.goalSign = None
+        self.existingPlantsAtStart = None
+        self.existingSeedsInGroundAtStart = None
         self.artifacts = []
         self.signs = []
 
