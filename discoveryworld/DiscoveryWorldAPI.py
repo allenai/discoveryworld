@@ -70,31 +70,18 @@ class DiscoveryWorldAPI:
         # First, create the World -- a blank slate
         self.world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json", dataPath = "data/", filenameObjectData = "objects.tsv", filenameMaterialData="materials.tsv", filenameDiscoveryFeed="discoveryFeed.json")
 
+
+        #### TODO: Refactor to use the new ScenarioMaker (which should take all this stuff into account)
+
         # Create the town scenario
-        scenarioMaker = ScenarioMaker(self.r)
+        scenarioMaker = ScenarioMaker(self.world, self.r)
+        success, errorStr = scenarioMaker.setupScenario(scenarioName, self.numUserAgents)
 
-        if (scenarioName == "Mushroom"):
-            # Add scenario
-            scenarioMaker.makeScenarioTown(self.world, self.numUserAgents)
-            # Add tasks
-            self.world.addTaskByName("EatMushroomTask")
-
-        elif (scenarioName == "RustedKey"):
-            # Add scenario
-            scenarioMaker.makeScenarioStorageShed(self.world, self.numUserAgents)
-            # Add tasks
-            self.world.addTaskByName("RustedKeyTask")
-
-        elif (scenarioName == "AncientDig"):
-            # Add scenario
-            scenarioMaker.makeScenarioArchaeologicalDig(self.world, self.numUserAgents)
-            # Add tasks
-            self.world.addTaskByName("ArcheologyDigTask")
-
-        else:
-            print("Unknown scenario name: " + scenarioName)
+        if (not success):
+            print("ERROR: " + errorStr)
             exit(1)
             return
+
 
         # Initialize and attach user interfaces to the agents
         userAgents = self.world.getUserAgents()

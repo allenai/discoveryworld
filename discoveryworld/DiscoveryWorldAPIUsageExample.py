@@ -977,9 +977,10 @@ if __name__ == "__main__":
     print(api.getNameAndVersion())
 
     # Load the scenario
-    #api.loadScenario(scenarioName="Mushroom", numUserAgents=1, randomSeed=0)
-    #api.loadScenario(scenarioName="RustedKey", numUserAgents=1, randomSeed=0)
-    api.loadScenario(scenarioName="AncientDig", numUserAgents=1, randomSeed=0)
+    #api.loadScenario(scenarioName = "food_illness", numUserAgents = 1, randomSeed = 0)
+    api.loadScenario(scenarioName = "combinatorial_chemistry", numUserAgents = 1, randomSeed = 0)
+    #api.loadScenario(scenarioName = "archaeology_dating", numUserAgents = 1, randomSeed = 0)
+    #api.loadScenario(scenarioName = "plant_nutrients", numUserAgents = 1, randomSeed = 0)
 
     # Test the API
     #testAgent(api)
