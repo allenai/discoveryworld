@@ -28,9 +28,9 @@ class TaskScorer():
         outStr = "Task Progress:\n"
         for idx, task in enumerate(self.tasks):
             outStr += str(idx) + ": " + task.taskProgressStr() + "\n"
-        
+
         return outStr
-        
+
 
 
 #
@@ -70,7 +70,7 @@ class Task():
         self.completedSuccessfully = False      # Did the task complete successfully?
 
 
-    # Task setup: Add any necessary objects to the world to perform the task. 
+    # Task setup: Add any necessary objects to the world to perform the task.
     def taskSetup(self):
         pass
 
@@ -107,7 +107,7 @@ class EatMushroomTask(Task):
     def __init__(self, world):
         taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist are sometimes getting sick.  Your task is to figure out why people are getting sick, and to prevent it.  You must demonstrate this by having 10 colonists successfully eat mushrooms without eventually getting sick."
         taskDescription += "Since the food causes only mild illness, and getting the colony established is important, the colonists have volunteered to be test subjects.  The Chef in the Cafeteria can help you collect mushrooms, serve mushrooms from the cafeteria pot to the tables, and let the colonists know a meal is ready to eat, when you're ready."
-        Task.__init__(self, "EatMushroomTask", taskDescription, world)            
+        Task.__init__(self, "EatMushroomTask", taskDescription, world)
         self.score = 0
         self.maxScore = 10                       # Maximum score
         self.agentsToMonitorForSickness = {}        # Key: agent name, value: step they were added
@@ -131,7 +131,7 @@ class EatMushroomTask(Task):
                 # Check if they have eaten a mushroom
 
                 # Check if they successfully ate something on the last tick
-                lastAction = agent.actionHistory.getLastStepAction()                
+                lastAction = agent.actionHistory.getLastStepAction()
                 if (lastAction != None) and (lastAction['actionType'] == ActionType.EAT) and (lastAction['success'] == True):
                     # Check if it was a mushroom
                     if (lastAction['arg1'].name == "mushroom"):
@@ -186,7 +186,7 @@ class RustedKeyTask(Task):
         taskDescription += "7. When you have successfully rerusted the key and opened the door, please leave the shed. \n"
         ## taskDescription += "HERE'S A WALKTHROUGH/HINT: To complete this task, you need to pick up the jar, put 1 unit of Chemical A and 2 units of Chemical C into the jar, and then put the key into the jar.  The key will change from rusted to not rusted.  Then you can open the door, walk 3 steps out, and the task will be completed."
 
-        Task.__init__(self, "RustedKeyTask", taskDescription, world)            
+        Task.__init__(self, "RustedKeyTask", taskDescription, world)
         self.score = 0
         self.maxScore = 2                       # Maximum score
         self.keyToMonitor = None
@@ -232,7 +232,7 @@ class RustedKeyTask(Task):
 
         # Update score
         self.score = score
-        
+
         # Monitoring task 3: Check if the task is complete
         if (self.score >= self.maxScore):
             self.completed = True
@@ -252,9 +252,9 @@ class ArcheologyDig(Task):
     # Constructor
     def __init__(self, world):
         taskDescription = "You are on an archeological dig on Planet X.  3 ancient sites have been found. "
-        taskDescription += "Your task is to excavate the sites, and date any artifacts with the radiocarbon meter.  Then, once completed, place the red flag beside the sign of the dig site with the oldest artifact. "        
+        taskDescription += "Your task is to excavate the sites, and date any artifacts with the radiocarbon meter.  Then, once completed, place the red flag beside the sign of the dig site with the oldest artifact. "
 
-        Task.__init__(self, "ArcheologyDigTask", taskDescription, world)            
+        Task.__init__(self, "ArcheologyDigTask", taskDescription, world)
         self.score = 0
         self.maxScore = 1                       # Maximum score
         self.flagToMonitor = None
@@ -305,20 +305,20 @@ class ArcheologyDig(Task):
         # Set the maximum score
         self.maxScore = len(self.artifacts) + 2
 
-        
+
     # Update the task progress
     def updateTick(self):
         # Do not update the score if the task is already marked as completed
         if (self.completed == True):
             return
-        
+
         score = 0
 
-        # If 'artificts' is empty, then initialize the scorer        
+        # If 'artificts' is empty, then initialize the scorer
         if len(self.artifacts) == 0:
             self.initialize()
 
-        # Monitoring task 1: Check to see how many artifacts have been found        
+        # Monitoring task 1: Check to see how many artifacts have been found
         for artifact in self.artifacts:
             # Get the parent container
             parentContainer = artifact.parentContainer
@@ -331,7 +331,7 @@ class ArcheologyDig(Task):
             else:
                 # If the parent container is not a soil tile, then the container is something else, meaning the artifact was found and moved
                 score += 1
-        
+
 
         # Monitoring task 2: Check to see if the flag has been placed near ANY of the signs (+/- 2 grid spaces).
         # First, check that the flag has no parent container, meaning it's not being held by an agent
@@ -343,7 +343,7 @@ class ArcheologyDig(Task):
                     score += 1
                     flagPlaced = True
                     break
-            
+
         # Monitoring task 3: Also check to see whether the flag has been placed near the CORRECT sign
         if (flagPlaced == True):
             distance = self.flagToMonitor.distanceTo(self.goalSign)
@@ -351,7 +351,7 @@ class ArcheologyDig(Task):
             if (distance <= 2):
                 score += 1
                 flagAtGoal = True
-        
+
         # Set the score
         self.score = score
 
@@ -365,7 +365,7 @@ class ArcheologyDig(Task):
         else:
             self.completed = False
             self.completedSuccessfully = False
-            
+
 
 
 #
@@ -377,9 +377,9 @@ class ArcheologyDigGenericRadioisotopes(Task):
         # TODO: modify description
         taskDescription = "You are on an archeological dig on Planet X.  6 sites of suspected ancient artifacts have been found, 3 of which have already been uncovered. "
         taskDescription += "It's not clear how or if radioisotope dating works on Planet X, or how it would differ from Earth, but your task is to figure out if it can be used. "
-        taskDescription += "Your task is to excavate the remaining sites, and figure out a way to use the radioisotope meter to approximately date the artifacts.  Then, once completed, place the red flag beside the sign of the dig site with the oldest artifact. "        
+        taskDescription += "Your task is to excavate the remaining sites, and figure out a way to use the radioisotope meter to approximately date the artifacts.  Then, once completed, place the red flag beside the sign of the dig site with the oldest artifact. "
 
-        Task.__init__(self, "ArcheologyDigTaskGenericRadioisotope", taskDescription, world)            
+        Task.__init__(self, "ArcheologyDigTaskGenericRadioisotope", taskDescription, world)
         self.score = 0
         self.maxScore = 1                       # Maximum score
         self.flagToMonitor = None
@@ -430,22 +430,22 @@ class ArcheologyDigGenericRadioisotopes(Task):
         # Set the maximum score
         self.maxScore = len(self.artifacts) + 2
 
-        
+
     # Update the task progress
     def updateTick(self):
         # Do not update the score if the task is already marked as completed
         if (self.completed == True):
             return
-        
-        score = 0        
 
-        # If 'artificts' is empty, then initialize the scorer        
+        score = 0
+
+        # If 'artificts' is empty, then initialize the scorer
         if len(self.artifacts) == 0:
             self.initialize()
 
         #print("GOAL SIGN: " + str(self.goalSign.uuid))
 
-        # Monitoring task 1: Check to see how many artifacts have been found        
+        # Monitoring task 1: Check to see how many artifacts have been found
         for artifact in self.artifacts:
             # Get the parent container
             parentContainer = artifact.parentContainer
@@ -458,7 +458,7 @@ class ArcheologyDigGenericRadioisotopes(Task):
             else:
                 # If the parent container is not a soil tile, then the container is something else, meaning the artifact was found and moved
                 score += 1
-        
+
 
         # Monitoring task 2: Check to see if the flag has been placed near ANY of the signs (+/- 2 grid spaces).
         # First, check that the flag has no parent container, meaning it's not being held by an agent
@@ -470,7 +470,7 @@ class ArcheologyDigGenericRadioisotopes(Task):
                     score += 1
                     flagPlaced = True
                     break
-            
+
         # Monitoring task 3: Also check to see whether the flag has been placed near the CORRECT sign
         if (flagPlaced == True):
             distance = self.flagToMonitor.distanceTo(self.goalSign)
@@ -478,7 +478,7 @@ class ArcheologyDigGenericRadioisotopes(Task):
             if (distance <= 2):
                 score += 1
                 flagAtGoal = True
-        
+
         # Set the score
         self.score = score
 
@@ -492,7 +492,7 @@ class ArcheologyDigGenericRadioisotopes(Task):
         else:
             self.completed = False
             self.completedSuccessfully = False
-            
+
 
 
 #
@@ -506,13 +506,13 @@ class SoilNutrientTask(Task):
         taskDescription = "You are at a botanical research station on Planet X.  An species of plant has been identified that appears to grow very quickly in the presence of an unusual nutrient uncommon on Earth. "
         taskDescription += "Other scientists have narrowed down the nutrient to be one of the following: Potassium, Titanium, Lithium, Thorium, or Barium. "
         taskDescription += "Your task is to figure out which nutrient it is, and what specific amount of the nutrient (low, medium, or high) is required in the soil for the plant to grow. "
-        taskDescription += "To support your work, a pilot field was set up with 12 plots of soil, each with a different combination of nutrients.  The pilot field is located to the south west part of the research station. "        
+        taskDescription += "To support your work, a pilot field was set up with 12 plots of soil, each with a different combination of nutrients.  The pilot field is located to the south west part of the research station. "
         taskDescription += "The research station is equipped with three test fields, where you can configure the nutrient levels in the field using the nearby soil nutrient controller. Once you configure the nutrients for a field, it can't be changed again."
         taskDescription += "Under the right conditions, the plant tends to grow very quickly, so you should be able to see the results of your work within a few steps. "
         taskDescription += "Inside the storage facility are some tools that may be helpful for you work, including a soil nutrient meter, a jar of seeds, and a shovel. "
         taskDescription += "To plant the seeds, dig a hole in the soil, place a seed in the hole, then put the soil back into the hole.  If the conditions are correct, the plant will grow from the seed. "
 
-        Task.__init__(self, "SoilNutrientTask", taskDescription, world)            
+        Task.__init__(self, "SoilNutrientTask", taskDescription, world)
         self.score = 0
         self.maxScore = 1                       # Maximum score
         self.existingPlantsAtStart = None
@@ -563,22 +563,22 @@ class SoilNutrientTask(Task):
         # Set the maximum score
         self.maxScore = len(self.artifacts) + 2
 
-        
+
     # Update the task progress
     def updateTick(self):
         # Do not update the score if the task is already marked as completed
         if (self.completed == True):
             return
-        
-        score = 0        
 
-        # If 'artificts' is empty, then initialize the scorer        
+        score = 0
+
+        # If 'artificts' is empty, then initialize the scorer
         if len(self.artifacts) == 0:
             self.initialize()
 
         #print("GOAL SIGN: " + str(self.goalSign.uuid))
 
-        # Monitoring task 1: Check to see how many artifacts have been found        
+        # Monitoring task 1: Check to see how many artifacts have been found
         for artifact in self.artifacts:
             # Get the parent container
             parentContainer = artifact.parentContainer
@@ -591,7 +591,7 @@ class SoilNutrientTask(Task):
             else:
                 # If the parent container is not a soil tile, then the container is something else, meaning the artifact was found and moved
                 score += 1
-        
+
 
         # Monitoring task 2: Check to see if the flag has been placed near ANY of the signs (+/- 2 grid spaces).
         # First, check that the flag has no parent container, meaning it's not being held by an agent
@@ -603,7 +603,7 @@ class SoilNutrientTask(Task):
                     score += 1
                     flagPlaced = True
                     break
-            
+
         # Monitoring task 3: Also check to see whether the flag has been placed near the CORRECT sign
         if (flagPlaced == True):
             distance = self.flagToMonitor.distanceTo(self.goalSign)
@@ -611,7 +611,7 @@ class SoilNutrientTask(Task):
             if (distance <= 2):
                 score += 1
                 flagAtGoal = True
-        
+
         # Set the score
         self.score = score
 
@@ -625,4 +625,3 @@ class SoilNutrientTask(Task):
         else:
             self.completed = False
             self.completedSuccessfully = False
-            
