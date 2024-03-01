@@ -1251,7 +1251,7 @@ class ScenarioMaker:
         # Create a small building
         houseSizeX = 4
         houseSizeY = 4
-        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Soil Research Facility")
+        buildingMaker.mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Storage Building")
 
         # Add a seed jar
         seedJar = world.createObject("Jar")
@@ -1357,6 +1357,7 @@ class ScenarioMaker:
 
         # Soil research building
         self.mkSoilResearchBuilding(12, 8, world, buildingMaker, whichSeedName)
+        world.addTeleportLocation("Storage Building", 12+3, 8+2)
 
         # Primary pilot field area
         pilotFieldStartX = 6
@@ -1401,14 +1402,17 @@ class ScenarioMaker:
         sign = world.createObject("Sign")        
         sign.setText("Pilot Field")
         world.addObject(pilotFieldStartX, pilotFieldStartY+pilotFieldSizeY, Layer.FURNITURE, sign)        
-
+        world.addTeleportLocation("Pilot Field", pilotFieldStartX, pilotFieldStartY+pilotFieldSizeY-1)
 
         # Make 3 test fields
         testFieldStartX = 12
         testFieldStartY = 15
 
         for i in range(0, numPlantSites):
-            self.mkSoilFieldControlled(testFieldStartX + i*5, testFieldStartY, world, buildingMaker, i+1)
+            x = testFieldStartX + i*5
+            y = testFieldStartY
+            self.mkSoilFieldControlled(x, y, world, buildingMaker, i+1)
+            world.addTeleportLocation("Experimental Field #" + str(i+1), x, y+1)
 
 
         # Make path along fields

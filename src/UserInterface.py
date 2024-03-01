@@ -726,6 +726,10 @@ class UserInterface:
         success = self.currentAgent.actionUse(objToUse, objToUseWith)
         return success
 
+    # Teleport
+    def actionTeleportToLocation(self, location):
+        success = self.currentAgent.actionTeleportAgentToLocation(location)
+        return success
 
     # DiscoveryFeed actions
     def getDiscoveryFeedUpdates(self, startFromID=0):
@@ -1012,6 +1016,19 @@ class UserInterface:
             #     for item in result.data['generatedItems']:
             #         self.currentAgent.addObject(item)
 
+            return (True, result)
+
+        # Teleport to a random (named) location
+        elif (keys[pygame.K_z]):
+            # Get a random location from the world
+            teleportLocationNames = self.currentAgent.world.getTeleportLocations().keys()
+            if (len(teleportLocationNames) == 0):
+                return (False, ActionSuccess(success=False, message="No teleport locations found."))
+            # Pick a random location
+            randomLocationName = random.choice(list(teleportLocationNames))
+
+            # Teleport
+            result = self.actionTeleportToLocation(location = randomLocationName)
             return (True, result)
 
         if NUMBERS_TO_CHANGE_ITEMS:
