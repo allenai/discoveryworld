@@ -493,3 +493,136 @@ class ArcheologyDigGenericRadioisotopes(Task):
             self.completed = False
             self.completedSuccessfully = False
             
+
+
+#
+#   Specific Task: Soil Nutrient Task
+#
+class SoilNutrientTask(Task):
+    # Constructor
+    def __init__(self, world):
+        # TODO: modify description
+        # ["potassium", "titanium", "lithium", "thorium", "barium"]
+        taskDescription = "You are at a botanical research station on Planet X.  An species of plant has been identified that appears to grow very quickly in the presence of an unusual nutrient uncommon on Earth. "
+        taskDescription += "Other scientists have narrowed down the nutrient to be one of the following: Potassium, Titanium, Lithium, Thorium, or Barium. "
+        taskDescription += "Your task is to figure out which nutrient it is, and what specific amount of the nutrient (low, medium, or high) is required in the soil for the plant to grow. "
+        taskDescription += "To support your work, a pilot field was set up with 12 plots of soil, each with a different combination of nutrients.  The pilot field is located to the south west part of the research station. "        
+        taskDescription += "The research station is equipped with three test fields, where you can configure the nutrient levels in the field using the nearby soil nutrient controller. Once you configure the nutrients for a field, it can't be changed again."
+        taskDescription += "Under the right conditions, the plant tends to grow very quickly, so you should be able to see the results of your work within a few steps. "
+        taskDescription += "Inside the storage facility are some tools that may be helpful for you work, including a soil nutrient meter, a jar of seeds, and a shovel. "
+        taskDescription += "To plant the seeds, dig a hole in the soil, place a seed in the hole, then put the soil back into the hole.  If the conditions are correct, the plant will grow from the seed. "
+
+        Task.__init__(self, "SoilNutrientTask", taskDescription, world)            
+        self.score = 0
+        self.maxScore = 1                       # Maximum score
+        self.flagToMonitor = None
+        self.goalSign = None
+        self.artifacts = []
+        self.signs = []
+
+
+    # Task setup: Add any necessary objects to the world to perform the task.
+    def taskSetup(self):
+        # Add the colonists?
+        pass
+
+    def initialize(self):
+        # Find all the artifacts
+        self.artifacts = []
+        oldestArtifact = None
+        oldestAge = 0
+        for obj in self.world.getAllWorldObjects():
+            if obj.type == "ancient artifact":
+                self.artifacts.append(obj)
+                if obj.attributes['radiocarbonAge'] > oldestAge:
+                    oldestArtifact = obj
+                    oldestAge = obj.attributes['radiocarbonAge']
+
+        # Find all the signs
+        self.signs = []
+        closestSign = None
+        closestDistance = 1000000
+        for obj in self.world.getAllWorldObjects():
+            if obj.type == "sign":
+                self.signs.append(obj)
+                # Get distance between this sign and the oldest artifact
+                distance = obj.distanceTo(oldestArtifact)
+                if (distance < closestDistance):
+                    closestDistance = distance
+                    closestSign = obj
+        # Set the flag goal location to be the location of the closest sign
+        self.goalSign = closestSign
+
+        # Find the flag
+        for obj in self.world.getAllWorldObjects():
+            if obj.type == "flag":
+                self.flagToMonitor = obj
+                self.flagGoalLocation = obj.getWorldLocation()
+                break
+
+        # Set the maximum score
+        self.maxScore = len(self.artifacts) + 2
+
+        
+    # Update the task progress
+    def updateTick(self):
+        # Do not update the score if the task is already marked as completed
+        if (self.completed == True):
+            return
+        
+        score = 0        
+
+        # If 'artificts' is empty, then initialize the scorer        
+        if len(self.artifacts) == 0:
+            self.initialize()
+
+        #print("GOAL SIGN: " + str(self.goalSign.uuid))
+
+        # Monitoring task 1: Check to see how many artifacts have been found        
+        for artifact in self.artifacts:
+            # Get the parent container
+            parentContainer = artifact.parentContainer
+            # Check if the parent container is a soil tile
+            if (parentContainer != None) and (parentContainer.type == "soil"):
+                # Check that the soil tile "has a hold" (i.e. that the artifact has been exposed)
+                if (parentContainer.attributes["hasHole"] == True):
+                    score += 1
+
+            else:
+                # If the parent container is not a soil tile, then the container is something else, meaning the artifact was found and moved
+                score += 1
+        
+
+        # Monitoring task 2: Check to see if the flag has been placed near ANY of the signs (+/- 2 grid spaces).
+        # First, check that the flag has no parent container, meaning it's not being held by an agent
+        flagPlaced = False
+        if (self.flagToMonitor.parentContainer == None):
+            for sign in self.signs:
+                distance = sign.distanceTo(self.flagToMonitor)
+                if (distance <= 2):
+                    score += 1
+                    flagPlaced = True
+                    break
+            
+        # Monitoring task 3: Also check to see whether the flag has been placed near the CORRECT sign
+        if (flagPlaced == True):
+            distance = self.flagToMonitor.distanceTo(self.goalSign)
+            flagAtGoal = False
+            if (distance <= 2):
+                score += 1
+                flagAtGoal = True
+        
+        # Set the score
+        self.score = score
+
+        # If the flag has been placed, the task is complete
+        if (flagPlaced == True):
+            self.completed = True
+            if (flagAtGoal == True):
+                self.completedSuccessfully = True
+            else:
+                self.completedSuccessfully = False
+        else:
+            self.completed = False
+            self.completedSuccessfully = False
+            

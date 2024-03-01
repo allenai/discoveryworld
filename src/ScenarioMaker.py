@@ -1441,6 +1441,9 @@ class ScenarioMaker:
         world.addObject(20, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
         world.addObject(22, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
 
+        world.addObject(12, 21, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+        world.addObject(18, 21, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+
 
         # Randomly place a few decorative plants
         plantCount = 0
@@ -1476,7 +1479,6 @@ class ScenarioMaker:
             world.addAgent(userAgent)
 
 
-        # Add teleport locations to world
-        #world.addTeleportLocation("base camp", 13, 14)
-        #for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
-        #    world.addTeleportLocation("dig site " + str(digSiteIdx+1), digSiteLocation[0]-1, digSiteLocation[1]+1)
+        # Should tick the environment 10 times, to make sure the pilot seeds grow and are ready for the user to view. 
+        for i in range(0, 10):
+            world.tick()
