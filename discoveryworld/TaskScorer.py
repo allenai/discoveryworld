@@ -74,6 +74,7 @@ class Task():
         self.completed = False                  # Is this task over?
         self.completedSuccessfully = False      # Did the task complete successfully?
         self.scoreCard = []                     # List of the subtasks in this task's scorecard
+        self.criticalHypotheses = []            # List of critical hypotheses for this task
 
 
     # Task setup: Add any necessary objects to the world to perform the task.
@@ -100,7 +101,45 @@ class Task():
     def taskProgressStr(self):
         outStr = ""
         outStr += "Task Progress (" + self.taskName + "):  Score: " + str(self.score) + ", Completed: " + str(self.completed) + ", Completed Successfully: " + str(self.completedSuccessfully)
+        outStr += "\nScorecard:"
+        for element in self.scoreCard:
+            #outStr += "\n" + element.name + ": " + str(element.score) + "/" + str(element.maxScore) + ", Completed: " + str(element.completed)
+            # As above, but with constant witdh formatting, completed should be 'completed' or 'not completed', and the task description should be there too
+            isCompleted = "incomplete"
+            if (element.completed == True):
+                isCompleted = "completed"
+            outStr += "\n - " + element.name.ljust(30) + " " + str(element.score).rjust(2) + " /" + str(element.maxScore).rjust(2) + "  " + str(isCompleted).ljust(15) + " " + element.description
+        # Critical Hypotheses
+        outStr += "\nCritical Hypotheses:"
+        for hypothesis in self.criticalHypotheses:
+            outStr += "\n - " + hypothesis
+
+
         return outStr
+
+    # Get task progress as a dictionary
+    def taskProgressDict(self):
+        outDict = {}
+
+        outDict["taskName"] = self.taskName
+        outDict["taskDescription"] = self.taskDescription
+        outDict["score"] = self.score
+        outDict["maxScore"] = self.maxScore
+        outDict["completed"] = self.completed
+        outDict["completedSuccessfully"] = self.completedSuccessfully
+        outDict["scoreCard"] = self.getScorecard()
+        outDict["criticalHypotheses"] = self.criticalHypotheses
+
+        return outDict
+
+    # Get the scorecard elements as a form that can be serialized to JSON
+    def getScorecard(self):
+        out = []
+        for element in self.scoreCard:
+            out.append(element.toDict())
+        return out
+
+
 
 
 #
@@ -124,6 +163,16 @@ class ScorecardElement():
         self.associatedUUIDs = associatedUUIDs
         self.associatedNotes = associatedNotes
 
+    def toDict(self):
+        out = {}
+        out["name"] = self.name
+        out["description"] = self.description
+        out["maxScore"] = self.maxScore
+        out["score"] = self.score
+        out["completed"] = self.completed
+        out["associatedUUIDs"] = self.associatedUUIDs
+        out["associatedNotes"] = self.associatedNotes
+        return out
 
 
 #
@@ -559,6 +608,8 @@ class SoilNutrientTask(Task):
         self.scorecardAtLeastTwoNewPlants = ScorecardElement("At Least Two New Plants", "At least two new plants (mushrooms) have been grown to maturity", 2)
         self.scoreCard.append(self.scorecardAtLeastTwoNewPlants)
 
+        # Add hypotheses from scoringInfo
+        self.criticalHypotheses = scoringInfo["criticalHypotheses"]
 
     # Scoring Info passed from the scenario
     # scoringInfo["startingPlants"] = []

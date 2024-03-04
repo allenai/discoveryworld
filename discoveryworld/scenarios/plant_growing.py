@@ -30,12 +30,14 @@ def mapSeedToObjectName(nutrientName, nutrientValue):
 
 def makeScenarioPlantGrowing(world, numUserAgents=1, rng=None):
     scoringInfo = {}
+    scoringInfo["criticalHypotheses"] = []
     rng = rng or random.Random()
     numPlantSites = 3
 
     # Randomly choose what value is helpful for growing plants
     possibleNutrients = ["potassium", "titanium", "lithium", "thorium", "barium"]
     possibleValues = [1, 2, 3]
+    possibleValuesStrLUT = {1: "low", 2: "medium", 3: "high"}
     whichNutrientPositive = random.choice(possibleNutrients)
     whichValuePositive = random.choice(possibleValues)
     whichSeedName = mapSeedToObjectName(whichNutrientPositive, whichValuePositive)
@@ -77,6 +79,10 @@ def makeScenarioPlantGrowing(world, numUserAgents=1, rng=None):
         setValueDict = {}
         setValueDict[whichNutrientPositive] = whichValuePositive
         pilotSoilTiles[i].attributes["soilNutrients"] = mkRandomSoilNutrientsWithSetValues(setValuesDict=setValueDict, rng=rng)
+
+    # Add hypothesis
+    hypothesisStr = "If a seed is placed in soil with a '" + whichNutrientPositive + "' nutrient level of '" + str(possibleValuesStrLUT[whichValuePositive]) + "', then it will successfully grow into a plant."
+    scoringInfo["criticalHypotheses"].append(hypothesisStr)
 
     # Negative (next 3)
     for i in range(3, 6):
