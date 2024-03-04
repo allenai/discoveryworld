@@ -1,8 +1,13 @@
 # UtilSpriteSheetGrid.py
-import pygame
-# Font
+import argparse
+from os.path import join as pjoin
 
-    
+# Font
+import pygame
+
+from discoveryworld.constants import ASSETS_PATH
+
+
 # DisplayGrid
 # This function loads a spritesheet, and displays them all in a grid. It shows the grid coordinates for each sprite.
 # This is useful for figuring out the coordinates of sprites in a spritesheet.
@@ -31,9 +36,9 @@ def displayGrid(filename, tileSize, offset, transparentColor, window):
             window.blit(text, (x + 2 + offset[0], y + 2 + offset[1]))
 
 
-def main():
+def main(args):
     #filename = "assets/pixymoon/CuteRPG_Interior/32x32/CuteRPG_Interior_custom.png"
-    filename = "assets/pixymoon/CuteRPG_Caves/32x32/CuteRPG_Caves.png"
+    # filename = "assets/pixymoon/CuteRPG_Caves/32x32/CuteRPG_Caves.png"
     #filename = "assets/pixymoon/CuteRPG_Forest/32x32/CuteRPG_Forest.png"
     #filename = "assets/pixymoon/CuteRPG_Forest/32x32/CuteRPG_Forest_modified2.png"
     #filename = "assets/pixymoon/CuteRPG_Houses/32x32/CuteRPG_Houses_A-modified.png"
@@ -49,11 +54,11 @@ def main():
     transparentColor = (0, 0, 0)
 
     windowSize = (1800, 1200)
-    
+
     window = pygame.display.set_mode(windowSize)
     pygame.display.set_caption("Sprite Sheet Grid")
     clock = pygame.time.Clock()
-    
+
     running = True
     while running:
         clock.tick(10)
@@ -68,17 +73,25 @@ def main():
 
         # Insert drawing code here
         # This is just a test that puts a red square in the middle of the screen
-        #pygame.draw.rect(window, (255, 0, 0), (gameParams["width"] / 2 - 25, gameParams["height"] / 2 - 25, 50, 50))        
+        #pygame.draw.rect(window, (255, 0, 0), (gameParams["width"] / 2 - 25, gameParams["height"] / 2 - 25, 50, 50))
         pygame.draw.rect(window, (255, 0, 0), (windowSize[0] / 2 - 25, windowSize[1] / 2 - 25, 50, 50))
 
         # Display the sprite sheet
-        displayGrid(filename, tileSize, offset, transparentColor, window)
+        try:
+            displayGrid(args.filename, tileSize, offset, transparentColor, window)
+        except:
+            displayGrid(pjoin(ASSETS_PATH, args.filename), tileSize, offset, transparentColor, window)
 
         # Flip the backbuffer
-        pygame.display.flip()  
+        pygame.display.flip()
 
 
 # Main
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="View sprite grid.")
+    parser.add_argument('filename')
+
+    args = parser.parse_args()
+
     # Main function
-    main()
+    main(args)
