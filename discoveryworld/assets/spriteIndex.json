@@ -159,6 +159,10 @@
                 "sign_writing":      { "baseTile": [11, 4],  "size": [1, 1] },
 
                 "sign_village":      { "baseTile": [5, 4],  "size": [3, 2] },
+                "sign_village_bl":   { "baseTile": [5, 5],  "size": [1, 1] },
+                "sign_village_mid":  { "baseTile": [6, 5],  "size": [1, 1] },
+                "sign_village_br":   { "baseTile": [7, 5],  "size": [1, 1] },
+                "sign_village_top":  { "baseTile": [5, 4],  "size": [3, 1] },
 
                 "fence_l":      { "baseTile": [5, 14],  "size": [1, 1] },
                 "fence_r":       { "baseTile": [7, 14],  "size": [1, 1] },

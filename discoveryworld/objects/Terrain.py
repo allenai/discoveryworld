@@ -517,12 +517,32 @@ class SignVillage(Object):
     ### TODO: CURRENTLY DOES NOT HANDLE THAT ITS A MULTI-TILE OBJECT
 
     # Constructor
-    def __init__(self, world):
-        Object.__init__(self, world, "sign (village)", "sign (village)", defaultSpriteName = "village1_sign_village")
+    def __init__(self, world, part=None):
+        name = "sign (village)"
+        isPassable = False
+        defaultSpriteName = "village1_sign_village"
+        if part == "post_right":
+            name += f" {part}"
+            defaultSpriteName = "village1_sign_village_br"
+        elif part == "post_left":
+            name += f" {part}"
+            defaultSpriteName = "village1_sign_village_bl"
+        elif part == "center":
+            name += f" {part}"
+            defaultSpriteName = "village1_sign_village_mid"
+            isPassable = True
+        elif part == "banner":
+            name += f" {part}"
+            defaultSpriteName = "village1_sign_village_top"
+            isPassable = True
+        else:
+            raise NotImplementedError()
+
+        Object.__init__(self, world, "sign (village)", name, defaultSpriteName=defaultSpriteName)
 
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
-        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+        self.attributes["isPassable"] = isPassable                 # Agen't can't walk over this
         self.attributes["document"] = "This is a sign."
 
     def tick(self):

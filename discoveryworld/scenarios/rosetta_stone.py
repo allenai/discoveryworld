@@ -4,7 +4,7 @@ import random
 from discoveryworld.Agent import Agent
 from discoveryworld.Layer import Layer
 from discoveryworld.buildings.colony import mkKeyShop, mkPaintShop
-from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mkPathX, mkPathY, mkTownSquare
+from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mkPathX, mkPathY, mkSignVillage, mkTownSquare
 
 
 def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
@@ -66,8 +66,8 @@ def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
 
 
     # Add big village sign
-    world.addObject(16, 2, Layer.BUILDING, world.createObject("SignVillage"))
-    world.addObject(16, 29, Layer.BUILDING, world.createObject("SignVillage"))
+    mkSignVillage(16, 2, world)
+    mkSignVillage(16, 29, world)
 
     # Add some plants
     world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))
