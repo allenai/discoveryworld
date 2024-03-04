@@ -2547,7 +2547,7 @@ class NPCColonistAuto2(NPC):
             print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
 
             # If the result is "COMPLETED", then remove the action from the queue
-            if (result == ActionSuccess.ActionResult.COMPLETED):
+            if (result == ActionResult.COMPLETED):
                 self.autopilotActionQueue.remove(curAutopilotAction)
                 print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
             # If the result is "FAILURE", then remove the action from the queue
