@@ -7,3 +7,4 @@ class Layer(Enum):
     FURNITURE = 2
     OBJECTS = 3
     AGENT = 4
+    AIR = 5

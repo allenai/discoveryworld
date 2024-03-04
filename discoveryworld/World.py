@@ -163,11 +163,10 @@ class World:
         #     self.grid[x][y]["layers"][layer].append(object)
 
         # All layers can hold multiple objects (prevents objects suddenly disappearing when a new object is moved to the same world location)
-        if (layer == Layer.WORLD) or (layer == Layer.BUILDING) or (layer == Layer.FURNITURE) or (layer == Layer.OBJECTS) or (layer == Layer.AGENT):
+        if layer in Layer:
            self.grid[x][y]["layers"][layer].append(object)
         else:
-            print("Error: Invalid layer: " + str(layer))
-            return False
+            raise ValueError("Error: Invalid layer: " + str(layer))
 
     # Get all objects at a given position
     def getObjectsAt(self, x, y, respectContainerStatus=False, includeParts=False, excludeObjectsOnAgents=False, respectObscuringLowerLayers=False):
@@ -518,57 +517,46 @@ class World:
         # DEBUG: Enable rendering grid locations
         renderGridLocations = False
         # For agents: Enable rendering grid (expands the tile size by one, to leave a functional black grid line between tiles)
-        #if (includeGrid):
+        # if (includeGrid):
         #    tileSize += 1
 
-        for y in range(worldStartY, worldStartY + sizeTilesY):
-            for x in range(worldStartX, worldStartX + sizeTilesX):
-                # Bound checking: Make sure the object is within the world bounds
-                if (x < 0) or (x >= self.sizeX) or (y < 0) or (y >= self.sizeY):
-                    #print("Error: Object out of bounds: " + str(x) + ", " + str(y))
-                    continue
+        # Render the world layers in order.
+        for layer in [Layer.WORLD, Layer.BUILDING, Layer.FURNITURE, Layer.OBJECTS, Layer.AGENT, Layer.AIR]:
 
-                # Determine screen x/y coordinates
-                screenX = (x - worldStartX) * tileSize + offsetX
-                screenY = (y - worldStartY) * tileSize + offsetY
+            for y in range(worldStartY, worldStartY + sizeTilesY):
+                for x in range(worldStartX, worldStartX + sizeTilesX):
+                    # Bound checking: Make sure the object is within the world bounds
+                    if (x < 0) or (x >= self.sizeX) or (y < 0) or (y >= self.sizeY):
+                        #print("Error: Object out of bounds: " + str(x) + ", " + str(y))
+                        continue
 
-                # Render the world layer
-                for object in self.grid[x][y]["layers"][Layer.WORLD]:
-                    for spriteName in object.getSpriteNamesWithContents():
-                        self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
+                    # Determine screen x/y coordinates
+                    screenX = (x - worldStartX) * tileSize + offsetX
+                    screenY = (y - worldStartY) * tileSize + offsetY
 
-                # Render the building layer
-                for object in self.grid[x][y]["layers"][Layer.BUILDING]:
-                    for spriteName in object.getSpriteNamesWithContents():
-                        self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
+                    for object in self.grid[x][y]["layers"][layer]:
+                        for spriteName in object.getSpriteNamesWithContents():
+                            self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
 
-                # Render the furniture layer
-                for object in self.grid[x][y]["layers"][Layer.FURNITURE]:
-                    for spriteName in object.getSpriteNamesWithContents():
-                        self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
+        if renderGridLocations or includeGrid:
+            for y in range(worldStartY, worldStartY + sizeTilesY):
+                for x in range(worldStartX, worldStartX + sizeTilesX):
+                    # Bound checking: Make sure the object is within the world bounds
+                    if (x < 0) or (x >= self.sizeX) or (y < 0) or (y >= self.sizeY):
+                        #print("Error: Object out of bounds: " + str(x) + ", " + str(y))
+                        continue
 
-                # Render the objects layer
-                for object in self.grid[x][y]["layers"][Layer.OBJECTS]:
-                    for spriteName in object.getSpriteNamesWithContents():
-                        self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
+                    # Determine screen x/y coordinates
+                    screenX = (x - worldStartX) * tileSize + offsetX
+                    screenY = (y - worldStartY) * tileSize + offsetY
 
-                # Render the agent layer
-                for object in self.grid[x][y]["layers"][Layer.AGENT]:
-                    for spriteName in object.getSpriteNamesWithContents():
-                        self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
-
-                # If enabled, render the grid location (for debugging)
-                if (renderGridLocations):
-                    text = self.font.render(str(x) + "," + str(y), True, (0, 0, 0))
-                    window.blit(text, (screenX, screenY))
-                if (renderGridLocations) or (includeGrid):
-                    # Also draw a rectangle around the tile
-                    #pygame.draw.rect(window, (0, 0, 0), (screenX, screenY, tileSize, tileSize), 1)
+                    # Draw a rectangle around the tile
                     pygame.draw.rect(window, (0, 0, 0), (screenX, screenY, tileSize, tileSize), 1)
 
-
-
-
+                    # If enabled, render the grid location (for debugging)
+                    if (renderGridLocations):
+                        text = self.font.render(str(x) + "," + str(y), True, (0, 0, 0))
+                        window.blit(text, (screenX, screenY))
 
     #
     #   Teleport locations
