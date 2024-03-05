@@ -12,7 +12,7 @@ def mkSoilFieldControlled(x, y, world, fieldNumber, width=2, height=2):
         for j in range(0, height):
             soilTile = world.createObject("SoilTile")
             # Set a baseline soil nutrient level
-            nutrientLevels = packSoilNutrients(potassium=1, titanium=1, lithium=1, thorium=1, barium=1)
+            nutrientLevels = packSoilNutrients(potassium=0, titanium=0, lithium=0, thorium=0, barium=0)
             soilTile.attributes["soilNutrients"] = nutrientLevels
             fieldTiles.append(soilTile)     # Keep track of the soil tiles, so we can let the soil nutrient manager know which tiles it controls
 

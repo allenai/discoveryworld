@@ -152,7 +152,7 @@ def mkScienceLab(x, y, world):
     world.addObject(x+6, y+4, Layer.OBJECTS, world.createObject("NPKMeter"))
 
 
-def mkStorageShed(x, y, world, DOOR_KEY_ID):
+def mkStorageShed(x, y, world, DOOR_KEY_ID, scoringInfo):
     # Create a small building
     houseSizeX = 7
     houseSizeY = 4
@@ -172,6 +172,7 @@ def mkStorageShed(x, y, world, DOOR_KEY_ID):
     dispenser1.name = "Dispenser (Substance A)"
     dispenser2.name = "Dispenser (Substance B)"
     dispenser3.name = "Dispenser (Substance C)"
+    scoringInfo['dispensers'] = [dispenser1, dispenser2, dispenser3]
 
     # Fill with chemicals
     #dispenser1.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
@@ -187,6 +188,7 @@ def mkStorageShed(x, y, world, DOOR_KEY_ID):
     # Add bottle cleaner
     BottleCleaner = world.createObject("BottleCleaner")
     compoundTable5.addObject(BottleCleaner)
+    scoringInfo['bottleCleaner'] = BottleCleaner
 
     # Add tables to world
     world.addObject(x+2, y+1, Layer.FURNITURE, compoundTable1)
@@ -198,6 +200,7 @@ def mkStorageShed(x, y, world, DOOR_KEY_ID):
     mixingJar = world.createObject("Jar")
     # Add to first table
     compoundTable1.addObject(mixingJar)
+    scoringInfo['mixingJar'] = mixingJar
 
     # Add substance
     #substance1 = world.createObject("TestSubstance")
@@ -212,6 +215,7 @@ def mkStorageShed(x, y, world, DOOR_KEY_ID):
     rustyKey = world.createObject("Key")
     rustyKey.setKeyID(DOOR_KEY_ID)
     world.addObject(x+2, y+2, Layer.OBJECTS, rustyKey)
+    scoringInfo['key'] = rustyKey
 
 
 def mkKeyShop(x, y, world):
