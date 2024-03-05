@@ -4,14 +4,13 @@ from discoveryworld.scenarios import *
 
 import random
 
-SCENARIOS = ["food_illness", "combinatorial_chemistry", "archaeology_dating", "plant_nutrients", "lost_in_translation"]
+SCENARIOS = ["food_illness", "combinatorial_chemistry", "archaeology_dating_simple", "archaeology_dating_challenge", "plant_nutrients", "lost_in_translation"]
 
 class ScenarioMaker():
     # Constructor
     def __init__(self, world, rng=None):
         self.world = world
         self.rng = rng or random.Random()
-
 
     # Make a scenario
     def setupScenario(self, scenarioName:str, numUserAgents:int=1):
@@ -25,9 +24,14 @@ class ScenarioMaker():
             self.world.addTaskByName("RustedKeyTask", scoringInfo)
             return (True, "")
 
-        elif (scenarioName == "archaeology_dating"):
+        elif (scenarioName == "archaeology_dating_simple"):
             scoringInfo = makeScenarioArchaeologicalDig(self.world, numUserAgents, rng=self.rng)
             self.world.addTaskByName("ArcheologyDigTask", scoringInfo)
+            return (True, "")
+
+        elif (scenarioName == "archaeology_dating_challenge"):
+            scoringInfo = makeScenarioArchaeologicalDigGenericRadioisotope(self.world, numUserAgents, rng=self.rng)
+            self.world.addTaskByName("ArcheologyDigTaskGenericRadioisotope", scoringInfo)
             return (True, "")
 
         elif (scenarioName == "plant_nutrients"):

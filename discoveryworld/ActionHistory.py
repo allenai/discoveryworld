@@ -96,10 +96,21 @@ class ActionHistory:
 
     # Add an action to the history
     def add(self, actionType:ActionType, arg1, arg2, result:ActionSuccess):
+        arg1UUID = None
+        arg2UUID = None
+        if (arg1 != None):
+            if (isinstance(arg1, Object)):
+                arg1UUID = arg1.uuid
+        if (arg2 != None):
+            if (isinstance(arg2, Object)):
+                arg2UUID = arg2.uuid
+
         packed = {
             'actionType': actionType,
             'arg1': arg1,
+            'arg1UUID': arg1UUID,
             'arg2': arg2,
+            'arg2UUID': arg2UUID,
             'success': result.success,
             'step': self.world.getStepCounter(),
             'result': result
@@ -119,6 +130,35 @@ class ActionHistory:
             if (self.history[-1]['step'] == self.world.getStepCounter()):
                 return self.history[-1]
         return None
+
+    # Query for a specific action
+    # Queries for specific actions, but arg1 and arg2 should be objects (or None)
+    def queryActionObjects(self, actionType:ActionType, arg1, arg2, stopAtFirst:bool = False):
+        out = []
+
+        # Find the UUIDs of the objects
+        arg1Query = None
+        arg2Query = None
+        if (arg1 != None):
+            if (isinstance(arg1, Object)):
+                arg1Query = arg1.uuid
+        if (arg2 != None):
+            if (isinstance(arg2, Object)):
+                arg2Query = arg2.uuid
+
+        # Search for the query action
+        #print("Query: " + str(actionType) + " " + str(arg1Query) + " " + str(arg2Query))
+        for action in self.history:
+            #print("Action: " + str(action['actionType']) + " " + str(action['arg1UUID']) + " " + str(action['arg2UUID']))
+            if (action['actionType'] == actionType and action['arg1UUID'] == arg1Query and action['arg2UUID'] == arg2Query):
+                out.append(action)
+                #print("FOUND!!!!")
+                if (stopAtFirst):
+                    break
+
+        # Return the list of matching actions
+        return out
+
 
 
     # Export the action history to a list that can be converted to JSON

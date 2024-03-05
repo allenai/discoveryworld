@@ -214,7 +214,7 @@ class UserInterface:
             for idx, task in enumerate(taskList):
                 # x should be 200 from the right
                 # y should start 100 from the bottom
-                x = self.window.get_width() - 200
+                x = self.window.get_width() - 250
                 y = self.window.get_height() - 120
                 self.renderTaskProgress(x, y, task)
 
@@ -339,6 +339,10 @@ class UserInterface:
         # Write the task name and normalized score (0-1).
         # The background color is based on the task score -- red for 0, green for 1, and a gradient in between.
         taskName = task.taskName
+        # Clip taskName to 15 characters if too long
+        if (len(taskName) > 15):
+            taskName = taskName[:15] + "..."
+
         taskScore = task.getScoreNormalized()
 
         # Draw the background
@@ -351,7 +355,7 @@ class UserInterface:
         else:
             color = (int(255 * (1-taskScore)), int(255 * (taskScore)), 0)
         # Then, draw the background
-        pygame.draw.rect(self.window, color, (x, y, 200, 20))
+        pygame.draw.rect(self.window, color, (x, y, 250, 20))
 
         # Draw the text
         # First, get the text

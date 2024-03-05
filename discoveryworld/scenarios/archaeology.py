@@ -266,6 +266,14 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1, rng
     seedYoungArtifact.attributes["radioisotopeValues"] = radioisotopeValues
     seedYoungArtifact.attributes["radiocarbonAge"] = knownArtifactAges[2]
 
+    # The real channel is the starting channel (0), plus the shift, plus 1 (since channels are numbered 1, 2, 3, 4 in the radioisotope meter instead of 0, 1, 2, 3)
+    realChannel = channelShift + 1
+
+    print("Real channel: " + str(realChannel))
+    # TODO: Critical hypotheses
+    scoringInfo["criticalHypotheses"] = ["The lower a value an artifact has on Radioisotope Channel " + str(realChannel) + ", the older it is."]
+
+
     # Now the 3 unknown artifacts
     unknownArtifacts = []
     unknownArtifactAges = [oldArtifactAge, mediumArtifactAge, youngArtifactAge]
@@ -288,17 +296,24 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1, rng
     # Add dig sites
     scoringInfo["seedArtifacts"] = []
     scoringInfo["unknownArtifacts"] = []
+    scoringInfo["signs"] = []
     for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
         if (digSiteIdx < 3):
             # Seed artifact
             artifact = seedArtifacts[digSiteIdx]
-            _ = mkDigSiteWithObj(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifact, artifactExposed=True)
+            sign = mkDigSiteWithObj(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifact, artifactExposed=True)
             scoringInfo["seedArtifacts"].append(artifact)
+            scoringInfo["signs"].append(sign)
         else:
             # Unknown artifact
             artifact = unknownArtifacts[digSiteIdx-3]
             addedSign = mkDigSiteWithObj(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifact, artifactExposed=False)
             scoringInfo["unknownArtifacts"].append(artifact)
+            scoringInfo["signs"].append(addedSign)
+            # Also make a special note of the target (i.e. winning) sign
+            if (artifact.attributes["radiocarbonAge"] == oldArtifactAge):
+                scoringInfo["targetSign"] = addedSign
+
 
     # Add a table at the start of the dig site
     instrumentTable = world.createObject("Table")
@@ -385,3 +400,6 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1, rng
     world.addTeleportLocation("base camp", 13, 14)
     for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
         world.addTeleportLocation("dig site " + str(digSiteIdx+1), digSiteLocation[0]-1, digSiteLocation[1]+1)
+
+    # Return the scoring info
+    return scoringInfo
