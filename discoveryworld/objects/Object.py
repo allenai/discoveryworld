@@ -480,23 +480,24 @@ class Object:
             #for containedObj in obj.getAllContainedObjectsRecursive():
             #    containedObj.needsSpriteNameUpdate = True
 
-
     def inferSpriteName(self, force:bool=False):
         # Infer the sprite name from the current state of the object
         # This should be called whenever the object is moved, or something else changes
         if (self.needsSpriteNameUpdate):
             # Placeholder for inferring sprite name based on attributes
             self.curSpriteName = self.defaultSpriteName
-            pass
         else:
             self.curSpriteName = self.defaultSpriteName
 
-
-    # TODO: Add world as context?
     def getSpriteName(self):
         # Get the current sprite name, in response to the current state of the object
 
-        # Default: return the default sprite name
+        # Check if this sprite is invalidated and needs to be updated
+        if self.needsSpriteNameUpdate:
+            # If so, then update it
+            self.inferSpriteName()
+            self.needsSpriteNameUpdate = False
+
         return self.curSpriteName
 
     # Should be run once per frame, after the rendering for every tile is finished, after the backbuffer flips.
@@ -504,28 +505,8 @@ class Object:
         # Update the last sprite name
         self.lastSpriteName = self.tempLastSpriteName
 
-    # TODO: Rendering for objects with contents (e.g. containers with things on/in them)
-    def getSpriteNamesWithContents(self):
-        # Get the sprite name, including the contents of the object
-        # This is used for rendering objects that contain other objects (e.g. containers)
-
-        # Check if this sprite is invalidated and needs to be updated
-        if (self.needsSpriteNameUpdate):
-            # If so, then update it
-            self.inferSpriteName()
-            self.needsSpriteNameUpdate = False
-
-        # First, get the name of the current object itself
-        spriteNameOrNames = self.getSpriteName()
-        spriteList = []#[self.getSpriteName()]
-        if (isinstance(spriteNameOrNames, list)):
-            spriteList.extend(spriteNameOrNames)
-        else:
-            spriteList.append(spriteNameOrNames)
-
-        # Add any sprite modifiers
-        spriteList.extend(self.curSpriteModifiers)
-
+    def getContentsSpriteNames(self):
+        spriteList = []
         # Then, add the name of any visible contents
         # First, check if this is a container (and it's open)
         if (self.attributes['isContainer'] and self.attributes['isOpenContainer']):
@@ -533,16 +514,10 @@ class Object:
             if (self.attributes['contentsVisible2D']):
                 # If so, then add the contents
                 for obj in self.contents:
-                    # Check if this sprite is invalidated and needs to be updated
-                    if (obj.needsSpriteNameUpdate):
-                        # If so, then update it
-                        obj.inferSpriteName()
-                        obj.needsSpriteNameUpdate = False
-
                     # Add the sprite name of the object
                     spriteNameObj = obj.getSpriteName()
-                    #print("Object name: " + obj.name + "  sprite name: " + str(spriteNameObj))
-                    if (spriteNameObj != None):
+
+                    if spriteNameObj is not None:
                         spriteList.append(spriteNameObj)
                         # Add any sprite modifiers
                         spriteList.extend(obj.curSpriteModifiers)
@@ -554,21 +529,44 @@ class Object:
 
                 # Make sure that object's parent container is this object, otherwise discontinue
                 if (obj.parentContainer == self):
-                    # Check if this sprite is invalidated and needs to be updated
-                    if (obj.needsSpriteNameUpdate):
-                        # If so, then update it
-                        obj.inferSpriteName()
-                        obj.needsSpriteNameUpdate = False
                     # Add the sprite name of the object
                     spriteNameObj = obj.getSpriteName()
-                    if (spriteNameObj != None):
+                    if spriteNameObj is not None:
                         spriteList.append(spriteNameObj)
                         # Add any sprite modifiers
                         spriteList.extend(obj.curSpriteModifiers)
 
+        return spriteList
+
+    def getSpriteNames(self):
+        # First, get the name of the current object itself
+        spriteNameOrNames = self.getSpriteName()
+        spriteList = []
+        if (isinstance(spriteNameOrNames, list)):
+            spriteList.extend(spriteNameOrNames)
+        else:
+            spriteList.append(spriteNameOrNames)
+
+        # Add any sprite modifiers
+        spriteList.extend(self.curSpriteModifiers)
+        return spriteList
+
+    def getSpriteNamesWithContents(self):
+        # Get the sprite name, including the contents of the object
+        # This is used for rendering objects that contain other objects (e.g. containers)
+
+        # First, get the name of the current object itself
+        spriteList = self.getSpriteNames()
+
+        # Then, add the name of any visible contents
+        spriteList.extend(self.getContentsSpriteNames())
 
         # Return the sprite list
         return spriteList
+
+    def render(self, spriteLibrary, window, screenX, screenY, scale):
+        for spriteName in self.getSpriteNamesWithContents():
+           spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
 
 
     #

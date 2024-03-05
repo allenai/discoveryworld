@@ -288,6 +288,15 @@ class Table(Object):
         # Call superclass
         Object.tick(self)
 
+    def render(self, spriteLibrary, window, screenX, screenY, scale):
+        for spriteName in self.getSpriteNames():
+            spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
+
+        # Small Y offset. This is to make it look like the objects are on the table.
+        screenY -= 7 #* scale
+        for spriteName in self.getContentsSpriteNames():
+            spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
+
 
 class TableBedside(Object):
     # Constructor

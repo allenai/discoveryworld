@@ -535,8 +535,7 @@ class World:
                     screenY = (y - worldStartY) * tileSize + offsetY
 
                     for object in self.grid[x][y]["layers"][layer]:
-                        for spriteName in object.getSpriteNamesWithContents():
-                            self.spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
+                        object.render(self.spriteLibrary, window, screenX, screenY, scale)
 
         if renderGridLocations or includeGrid:
             for y in range(worldStartY, worldStartY + sizeTilesY):
