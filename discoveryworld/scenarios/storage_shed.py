@@ -6,7 +6,7 @@ from discoveryworld.Layer import Layer
 from discoveryworld.buildings.colony import mkStorageShed
 from discoveryworld.buildings.terrain import mkGrassFill, mkPathX
 
-
+# TODO: Make the task generate a random combination of chemicals that works as a de-ruster on initialization (currently hardcoded to 1-part Chemical A and 2 parts Chemical C)
 def makeScenarioStorageShed(world, numUserAgents=1, rng=None):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
