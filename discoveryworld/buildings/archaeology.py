@@ -14,6 +14,11 @@ def mkDigSite(x, y, world, r, digSiteNum, artifactAge):
         totalLocations = digSiteSizeX * digSiteSizeY
     locationOfArtifact = r.randint(0, totalLocations-1)
 
+    # The artifact to add
+    artifact = world.createObject("AncientArtifact")
+    # Add the age
+    artifact.attributes['radiocarbonAge'] = artifactAge
+
     # Make the dig site soil (with one hole containing an artifact)
     count = 0       # Counter for where to place the artifact
     for i in range(0, digSiteSizeX):
@@ -25,10 +30,6 @@ def mkDigSite(x, y, world, r, digSiteNum, artifactAge):
 
             # Randomly add an artifact to one of the soil tiles
             if (count == locationOfArtifact):
-                # Add an artifact
-                artifact = world.createObject("AncientArtifact")
-                # Add the age
-                artifact.attributes['radiocarbonAge'] = artifactAge
                 # Add the artifact to the hole
                 soilTile.addObject(artifact, force=True)
 
@@ -37,11 +38,13 @@ def mkDigSite(x, y, world, r, digSiteNum, artifactAge):
 
             count += 1
 
-
     # Add a sign to the dig site
     sign = world.createObject("Sign")
     sign.setText("Dig Site " + str(digSiteNum))
     world.addObject(x, y, Layer.FURNITURE, sign)
+
+    # Return the artifact that was added
+    return artifact
 
 
 
@@ -85,3 +88,6 @@ def mkDigSiteWithObj(x, y, world, r, digSiteNum, artifactObj, artifactExposed=Fa
     sign = world.createObject("Sign")
     sign.setText("Dig Site " + str(digSiteNum))
     world.addObject(x, y, Layer.FURNITURE, sign)
+
+    # Return the sign that was added
+    return sign

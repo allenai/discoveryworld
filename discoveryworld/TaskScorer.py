@@ -463,6 +463,39 @@ class ArcheologyDigGenericRadioisotopes(Task):
         self.artifacts = []
         self.signs = []
 
+        # Scorecard elements (TODO)
+        # Taking critical objects
+        self.scorecardRadioisotopeMeter = ScorecardElement("Take radioisotope meter", "The radioisotope meter has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardRadioisotopeMeter)
+        self.scorecardShovel = ScorecardElement("Take shovel", "The shovel has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardShovel)
+        self.scorecardFlag = ScorecardElement("Take flag", "The flag has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardFlag)
+
+        # 3 unknown objects uncovered
+        self.scorecardUncoveredArtifacts = ScorecardElement("Uncover 3 unknown artifacts", "3 unknown artifacts have been uncovered", maxScore=3)
+        self.scoreCard.append(self.scorecardUncoveredArtifacts)
+
+        # Radioisotope meter used on 3 seed artifacts
+        self.scorecardRadioisotopeMeterUsed = ScorecardElement("Use radioisotope meter on 3 seed artifacts", "The radioisotope meter has been used on 3 seed artifacts", maxScore=3)
+
+        # Radioisotope meter used on 3 unknown artifacts
+        self.scorecardRadioisotopeMeterUsedUnknown = ScorecardElement("Use radioisotope meter on 3 unknown artifacts", "The radioisotope meter has been used on 3 unknown artifacts", maxScore=3)
+
+        # Flag moved to correct location (or not) -- ends task
+        self.scorecardFlagMoved = ScorecardElement("Move flag to correct location", "The flag has been moved to the correct location", maxScore=1)
+
+        # TODO: Add subtask that requires agent to use the soil nutrient meter on at least one square of soil from the field?
+
+        # Add hypotheses from scoringInfo
+        self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+
+        # Scoring Info passed from the scenario
+        # scoringInfo["seedArtifacts"] = []
+        # scoringInfo["unknownArtifacts"] = []
+        # scoringInfo["radioisotopeMeter"] = radioisotopeMeter
+        # scoringInfo["shovel"] = shovel
+        # scoringInfo["flag"] = flag
 
     # Task setup: Add any necessary objects to the world to perform the task.
     def taskSetup(self):
@@ -597,26 +630,28 @@ class SoilNutrientTask(Task):
         self.newPlantsGrown = set()             # New plants grown since the start of the task
 
         # Scorecard elements
-        self.scorecardSoilNutrientMeterPresent = ScorecardElement("Soil Nutrient Meter Present", "The soil nutrient meter has been in an agent's inventory", 1)
+        self.scorecardSoilNutrientMeterPresent = ScorecardElement("Soil Nutrient Meter Present", "The soil nutrient meter has been in an agent's inventory", maxScore=1)
         self.scoreCard.append(self.scorecardSoilNutrientMeterPresent)
-        self.scorecardShovelPresent = ScorecardElement("Shovel Present", "The shovel has been in an agent's inventory", 1)
+        self.scorecardShovelPresent = ScorecardElement("Shovel Present", "The shovel has been in an agent's inventory", maxScore=1)
         self.scoreCard.append(self.scorecardShovelPresent)
-        self.scorecardJarPresent = ScorecardElement("Seed Jar Present", "The seed jar has been in an agent's inventory", 1)
+        self.scorecardJarPresent = ScorecardElement("Seed Jar Present", "The seed jar has been in an agent's inventory", maxScore=1)
         self.scoreCard.append(self.scorecardJarPresent)
-        self.scorecardAtLeastOneSeedPlanted = ScorecardElement("At Least One Seed Planted", "At least one seed has been planted in the ground", 1)
+        self.scorecardAtLeastOneSeedPlanted = ScorecardElement("At Least One Seed Planted", "At least one seed has been planted in the ground", maxScore=1)
         self.scoreCard.append(self.scorecardAtLeastOneSeedPlanted)
-        self.scorecardAtLeastTwoNewPlants = ScorecardElement("At Least Two New Plants", "At least two new plants (mushrooms) have been grown to maturity", 2)
+        self.scorecardAtLeastTwoNewPlants = ScorecardElement("At Least Two New Plants", "At least two new plants (mushrooms) have been grown to maturity", maxScore=2)
         self.scoreCard.append(self.scorecardAtLeastTwoNewPlants)
+
+        # TODO: Add subtask that requires agent to use the soil nutrient meter on at least one square of soil from the field?
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
 
-    # Scoring Info passed from the scenario
-    # scoringInfo["startingPlants"] = []
-    # scoringInfo["startingSeeds"].append(seed)
-    # scoringInfo["soilNutrientMeter"] = obj
-    # scoringInfo["shovel"] = obj
-    # scoringInfo["jar"] = obj            # Seed jar
+        # Scoring Info passed from the scenario
+        # scoringInfo["startingPlants"] = []
+        # scoringInfo["startingSeeds"].append(seed)
+        # scoringInfo["soilNutrientMeter"] = obj
+        # scoringInfo["shovel"] = obj
+        # scoringInfo["jar"] = obj            # Seed jar
 
     # Task setup: Add any necessary objects to the world to perform the task.
     def taskSetup(self):

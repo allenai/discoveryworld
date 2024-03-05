@@ -10,7 +10,10 @@ from discoveryworld.buildings import mkGrassFill
 from discoveryworld.buildings.archaeology import mkDigSite, mkDigSiteWithObj
 
 
+# This is the SIMPLE version of the task, with a radiocarbon meter
 def makeScenarioArchaeologicalDig(world, numUserAgents=1, rng=None):
+    scoringInfo = {}
+    scoringInfo["criticalHypotheses"] = []
     rng = rng or random.Random()
     numDigSites = 3
 
@@ -38,23 +41,31 @@ def makeScenarioArchaeologicalDig(world, numUserAgents=1, rng=None):
     digSiteLocations = [(10, 10), (20, 13), (12, 18)]
 
     # Add 3 dig sites
+    scoringInfo["unknownArtifacts"] = []
     for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
-        mkDigSite(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifactAges[digSiteIdx])
+        artifact = mkDigSite(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifactAges[digSiteIdx])
+        scoringInfo["unknownArtifacts"].append(artifact)
+
+    # TODO: Critical hypotheses
+    scoringInfo["criticalHypotheses"] = ["TODO: Add critical hypotheses here"]
 
     # Add a table at the start of the dig site
     instrumentTable = world.createObject("Table")
     world.addObject(15, 15, Layer.FURNITURE, instrumentTable)
     # Add a radiocarbon meter to the table
-    instrumentTable.addObject( world.createObject("RadioCarbonMeter") )
-
+    radioCarbonMeter = world.createObject("RadioCarbonMeter")
+    instrumentTable.addObject( radioCarbonMeter )
+    scoringInfo["radioCarbonMeter"] = radioCarbonMeter
 
     # Add a shovel at the start of the dig site
     shovel = world.createObject("Shovel")
     world.addObject(14, 15, Layer.FURNITURE, shovel)
+    scoringInfo["shovel"] = shovel
 
     # Add a flag at the start of the dig site
     flag = world.createObject("Flag")
     world.addObject(14, 16, Layer.FURNITURE, flag)
+    scoringInfo["flag"] = flag
 
     # Add some random holes
     minHoles = 1
@@ -129,7 +140,12 @@ def makeScenarioArchaeologicalDig(world, numUserAgents=1, rng=None):
 #
 # Make the archeological dig scenario
 #
+
+# This is the HARD version of the task, with a generic radioisotope meter, where the agent has to figure out which radioisotope is useful for dating the artifacts
 def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1, rng=None):
+    scoringInfo = {}
+    scoringInfo["criticalHypotheses"] = []
+
     rng = rng or random.Random()
     numDigSites = 3
 
@@ -270,32 +286,37 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1, rng
 
 
     # Add dig sites
+    scoringInfo["seedArtifacts"] = []
+    scoringInfo["unknownArtifacts"] = []
     for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
         if (digSiteIdx < 3):
             # Seed artifact
             artifact = seedArtifacts[digSiteIdx]
-            mkDigSiteWithObj(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifact, artifactExposed=True)
+            _ = mkDigSiteWithObj(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifact, artifactExposed=True)
+            scoringInfo["seedArtifacts"].append(artifact)
         else:
             # Unknown artifact
             artifact = unknownArtifacts[digSiteIdx-3]
-            mkDigSiteWithObj(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifact, artifactExposed=False)
-            #self.mkDigSite(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifactAges[digSiteIdx])
-
+            addedSign = mkDigSiteWithObj(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifact, artifactExposed=False)
+            scoringInfo["unknownArtifacts"].append(artifact)
 
     # Add a table at the start of the dig site
     instrumentTable = world.createObject("Table")
     world.addObject(15, 15, Layer.FURNITURE, instrumentTable)
     # Add a radiocarbon meter to the table
-    instrumentTable.addObject( world.createObject("RadioisotopeMeter") )
-
+    radioisotopeMeter = world.createObject("RadioisotopeMeter")
+    instrumentTable.addObject( radioisotopeMeter )
+    scoringInfo["radioisotopeMeter"] = radioisotopeMeter
 
     # Add a shovel at the start of the dig site
     shovel = world.createObject("Shovel")
     world.addObject(14, 15, Layer.FURNITURE, shovel)
+    scoringInfo["shovel"] = shovel
 
     # Add a flag at the start of the dig site
     flag = world.createObject("Flag")
     world.addObject(14, 16, Layer.FURNITURE, flag)
+    scoringInfo["flag"] = flag
 
     # Add some random holes
     minHoles = 1
