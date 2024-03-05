@@ -26,7 +26,7 @@ class ScenarioMaker():
 
         elif (scenarioName == "archaeology_dating_simple"):
             scoringInfo = makeScenarioArchaeologicalDig(self.world, numUserAgents, rng=self.rng)
-            self.world.addTaskByName("ArcheologyDigTask", scoringInfo)
+            self.world.addTaskByName("ArcheologyDigTaskEasy", scoringInfo)
             return (True, "")
 
         elif (scenarioName == "archaeology_dating_challenge"):

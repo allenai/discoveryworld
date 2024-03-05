@@ -36,15 +36,21 @@ def makeScenarioArchaeologicalDig(world, numUserAgents=1, rng=None):
     rng.shuffle(artifactAges)
     # Trim to the first numDigSites
     artifactAges = artifactAges[:numDigSites]
+    # Find the oldest artifact
+    oldestArtifactAge = max(artifactAges)
 
     # List dig site locations
     digSiteLocations = [(10, 10), (20, 13), (12, 18)]
 
     # Add 3 dig sites
     scoringInfo["unknownArtifacts"] = []
+    scoringInfo["signs"] = []
     for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
-        artifact = mkDigSite(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifactAges[digSiteIdx])
+        artifact, sign = mkDigSite(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifactAges[digSiteIdx])
         scoringInfo["unknownArtifacts"].append(artifact)
+        scoringInfo["signs"].append(sign)
+        if (artifact.attributes["radiocarbonAge"] == oldestArtifactAge):
+            scoringInfo["targetSign"] = sign
 
     # TODO: Critical hypotheses
     scoringInfo["criticalHypotheses"] = ["TODO: Add critical hypotheses here"]
@@ -135,6 +141,9 @@ def makeScenarioArchaeologicalDig(world, numUserAgents=1, rng=None):
     for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
         world.addTeleportLocation("dig site " + str(digSiteIdx+1), digSiteLocation[0]-1, digSiteLocation[1]+1)
 
+
+    # Return the scoring info
+    return scoringInfo
 
 
 #

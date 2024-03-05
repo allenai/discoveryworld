@@ -44,7 +44,7 @@ def mkDigSite(x, y, world, r, digSiteNum, artifactAge):
     world.addObject(x, y, Layer.FURNITURE, sign)
 
     # Return the artifact that was added
-    return artifact
+    return artifact, sign
 
 
 
