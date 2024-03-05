@@ -654,7 +654,7 @@ class SoilNutrientTask(Task):
         self.score = 0
         self.maxScore = 6                       # Maximum score
 
-        self.atLeastOneSeedPlanted = False      # Has at least one seed ever been planted
+        self.newSeedsPlanted = set()            # New seeds planted since the start of the task
         self.newPlantsGrown = set()             # New plants grown since the start of the task
 
         # Scorecard elements
@@ -664,12 +664,14 @@ class SoilNutrientTask(Task):
         self.scoreCard.append(self.scorecardShovelPresent)
         self.scorecardJarPresent = ScorecardElement("Seed Jar Present", "The seed jar has been in an agent's inventory", maxScore=1)
         self.scoreCard.append(self.scorecardJarPresent)
-        self.scorecardAtLeastOneSeedPlanted = ScorecardElement("At Least One Seed Planted", "At least one seed has been planted in the ground", maxScore=1)
-        self.scoreCard.append(self.scorecardAtLeastOneSeedPlanted)
+        self.scorecardUseSoilNutrientMeter = ScorecardElement("Use Soil Nutrient Meter", "The soil nutrient meter has been used on at least 2 squares of soil from the pilot field", maxScore=2)
+        self.scoreCard.append(self.scorecardUseSoilNutrientMeter)
+        self.scorecardAtLeastTwoSeedsPlanted = ScorecardElement("At Least 2 Seeds Planted", "At least 2 seeds have been planted in the ground", maxScore=2)
+        self.scoreCard.append(self.scorecardAtLeastTwoSeedsPlanted)
         self.scorecardAtLeastTwoNewPlants = ScorecardElement("At Least Two New Plants", "At least two new plants (mushrooms) have been grown to maturity", maxScore=2)
         self.scoreCard.append(self.scorecardAtLeastTwoNewPlants)
 
-        # TODO: Add subtask that requires agent to use the soil nutrient meter on at least one square of soil from the field?
+        # Add subtask that requires agent to use the soil nutrient meter on at least one square of soil from the field?
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
@@ -680,6 +682,8 @@ class SoilNutrientTask(Task):
         # scoringInfo["soilNutrientMeter"] = obj
         # scoringInfo["shovel"] = obj
         # scoringInfo["jar"] = obj            # Seed jar
+        # scoringInfo["pilotFieldSoilTiles"]
+
 
     # Task setup: Add any necessary objects to the world to perform the task.
     def taskSetup(self):
@@ -723,11 +727,26 @@ class SoilNutrientTask(Task):
                     self.scorecardJarPresent.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["jar"].uuid], associatedNotes="The jar has been in the inventory of the agent with uuid " + str(jarContainer.uuid))
         #self.scoreCard.append(self.scorecardJarPresent)
 
+        # Check if the soil nutrient meter has been used on at least 2 squares of soil from the pilot field
+        if (not self.scorecardUseSoilNutrientMeter.completed):
+            soilTilesChecked = set()
+            for agent in self.world.getUserAgents():
+                for soilTile in self.scoringInfo["pilotFieldSoilTiles"]:
+                    foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=self.scoringInfo["soilNutrientMeter"], arg2=soilTile, stopAtFirst=True)
+                    if (len(foundActions) > 0):
+                        soilTilesChecked.add(soilTile.uuid)
+
+            numSoilTilesChecked = len(soilTilesChecked)
+            isComplete = False
+            if (numSoilTilesChecked >= 2):
+                isComplete = True
+            self.scorecardUseSoilNutrientMeter.updateScore(score=numSoilTilesChecked, completed=isComplete, associatedUUIDs=list(soilTilesChecked), associatedNotes="The following soil tiles have been checked with the soil nutrient meter: " + str(soilTilesChecked))
+
         # Check for at least one seed that is not a starting seed to be in the ground
         # First, get all objects
         allObjects = self.world.getAllWorldObjects()
 
-        if (not self.scorecardAtLeastOneSeedPlanted.completed):
+        if (not self.scorecardAtLeastTwoSeedsPlanted.completed):
             for obj in allObjects:
                 if (obj.type == "seed"):
                     # Make sure this seed isn't in the list of starting seeds
@@ -738,8 +757,13 @@ class SoilNutrientTask(Task):
                             if (parentContainer.type == "soil"):
                                 # Make sure there's no hole in the soil (i.e. the hole is filled in/the seed is planted)
                                 if (parentContainer.attributes['hasHole'] == False):
-                                    self.scorecardAtLeastOneSeedPlanted.updateScore(score=1, completed=True, associatedUUIDs=[obj.uuid], associatedNotes="At least one seed has been planted in the ground (in soil tile with uuid " + str(parentContainer.uuid) + ")")
-        #self.scoreCard.append(self.scorecardAtLeastOneSeedPlanted)
+                                    self.newSeedsPlanted.add(obj.uuid)
+            numNewSeedsPlanted = len(self.newSeedsPlanted)
+            isCompleted = False
+            if (numNewSeedsPlanted >= 2):
+                isCompleted = True
+            self.scorecardAtLeastTwoSeedsPlanted.updateScore(score=numNewSeedsPlanted, completed=isCompleted, associatedUUIDs=list(self.newSeedsPlanted), associatedNotes="At least two new seeds have been planted in the ground")
+
 
         # Check for at least 2 new plants (Mushrooms) to exist
         if (not self.scorecardAtLeastTwoNewPlants.completed):
@@ -758,6 +782,11 @@ class SoilNutrientTask(Task):
 
             self.scorecardAtLeastTwoNewPlants.updateScore(score=numMaturePlants, completed=completedTwoNewPlants, associatedUUIDs=[plant.uuid for plant in self.newPlantsGrown], associatedNotes="At least two new plants have been grown to maturity")
 
+            # Ultimately, it's having successfully grown 2 new plants that determines whether the task is complete
+            if (completedTwoNewPlants == True):
+                self.completed = True
+                self.completedSuccessfully = True
+
         #self.scoreCard.append(self.scorecardAtLeastTwoNewPlants)
 
 
@@ -770,12 +799,4 @@ class SoilNutrientTask(Task):
         self.score = score
         self.maxScore = maxScore
 
-        # Check if the task is complete
-        # In this task, the task is complete if all the scorecard elements are complete
-        completed = True
-        for scorecardElement in self.scoreCard:
-            if (scorecardElement.completed == False):
-                completed = False
-                break
-        self.completed = completed
-        self.completedSuccessfully = completed
+        # TODO: Add a timeout that marks the task complete 100 steps after the last soil controller has been used?
