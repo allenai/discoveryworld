@@ -304,6 +304,8 @@ class RustedKeyTask(Task):
         self.scorecardAgentOutside = ScorecardElement("Agent is outside", "The agent is outside the shed", maxScore=1)
         self.scoreCard.append(self.scorecardAgentOutside)
 
+        # Add hypotheses from scoringInfo
+        self.criticalHypotheses = scoringInfo["criticalHypotheses"]
 
 
     # Task setup: Add any necessary objects to the world to perform the task.

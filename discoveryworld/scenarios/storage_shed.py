@@ -29,6 +29,9 @@ def makeScenarioStorageShed(world, numUserAgents=1, rng=None):
     # Buildings
     mkStorageShed(15, 10, world, DOOR_KEY_ID, scoringInfo)
 
+    # Critical Hypothesis
+    scoringInfo["criticalHypotheses"] = ["If the key is placed in a mixture of 1 part Chemical A and 2 parts Chemical C, then the rust will be removed."]
+
     # Paths
     mkPathX(17, 15, 15, world)       # Town square to farm
 
@@ -72,6 +75,7 @@ def makeScenarioStorageShed(world, numUserAgents=1, rng=None):
 
 
     # Add teleport locations to world
-    # world.addTeleportLocation("shed", 12, 13)
+    world.addTeleportLocation("shed", 18, 12)
+
 
     return scoringInfo
