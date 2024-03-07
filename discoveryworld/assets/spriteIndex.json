@@ -267,6 +267,10 @@
                 "quantum_crystal":      { "baseTile": [6, 5],  "size": [1, 1] },
                 "crystal_reactor_off":  { "baseTile": [6, 4],  "size": [1, 1] },
                 "crystal_reactor_on":   { "baseTile": [7, 4],  "size": [1, 1] },
+                "generator_left":       { "baseTile": [5, 7],  "size": [1, 1] },
+                "generator_right":      { "baseTile": [7, 7],  "size": [1, 1] },
+                "generator_center_off": { "baseTile": [4, 7],  "size": [1, 1] },
+                "generator_center_on":  { "baseTile": [6, 7],  "size": [1, 1] },
 
                 "soil_controller":      { "baseTile": [4, 1],  "size": [1, 1] },
                 "radiocarbon_meter":    { "baseTile": [4, 4],  "size": [1, 1] },

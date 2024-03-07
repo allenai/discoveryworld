@@ -248,6 +248,9 @@ class ObjectMaker:
             "SeedRequiringNutrients": SeedRequiringNutrients,
             "QuantumCrystal": QuantumCrystal,
             "CrystalReactor": CrystalReactor,
+            "GeneratorSideLeft": GeneratorSideLeft,
+            "GeneratorSideRight": GeneratorSideRight,
+            "GeneratorCenter": GeneratorCenter,
 
             # Colored objects
             "PaintBucket": PaintBucket,
