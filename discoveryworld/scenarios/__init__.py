@@ -4,6 +4,7 @@ from discoveryworld.scenarios.plant_growing import makeScenarioPlantGrowing
 from discoveryworld.scenarios.rosetta_stone import makeScenarioRosettaStone
 from discoveryworld.scenarios.storage_shed import makeScenarioStorageShed
 from discoveryworld.scenarios.town import makeScenarioTown
+from discoveryworld.scenarios.reactor_lab import makeScenarioReactorLab
 
 SCENARIOS = {
     "Town": makeScenarioTown,
@@ -12,4 +13,5 @@ SCENARIOS = {
     "ArchaeologicalDig": makeScenarioArchaeologicalDig,
     "ArchaeologicalDigGenericRadioisotope": makeScenarioArchaeologicalDigGenericRadioisotope,
     "RosettaStone": makeScenarioRosettaStone,
+    "ReactorLab": makeScenarioReactorLab,
 }

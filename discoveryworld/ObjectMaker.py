@@ -246,6 +246,8 @@ class ObjectMaker:
             "PlantTreeBig": PlantTreeBig,
             "SoilNutrientMeter": SoilNutrientMeter,
             "SeedRequiringNutrients": SeedRequiringNutrients,
+            "QuantumCrystal": QuantumCrystal,
+            "CrystalReactor": CrystalReactor,
 
             # Colored objects
             "PaintBucket": PaintBucket,

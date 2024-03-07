@@ -355,7 +355,7 @@ class UserInterface:
         else:
             color = (int(255 * (1-taskScore)), int(255 * (taskScore)), 0)
         # Then, draw the background
-        pygame.draw.rect(self.window, color, (x, y, 250, 20))
+        pygame.draw.rect(self.window, color, (x, y, 200, 20))
 
         # Draw the text
         # First, get the text

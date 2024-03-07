@@ -264,6 +264,10 @@
                 "key_black":            { "baseTile": [2, 5],  "size": [1, 1], "color": "black" },
                 "key_orange":           { "baseTile": [2, 5],  "size": [1, 1], "color": "orange" },
 
+                "quantum_crystal":      { "baseTile": [6, 5],  "size": [1, 1] },
+                "crystal_reactor_off":  { "baseTile": [6, 4],  "size": [1, 1] },
+                "crystal_reactor_on":   { "baseTile": [7, 4],  "size": [1, 1] },
+
                 "soil_controller":      { "baseTile": [4, 1],  "size": [1, 1] },
                 "radiocarbon_meter":    { "baseTile": [4, 4],  "size": [1, 1] },
                 "generic_meter":        { "baseTile": [4, 5],  "size": [1, 1] },

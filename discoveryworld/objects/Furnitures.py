@@ -284,18 +284,13 @@ class Table(Object):
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
 
+        # Rendering attributes
+        self.attributes["screenYOffset"] = -7                      # Small Y offset. This is to make it look like the objects are on the table.
+
+
     def tick(self):
         # Call superclass
         Object.tick(self)
-
-    def render(self, spriteLibrary, window, screenX, screenY, scale):
-        for spriteName in self.getSpriteNames():
-            spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
-
-        # Small Y offset. This is to make it look like the objects are on the table.
-        screenY -= 7 #* scale
-        for spriteName in self.getContentsSpriteNames():
-            spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
 
 
 class TableBedside(Object):

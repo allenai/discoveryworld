@@ -6,3 +6,4 @@ from discoveryworld.objects.Furnitures import *
 from discoveryworld.objects.ScienceTools import *
 from discoveryworld.objects.Terrain import *
 from discoveryworld.objects.Tools import *
+from discoveryworld.objects.ReactorLab import *
