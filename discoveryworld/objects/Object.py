@@ -508,38 +508,42 @@ class Object:
         self.lastSpriteName = self.tempLastSpriteName
 
     # TODO: DEPRICATING?
-    # def getContentsSpriteNames(self):
-    #     spriteList = []
-    #     # Then, add the name of any visible contents
-    #     # First, check if this is a container (and it's open)
-    #     if (self.attributes['isContainer'] and self.attributes['isOpenContainer']):
-    #         # Make sure that the sprites for the contents should be displayed, and that this isn't handled by the sprite function rendering different sprites for full vs empty objects
-    #         if (self.attributes['contentsVisible2D']):
-    #             # If so, then add the contents
-    #             for obj in self.contents:
-    #                 # Add the sprite name of the object
-    #                 spriteNameObj = obj.getSpriteName()
+    def getContentsSpriteNames(self):
+        spriteList = []
+        # Then, add the name of any visible contents
+        # First, check if this is a container (and it's open)
+        if (self.attributes['isContainer'] and self.attributes['isOpenContainer']):
+            # Make sure that the sprites for the contents should be displayed, and that this isn't handled by the sprite function rendering different sprites for full vs empty objects
+            if (self.attributes['contentsVisible2D']):
+                # If so, then add the contents
+                for obj in self.contents:
+                    # Add the sprite name of the object
+                    spriteNameObj = obj.getSpriteName()
 
-    #                 if spriteNameObj is not None:
-    #                     spriteList.append(spriteNameObj)
-    #                     # Add any sprite modifiers
-    #                     spriteList.extend(obj.curSpriteModifiers)
+                    if spriteNameObj is not None:
+                        spriteList.append(spriteNameObj)
+                        # Add any sprite modifiers
+                        spriteList.extend(obj.curSpriteModifiers)
 
-    #         # If the object has the 'objectToShow' attribute, like for agents showing the last object they interacted with, then add that object's sprite name
-    #         if ('objectToShow' in self.attributes) and (self.attributes['objectToShow'] != None):
-    #             # Get the object to show
-    #             obj = self.attributes['objectToShow']
+                        # Sprite names of contents
+                        spriteList.extend(obj.getSpriteNamesWithContents())
 
-    #             # Make sure that object's parent container is this object, otherwise discontinue
-    #             if (obj.parentContainer == self):
-    #                 # Add the sprite name of the object
-    #                 spriteNameObj = obj.getSpriteName()
-    #                 if spriteNameObj is not None:
-    #                     spriteList.append(spriteNameObj)
-    #                     # Add any sprite modifiers
-    #                     spriteList.extend(obj.curSpriteModifiers)
 
-    #     return spriteList
+            # If the object has the 'objectToShow' attribute, like for agents showing the last object they interacted with, then add that object's sprite name
+            if ('objectToShow' in self.attributes) and (self.attributes['objectToShow'] != None):
+                # Get the object to show
+                obj = self.attributes['objectToShow']
+
+                # Make sure that object's parent container is this object, otherwise discontinue
+                if (obj.parentContainer == self):
+                    # Add the sprite name of the object
+                    spriteNameObj = obj.getSpriteName()
+                    if spriteNameObj is not None:
+                        spriteList.append(spriteNameObj)
+                        # Add any sprite modifiers
+                        spriteList.extend(obj.curSpriteModifiers)
+
+        return spriteList
 
     def getSpriteNames(self):
         # First, get the name of the current object itself
@@ -568,35 +572,12 @@ class Object:
         return spriteList
 
     def render(self, spriteLibrary, window, screenX, screenY, scale):
-        #for spriteName in self.getSpriteNamesWithContents():
-        #   spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
         # Render this object and it's sprite(s)
         for spriteName in self.getSpriteNames():
             spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
 
-        # Render the contents (if applicable, unless hidden)
-        if (self.attributes['isContainer'] and self.attributes['isOpenContainer']):
-            # Make sure that the sprites for the contents should be displayed, and that this isn't handled by the sprite function rendering different sprites for full vs empty objects
-            renderingOffsetY = self.attributes["screenYOffset"]
-            #renderingOffsetY = -5
-            if (self.attributes['contentsVisible2D']):
-                for containedObject in self.contents:
-                    # Render the object
-                    containedObject.render(spriteLibrary, window, screenX, screenY + renderingOffsetY, scale)
-
-        # Last object interacted with
-        # If the object has the 'objectToShow' attribute, like for agents showing the last object they interacted with, then add that object's sprite name
-        if ('objectToShow' in self.attributes) and (self.attributes['objectToShow'] != None):
-            # Get the object to show
-            obj = self.attributes['objectToShow']
-
-            # Make sure that object's parent container is this object, otherwise discontinue
-            if (obj.parentContainer == self):
-                # Add the sprite name of the object
-                obj.render(spriteLibrary, window, screenX, screenY, scale)
-
-        #for spriteName in self.getContentsSpriteNames():
-        #    spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
+        for spriteName in self.getContentsSpriteNames():
+            spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
 
 
 
@@ -614,7 +595,7 @@ class Object:
             "parts": [],
             "attributes": {},
             "actionHistory": None,
-            #"spriteNames": self.getSpriteNamesWithContents()       ## TODO: Deprecated for the moment, since objects now render themselves.
+            "spriteNames": self.getSpriteNamesWithContents()       ## TODO: Deprecated for the moment, since objects now render themselves.
         }
 
         # Serialize contents
