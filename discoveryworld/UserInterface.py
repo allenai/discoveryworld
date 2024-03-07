@@ -421,8 +421,10 @@ class UserInterface:
 
     # Helper to render an object's sprite(s) at a given x/y location
     def _renderObjectSprite(self, object, x, y, scale=1.0):
-        for spriteName in object.getSpriteNamesWithContents():
-            self.spriteLibrary.renderSprite(self.window, spriteName, x, y, scale, adjustY=True)
+        #for spriteName in object.getSpriteNamesWithContents():
+        #    self.spriteLibrary.renderSprite(self.window, spriteName, x, y, scale, adjustY=True)
+        for spriteDict in object.getSpriteNamesWithContents():
+            self.spriteLibrary.renderSprite(self.window, spriteDict["spriteName"], x, y + spriteDict["yOffset"], scale, adjustY=True)
 
 
     # Render a box that shows (graphically) a set of objects the agent might select from.

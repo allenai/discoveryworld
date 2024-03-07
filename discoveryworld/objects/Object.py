@@ -507,8 +507,8 @@ class Object:
         # Update the last sprite name
         self.lastSpriteName = self.tempLastSpriteName
 
-    # TODO: DEPRICATING?
-    def getContentsSpriteNames(self):
+    # Now returns a list of dicts ({"spriteName": ..., "yOffset": ...})
+    def getContentsSpriteNames(self, yOffset:int=0):
         spriteList = []
         # Then, add the name of any visible contents
         # First, check if this is a container (and it's open)
@@ -521,13 +521,14 @@ class Object:
                     spriteNameObj = obj.getSpriteName()
 
                     if spriteNameObj is not None:
-                        spriteList.append(spriteNameObj)
+                        spriteList.append({"spriteName": spriteNameObj, "yOffset": yOffset})
                         # Add any sprite modifiers
-                        spriteList.extend(obj.curSpriteModifiers)
+                        #spriteList.extend(obj.curSpriteModifiers)
+                        for spriteModifier in obj.curSpriteModifiers:
+                            spriteList.append({"spriteName": spriteModifier, "yOffset": yOffset})
 
                         # Sprite names of contents
-                        spriteList.extend(obj.getSpriteNamesWithContents())
-
+                        spriteList.extend(obj.getSpriteNamesWithContents(yOffset=yOffset + obj.attributes["screenYOffset"]))
 
             # If the object has the 'objectToShow' attribute, like for agents showing the last object they interacted with, then add that object's sprite name
             if ('objectToShow' in self.attributes) and (self.attributes['objectToShow'] != None):
@@ -539,45 +540,56 @@ class Object:
                     # Add the sprite name of the object
                     spriteNameObj = obj.getSpriteName()
                     if spriteNameObj is not None:
-                        spriteList.append(spriteNameObj)
+                        #spriteList.append(spriteNameObj)
+                        spriteList.append({"spriteName": spriteNameObj, "yOffset": yOffset})
                         # Add any sprite modifiers
-                        spriteList.extend(obj.curSpriteModifiers)
+                        #spriteList.extend(obj.curSpriteModifiers)
+                        for spriteModifier in obj.curSpriteModifiers:
+                            spriteList.append({"spriteName": spriteModifier, "yOffset": yOffset})
 
         return spriteList
 
-    def getSpriteNames(self):
+    # Now returns a list of dicts ({"spriteName": ..., "yOffset": ...})
+    def getSpriteNames(self, yOffset:int=0):
         # First, get the name of the current object itself
         spriteNameOrNames = self.getSpriteName()
         spriteList = []
         if (isinstance(spriteNameOrNames, list)):
-            spriteList.extend(spriteNameOrNames)
+            #spriteList.extend(spriteNameOrNames)
+            for spriteName in spriteNameOrNames:
+                spriteList.append({"spriteName": spriteName, "yOffset": yOffset})
         else:
-            spriteList.append(spriteNameOrNames)
+            #spriteList.append(spriteNameOrNames)
+            spriteList.append({"spriteName": spriteNameOrNames, "yOffset": yOffset})
 
         # Add any sprite modifiers
-        spriteList.extend(self.curSpriteModifiers)
+        #spriteList.extend(self.curSpriteModifiers)
+        for spriteModifier in self.curSpriteModifiers:
+            spriteList.append({"spriteName": spriteModifier, "yOffset": yOffset})
+
         return spriteList
 
-    def getSpriteNamesWithContents(self):
+    def getSpriteNamesWithContents(self, yOffset:int=0):
         # Get the sprite name, including the contents of the object
         # This is used for rendering objects that contain other objects (e.g. containers)
 
         # First, get the name of the current object itself
-        spriteList = self.getSpriteNames()
+        spriteList = self.getSpriteNames(yOffset=yOffset)
 
         # Then, add the name of any visible contents
-        spriteList.extend(self.getContentsSpriteNames())
+        spriteList.extend(self.getContentsSpriteNames(yOffset=yOffset + self.attributes["screenYOffset"]))
 
         # Return the sprite list
         return spriteList
 
-    def render(self, spriteLibrary, window, screenX, screenY, scale):
-        # Render this object and it's sprite(s)
-        for spriteName in self.getSpriteNames():
-            spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
+    # TODO: DEPRECATING
+    # def render(self, spriteLibrary, window, screenX, screenY, scale):
+    #     # Render this object and it's sprite(s)
+    #     for spriteName in self.getSpriteNames():
+    #         spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
 
-        for spriteName in self.getContentsSpriteNames():
-            spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
+    #     for spriteName in self.getContentsSpriteNames():
+    #         spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
 
 
 
