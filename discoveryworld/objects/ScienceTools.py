@@ -19,7 +19,7 @@ class Microscope(Object):
     #
     def actionUseWith(self, patientObj):
         # Use this object on the patient object
-        microscopeDescriptionStr = "You use the microscope to view the " + patientObj.name + ".\n"
+        microscopeDescriptionStr = "You use the microscope to observe the " + patientObj.name + ".\n"
         # Get the description of the object as observed under a microscope
         microscopeDescriptionStr += patientObj.getTextObservationMicroscopic()
         # Return the action response
@@ -411,7 +411,7 @@ class Spectrometer(Object):
     #
     def actionUseWith(self, patientObj):
         # Use this object on the patient object
-        useDescriptionStr = "You use the spectrometer to view the " + patientObj.name + ".\n"
+        useDescriptionStr = "You use the spectrometer to examine the " + patientObj.name + ".\n"
 
         # Get the patient object, and all its parts
         # def getAllContainedObjectsAndParts(self, includeContents=True, includeParts=True):
@@ -506,6 +506,72 @@ class Thermometer(Object):
 
         # Report the temperature (to 1 decimal place(s)
         useDescriptionStr += "The thermometer reports a temperature of " + "{:.1f}".format(patientTemperature) + " degrees Celsius.\n"
+
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+
+    #
+    #   Tick
+    #
+    def tick(self):
+        # TODO: Invalidate sprite name if this or neighbouring walls change
+        if (False):
+            self.needsSpriteNameUpdate = True
+
+        # TODO
+
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+
+# TODO: Implement density measurement
+class Densitometer(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "densitometer", "densitometer", defaultSpriteName = "instruments_densitometer")
+
+        # Default attributes
+
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        pass
+
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        ### TODO: CURRENTLY JUST COPIED/PASTED FROM THE SPECTROMETER.
+
+        # Use this object on the patient object
+        useDescriptionStr = "You use the densitometer to examine the " + patientObj.name + ".\n"
+
+        # seedMediumArtifact.attributes["radioisotopeValues"]
+        # Check for a "radioisotopeValues" attribute in the patient object
+        if ("density" not in patientObj.attributes):
+            useDescriptionStr += "The results are inconclusive.\n"
+            return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+
+        # If the list is empty, then the results are inconclusive
+        if (patientObj.attributes["density"] <= 0):
+            useDescriptionStr += "The results are inconclusive.\n"
+            return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+
+        # If there are values, then report the values
+        useDescriptionStr += "The results are as follows:\n"
+        useDescriptionStr += "The density of the " + patientObj.name + " appears to be approximately " + "{:.3f}".format(patientObj.attributes["density"]) + " grams per cubic centimeter.\n"
 
         return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
 

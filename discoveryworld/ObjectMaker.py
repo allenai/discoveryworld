@@ -251,6 +251,7 @@ class ObjectMaker:
             "GeneratorSideLeft": GeneratorSideLeft,
             "GeneratorSideRight": GeneratorSideRight,
             "GeneratorCenter": GeneratorCenter,
+            "Densitometer": Densitometer,
 
             # Colored objects
             "PaintBucket": PaintBucket,

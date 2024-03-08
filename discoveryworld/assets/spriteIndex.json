@@ -271,6 +271,7 @@
                 "generator_right":      { "baseTile": [7, 7],  "size": [1, 1] },
                 "generator_center_off": { "baseTile": [4, 7],  "size": [1, 1] },
                 "generator_center_on":  { "baseTile": [6, 7],  "size": [1, 1] },
+                "densitometer":         { "baseTile": [4, 6],  "size": [1, 1] },
 
                 "soil_controller":      { "baseTile": [4, 1],  "size": [1, 1] },
                 "radiocarbon_meter":    { "baseTile": [4, 4],  "size": [1, 1] },

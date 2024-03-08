@@ -132,6 +132,9 @@ class Object:
         self.attributes["needsNutrientLevels"] = {}              # For seeds/plants: What nutrient levels do they need to grow?
         self.attributes["antirequirementsNutrientLevels"] = []   # A list of dictionaries, each containing a list of nutrient levels under which the seed/plant will NOT grow
 
+        # Object density
+        self.attributes["density"] = 0.0                         # Object density (in g/cm^3). <=0 means it's not applicable/inconclusive.
+
         # Force a first infer-sprite-name
         # NOTE: Moved to a global update (since other objects that the sprite depends on may not be populated yet when it is created)
         self.firstInit = True
