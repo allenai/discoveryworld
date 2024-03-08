@@ -11,6 +11,9 @@ from discoveryworld.Layer import Layer
 from discoveryworld.ActionHistory import ActionHistory, ActionType
 from discoveryworld.Pathfinding import *
 
+from discoveryworld.objects import QuantumCrystal
+
+
 #
 #   Agent (controlled by a user or model)
 #
@@ -2888,6 +2891,87 @@ class SoilController(NPC):
     # Updates the current sprite name based on the current state of the object
     def inferSpriteName(self, force:bool=False):
         self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   Quantum Crystal Reactor
+#
+class CrystalReactor(NPC):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        #Object.__init__(self, world, "crystal reactor", "crystal reactor", defaultSpriteName = "instruments_crystal_reactor_off")
+        Agent.__init__(self, world, "crystal reactor", "crystal reactor", defaultSpriteName = "instruments_crystal_reactor_off")
+
+        self.spriteCharacterPrefix = ""         # Disable the character prefix for this object (just use the default sprite)
+
+        # Show contents when rendering
+        self.attributes['contentsVisible2D'] = True
+
+        # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+        # Container attributes
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                       # Can be opened
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")
+
+        # Device (is activable)
+        self.attributes['isActivatable'] = False                      # Is this a device? (more specifically, can it be activated/deactivated?)
+        self.attributes['isActivated'] = False                      # Is this device currently activated?
+
+
+    # Initialize what crystal reactor this is (and what object it contains)
+    def setReactorNum(self, reactorNum:int):
+        self.attributes['reactorNum'] = reactorNum
+        # Initialize dialog tree
+        dialogMaker = DialogMaker()
+        dialogMaker.mkDialogCrystalReactor(self, self.attributes['reactorNum'])    # Sets the dialog tree
+
+
+    def tick(self):
+        # Call superclass
+        NPC.tick(self)
+
+        # Check if it contains a quantum crystal in the contents
+        containsCrystal = False
+        for obj in self.contents:
+            if (isinstance(obj, QuantumCrystal)):
+                containsCrystal = True
+                break
+
+        # If it contains a quantum crystal, then turn it on
+        if (containsCrystal):
+            if (not self.attributes['isActivated']):
+                self.attributes['isActivated'] = True
+                self.needsSpriteNameUpdate = True
+        else:
+            if (self.attributes['isActivated']):
+                self.attributes['isActivated'] = False
+                self.needsSpriteNameUpdate = True
+
+        # Call superclass
+        Object.tick(self)
+
+
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+        if (self.attributes['isActivated']):
+            self.curSpriteName = "instruments_crystal_reactor_on"
+        else:
+            self.curSpriteName = "instruments_crystal_reactor_off"
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName

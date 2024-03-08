@@ -13,7 +13,7 @@ class DialogTree():
         # If this NPC is currently talking with a user/agent, this is a reference to who its talking to
         self.engagingWithAgent = None
 
-    # 
+    #
     #   Adding nodes
     #
     def addNode(self, node):
@@ -30,7 +30,7 @@ class DialogTree():
         self.engagingWithAgent = None
         self.agent.setNotInDialog()
 
-    # Call this when an agent stops talking to this dialog tree        
+    # Call this when an agent stops talking to this dialog tree
     def endDialog(self):
         self.reset()
 
@@ -56,7 +56,7 @@ class DialogTree():
     def initiateDialog(self, agent):
         self.reset()
         self.engagingWithAgent = agent
-        
+
     # Set the current node in the dialog tree
     def setCurrentNode(self, nodeName):
         self.currentNodeName = nodeName
@@ -66,14 +66,14 @@ class DialogTree():
         for stateToAdd in currentNode.statesToAdd:
             self.agent.addState(stateToAdd)
         for stateToRemove in currentNode.statesToRemove:
-            self.agent.removeState(stateToRemove)            
+            self.agent.removeState(stateToRemove)
 
 
     # Get the current node in the dialog tree
     def getCurrentNode(self, nodeName):
         return self.nodes[nodeName]
 
-    # Returns what the agent is currently saying, and any options that the agent can say next. 
+    # Returns what the agent is currently saying, and any options that the agent can say next.
     def getCurrentDialog(self):
         # Get the current node
         currentNode = self.getCurrentNode(self.currentNodeName)
@@ -81,9 +81,9 @@ class DialogTree():
         # Get what this agent is currently saying
         currentNodeText = currentNode.currentNodeText
 
-        # Get the options of what the user can say to this agent 
+        # Get the options of what the user can say to this agent
         dialogOptions = currentNode.dialogOptions
-        # Old: Filter to include only 'thingsToSay'        
+        # Old: Filter to include only 'thingsToSay'
         #dialogOptions = [dialogOption["thingToSay"] for dialogOption in dialogOptions]
         # New: Filter to include only 'thingsToSay', but make sure that the state requirements are met
         dialogOptionsStrs = []
@@ -113,7 +113,7 @@ class DialogTree():
         # Check if this dialog tree is open
         if (self.engagingWithAgent == None):
             self.engagingWithAgent = agentEngaging
-            
+
         # Check if this dialog tree is busy with another agent
         if (self.engagingWithAgent != agentEngaging):
             # This agent is not currently talking to this dialog tree
@@ -133,7 +133,7 @@ class DialogTree():
                 return True
 
         # If we got here, the agent said something that wasn't a dialog option. Reset
-        self.reset()        
+        self.reset()
 
 
     def __str__(self):
@@ -148,16 +148,18 @@ class DialogNode():
         self.statesToAdd = statesToAdd
         self.statesToRemove = statesToRemove
         self.dialogOptions = []
-    
-    def addDialogOption(self, thingToSay, nextNodeName, requiresStates = [], antiStates = []):
+
+
+    def addDialogOption(self, thingToSay, nextNodeName, requiresStates = [], antiStates = [], floatVariablesToModify = {}):
         packed = {
             "thingToSay": thingToSay,
             "nextNodeName": nextNodeName,
             "requiresStates": requiresStates,
-            "antiStates": antiStates
+            "antiStates": antiStates,
+            "floatVariablesToModify": floatVariablesToModify
         }
 
-        self.dialogOptions.append(packed)    
+        self.dialogOptions.append(packed)
 
     def __str__(self):
         return "DialogNode(" + str(self.name) + ", " + str(self.currentNodeText) + ", " + str(self.statesToAdd) + ", " + str(self.statesToRemove) + ", " + str(self.dialogOptions) + ")"
@@ -174,7 +176,7 @@ class DialogMaker():
         pass
 
     def mkDialogChef(self, agent):
-        tree = DialogTree(agent)        
+        tree = DialogTree(agent)
 
         # Root node (introduce the chef, give options to ask to collect food, or distribute food)
         rootNode = DialogNode("rootNode", "Hello, I am the chef. I can collect food from the farm, or serve food from the pot.", statesToAdd = [], statesToRemove = [])
@@ -189,12 +191,12 @@ class DialogMaker():
         collectFoodNode = DialogNode("collectFoodNode", "I will go collect food from the farm, and place it in the pot.", statesToAdd = ["collectSignal"], statesToRemove = [])
         collectFoodNode.addDialogOption("OK", "endNode")
         tree.addNode(collectFoodNode)
-        
-        # Serve food node 
+
+        # Serve food node
         serveFoodNode = DialogNode("serveFoodNode", "I will serve food from the pot to the buffet so it's available for meals.", statesToAdd = ["serveSignal"], statesToRemove = [])
         serveFoodNode.addDialogOption("OK", "endNode")
         tree.addNode(serveFoodNode)
-        
+
         # Call Colonists node
         callColonistsNode = DialogNode("callColonistsNode", "I will call the colonists for a meal.", statesToAdd = ["callColonistsSignal"], statesToRemove = [])
         callColonistsNode.addDialogOption("OK", "endNode")
@@ -209,12 +211,12 @@ class DialogMaker():
 
 
     def mkDialogFarmer(self, agent):
-        tree = DialogTree(agent)        
+        tree = DialogTree(agent)
 
         # Root node (introduce the farmer, give options to ask to plant more seeds)
         rootNode = DialogNode("rootNode", "Hello, I am the farmer. I can plant more seeds.", statesToAdd = [], statesToRemove = [])
         rootNode.addDialogOption("Can you plant more seeds", "plantSeeds")
-        rootNode.addDialogOption("Goodbye", "endNode")        
+        rootNode.addDialogOption("Goodbye", "endNode")
         tree.addNode(rootNode)
         tree.setRoot(rootNode.name)
 
@@ -223,7 +225,7 @@ class DialogMaker():
         plantSeedsNode.addDialogOption("OK", "endNode")
         tree.addNode(plantSeedsNode)
 
-        
+
         # End node
         endNode = DialogNode("endNode", "Goodbye.", statesToAdd = [], statesToRemove = [])
         tree.addNode(endNode)
@@ -231,7 +233,7 @@ class DialogMaker():
         # Store dialog tree in agent
         agent.setDialogTree(tree)
 
-    
+
     def mkDialogColonist(self, agent):
         tree = DialogTree(agent)
 
@@ -244,7 +246,7 @@ class DialogMaker():
         tree.addNode(rootNode)
         tree.setRoot(rootNode.name)
 
-        # Eat node        
+        # Eat node
         eatNode = DialogNode("eatNode", "I will go to the cafeteria to find something to eat.", statesToAdd = ["eatSignal_" + colonistName], statesToRemove = [])
         eatNode.addDialogOption("OK", "endNode")
         tree.addNode(eatNode)
@@ -270,7 +272,7 @@ class DialogMaker():
         rootNode.addDialogOption("Set Potassium Level (Current: Low)", "changePotassiumLevel", requiresStates=["potassiumLowSignal_field" + str(fieldNum)])
         rootNode.addDialogOption("Set Potassium Level (Current: Medium)", "changePotassiumLevel", requiresStates=["potassiumMediumSignal_field" + str(fieldNum)])
         rootNode.addDialogOption("Set Potassium Level (Current: High)", "changePotassiumLevel", requiresStates=["potassiumHighSignal_field" + str(fieldNum)])
-        rootNode.addDialogOption("Set Potassium Level (Current: Unset)", "changePotassiumLevel", antiStates=["potassiumLowSignal_field" + str(fieldNum), "potassiumMediumSignal_field" + str(fieldNum), "potassiumHighSignal_field" + str(fieldNum)])        
+        rootNode.addDialogOption("Set Potassium Level (Current: Unset)", "changePotassiumLevel", antiStates=["potassiumLowSignal_field" + str(fieldNum), "potassiumMediumSignal_field" + str(fieldNum), "potassiumHighSignal_field" + str(fieldNum)])
         # Titanium
         rootNode.addDialogOption("Set Titanium Level (Current: Low)", "changeTitaniumLevel", requiresStates=["titaniumLowSignal_field" + str(fieldNum)])
         rootNode.addDialogOption("Set Titanium Level (Current: Medium)", "changeTitaniumLevel", requiresStates=["titaniumMediumSignal_field" + str(fieldNum)])
@@ -292,14 +294,14 @@ class DialogMaker():
         rootNode.addDialogOption("Set Barium Level (Current: High)", "changeBariumLevel", requiresStates=["bariumHighSignal_field" + str(fieldNum)])
         rootNode.addDialogOption("Set Barium Level (Current: Unset)", "changeBariumLevel", antiStates=["bariumLowSignal_field" + str(fieldNum), "bariumMediumSignal_field" + str(fieldNum), "bariumHighSignal_field" + str(fieldNum)])
         # OK
-        rootNode.addDialogOption("Imprint current selections on this field (Note: can't be changed)", "endNodeOK")        
+        rootNode.addDialogOption("Imprint current selections on this field (Note: can't be changed)", "endNodeOK")
         # Cancel
-        rootNode.addDialogOption("Cancel and exit", "endNodeCancel")        
+        rootNode.addDialogOption("Cancel and exit", "endNodeCancel")
         tree.addNode(rootNode)
         tree.setRoot(rootNode.name)
 
         # Change nutrient levels node (Potassium)
-        changeNutrientLevelsNodePot = DialogNode("changePotassiumLevel", "What level would you like the Potassium to be at in field #" + str(fieldNum) + "?", statesToAdd = [""], statesToRemove = [])        
+        changeNutrientLevelsNodePot = DialogNode("changePotassiumLevel", "What level would you like the Potassium to be at in field #" + str(fieldNum) + "?", statesToAdd = [""], statesToRemove = [])
         changeNutrientLevelsNodePot.addDialogOption("Potassium level: low", "nodePotassiumLow")
         changeNutrientLevelsNodePot.addDialogOption("Potassium level: medium", "nodePotassiumMedium")
         changeNutrientLevelsNodePot.addDialogOption("Potassium level: high", "nodePotassiumHigh")
@@ -431,16 +433,40 @@ class DialogMaker():
 
             infoText += "- " + str(nutrient) + ": " + nutrientLevelStr + "\n"
 
-        rootNode = DialogNode("rootNode", infoText, statesToAdd = [], statesToRemove = [])            
+        rootNode = DialogNode("rootNode", infoText, statesToAdd = [], statesToRemove = [])
         rootNode.addDialogOption("Exit", "endNode")
         tree.addNode(rootNode)
         tree.setRoot(rootNode.name)
 
-        # End node        
+        # End node
         endNode = DialogNode("endNode", "Goodbye.", statesToAdd = [], statesToRemove = [])
         tree.addNode(endNode)
 
 
         # Store dialog tree in agent
         agent.setDialogTree(tree)
-        
+
+
+    # Dialog tree for crystal reactor
+    def mkDialogCrystalReactor(self, agent, reactorNum):
+        # floatVariablesToModify
+        tree = DialogTree(agent)
+
+        # Root node (introduce the soil nutrient controller, give options to ask to change the nutrient levels)
+        rootNode = DialogNode("rootNode", "Hello, I am Crystal Reactor #" + str(reactorNum) + ".\nThe current resonance frequence is: {resonanceFreq} Hertz.", statesToAdd = [], statesToRemove = [])
+        # Increase frequency
+        rootNode.addDialogOption("Increase frequency by 100 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 100})
+        # Decrease frequency
+        rootNode.addDialogOption("Decrease frequency by 100 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -100})
+        # Exit
+        rootNode.addDialogOption("Exit", "endNode")
+        tree.addNode(rootNode)
+        tree.setRoot(rootNode.name)
+
+        # OK node
+        endNodeOK = DialogNode("endNode", "Exiting crystal reactor controls.", statesToAdd = [], statesToRemove = [])
+        tree.addNode(endNodeOK)
+
+
+        # Store dialog tree in agent
+        agent.setDialogTree(tree)
