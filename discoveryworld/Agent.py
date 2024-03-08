@@ -2925,6 +2925,9 @@ class CrystalReactor(NPC):
         self.attributes['isActivatable'] = False                      # Is this a device? (more specifically, can it be activated/deactivated?)
         self.attributes['isActivated'] = False                      # Is this device currently activated?
 
+        # Resonance Frequency of the crystal reactor (a controllable property)
+        self.attributes['resonanceFreq'] = 5000                    # The resonance frequency of the crystal reactor
+
 
     # Initialize what crystal reactor this is (and what object it contains)
     def setReactorNum(self, reactorNum:int):
@@ -2935,6 +2938,12 @@ class CrystalReactor(NPC):
 
 
     def tick(self):
+        # Make sure the resonance frequency is within bounds
+        if (self.attributes['resonanceFreq'] < 0):
+            self.attributes['resonanceFreq'] = 0
+        elif (self.attributes['resonanceFreq'] > 10000):
+            self.attributes['resonanceFreq'] = 10000
+
         # Call superclass
         NPC.tick(self)
 
