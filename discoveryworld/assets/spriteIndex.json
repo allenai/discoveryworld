@@ -269,7 +269,10 @@
                 "crystal_reactor_on":   { "baseTile": [7, 4],  "size": [1, 1] },
                 "generator_left":       { "baseTile": [5, 7],  "size": [1, 1] },
                 "generator_right":      { "baseTile": [7, 7],  "size": [1, 1] },
-                "generator_center_off": { "baseTile": [4, 7],  "size": [1, 1] },
+                "generator_center_off": { "baseTile": [0, 7],  "size": [1, 1] },
+                "generator_center_25":  { "baseTile": [1, 7],  "size": [1, 1] },
+                "generator_center_50":  { "baseTile": [2, 7],  "size": [1, 1] },
+                "generator_center_75":  { "baseTile": [3, 7],  "size": [1, 1] },
                 "generator_center_on":  { "baseTile": [6, 7],  "size": [1, 1] },
                 "densitometer":         { "baseTile": [4, 6],  "size": [1, 1] },
 
