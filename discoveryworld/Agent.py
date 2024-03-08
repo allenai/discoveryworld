@@ -2959,10 +2959,16 @@ class CrystalReactor(NPC):
             if (not self.attributes['isActivated']):
                 self.attributes['isActivated'] = True
                 self.needsSpriteNameUpdate = True
+
+                # Change the name to (activated)
+                self.name = "crystal reactor (activated)"
         else:
             if (self.attributes['isActivated']):
                 self.attributes['isActivated'] = False
                 self.needsSpriteNameUpdate = True
+
+                # Change the name to (deactivated)
+                self.name = "crystal reactor (uncalibrated)"
 
         # Call superclass
         Object.tick(self)
