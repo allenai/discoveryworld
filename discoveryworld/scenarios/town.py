@@ -9,8 +9,7 @@ from discoveryworld.buildings.farm import mkFarm
 from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mkPathX, mkPathY, mkSignVillage, mkTownSquare
 
 
-def makeScenarioTown(world, numUserAgents=1, rng=None):
-    rng = rng or random.Random()
+def makeScenarioTown(world, numUserAgents=1):
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 5
@@ -23,8 +22,8 @@ def makeScenarioTown(world, numUserAgents=1, rng=None):
     mkGrassFill(world)
     # Randomly place a few plants (plant1, plant2, plant3)
     for i in range(0, 10):
-        randX = rng.randint(0, world.sizeX - 1)
-        randY = rng.randint(0, world.sizeY - 1)
+        randX = world.rng.randint(0, world.sizeX - 1)
+        randY = world.rng.randint(0, world.sizeY - 1)
 
 
     # Buildings
@@ -39,7 +38,7 @@ def makeScenarioTown(world, numUserAgents=1, rng=None):
     mkTownSquare(16, 18, world)
 
     ## TODO: Add Farm?
-    mushroomsAdded = mkFarm(10, 8, world, rng)
+    mushroomsAdded = mkFarm(10, 8, world, world.rng)
 
     # Cave
     mkCave(0, 0, world)
@@ -85,8 +84,8 @@ def makeScenarioTown(world, numUserAgents=1, rng=None):
     minPlants = 15
     while (plantCount < minPlants):
         # Pick a random location
-        randX = rng.randint(0, world.sizeX - 1)
-        randY = rng.randint(0, world.sizeY - 1)
+        randX = world.rng.randint(0, world.sizeX - 1)
+        randY = world.rng.randint(0, world.sizeY - 1)
 
         # Check to see if there are any objects other than grass there
         objs = world.getObjectsAt(randX, randY)

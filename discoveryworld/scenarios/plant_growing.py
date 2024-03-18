@@ -28,18 +28,17 @@ def mapSeedToObjectName(nutrientName, nutrientValue):
     return None
 
 
-def makeScenarioPlantGrowing(world, numUserAgents=1, rng=None):
+def makeScenarioPlantGrowing(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
-    rng = rng or random.Random()
     numPlantSites = 3
 
     # Randomly choose what value is helpful for growing plants
     possibleNutrients = ["potassium", "titanium", "lithium", "thorium", "barium"]
     possibleValues = [1, 2, 3]
     possibleValuesStrLUT = {1: "low", 2: "medium", 3: "high"}
-    whichNutrientPositive = random.choice(possibleNutrients)
-    whichValuePositive = random.choice(possibleValues)
+    whichNutrientPositive = world.rng.choice(possibleNutrients)
+    whichValuePositive = world.rng.choice(possibleValues)
     whichSeedName = mapSeedToObjectName(whichNutrientPositive, whichValuePositive)
 
     # Set a limit for the number of user agents
@@ -66,7 +65,7 @@ def makeScenarioPlantGrowing(world, numUserAgents=1, rng=None):
         for j in range(0, pilotFieldSizeY):
             soilTile = world.createObject("SoilTile")
             # Randomize nutrient levels in this soil tile
-            soilTile.attributes["soilNutrients"] = mkRandomSoilNutrientsWithSetValues(setValuesDict={}, rng=rng)
+            soilTile.attributes["soilNutrients"] = mkRandomSoilNutrientsWithSetValues(setValuesDict={}, rng=world.rng)
             world.addObject(pilotFieldStartX+i, pilotFieldStartY+j, Layer.BUILDING, soilTile)
             # TODO: Add plants, etc.
             pilotSoilTiles.append(soilTile)
@@ -74,11 +73,11 @@ def makeScenarioPlantGrowing(world, numUserAgents=1, rng=None):
 
     # Randomly set 3 of the tiles to have positive examples of the required soil nutrients, and 3 to have negative examples
     # Positive (first 3)
-    random.shuffle(pilotSoilTiles)
+    world.rng.shuffle(pilotSoilTiles)
     for i in range(0, 3):
         setValueDict = {}
         setValueDict[whichNutrientPositive] = whichValuePositive
-        pilotSoilTiles[i].attributes["soilNutrients"] = mkRandomSoilNutrientsWithSetValues(setValuesDict=setValueDict, rng=rng)
+        pilotSoilTiles[i].attributes["soilNutrients"] = mkRandomSoilNutrientsWithSetValues(setValuesDict=setValueDict, rng=world.rng)
 
     # Add hypothesis
     hypothesisStr = "If a seed is placed in soil with a '" + whichNutrientPositive + "' nutrient level of '" + str(possibleValuesStrLUT[whichValuePositive]) + "', then it will successfully grow into a plant."
@@ -89,9 +88,9 @@ def makeScenarioPlantGrowing(world, numUserAgents=1, rng=None):
         soilTile = pilotSoilTiles[i]
         setValueDict = {}
         # Select a random negative value for the nutrient (by negative, we mean not the positive value)
-        setValueDict[whichNutrientPositive] = random.choice(possibleValues)
+        setValueDict[whichNutrientPositive] = world.rng.choice(possibleValues)
         while (setValueDict[whichNutrientPositive] == whichValuePositive):
-            setValueDict[whichNutrientPositive] = random.choice(possibleValues)
+            setValueDict[whichNutrientPositive] = world.rng.choice(possibleValues)
         soilTile.attributes["soilNutrients"] = mkRandomSoilNutrientsWithSetValues(setValuesDict=setValueDict, rng=rng)
 
     # Note the pilot field soil tiles, for scoring
@@ -156,8 +155,8 @@ def makeScenarioPlantGrowing(world, numUserAgents=1, rng=None):
     minPlants = 15
     while (plantCount < minPlants):
         # Pick a random location
-        randX = random.randint(0, world.sizeX - 1)
-        randY = random.randint(0, world.sizeY - 1)
+        randX = world.rng.randint(0, world.sizeX - 1)
+        randY = world.rng.randint(0, world.sizeY - 1)
 
         # Check to see if there are any objects other than grass there
         objs = world.getObjectsAt(randX, randY)

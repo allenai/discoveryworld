@@ -28,11 +28,57 @@ def mkGenerator(x, y, world, linkedObjects, reactorLength=3):
         world.addObject(x+i, y, Layer.OBJECTS, reactorCenterPiece)
 
 
+# Make random properties of a quantum crystal
+def mkCrystalProperties(quantumCrystalIn, rng, keyDimension:int=0, slope:float=100.0, offset:float=100):
+        # Resonance Frequency of the crystal (a set property for a given crystal)
+        #quantumCrystalIn.attributes['resonanceFreq'] = 5000                    # The resonance frequency of the crystal
+        precision = 2   # Number of decimal places to round to
+
+        # Quantities that the crystal depends on
+        quantumCrystalIn.attributes['density'] = round(rng.uniform(10.0, 70.0), precision)          # The density of the crystal (in g/cm^3)
+        quantumCrystalIn.attributes['temperatureC'] = round(rng.uniform(10.0, 50.0), precision)    # The temperature of the crystal (in degrees C)
+        quantumCrystalIn.attributes['quantumSize'] = round(rng.uniform(10.0, 70.0), precision)   # The quantum size of the crystal (in nm)
+        # Add a faux material, with a given radiation and spectrum
+        fauxMaterial = {}
+        fauxMaterial['radiationusvh'] = round(rng.uniform(10.0, 50.0), precision)       # The radiation of the crystal (in mSv)
+        spectrum = []
+        for i in range(0, 5):
+            channelValue = round(rng.uniform(10.0, 70.0), precision)
+            spectrum.append(channelValue)
+        fauxMaterial['spectrum'] = spectrum            # The spectrum of the crystal (on 5 spectral channels)
+        fauxMaterial['microscopeDesc'] = "The quantum gap of this crystal appears to be " + str(quantumCrystalIn.attributes['quantumSize']) + " nm"  # The description of the crystal under a microscope
+        quantumCrystalIn.attributes['materials'].append(fauxMaterial)
+
+        # Pick one dimension (density, temperature, quantumSize, radiation, or spectrum) to be the "key" dimension.  Dimensions are numbered (0, 1, 2, 3, 4)
+        keyValue = 0
+        if (keyDimension == 0):
+            keyValue = quantumCrystalIn.attributes['density']
+        elif (keyDimension == 1):
+            keyValue = quantumCrystalIn.attributes['temperatureC']
+        elif (keyDimension == 2):
+            keyValue = quantumCrystalIn.attributes['quantumSize']
+        elif (keyDimension == 3):
+            keyValue = fauxMaterial['radiationusvh']
+        elif (keyDimension == 4):
+            keyValue = fauxMaterial['spectrum'][4]
+        else:
+            print("Error: mkCrystalProperties(): keyDimension must be between 0 and 4")
+
+        # The value of 'resonanceFreq' will be a linear function of the keyValue, with the specified slope and offset
+        resonanceFreq = (slope * keyValue) + offset
+        # resonanceFreq should be an integer
+        resonanceFreq = int(resonanceFreq)
+        quantumCrystalIn.attributes['resonanceFreq'] = resonanceFreq
+
+        # Return
+        return quantumCrystalIn
+
+
 #
 #   Reactor Lab Building
 #
 
-def mkReactorLab(x, y, world):
+def mkReactorLab(x, y, world, rng, randomSeed):
     # Create a building (science lab)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
     mkBuildingDivided(world, x=x, y=y, width=13, height=6, dividerX=6, apertureX=3, dividerY=0, apertureY=0, doorX=3, signText="Quantum Reactor Lab")
@@ -46,7 +92,7 @@ def mkReactorLab(x, y, world):
     instruments.append( world.createObject("Densitometer") )
 
     # Shuffle
-    random.shuffle(instruments)
+    rng.shuffle(instruments)
 
     # Add the tables and an instrument to each
     for i in range(0, 5):
@@ -57,14 +103,23 @@ def mkReactorLab(x, y, world):
 
     # Reactor portion
     quantumCrystals = []
+    #keyDimension = rng.randint(0, 4)        # Which dimension (temperature, density, quantum size, radiation, spectrum) will be the "key" dimension that the resonance frequency depends on
+    keyDimension = randomSeed % 5            # Makes sure that random seeds 1-5 cycle through all available dimensions
+    randomSlope = int(rng.uniform(90, 110))
+    randomOffset = int(rng.uniform(90, 110))
+
     for i in range(0, 4):
         quantumCrystal = world.createObject("QuantumCrystal")
-        quantumCrystal.attributes['density'] = random.uniform(0.5, 1.5)
+        #quantumCrystal.attributes['density'] = random.uniform(0.5, 1.5)
+        # Make random quantum crystal values
+        quantumCrystal = mkCrystalProperties(quantumCrystal, rng=rng, keyDimension=keyDimension, slope=randomSlope, offset=randomOffset)
+        print("Quantum Crystal " + str(i+1) + " resonance frequency: " + str(quantumCrystal.attributes['resonanceFreq']) + " Hz")
         quantumCrystals.append(quantumCrystal)
 
+    #exit(1)
 
     # Shuffle
-    random.shuffle(quantumCrystals)
+    rng.shuffle(quantumCrystals)
     # Give the crystals a number
     for i in range(0, 4):
         quantumCrystals[i].name = "quantum crystal " + str(i+1)
@@ -81,8 +136,8 @@ def mkReactorLab(x, y, world):
         if (i < 2):
             # Add a crystal to the contents of this reactor
             reactor.addObject( quantumCrystals[i] )
-
-            # TODO: Set the reactor to the appropriate frequency
+            # Set the reactor to the appropriate frequency
+            reactor.attributes['resonanceFreq'] = quantumCrystals[i].attributes['resonanceFreq']
 
         world.addObject(x+8+i, y+2, Layer.FURNITURE, reactorBench)
 
@@ -111,8 +166,7 @@ def mkReactorLab(x, y, world):
 #
 #   Reactor Lab Scenario
 #
-def makeScenarioReactorLab(world, numUserAgents=1, rng=None):
-    rng = rng or random.Random()
+def makeScenarioReactorLab(world, numUserAgents=1):
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 3
@@ -125,14 +179,14 @@ def makeScenarioReactorLab(world, numUserAgents=1, rng=None):
     mkGrassFill(world)
     # Randomly place a few plants (plant1, plant2, plant3)
     for i in range(0, 10):
-        randX = rng.randint(0, world.sizeX - 1)
-        randY = rng.randint(0, world.sizeY - 1)
+        randX = world.rng.randint(0, world.sizeX - 1)
+        randY = world.rng.randint(0, world.sizeY - 1)
 
 
     # Buildings
     #mkHouse(4, 4, world)
 
-    mkReactorLab(10, 15, world)
+    mkReactorLab(10, 15, world, rng=world.rng, randomSeed=randomSeed)
 
     # Paths
     #mkPathY(17, 1, 30, world)       # Top/bottom, through town square
@@ -168,8 +222,8 @@ def makeScenarioReactorLab(world, numUserAgents=1, rng=None):
     minPlants = 15
     while (plantCount < minPlants):
         # Pick a random location
-        randX = rng.randint(0, world.sizeX - 1)
-        randY = rng.randint(0, world.sizeY - 1)
+        randX = world.rng.randint(0, world.sizeX - 1)
+        randY = world.rng.randint(0, world.sizeY - 1)
 
         # Check to see if there are any objects other than grass there
         objs = world.getObjectsAt(randX, randY)

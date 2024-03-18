@@ -7,10 +7,9 @@ from discoveryworld.buildings.colony import mkStorageShed
 from discoveryworld.buildings.terrain import mkGrassFill, mkPathX
 
 # TODO: Make the task generate a random combination of chemicals that works as a de-ruster on initialization (currently hardcoded to 1-part Chemical A and 2 parts Chemical C)
-def makeScenarioStorageShed(world, numUserAgents=1, rng=None):
+def makeScenarioStorageShed(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
-    rng = rng or random.Random()
     DOOR_KEY_ID = 123
 
     # Set a limit for the number of user agents
@@ -23,8 +22,8 @@ def makeScenarioStorageShed(world, numUserAgents=1, rng=None):
     mkGrassFill(world)
     # Randomly place a few plants (plant1, plant2, plant3)
     for i in range(0, 10):
-        randY = rng.randint(0, world.sizeY - 1)
-        randX = rng.randint(0, world.sizeX - 1)
+        randY = world.rng.randint(0, world.sizeY - 1)
+        randX = world.rng.randint(0, world.sizeX - 1)
 
     # Buildings
     mkStorageShed(15, 10, world, DOOR_KEY_ID, scoringInfo)
@@ -42,8 +41,8 @@ def makeScenarioStorageShed(world, numUserAgents=1, rng=None):
     minPlants = 15
     while (plantCount < minPlants):
         # Pick a random location
-        randX = rng.randint(0, world.sizeX - 1)
-        randY = rng.randint(0, world.sizeY - 1)
+        randX = world.rng.randint(0, world.sizeX - 1)
+        randY = world.rng.randint(0, world.sizeY - 1)
 
         # Check to see if there are any objects other than grass there
         objs = world.getObjectsAt(randX, randY)

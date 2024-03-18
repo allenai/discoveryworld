@@ -14,6 +14,17 @@ class QuantumCrystal(Object):
         # Resonance Frequency of the crystal (a set property for a given crystal)
         self.attributes['resonanceFreq'] = 5000                    # The resonance frequency of the crystal
 
+        # Quantities that the crystal depends on
+        self.attributes['density'] = 1.0                          # The density of the crystal (in g/cm^3)
+        self.attributes['temperatureC'] = 25.0                    # The temperature of the crystal (in degrees C)
+        self.attributes['quantumSize'] = 2.0                      # The quantum size of the crystal (in nm)
+        # Add a faux material, with a given radiation and spectrum
+        fauxMaterial = {}
+        fauxMaterial['radiationusvh'] = 10.0                           # The radiation of the crystal (in mSv)
+        fauxMaterial['spectrum'] = [1.0, 2.0, 3.0, 4.0, 5.0]           # The spectrum of the crystal (in nm)
+        fauxMaterial['microscopeDesc'] = "The quantum gap of this crystal appears to be " + str(self.attributes['quantumSize']) + " nm"  # The description of the crystal under a microscope
+        self.attributes['materials'].append(fauxMaterial)
+
 
     def tick(self):
         # Call superclass

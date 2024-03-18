@@ -86,9 +86,9 @@ def main(args):
     ui = UserInterface(window, world.spriteLibrary)
 
     # Create a new random number generator (for deterministic behavior) with a specific seed
-    r = random.Random()
+    #r = random.Random()
 
-    scenarioMaker = ScenarioMaker(world, rng=r)
+    scenarioMaker = ScenarioMaker(world, seed=0)
     smSuccess, smErrorStr = scenarioMaker.setupScenario(args.scenario)
     if (not smSuccess):
         print("ERROR: ScenarioMaker failed to setup scenario: " + smErrorStr)
