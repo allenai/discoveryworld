@@ -91,7 +91,7 @@ def makeScenarioPlantGrowing(world, numUserAgents=1):
         setValueDict[whichNutrientPositive] = world.rng.choice(possibleValues)
         while (setValueDict[whichNutrientPositive] == whichValuePositive):
             setValueDict[whichNutrientPositive] = world.rng.choice(possibleValues)
-        soilTile.attributes["soilNutrients"] = mkRandomSoilNutrientsWithSetValues(setValuesDict=setValueDict, rng=rng)
+        soilTile.attributes["soilNutrients"] = mkRandomSoilNutrientsWithSetValues(setValuesDict=setValueDict, rng=world.rng)
 
     # Note the pilot field soil tiles, for scoring
     scoringInfo["pilotFieldSoilTiles"] = pilotSoilTiles

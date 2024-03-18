@@ -45,7 +45,7 @@ def makeScenarioArchaeologicalDig(world, numUserAgents=1):
     scoringInfo["unknownArtifacts"] = []
     scoringInfo["signs"] = []
     for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
-        artifact, sign = mkDigSite(digSiteLocation[0], digSiteLocation[1], world, rng, digSiteIdx+1, artifactAges[digSiteIdx])
+        artifact, sign = mkDigSite(digSiteLocation[0], digSiteLocation[1], world, world.rng, digSiteIdx+1, artifactAges[digSiteIdx])
         scoringInfo["unknownArtifacts"].append(artifact)
         scoringInfo["signs"].append(sign)
         if (artifact.attributes["radiocarbonAge"] == oldestArtifactAge):

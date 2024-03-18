@@ -186,7 +186,7 @@ def makeScenarioReactorLab(world, numUserAgents=1):
     # Buildings
     #mkHouse(4, 4, world)
 
-    mkReactorLab(10, 15, world, rng=world.rng, randomSeed=randomSeed)
+    mkReactorLab(10, 15, world, rng=world.rng, randomSeed=world.randomSeed)
 
     # Paths
     #mkPathY(17, 1, 30, world)       # Top/bottom, through town square
