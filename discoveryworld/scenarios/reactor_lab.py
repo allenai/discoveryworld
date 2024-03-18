@@ -115,17 +115,19 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
         #quantumCrystal.attributes['density'] = random.uniform(0.5, 1.5)
         # Make random quantum crystal values
         quantumCrystal = mkCrystalProperties(quantumCrystal, rng=rng, keyDimension=keyDimension, slope=randomSlope, offset=randomOffset)
-        print("Quantum Crystal " + str(i+1) + " resonance frequency: " + str(quantumCrystal.attributes['resonanceFreq']) + " Hz")
         quantumCrystals.append(quantumCrystal)
 
     scoringInfo['quantumCrystals'] = quantumCrystals
-    #exit(1)
 
     # Shuffle
     rng.shuffle(quantumCrystals)
     # Give the crystals a number
     for i in range(0, 4):
         quantumCrystals[i].name = "quantum crystal " + str(i+1)
+        #print("Quantum Crystal " + str(i+1) + " resonance frequency: " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz")
+    #import time
+    #time.sleep(10)
+    #exit(1)
 
     # Add the tables and a quantum crystal reactor to each
     crystalReactors = []
