@@ -129,6 +129,7 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
 
     # Add the tables and a quantum crystal reactor to each
     crystalReactors = []
+    scoringInfo['reactorsToChange'] = []
     for i in range(0, 4):
         reactorBench = world.createObject("Table")
         reactor = world.createObject("CrystalReactor")
@@ -141,7 +142,12 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
             reactor.addObject( quantumCrystals[i] )
             # Set the reactor to the appropriate frequency
             reactor.attributes['resonanceFreq'] = quantumCrystals[i].attributes['resonanceFreq']
+        else:
+            scoringInfo['reactorsToChange'].append(reactor)
 
+        # Note the default resonance frequency
+        reactor.attributes['resonanceFreqDefault'] = quantumCrystals[i].attributes['resonanceFreq']
+        # Add the reactor to the bench
         world.addObject(x+8+i, y+2, Layer.FURNITURE, reactorBench)
 
     scoringInfo['reactors'] = crystalReactors

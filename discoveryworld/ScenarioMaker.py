@@ -47,7 +47,7 @@ class ScenarioMaker():
 
         elif (scenarioName == "reactor_lab"):
             scoringInfo = makeScenarioReactorLab(self.world, numUserAgents)
-            # TODO: Add a task for the reactor lab
+            self.world.addTaskByName("ReactorTask", scoringInfo)
             return (True, "")
 
         # If we reach here, the scenario was not recognized
