@@ -2935,6 +2935,8 @@ class CrystalReactor(NPC):
         # Initialize dialog tree
         dialogMaker = DialogMaker()
         dialogMaker.mkDialogCrystalReactor(self, self.attributes['reactorNum'])    # Sets the dialog tree
+        # Also change the name of the reactor
+        self.name = "crystal reactor " + str(self.attributes['reactorNum'])
 
 
     def tick(self):
@@ -2948,27 +2950,37 @@ class CrystalReactor(NPC):
         NPC.tick(self)
 
         # Check if it contains a quantum crystal in the contents
-        containsCrystal = False
+        containsCrystal = None
         for obj in self.contents:
             if (isinstance(obj, QuantumCrystal)):
-                containsCrystal = True
+                containsCrystal = obj
                 break
 
         # If it contains a quantum crystal, then turn it on
-        if (containsCrystal):
-            if (not self.attributes['isActivated']):
+        if (containsCrystal is not None):
+            # Check whether the reactor frequency is the same as the crystal's frequency
+            wiggleRoom = 2.0    # Allow 2 Hz of wiggle room in getting the value correct
+            if (abs(self.attributes['resonanceFreq'] - containsCrystal.attributes['resonanceFreq']) < wiggleRoom):
+                # Crystal present, and correct frequency
+                if (not self.attributes['isActivated']):
+                    self.needsSpriteNameUpdate = True
                 self.attributes['isActivated'] = True
-                self.needsSpriteNameUpdate = True
-
-                # Change the name to (activated)
                 self.name = "crystal reactor (activated)"
-        else:
-            if (self.attributes['isActivated']):
-                self.attributes['isActivated'] = False
-                self.needsSpriteNameUpdate = True
 
-                # Change the name to (deactivated)
+            else:
+                # Crystal present, but wrong frequency
+                if (self.attributes['isActivated']):
+                    self.needsSpriteNameUpdate = True
+                self.attributes['isActivated'] = False
                 self.name = "crystal reactor (uncalibrated)"
+
+        else:
+            # No crystal present
+            if (self.attributes['isActivated']):
+                self.needsSpriteNameUpdate = True
+            self.attributes['isActivated'] = False
+            self.name = "crystal reactor (no crystal present)"
+
 
         # Call superclass
         Object.tick(self)
