@@ -74,6 +74,19 @@ def mkCrystalProperties(quantumCrystalIn, rng, keyDimension:int=0, slope:float=1
         return quantumCrystalIn
 
 
+def mkPlaza(x, y, world):
+    # Add statue
+    statue = world.createObject("Statue")
+    statue.addReadableText("A statue of the colony founder.")
+    world.addObject(x+1, y+1, Layer.OBJECTS, statue)
+
+    # Create a square that's made out of "Path" tiles
+    for i in range(0, 3):
+        for j in range(0, 3):
+            if (not world.hasObj(x+i, y+j, "path")):
+                world.addObject(x+i, y+j, Layer.WORLD, world.createObject("Path"))
+
+
 #
 #   Reactor Lab Building
 #
@@ -200,34 +213,40 @@ def makeScenarioReactorLab(world, numUserAgents=1):
     # Buildings
     #mkHouse(4, 4, world)
 
+    # Reactor Lab
     mkReactorLab(10, 15, world, rng=world.rng, randomSeed=world.randomSeed, scoringInfo=scoringInfo)
 
-    # Paths
-    #mkPathY(17, 1, 30, world)       # Top/bottom, through town square
-    #mkPathX(10, 28, 15, world)       # Bottom, along cafeteria/science lab
+    # Plaza
+    mkPlaza(15, 22, world)
 
+    # Paths
+    mkPathX(10, 23, 5, world)
+    mkPathX(18, 23, 5, world)
+    mkPathY(16, 25, 5, world)   # Down from plaza
+    mkPathY(13, 21, 2, world)   # Down from plaza
+
+    # Trees
+    world.addObject(9, 23, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(23, 23, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+
+    world.addObject(9, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(23, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+
+    world.addObject(9, 17, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(23, 17, Layer.OBJECTS, world.createObject("PlantTreeBig"))
 
     # Fences
     # Top-left corner
-    mkFenceY(6, 2, 16, world)
-    mkFenceX(6, 2, 10, world)
+    mkFenceY(6, 12, 14, world)
+    mkFenceX(6, 12, 20, world)
 
-    # Bottom-left corner
-    mkFenceY(6, 21, 8, world)
-    mkFenceX(6, 29, 10, world)
+    mkFenceY(26, 12, 14, world)
 
-    # Bottom-right corner
-    mkFenceX(19, 29, 10, world)
-    mkFenceY(28, 21, 8, world)
-
-    # Top-right corner
-    mkFenceX(19, 2, 10, world)
-    mkFenceY(28, 2, 16, world)
-
+    mkFenceX(6, 25, 9, world)
+    mkFenceX(18, 25, 9, world)
 
     # Add big village sign
-    mkSignVillage(16, 2, world)
-    mkSignVillage(16, 29, world)
+    mkSignVillage(15, 27, world)
 
     # Add some plants
     world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))
