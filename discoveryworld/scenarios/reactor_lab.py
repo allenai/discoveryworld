@@ -78,7 +78,7 @@ def mkCrystalProperties(quantumCrystalIn, rng, keyDimension:int=0, slope:float=1
 #   Reactor Lab Building
 #
 
-def mkReactorLab(x, y, world, rng, randomSeed):
+def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
     # Create a building (science lab)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
     mkBuildingDivided(world, x=x, y=y, width=13, height=6, dividerX=6, apertureX=3, dividerY=0, apertureY=0, doorX=3, signText="Quantum Reactor Lab")
@@ -90,6 +90,8 @@ def mkReactorLab(x, y, world, rng, randomSeed):
     instruments.append( world.createObject("RadiationMeter") )
     instruments.append( world.createObject("Thermometer") )
     instruments.append( world.createObject("Densitometer") )
+
+    scoringInfo['instruments'] = instruments
 
     # Shuffle
     rng.shuffle(instruments)
@@ -116,6 +118,7 @@ def mkReactorLab(x, y, world, rng, randomSeed):
         print("Quantum Crystal " + str(i+1) + " resonance frequency: " + str(quantumCrystal.attributes['resonanceFreq']) + " Hz")
         quantumCrystals.append(quantumCrystal)
 
+    scoringInfo['quantumCrystals'] = quantumCrystals
     #exit(1)
 
     # Shuffle
@@ -141,6 +144,7 @@ def mkReactorLab(x, y, world, rng, randomSeed):
 
         world.addObject(x+8+i, y+2, Layer.FURNITURE, reactorBench)
 
+    scoringInfo['reactors'] = crystalReactors
 
     # Put the other 2 quantum crystals on tables on the other side of the room
     for i in range(0, 2):
@@ -167,6 +171,8 @@ def mkReactorLab(x, y, world, rng, randomSeed):
 #   Reactor Lab Scenario
 #
 def makeScenarioReactorLab(world, numUserAgents=1):
+    scoringInfo = {}
+    scoringInfo["criticalHypotheses"] = []
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 3
@@ -186,7 +192,7 @@ def makeScenarioReactorLab(world, numUserAgents=1):
     # Buildings
     #mkHouse(4, 4, world)
 
-    mkReactorLab(10, 15, world, rng=world.rng, randomSeed=world.randomSeed)
+    mkReactorLab(10, 15, world, rng=world.rng, randomSeed=world.randomSeed, scoringInfo=scoringInfo)
 
     # Paths
     #mkPathY(17, 1, 30, world)       # Top/bottom, through town square
@@ -245,8 +251,8 @@ def makeScenarioReactorLab(world, numUserAgents=1):
     for userAgentIdx in range(0, numUserAgents):
         userAgent = Agent(world)
         # TODO: Add starting tools for agent
-        userAgent.addObject(world.createObject("Shovel"))
-        userAgent.addObject(world.createObject("Seed"))
+        #userAgent.addObject(world.createObject("Shovel"))
+        #userAgent.addObject(world.createObject("Seed"))
         # Add the agent to a specfic location
         #world.addObject(14+userAgentIdx, 14, Layer.AGENT, userAgent)      # In farm field
         world.addObject(12+userAgentIdx, 18, Layer.AGENT, userAgent)      # Near farm
@@ -256,4 +262,8 @@ def makeScenarioReactorLab(world, numUserAgents=1):
 
     # Add teleport locations to world
     # TODO
-    #world.addTeleportLocation("science lab", 10, 24)
+    world.addTeleportLocation("science lab", 14, 18)
+    world.addTeleportLocation("reactor lab", 20, 18)
+
+    # Return scoring info
+    return scoringInfo
