@@ -152,7 +152,7 @@ def mkScienceLab(x, y, world):
     world.addObject(x+6, y+4, Layer.OBJECTS, world.createObject("NPKMeter"))
 
 
-def mkStorageShed(x, y, world, DOOR_KEY_ID, scoringInfo):
+def mkStorageShed(x, y, world, DOOR_KEY_ID, chemicalSolutionDict, scoringInfo):
     # Create a small building
     houseSizeX = 7
     houseSizeY = 4
@@ -212,7 +212,9 @@ def mkStorageShed(x, y, world, DOOR_KEY_ID, scoringInfo):
     #mixingJar.addObject(substanceCleaner)
 
     # Add rusty key
-    rustyKey = world.createObject("Key")
+    #rustyKey = world.createObject("Key")
+    rustyKey = world.createObject("KeyRustyParametric")
+    rustyKey.setRustRemovalDict(chemicalSolutionDict)
     rustyKey.setKeyID(DOOR_KEY_ID)
     world.addObject(x+2, y+2, Layer.OBJECTS, rustyKey)
     scoringInfo['key'] = rustyKey

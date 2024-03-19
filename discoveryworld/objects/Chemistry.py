@@ -556,3 +556,165 @@ class Key(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+#
+#   A key, whose rust can be removed by a specific mixture of substances
+#
+class KeyRustyParametric(Object):
+    # Constructor
+    def __init__(self, world, color=None, isRusted=True):
+        # Default sprite name
+        self.color = color
+        name = "key" if self.color is None else f"{self.color} key"
+        defaultSpriteName = "instruments_key" if self.color is None else f"instruments_key_{self.color}"
+        Object.__init__(self, world, "key", name, defaultSpriteName)
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+        # Container
+        self.attributes['isContainer'] = False                    # Is it a container?
+
+        # Rusted
+        self.attributes['isRusted'] = isRusted                    # Is the key rusted?
+        self.attributes['rustLevel'] = 3 if isRusted else 0       # Description of the rust (0=none, 1=light, 2=medium, 3=heavy)
+
+        # Key ID
+        self.attributes['keyID'] = 1                              # Key ID (1 by default)
+
+        # A chemical dictionary that describes a solution that will remove the rust from this key
+        self.attributes['rustRemovalDict'] = {}                   # Dictionary of substances and their proportions in the mixture
+
+
+    def setKeyID(self, keyID:int):
+        self.attributes['keyID'] = keyID
+
+    def setRustRemovalDict(self, rustRemovalDict:dict):
+        self.attributes['rustRemovalDict'] = rustRemovalDict
+
+    # Evaluate how close/far the key is from being rust-free.
+    def evaluateRustRemovalProgress(self, chemicalDict:dict):
+        # Calculate cosine similarity of the two dictionaries (rustRemovalDict and chemicalDict)
+
+        # First, get a list of all the keys in the two dictionaries
+        allKeys = set(self.attributes['rustRemovalDict'].keys()).union(set(chemicalDict.keys()))
+        # Then, create two lists of the values for each key in the dictionaries
+        list1 = []
+        list2 = []
+        for key in allKeys:
+            if (key in self.attributes['rustRemovalDict']):
+                list1.append(self.attributes['rustRemovalDict'][key])
+            else:
+                list1.append(0)
+            if (key in chemicalDict):
+                list2.append(chemicalDict[key])
+            else:
+                list2.append(0)
+        # Then, calculate the cosine similarity
+        dotProduct = sum([list1[i] * list2[i] for i in range(len(list1))])
+        magnitude1 = math.sqrt(sum([list1[i] ** 2 for i in range(len(list1))]))
+        magnitude2 = math.sqrt(sum([list2[i] ** 2 for i in range(len(list2))]))
+        cosineSimilarity = dotProduct / (magnitude1 * magnitude2)
+
+        print("### RUST COSINE: " + str(cosineSimilarity) + " (dict1: " + str(self.attributes['rustRemovalDict']) + ", dict2: " + str(chemicalDict) + ")")
+
+        return cosineSimilarity
+
+
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+        # Clean rust of key (if conditions are met)
+        # If the key is in a container, and that container contains SUBSTANCE TODO, and it's rusted, then remove the rust.
+        # Check if the key is in a container
+        if (self.parentContainer is not None):
+            # Get parent container contents
+            parentContainerContents = self.parentContainer.contents
+            # Check if the parent container contains a specific substance
+            containsCleaner = False
+            print("### KEY: Checking for cleaner substance in parent container")
+            partialEvidenceLevel = 0
+
+            # Check to make sure there are not more than 1 subtances in the container
+            numSubstances = 0
+            for obj in parentContainerContents:
+                if (obj.type == "substance"):
+                    numSubstances += 1
+
+            if (numSubstances > 1):
+                print("## More than 1 substance in container.  Not evaluating rust reduction further, since those subtances may react later.")
+                return
+
+            for obj in parentContainerContents:
+                print("## Key: Mixture dictionary: " + str(obj.attributes['mixtureDict']) + " (containsCleaner: " + str(containsCleaner) + ")")
+                # Check for "Cleaner"
+                if (obj.type == "substance") and (obj.attributes["substanceName"] == "cleaner"):
+                    containsCleaner = True
+                    break
+                # Check for a specific mixture
+                if (obj.type == "substance"):
+                    cosine = self.evaluateRustRemovalProgress(obj.attributes['mixtureDict'])
+                    if (cosine >= 0.99):
+                        containsCleaner = True
+                        break
+                    # Partial evidence -- give some help for hill-climbing. (0=none, 1=light, 2=medium, 3=heavy)
+                    elif (cosine >= 0.66):
+                        #self.attributes['rustLevel'] = 1
+                        partialEvidenceLevel = 1
+                    elif (cosine >= 0.33):
+                        #self.attributes['rustLevel'] = 2
+                        partialEvidenceLevel = 2
+                    else:
+                        #self.attributes['rustLevel'] = 3
+                        partialEvidenceLevel = 3
+
+                    print("Partial Evidence Level: " + str(partialEvidenceLevel) + " (cosine: " + str(cosine) + ")")
+
+            # If the parent container contains the cleaner substance, then remove the rust from the key
+            if (containsCleaner):
+                self.attributes['isRusted'] = False
+                self.attributes['rustLevel'] = 0    # No more rust
+                # Invalidate the sprite
+                self.needsSpriteNameUpdate = True
+
+            # Handle partial evidence -- describe the key as less rusty, if certain combinations of substances are found
+            print("### Partial evidence level: " + str(partialEvidenceLevel))
+            if (partialEvidenceLevel > 0):
+                if (partialEvidenceLevel < self.attributes['rustLevel']):
+                    self.attributes['rustLevel'] = partialEvidenceLevel
+                    self.needsSpriteNameUpdate = True
+
+        # Update key name based on whether it's rusted or not
+        # If the key is rusted, then set it's name to key (rusted)
+        if (self.attributes['isRusted']):# and (self.name != "rusted key"):
+            if (self.attributes['rustLevel'] == 3):
+                self.name = "rusted key (heavily rusted)"
+            elif (self.attributes['rustLevel'] == 2):
+                self.name = "rusted key (moderately rusted)"
+            elif (self.attributes['rustLevel'] == 1):
+                self.name = "rusted key (lightly rusted)"
+
+        elif (not self.attributes['isRusted']):
+            self.name = "key (no rust)"
+
+        if self.color:
+            self.name = f"{self.color} {self.name}"
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # If rusted, use the rusty sprite
+        if (self.attributes['isRusted']):
+            self.curSpriteName = "instruments_key_rusty"
+        else:
+            self.curSpriteName = "instruments_key" if self.color is None else f"instruments_key_{self.color}"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName

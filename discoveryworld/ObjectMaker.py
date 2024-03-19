@@ -235,6 +235,7 @@ class ObjectMaker:
             "ChemicalDispenser": ChemicalDispenser,
             "BottleCleaner": BottleCleaningDevice,
             "Key": Key,
+            "KeyRustyParametric": KeyRustyParametric,
             "AncientArtifact": AncientArtifact,
             "Flag": Flag,
             "RadioCarbonMeter": RadioCarbonMeter,

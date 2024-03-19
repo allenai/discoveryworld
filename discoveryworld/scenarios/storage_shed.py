@@ -14,6 +14,8 @@ from discoveryworld.buildings.terrain import mkGrassFill, mkPathX
 def mkRandomChemicalCombination(rng, numChemicals:int=3, minChemicals:int=2, minAmount:int=3, maxAmount:int=3):
     # Chemical names
     chemicalNames = ["Substance A", "Substance B", "Substance C", "Substance D", "Substance E", "Substance F"]
+    # Limit chemical names to numChemicals
+    chemicalNames = chemicalNames[0:numChemicals]
     # Randomly shuffle the chemical names
     rng.shuffle(chemicalNames)
     # Randomly choose between minChemicals and maxAmount
@@ -71,11 +73,32 @@ def makeScenarioStorageShed(world, numUserAgents=1):
         randY = world.rng.randint(0, world.sizeY - 1)
         randX = world.rng.randint(0, world.sizeX - 1)
 
+    # Make the random solution
+    chemicalSolutionDict = mkRandomChemicalCombination(world.rng, numChemicals=3, minChemicals=2, minAmount=3, maxAmount=4)
+    scoringInfo["chemicalSolutionDict"] = chemicalSolutionDict
+    print("Chemical solution: " + str(chemicalSolutionDict))
+
     # Buildings
-    mkStorageShed(15, 10, world, DOOR_KEY_ID, scoringInfo)
+    mkStorageShed(15, 10, world, DOOR_KEY_ID, chemicalSolutionDict, scoringInfo)
 
     # Critical Hypothesis
-    scoringInfo["criticalHypotheses"] = ["If the key is placed in a mixture of 1 part Chemical A and 2 parts Chemical C, then the rust will be removed."]
+    #scoringInfo["criticalHypotheses"] = ["If the key is placed in a mixture of 1 part Chemical A and 2 parts Chemical C, then the rust will be removed."]
+    # TODO: Use the chemical solution dict to generate the critical hypothesis parametrically
+
+    # Should be of the form "X part(s) Chemical A, Y part(s) Chemical B, ..., *AND* Z part(s) Chemical C"
+    mixtureStrElems = []
+    for key in sorted(chemicalSolutionDict.keys()):
+        if (chemicalSolutionDict[key] == 1):
+            mixtureStrElems.append(str(chemicalSolutionDict[key]) + " part " + key)
+        else:
+            mixtureStrElems.append(str(chemicalSolutionDict[key]) + " parts " + key)
+    for i in range(0, len(mixtureStrElems)):
+        if (i == len(mixtureStrElems) - 1):
+            mixtureStrElems[i] = "and " + mixtureStrElems[i]
+        else:
+            mixtureStrElems[i] = mixtureStrElems[i] + ", "
+    scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of " + "".join(mixtureStrElems) + ", then the rust will be removed.")
+    #scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of 1 part Chemical A and 2 parts Chemical C, then the rust will be removed.")
 
     # Paths
     mkPathX(17, 15, 15, world)       # Town square to farm
