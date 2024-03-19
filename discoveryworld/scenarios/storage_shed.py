@@ -74,7 +74,12 @@ def makeScenarioStorageShed(world, numUserAgents=1):
         randX = world.rng.randint(0, world.sizeX - 1)
 
     # Make the random solution
-    chemicalSolutionDict = mkRandomChemicalCombination(world.rng, numChemicals=3, minChemicals=2, minAmount=3, maxAmount=4)
+    chemicalSolutionDict = {}
+    if (world.randomSeed == 0):
+        # Hardcode the first version of the task
+        chemicalSolutionDict = {"Substance A": 1, "Substance C": 2}
+    else:
+        chemicalSolutionDict = mkRandomChemicalCombination(world.rng, numChemicals=3, minChemicals=2, minAmount=3, maxAmount=4)
     scoringInfo["chemicalSolutionDict"] = chemicalSolutionDict
     print("Chemical solution: " + str(chemicalSolutionDict))
 
