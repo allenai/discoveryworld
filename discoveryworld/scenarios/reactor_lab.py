@@ -96,13 +96,17 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
     mkBuildingDivided(world, x=x, y=y, width=13, height=6, dividerX=6, apertureX=3, dividerY=0, apertureY=0, doorX=3, signText="Quantum Reactor Lab")
 
-    # Add 5 instruments on 5 tables
     instruments = []
-    instruments.append( world.createObject("Microscope") )
-    instruments.append( world.createObject("Spectrometer") )
-    instruments.append( world.createObject("RadiationMeter") )
-    instruments.append( world.createObject("Thermometer") )
-    instruments.append( world.createObject("Densitometer") )
+    instrumentMicroscope = world.createObject("Microscope")
+    instrumentSpectrometer = world.createObject("Spectrometer")
+    instrumentRadiationMeter = world.createObject("RadiationMeter")
+    instrumentThermometer = world.createObject("Thermometer")
+    instrumentDensitometer = world.createObject("Densitometer")
+    instruments.append(instrumentMicroscope)
+    instruments.append(instrumentSpectrometer)
+    instruments.append(instrumentRadiationMeter)
+    instruments.append(instrumentThermometer)
+    instruments.append(instrumentDensitometer)
 
     scoringInfo['instruments'] = instruments
 
@@ -123,6 +127,20 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
     randomSlope = int(rng.uniform(90, 110))
     randomOffset = int(rng.uniform(90, 110))
 
+    # Store the critical instrument (note, the 0-4 alignment is the same as in mkCrystalProperties)
+    scoringInfo['criticalInstrument'] = None
+    if (keyDimension == 0):
+        scoringInfo['criticalInstrument'] = instrumentDensitometer
+    elif (keyDimension == 1):
+        scoringInfo['criticalInstrument'] = instrumentThermometer
+    elif (keyDimension == 2):
+        scoringInfo['criticalInstrument'] = instrumentMicroscope
+    elif (keyDimension == 3):
+        scoringInfo['criticalInstrument'] = instrumentRadiationMeter
+    elif (keyDimension == 4):
+        scoringInfo['criticalInstrument'] = instrumentSpectrometer
+
+    # Generate the quantum crystals
     for i in range(0, 4):
         quantumCrystal = world.createObject("QuantumCrystal")
         #quantumCrystal.attributes['density'] = random.uniform(0.5, 1.5)
@@ -161,7 +179,7 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
             scoringInfo['reactorsToChange'].append(reactor)
 
         # Note the default resonance frequency
-        reactor.attributes['resonanceFreqDefault'] = quantumCrystals[i].attributes['resonanceFreq']
+        reactor.attributes['resonanceFreqDefault'] = reactor.attributes['resonanceFreq']
         # Add the reactor to the bench
         world.addObject(x+8+i, y+2, Layer.FURNITURE, reactorBench)
 

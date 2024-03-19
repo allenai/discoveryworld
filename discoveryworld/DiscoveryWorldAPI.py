@@ -6,7 +6,7 @@ import random
 import subprocess
 
 import pygame
-from discoveryworld import ScenarioMaker
+from discoveryworld.ScenarioMaker import ScenarioMaker, SCENARIOS
 from discoveryworld.ActionHistory import getActionDescriptions
 from discoveryworld.ActionSuccess import MessageImportance
 from discoveryworld.World import World
@@ -60,21 +60,20 @@ class DiscoveryWorldAPI:
 
 
     def loadScenario(self, scenarioName, numUserAgents = 1, randomSeed=0):
-        # Create a fresh instance of a random number generator (for deterministic behavior) with a specific seed
-        self.r = random.Random()
-        self.r.seed(randomSeed)
-
         # Set the number of agents
         self.numUserAgents = numUserAgents
 
         # First, create the World -- a blank slate
-        self.world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json", dataPath = "data/", filenameObjectData = "objects.tsv", filenameMaterialData="materials.tsv", filenameDiscoveryFeed="discoveryFeed.json")
+        # OLD
+        #self.world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json", dataPath = "data/", filenameObjectData = "objects.tsv", filenameMaterialData="materials.tsv", filenameDiscoveryFeed="discoveryFeed.json")
+        # NEW?
+        self.world = World(assetPath=None, filenameSpriteIndex="spriteIndex.json", dataPath=None, filenameObjectData="objects.tsv", filenameMaterialData="materials.tsv", filenameDiscoveryFeed="discoveryFeed.json")
 
 
         #### TODO: Refactor to use the new ScenarioMaker (which should take all this stuff into account)
 
         # Create the town scenario
-        scenarioMaker = ScenarioMaker(self.world, self.r)
+        scenarioMaker = ScenarioMaker(world = self.world, seed = randomSeed)
         success, errorStr = scenarioMaker.setupScenario(scenarioName, self.numUserAgents)
 
         if (not success):

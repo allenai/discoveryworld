@@ -973,6 +973,7 @@ class ReactorTask(Task):
         self.crystalsTaken = set()              # Crystals that have been taken
         self.instrumentsUsed = set()            # Instruments that have been used
         self.crystalsExamined = set()           # Crystals that have been examined
+        self.crystalsExaminedByCriticalInstrument = set()  # Crystals that have been examined by the critical instrument
         self.reactorsChanged = set()            # Reactors that have had their values changed
 
         # Scorecard elements
@@ -980,16 +981,24 @@ class ReactorTask(Task):
         self.scoreCard.append(self.scorecardQuantumCrystalsPresent)
 
         # Each instrument has been used with at least one crystal
-        self.scorecardInstrumentsUsed = ScorecardElement("Instruments Used", "Each scientific instrument has been used with at least one crystal", maxScore=4)
+        self.scorecardInstrumentsUsed = ScorecardElement("Instruments Used", "Each scientific instrument has been used with at least one crystal", maxScore=5)
         self.scoreCard.append(self.scorecardInstrumentsUsed)
 
         # Each crystal has been examined by at least one instrument
         self.scorecardCrystalsExamined = ScorecardElement("Crystals Examined", "Each crystal has been examined by at least one instrument", maxScore=4)
         self.scoreCard.append(self.scorecardCrystalsExamined)
 
+        # Each crystal has been examined by the critical instrument required to solve the task
+        self.scorecardCriticalInstrumentsUsed = ScorecardElement("Crystals Examined by Critical Instrument", "Each crystal has been examined by the critical instrument", maxScore=4)
+        self.scoreCard.append(self.scorecardCriticalInstrumentsUsed)
+
         # Unknown reactors (3 and 4) have had their values changed
         self.scorecardReactorsChanged = ScorecardElement("Reactors Changed", "The resonance frequency of the unknown reactors have been changed", maxScore=2)
         self.scoreCard.append(self.scorecardReactorsChanged)
+
+        # Unknown reactors (3 and 4) set to correct resonance frequencies
+        self.scorecardReactorsSet = ScorecardElement("Reactors Set", "The resonance frequency of the unknown reactors is correct", maxScore=2)
+        self.scoreCard.append(self.scorecardReactorsSet)
 
         # Reactors on
         self.scorecardReactorsOn = ScorecardElement("Reactors On", "The reactors have been successfully activated", maxScore=4)
@@ -1003,6 +1012,7 @@ class ReactorTask(Task):
         # scoringInfo['quantumCrystals'] = quantumCrystals
         # scoringInfo['reactors'] = crystalReactors
         # scoringInfo['reactorsToChange']
+        # scoringInfo['criticalInstrument']
 
 
     # Task setup: Add any necessary objects to the world to perform the task.
@@ -1038,7 +1048,7 @@ class ReactorTask(Task):
             self.scorecardQuantumCrystalsPresent.updateScore(score=numCrystalsTaken, completed=isComplete, associatedUUIDs=list(self.crystalsTaken), associatedNotes="The following quantum crystals have been taken: " + str(self.crystalsTaken))
 
         # Check if the instruments have been used with at least one crystal
-        if (not self.scorecardInstrumentsUsed.completed) or (not self.scorecardCrystalsExamined.completed):
+        if (not self.scorecardInstrumentsUsed.completed) or (not self.scorecardCrystalsExamined.completed) or (not self.scorecardCriticalInstrumentsUsed.completed):
             for agent in self.world.getUserAgents():
                 for instrument in self.scoringInfo["instruments"]:
                     for crystal in self.scoringInfo["quantumCrystals"]:
@@ -1047,9 +1057,12 @@ class ReactorTask(Task):
                             self.instrumentsUsed.add(instrument.uuid)
                             self.crystalsExamined.add(crystal.uuid)
 
+                            if (instrument.uuid == self.scoringInfo["criticalInstrument"].uuid):
+                                self.crystalsExaminedByCriticalInstrument.add(crystal.uuid)
+
             numInstrumentsUsed = len(self.instrumentsUsed)
             isCompleteInstruments = False
-            if (numInstrumentsUsed >= 4):
+            if (numInstrumentsUsed >= 5):
                 isCompleteInstruments = True
             self.scorecardInstrumentsUsed.updateScore(score=numInstrumentsUsed, completed=isCompleteInstruments, associatedUUIDs=list(self.instrumentsUsed), associatedNotes="The following instruments have been used: " + str(self.instrumentsUsed))
 
@@ -1058,6 +1071,12 @@ class ReactorTask(Task):
             if (numCrystalsExamined >= 4):
                 isCompleteCrystals = True
             self.scorecardCrystalsExamined.updateScore(score=numCrystalsExamined, completed=isCompleteCrystals, associatedUUIDs=list(self.crystalsExamined), associatedNotes="The following crystals have been examined: " + str(self.crystalsExamined))
+
+            numCrystalsExaminedByCriticalInstrument = len(self.crystalsExaminedByCriticalInstrument)
+            isCompleteCritical = False
+            if (numCrystalsExaminedByCriticalInstrument >= 4):
+                isCompleteCritical = True
+            self.scorecardCriticalInstrumentsUsed.updateScore(score=numCrystalsExaminedByCriticalInstrument, completed=isCompleteCritical, associatedUUIDs=list(self.crystalsExaminedByCriticalInstrument), associatedNotes="The following crystals have been examined by the critical instrument: " + str(self.crystalsExaminedByCriticalInstrument))
 
 
         # Check that the resonance frequency of the unknown (last 2) reactors has been changed from the default value
@@ -1071,6 +1090,20 @@ class ReactorTask(Task):
             if (numReactorsChanged >= 2):
                 isComplete = True
             self.scorecardReactorsChanged.updateScore(score=numReactorsChanged, completed=isComplete, associatedUUIDs=list(self.reactorsChanged), associatedNotes="The following reactors have had their resonance frequency changed: " + str(self.reactorsChanged))
+
+        # Check that the resonance frequency of the unknown (last 2) reactors has been set to the correct value
+        numReactorsSet = 0
+        unknownCrystals = self.scoringInfo["quantumCrystals"][2:]
+        print("unknown crystals: " + str(unknownCrystals))
+        for idx, reactor in enumerate(self.scoringInfo["reactorsToChange"]):
+            crystalFreq = unknownCrystals[idx].attributes["resonanceFreq"]
+            if (reactor.attributes["resonanceFreq"] == crystalFreq):
+                numReactorsSet += 1
+
+        isComplete = False
+        if (numReactorsSet >= 2):
+            isComplete = True
+        self.scorecardReactorsSet.updateScore(score=numReactorsSet, completed=isComplete, associatedUUIDs=[reactor.uuid for reactor in self.scoringInfo["reactors"]], associatedNotes="The following reactors have been set to the correct resonance frequency: " + str([reactor.uuid for reactor in self.scoringInfo["reactors"]]))
 
         # Check if the reactors have been activated
         if (not self.scorecardReactorsOn.completed):

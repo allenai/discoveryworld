@@ -977,10 +977,15 @@ if __name__ == "__main__":
     print(api.getNameAndVersion())
 
     # Load the scenario
-    #api.loadScenario(scenarioName = "food_illness", numUserAgents = 1, randomSeed = 0)
-    api.loadScenario(scenarioName = "combinatorial_chemistry", numUserAgents = 1, randomSeed = 0)
-    #api.loadScenario(scenarioName = "archaeology_dating", numUserAgents = 1, randomSeed = 0)
-    #api.loadScenario(scenarioName = "plant_nutrients", numUserAgents = 1, randomSeed = 0)
+    #scenarioName = "food_illness"
+    #scenarioName = "combinatorial_chemistry"
+    scenarioName = "archaeology_dating_simple"
+    #scenarioName = "archaeology_dating_challenge"
+    #scenarioName = "plant_nutrients"
+    #scenarioName = "lost_in_translation"
+    #scenarioName = "reactor_lab"
+    #api.loadScenario(scenarioName = "combinatorial_chemistry", numUserAgents = 1, randomSeed = 0)
+    api.loadScenario(scenarioName = scenarioName, numUserAgents = 1, randomSeed = 0)
 
     # Test the API
     #testAgent(api)
@@ -991,7 +996,8 @@ if __name__ == "__main__":
 
     # GPT4-V Hypothesizer Agent
     GPT4VHypothesizerAgent(api, numSteps=500)
-    api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v_hypothesizer.ancientdig.mp4")
+    filenameOut = "output_gpt4v_hypothesizer." + scenarioName + ".mp4"
+    api.createAgentVideo(agentIdx=0, filenameOut=filenameOut)
 
     # Random agent
     #randomAgent(api, numSteps=10)
