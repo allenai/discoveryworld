@@ -6,6 +6,52 @@ from discoveryworld.Layer import Layer
 from discoveryworld.buildings.colony import mkStorageShed
 from discoveryworld.buildings.terrain import mkGrassFill, mkPathX
 
+# Randomly create a chemical combination
+# numChemicals: The number of chemical possibilities (e.g. if there are 5 checmical dispensers, then numChemicals=5)
+# minChemicals: The minimum number of DIFFERENT chemicals that can be in the combinations
+# minAmount: The minimum number of total parts of chemicals that must be in the combination (e.g. minAmount=3 means 1 part Chemical A and 2 parts Chemical B is valid)
+# maxAmount: The maximum number of total parts of chemicals that must be in the combination (e.g. maxAmount=5 means 2 part Chemical A and 3 parts Chemical B is valid)
+def mkRandomChemicalCombination(rng, numChemicals:int=3, minChemicals:int=2, minAmount:int=3, maxAmount:int=3):
+    # Chemical names
+    chemicalNames = ["Substance A", "Substance B", "Substance C", "Substance D", "Substance E", "Substance F"]
+    # Randomly shuffle the chemical names
+    rng.shuffle(chemicalNames)
+    # Randomly choose between minChemicals and maxAmount
+    numChemicals = rng.randint(minChemicals, maxAmount)
+
+    # Randomly choose the chemicals
+    chemicalDict = {}
+    for i in range(0, numChemicals):
+        chemicalDict[chemicalNames[i]] = 1
+
+
+    # Num parts to add
+    totalParts = rng.randint(minAmount, maxAmount)
+
+    # Calculate the total number of chemical parts
+    while (True):
+        # Count the number of parts
+        sum = 0
+        for key in chemicalDict:
+            sum += chemicalDict[key]
+
+        # If we have the right number of parts, we are done
+        if (sum == totalParts):
+            break
+
+        # This should never happen -- but just in case, to prevent an infinite loop, if the number of parts is too high, exit
+        if (sum > totalParts):
+            break
+
+        # Otherwise, we have too few parts -- randomly pick a key, and add a part
+        key = rng.choice(list(chemicalDict.keys()))
+        chemicalDict[key] += 1
+
+    return chemicalDict
+
+
+
+
 # TODO: Make the task generate a random combination of chemicals that works as a de-ruster on initialization (currently hardcoded to 1-part Chemical A and 2 parts Chemical C)
 def makeScenarioStorageShed(world, numUserAgents=1):
     scoringInfo = {}
