@@ -33,7 +33,7 @@ from discoveryworld.World import World
 
 def main(args):
     print("Initializing...")
-
+    displayGrid = args.debug
 
     # 32 pixels/tile * 32 tiles = 1024 pixels
 
@@ -175,6 +175,11 @@ def main(args):
                     ui.addTextMessageToQueue(success.message)
 
             else:
+
+                if (keys[pygame.K_g]):
+                    displayGrid = not displayGrid
+                    doNextTurn = True
+                    success = True
 
                 # # Manual state adjustment
                 if (keys[pygame.K_1]):
@@ -338,7 +343,7 @@ def main(args):
         worldStartX = agentLocation[0] - int(viewportSizeX / 2)
         worldStartY = agentLocation[1] - int(viewportSizeY / 2)
         # Step 4: Render the viewport
-        world.renderViewport(window, worldStartX, worldStartY, viewportSizeX, viewportSizeY, 0, 0, scale=1.0)
+        world.renderViewport(window, worldStartX, worldStartY, viewportSizeX, viewportSizeY, 0, 0, scale=1.0, includeGrid=displayGrid)
         # Step 5: Render the user interface
         ui.render()
 
@@ -386,6 +391,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Play DiscoveryWorld.")
     parser.add_argument('--scenario', choices=SCENARIOS, default=SCENARIOS[0])
+    parser.add_argument('--debug', action="store_true")
 
     args = parser.parse_args()
 

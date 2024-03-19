@@ -203,3 +203,37 @@ class Shovel(Object):
     def tick(self):
         # Call superclass
         Object.tick(self)
+
+
+class Coin(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "coin", "coin", defaultSpriteName = "house1_coin")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+
+class FlagPole(Object):
+    # Constructor
+    def __init__(self, world, height=1):
+        # Default sprite name
+        Object.__init__(self, world, "flag", "flag", defaultSpriteName = "flags_flag_pole_bottom")
+
+        self.height = height
+        self.current_height = height
+
+    def getSpriteNamesWithContents(self, yOffset:int=0):
+        spriteList = super().getSpriteNamesWithContents(yOffset)
+
+        for i in range(1, self.height+1):
+            if i == self.height:
+                spriteList.append({"spriteName": "flags_flag_pole_top", "yOffset": -32*i})
+            else:
+                spriteList.append({"spriteName": "flags_flag_pole_middle", "yOffset": -32*i})
+
+            if self.current_height == i:
+                spriteList.append({"spriteName": "flags_flag", "yOffset": -32*i})
+
+        return spriteList

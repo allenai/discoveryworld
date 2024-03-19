@@ -599,3 +599,59 @@ class Densitometer(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+class CountingComputer(Object):
+    def __init__(self, world):
+        Object.__init__(self, world, "computer", "computer", defaultSpriteName="instruments_spectrometer")
+
+        # Default attributes
+        self.attributes['isUsable'] = True  # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+    def actionUseWith(self, otherObject):
+        # Use this object on the patient object
+        useDescriptionStr = "You use the computer to count numbers.\n"
+
+        # # Get the patient object, and all its parts
+        # # def getAllContainedObjectsAndParts(self, includeContents=True, includeParts=True):
+        # patientObjAndParts = patientObj.getAllContainedObjectsAndParts(includeContents=False, includeParts=True)
+        # # Collect the materials of the object and its parts
+        # patientMaterials = []
+        # for patientObjOrPart in patientObjAndParts:
+        #     if ("materials" in patientObjOrPart.attributes):
+        #         patientMaterials.extend(patientObjOrPart.attributes["materials"])
+
+        # # Get the radiation levels of each material
+        # radiationLevels = []
+        # for patientMaterial in patientMaterials:
+        #     if ("radiationusvh" in patientMaterial):
+        #         radiationLevels.append(patientMaterial["radiationusvh"])
+
+        # # If there are radiation levels, say the results are inconclusive.
+        # # TODO: Just use background rate, then?
+        # if (len(radiationLevels) == 0):
+        #     radiationLevels = [0]
+        #     #useDescriptionStr += "The results are inconclusive.\n"
+        #     #return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+
+        # # Calculate the radiation level of this object (sum of all radiation levels of each material)
+        # radiationLevelMicroSeivertsPerHour = sum(radiationLevels)
+        # # Add a random amount of background radiation, drawn from the current background radiation rate.  First, generate a number between 0-avgRadiationBackgroundLevelUSVH
+        # backgroundRadiation = self.rng.random() * self.world.parameters["avgRadiationBackgroundLevelUSVH"]
+        # # Add the background radiation to the radiation level
+        # radiationLevelMicroSeivertsPerHour += backgroundRadiation
+
+        # # Also add the radiation from any objects near this location, using the inverse square law.
+        # backgroundNearLocation = getRadiationLevelAroundLocation(self.world, self.attributes["gridX"], self.attributes["gridY"], excludeObject=patientObj, windowSize=5)
+        # radiationLevelMicroSeivertsPerHour += backgroundNearLocation
+
+        # # TODO: Also add the radiation from any other objects near this location.
+
+        # # Report the radiation level (to 2 decimal place(s)
+        # useDescriptionStr += "The radiation meter reports a level of " + "{:.2f}".format(radiationLevelMicroSeivertsPerHour) + " micro Seiverts per hour.\n"
+        # useDescriptionStr += "DEBUG:\n Background radiation: " + "{:.2f}".format(backgroundRadiation) + " micro Seiverts per hour.\n"
+        # useDescriptionStr += "DEBUG:\n Background near location: " + "{:.2f}".format(backgroundNearLocation) + " micro Seiverts per hour.\n"
+
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+
+    

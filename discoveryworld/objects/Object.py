@@ -585,17 +585,6 @@ class Object:
         # Return the sprite list
         return spriteList
 
-    # TODO: DEPRECATING
-    # def render(self, spriteLibrary, window, screenX, screenY, scale):
-    #     # Render this object and it's sprite(s)
-    #     for spriteName in self.getSpriteNames():
-    #         spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
-
-    #     for spriteName in self.getContentsSpriteNames():
-    #         spriteLibrary.renderSprite(window, spriteName, screenX, screenY, scale)
-
-
-
     #
     #   Serialize to JSON (for saving histories, but potentially lossy -- not all object member variables are saved)
     #

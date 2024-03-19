@@ -253,6 +253,9 @@ class ObjectMaker:
             "GeneratorSideRight": GeneratorSideRight,
             "GeneratorCenter": GeneratorCenter,
             "Densitometer": Densitometer,
+            "Pupitre": Pupitre,
+            "FlagPole": FlagPole,
+            "TableWithSign": TableWithSign,
 
             # Colored objects
             "PaintBucket": PaintBucket,

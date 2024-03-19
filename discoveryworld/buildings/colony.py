@@ -228,18 +228,19 @@ def mkKeyShop(x, y, world):
     COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "k": "black", "w": "white", "o": "orange"}
     layout = [
         "xxxxxxx",
-        "xxxyxxx",
-        "xbxxxwx",
+        "xrbywkx",
+        "xxxxxxx",
         "xgxxxox",
-        "xrxxxkx",
+        "xxxxxxx",
         "xxxxxxx",
     ]
     for i, row in enumerate(layout):
         for j, c in enumerate(row):
             if c in COLORS.keys():
-                table = world.createObject("Table")
+                key = world.createObject("Key", color=COLORS[c], isRusted=False)  # TODO: change sign text to alien language.
+                table = world.createObject("TableWithSign", signText=key.name)
                 world.addObject(x+j, y+i, Layer.FURNITURE, table)
-                table.addObject( world.createObject("Key", color=COLORS[c], isRusted=False) )
+                table.addObject(key)
 
 
 def mkPaintShop(x, y, world):
@@ -249,15 +250,104 @@ def mkPaintShop(x, y, world):
     COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "k": "black", "w": "white", "o": "orange"}
     layout = [
         "xxxxxxx",
-        "xxxyxxx",
-        "xbxxxwx",
+        "xrbywkx",
+        "xxxxxxx",
         "xgxxxox",
-        "xrxxxkx",
+        "xxxxxxx",
         "xxxxxxx",
     ]
     for i, row in enumerate(layout):
         for j, c in enumerate(row):
             if c in COLORS.keys():
-                table = world.createObject("Table")
+                paint = world.createObject("PaintBucket", color=COLORS[c])  # TODO: change sign text to alien language.
+                table = world.createObject("TableWithSign", signText=paint.name)
                 world.addObject(x+j, y+i, Layer.FURNITURE, table)
-                table.addObject( world.createObject("PaintBucket", color=COLORS[c]) )
+                table.addObject(paint)
+
+
+def mkGeneralStore(x, y, world):
+    # Create a building (shop sellings colored keys)
+    signText = "Magasin général\n[The logo is a shopping cart]"
+    mkBuildingOneRoom(world, x=x, y=y, width=9, height=14, signText=signText)
+
+    COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "k": "black", "w": "white", "o": "orange"}
+    OBJECTS = {
+        "0": "",
+        "1": "Mushroom",
+        "2": "Pot",
+        "3": "Jar",
+        "4": "Shovel",
+        "5": "Seed",
+        "6": "FlowerPot",
+        "7": "Key",
+        "8": "Flag",
+        # "9": "PaintBucket",
+        # "A": "Rock",
+    }
+    layout = [
+        ".........",
+        ".0400000.",
+        ".........",
+        ".100.000.",
+        ".........",
+        ".002.000.",
+        ".........",
+        ".003.081.",
+        ".........",
+        ".040.070.",
+        ".........",
+        ".500.600.",
+        ".........",
+    ]
+    for i, row in enumerate(layout):
+        for j, o in enumerate(row):
+            if o in OBJECTS.keys():
+                if OBJECTS[o]:
+                    obj = world.createObject(OBJECTS[o])  # TODO: change sign text to alien language.
+                    table = world.createObject("TableWithSign", signText=obj.name)
+                    table.addObject(obj)
+                else:
+                    table = world.createObject("Table")
+
+                world.addObject(x+j, y+i, Layer.FURNITURE, table)
+
+
+def mkSchool(x, y, world):
+    # Create a building (shop sellings colored keys)
+    signText = "École\n[The logo is a student hat]"
+    mkBuildingOneRoom(world, x=x, y=y, width=9, height=11, signText=signText)
+
+    OBJECTS = {
+        "c": ("Chair", {}),
+        "T": ("Table", {}),
+        "p": ("Pupitre", {"facing": "south"}),
+        "t": ("Pupitre", {"facing": "north"}),
+        "<": ("Pupitre", {"facing": "west"}),
+        ">": ("Pupitre", {"facing": "east"}),
+        "P": ("FlagPole", {"height": 5}),
+    }
+    layout = [
+        ".........",
+        ".......P.",
+        "...TpT...",
+        ".........",
+        ".t.t.t.t.",
+        ".........",
+        ".t.t.S.t.",
+        ".........",
+        ".t.t.t.t.",
+        ".........",
+        ".........",
+    ]
+    for i, row in enumerate(layout):
+        for j, o in enumerate(row):
+            if o in OBJECTS.keys():
+                cls, kwargs = OBJECTS[o]
+                obj = world.createObject(cls, **kwargs)
+                world.addObject(x+j, y+i, Layer.FURNITURE, obj)
+            elif o == "S":
+                desk = world.createObject("Pupitre", facing="north")
+                world.addObject(x+j, y+i, Layer.FURNITURE, desk)
+
+                computer = world.createObject("CountingComputer")
+                desk.addObject(computer)

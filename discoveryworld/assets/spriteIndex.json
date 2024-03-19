@@ -26,6 +26,8 @@
                 "chair_u":    { "baseTile": [5, 6],  "size": [1, 1] },
                 "chair_d":    { "baseTile": [4, 6],  "size": [1, 1] },
 
+                "chair_u_back": { "baseTile": [5, 7],  "size": [1, 1] },
+
                 "stove_off":    { "baseTile": [2, 12],  "size": [1, 1] },
                 "stove_on":     { "baseTile": [0, 12],  "size": [1, 1] },
                 "stove_open":   { "baseTile": [1, 12],  "size": [1, 1] },
@@ -41,6 +43,8 @@
                 "bed_lr":          { "baseTile": [2, 11],  "size": [2, 1] },
 
                 "table_bedside":   { "baseTile": [4, 11],  "size": [1, 1] },
+
+                "coin": { "baseTile": [6, 5],  "size": [1, 1] },
 
                 "test1": { "baseTile": [4, 4],  "size": [1, 1] }
             },
@@ -157,6 +161,7 @@
             {
                 "sign_nowriting":    { "baseTile": [10, 4],  "size": [1, 1] },
                 "sign_writing":      { "baseTile": [11, 4],  "size": [1, 1] },
+                "sign_writing2":     { "baseTile": [13, 3],  "size": [1, 1] },
 
                 "sign_village":      { "baseTile": [5, 4],  "size": [3, 2] },
                 "sign_village_bl":   { "baseTile": [5, 5],  "size": [1, 1] },
@@ -284,6 +289,21 @@
                 "stone_hammer":         { "baseTile": [5, 4],  "size": [1, 1] },
                 "brass_chisel":         { "baseTile": [5, 5],  "size": [1, 1] },
                 "iron_tongs":           { "baseTile": [5, 6],  "size": [1, 1] }
+            },
+        "composites":
+            {
+            }
+    },
+    {
+        "sheetName": "flags",
+        "filename": "placeholder/flags.png",
+        "tileSize": [32, 32],
+        "sprites":
+            {
+                "flag_pole_top":     { "baseTile": [0, 0],  "size": [1, 1] },
+                "flag_pole_middle":  { "baseTile": [3, 0],  "size": [1, 1] },
+                "flag_pole_bottom":  { "baseTile": [1, 0],  "size": [1, 1] },
+                "flag":              { "baseTile": [2, 0],  "size": [1, 1] }
             },
         "composites":
             {

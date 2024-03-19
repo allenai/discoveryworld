@@ -25,7 +25,7 @@ class Bed(Object):
 
 class Chair(Object):
     # Constructor
-    def __init__(self, world):
+    def __init__(self, world, curDirection="west"):
         Object.__init__(self, world, "chair", "chair", defaultSpriteName = "house1_chair_l")
 
         self.attributes["isMovable"] = False                       # Can it be moved?
@@ -38,16 +38,7 @@ class Chair(Object):
         self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
 
         # Rendering attributes
-        self.curDirection = "west"
-
-    def tick(self):
-        # TODO: Invalidate sprite name if this or neighbouring walls change
-        if (False):
-            self.needsSpriteNameUpdate = True
-
-        # Call superclass
-        Object.tick(self)
-
+        self.curDirection = curDirection
 
     # Sprite helper: Look to see if there's a table nearby
     def _hasTable(self, x, y):
@@ -311,3 +302,70 @@ class TableBedside(Object):
     def tick(self):
         # Call superclass
         Object.tick(self)
+
+
+class TableWithSign(Object):
+    # Constructor
+    def __init__(self, world, signText=""):
+        # Default sprite name
+        Object.__init__(self, world, "table", "table with a sign", defaultSpriteName = "house1_table")
+        self.sign = world.createObject("Sign", variant=2)
+        self.sign.setText(signText)
+        self.attributes["document"] = signText
+
+        self.attributes["isReadable"] = True                       # Can it be moved?
+        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+        # Container
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can not be opened (things are stored on the table surface)
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
+
+        # Rendering attributes
+        self.attributes["screenYOffset"] = -7                      # Small Y offset. This is to make it look like the objects are on the table.
+
+    def getSpriteNamesWithContents(self, yOffset:int=0):
+        spriteList = super().getSpriteNamesWithContents(yOffset)
+        spriteList.append({"spriteName": self.sign.getSpriteName(), "yOffset": yOffset+7})
+        return spriteList
+
+
+class Pupitre(Table):
+    def __init__(self, world, facing="north"):
+        self.facing = facing
+        Object.__init__(self, world, "pupitre", "pupitre", defaultSpriteName = "house1_table")
+        #self.chair = world.createObject("Chair")
+
+        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+        # Container
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can not be opened (things are stored on the table surface)
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
+
+        # Rendering attributes
+        self.attributes["screenYOffset"] = -7                      # Small Y offset. This is to make it look like the objects are on the table.
+
+    def getSpriteNamesWithContents(self, yOffset:int=0):
+        spriteList = []
+
+        # Pick the correct chair sprite according to the facing direction of the objects.
+        # Depending on the facing direction, we either draw the table on top or not.
+        if self.facing == "north":
+            spriteList.extend(super().getSpriteNamesWithContents(yOffset))
+            spriteList.append({"spriteName": "house1_chair_u_back", "yOffset": 7})
+        elif self.facing == "south":
+            spriteList.append({"spriteName": "house1_chair_d", "yOffset": -10})
+            spriteList.extend(super().getSpriteNamesWithContents(yOffset))
+        elif self.facing == "west":
+            spriteList.append({"spriteName": "house1_chair_r", "xOffset": -16, "yOffset": -3})
+            spriteList.extend(super().getSpriteNamesWithContents(yOffset))
+        elif self.facing == "east":
+            spriteList.append({"spriteName": "house1_chair_l", "xOffset": 16, "yOffset": -3})
+            spriteList.extend(super().getSpriteNamesWithContents(yOffset))
+
+        return spriteList

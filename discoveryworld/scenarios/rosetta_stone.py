@@ -3,7 +3,7 @@
 import random
 from discoveryworld.Agent import Agent
 from discoveryworld.Layer import Layer
-from discoveryworld.buildings.colony import mkKeyShop, mkPaintShop
+from discoveryworld.buildings.colony import mkGeneralStore, mkKeyShop, mkPaintShop, mkSchool
 from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mkPathX, mkPathY, mkSignVillage, mkTownSquare
 
 
@@ -29,22 +29,35 @@ def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
 
     mkKeyShop(9, 21, world)
     mkPaintShop(19, 21, world)
+    mkGeneralStore(7, 4, world)
+    mkSchool(19, 7, world)
 
-    # tables, pot = mkCafeteria(19, 20, world, buildingMaker)
+    # We get an instruction in an alien language
+    # e.g. You need the blue key to unlock the door.
+    # e.g. Open/close chest/door
+    # e.g. lock/unlock chest/door with color key
+    # e.g. give water/object to someone
+    # e.g. understand numbers from hearing clock (requires time system)
+    # e.g. understand numbers from looking at a rock/mushromom/cats/ collection.
+    # e.g. understand numbers from using a dispenser machine: you press the button and get that many items.
+    # Open/close is learned from flipping a lever and hearing a click, need to go and see the outcome.
+    #
+
+    # Tasks:
+    #   put  [X] in/on [Y],
+    #   open [X] with [Y],
+    #   give [X] to [y]
+    #   take [X] of [Y]
+    # Store selling keys
+    # Store selling color paint
 
     mkTownSquare(16, 18, world)
 
-    #mushroomsAdded = mkFarm(10, 8, world, buildingMaker)
-
     # Paths
     mkPathY(17, 1, 30, world)       # Top/bottom, through town square
-
-    mkPathX(10, 28, 15, world)       # Bottom, along cafeteria/science lab
-
-    mkPathX(17, 19, 15, world)       # Town square to barracks
-
-    mkPathX(17, 10, 10, world)       # Town square to infirmary
-
+    mkPathX(10, 28, 15, world)      # Bottom, along cafeteria/science lab
+    mkPathX(17, 19, 15, world)      # Town square to barracks
+    mkPathX(17, 10, 10, world)      # Town square to infirmary
     mkPathX(1, 19, 16, world)       # Town square to farm
 
     # Fences
@@ -99,19 +112,21 @@ def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
     for userAgentIdx in range(0, numUserAgents):
         userAgent = Agent(world)
         # TODO: Add starting tools for agent
-        userAgent.addObject(world.createObject("Shovel"))
-        userAgent.addObject(world.createObject("Seed"))
+        # userAgent.addObject(world.createObject("Shovel"))
+        # userAgent.addObject(world.createObject("Seed"))
+        userAgent.addObject(world.createObject("Coin"))
         # Add the agent to a specfic location
-        #world.addObject(14+userAgentIdx, 14, Layer.AGENT, userAgent)      # In farm field
-        world.addObject(12+userAgentIdx, 18, Layer.AGENT, userAgent)      # Near farm
+        world.addObject(16+userAgentIdx, 18, Layer.AGENT, userAgent)      # Town Square
+        # world.addObject(12+userAgentIdx, 24, Layer.AGENT, userAgent)      # In key shop
         # Register the agent with the World so we can keep track of it
         world.addAgent(userAgent)
 
 
     # Add teleport locations to world
-    world.addTeleportLocation("key shop", 10, 24)
-    world.addTeleportLocation("paint shop", 20, 23)
+    world.addTeleportLocation("key shop", 12, 24)
+    world.addTeleportLocation("paint shop", 22, 24)
     world.addTeleportLocation("town square", 16, 18)
+    world.addTeleportLocation("general store", 11, 10)
 
     # currentAgent = Agent(world)
     # #world.addObject(5, 8, Layer.AGENT, currentAgent)      # Near cave

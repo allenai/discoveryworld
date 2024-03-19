@@ -471,8 +471,12 @@ class Path(Object):
 
 class Sign(Object):
     # Constructor
-    def __init__(self, world):
-        Object.__init__(self, world, "sign", "sign", defaultSpriteName = "village1_sign_nowriting")
+    def __init__(self, world, variant=None):
+        self.variant = variant
+        defaultSpriteName = "village1_sign_writing"
+        if self.variant:
+            defaultSpriteName = f"village1_sign_writing{self.variant}"
+        Object.__init__(self, world, "sign", "sign", defaultSpriteName=defaultSpriteName)
 
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
@@ -500,9 +504,9 @@ class Sign(Object):
             # No need to update the sprite name
             return
 
-        # If the stove is open, then we need to use the open sprite
+        # If the sign has text, we choose the sign accordingly.
         if (len(self.attributes["document"]) > 0):
-            self.curSpriteName = "village1_sign_writing"
+            self.curSpriteName = self.defaultSpriteName
         else:
             self.curSpriteName = "village1_sign_nowriting"
 
@@ -511,6 +515,13 @@ class Sign(Object):
 
         # After one run, we don't need to update the sprite name again unless something changes
         self.needsSpriteNameUpdate = False
+
+    # def render(self, spriteLibrary, window, screenX, screenY, scale):
+    #     if self.variant is None:
+    #         super().render(spriteLibrary, window, screenX, screenY, scale)
+    #     else:
+    #         for spriteName in self.getSpriteNamesWithContents():
+    #             spriteLibrary.renderSprite(window, spriteName, screenX, screenY-32, scale)
 
 
 class SignVillage(Object):

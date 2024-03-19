@@ -528,7 +528,7 @@ class World:
         #offsetY -= tileDiff
 
         # DEBUG: Enable rendering grid locations
-        renderGridLocations = False
+        renderGridLocations = includeGrid
         # For agents: Enable rendering grid (expands the tile size by one, to leave a functional black grid line between tiles)
         # if (includeGrid):
         #    tileSize += 1
@@ -550,7 +550,7 @@ class World:
                     for object in self.grid[x][y]["layers"][layer]:
                         #object.render(self.spriteLibrary, window, screenX, screenY, scale)
                         for spriteDict in object.getSpriteNamesWithContents():
-                            self.spriteLibrary.renderSprite(window, spriteDict["spriteName"], screenX, screenY + spriteDict["yOffset"], scale)
+                            self.spriteLibrary.renderSprite(window, spriteDict["spriteName"], screenX + spriteDict.get("xOffset", 0), screenY + spriteDict.get("yOffset", 0), scale)
 
 
         if renderGridLocations or includeGrid:
