@@ -544,11 +544,11 @@ class Object:
                     spriteNameObj = obj.getSpriteName()
                     if spriteNameObj is not None:
                         #spriteList.append(spriteNameObj)
-                        spriteList.append({"spriteName": spriteNameObj, "yOffset": yOffset})
+                        spriteList.append({"spriteName": spriteNameObj, "yOffset": yOffset + 8, "xOffset": 8, "scale": 0.5})
                         # Add any sprite modifiers
                         #spriteList.extend(obj.curSpriteModifiers)
                         for spriteModifier in obj.curSpriteModifiers:
-                            spriteList.append({"spriteName": spriteModifier, "yOffset": yOffset})
+                            spriteList.append({"spriteName": spriteModifier, "yOffset": yOffset + 8, "xOffset": 8, "scale": 0.5})
 
         return spriteList
 

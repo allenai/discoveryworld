@@ -23,6 +23,16 @@ class Bed(Object):
         Object.tick(self)
 
 
+class Bookcase(Object):
+    # Constructor
+    def __init__(self, world):
+        super().__init__(world, "bed", "bed", defaultSpriteName="house1_bookcase")
+
+        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+        self.attributes['isContainer'] = False                     # Is it a container?
+
+
 class Chair(Object):
     # Constructor
     def __init__(self, world, curDirection="west"):

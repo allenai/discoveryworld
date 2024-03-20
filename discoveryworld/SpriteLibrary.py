@@ -207,6 +207,7 @@ class SpriteLibrary:
             #print("Original Y: " + str(y) + "    Adjusted y: " + str(adjusted_y))
 
         if (scale != 1):
+            # Scale around the center of the sprite
             sprite = pygame.transform.scale(sprite, (int(sprite.get_width() * scale), int(sprite.get_height() * scale)))
 
         window.blit(sprite, (x, adjusted_y))

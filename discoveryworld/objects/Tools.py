@@ -1,3 +1,4 @@
+import numpy as np
 from discoveryworld.ActionSuccess import ActionSuccess
 from discoveryworld.objects.Object import Object
 
@@ -219,21 +220,28 @@ class FlagPole(Object):
     # Constructor
     def __init__(self, world, height=1):
         # Default sprite name
-        Object.__init__(self, world, "flag", "flag", defaultSpriteName = "flags_flag_pole_bottom")
+        Object.__init__(self, world, "flag", "flag", defaultSpriteName = "instruments2_flag_pole_bottom")
 
         self.height = height
-        self.current_height = height
+        self.current_height = 0
+
+        self.attributes["isMovable"] = False
+        self.attributes["isPassable"] = False
 
     def getSpriteNamesWithContents(self, yOffset:int=0):
         spriteList = super().getSpriteNamesWithContents(yOffset)
 
-        for i in range(1, self.height+1):
-            if i == self.height:
-                spriteList.append({"spriteName": "flags_flag_pole_top", "yOffset": -32*i})
-            else:
-                spriteList.append({"spriteName": "flags_flag_pole_middle", "yOffset": -32*i})
+        nb_flags = int(np.ceil(self.height / 2)) -1
 
-            if self.current_height == i:
-                spriteList.append({"spriteName": "flags_flag", "yOffset": -32*i})
+        for i in range(1, nb_flags+1):
+            if i == self.height:
+                spriteList.append({"spriteName": "instruments2_flag_pole_top", "yOffset": -32*i})
+            else:
+                spriteList.append({"spriteName": "instruments2_flag_pole_middle", "yOffset": -32*i})
+
+        if self.current_height % 2 == 0:
+            spriteList.append({"spriteName": "instruments2_flag_bottom", "yOffset": -32*(self.current_height//2)})
+        else:
+            spriteList.append({"spriteName": "instruments2_flag_top", "yOffset": -32*((self.current_height-1)//2)})
 
         return spriteList

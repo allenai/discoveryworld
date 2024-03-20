@@ -316,6 +316,14 @@ def mkSchool(x, y, world):
     # Create a building (shop sellings colored keys)
     signText = "École\n[The logo is a student hat]"
     mkBuildingOneRoom(world, x=x, y=y, width=9, height=11, signText=signText)
+    PROGRAMS = {
+        0: "Remise à zéro",
+        1: "Ajoute un",
+        2: "Ajoute deux",
+        3: "Ajoute trois",
+        4: "Ajoute quatre",
+        5: "Ajoute cinq",
+    }
 
     OBJECTS = {
         "c": ("Chair", {}),
@@ -324,30 +332,42 @@ def mkSchool(x, y, world):
         "t": ("Pupitre", {"facing": "north"}),
         "<": ("Pupitre", {"facing": "west"}),
         ">": ("Pupitre", {"facing": "east"}),
-        "P": ("FlagPole", {"height": 5}),
+        "P": ("FlagPole", {"height": 6}),
+        "B": ("Bookcase", {}),
     }
     layout = [
         ".........",
-        ".......P.",
-        "...TpT...",
+        "..B...B..",
+        "...TpS.P.",
         ".........",
-        ".t.t.t.t.",
+        ".3.t.t.0.",
         ".........",
-        ".t.t.S.t.",
+        ".t.t.1.5.",
         ".........",
-        ".t.t.t.t.",
+        ".t.2.t.4.",
         ".........",
         ".........",
     ]
+
+    computer = world.createObject("CountingComputer")
     for i, row in enumerate(layout):
         for j, o in enumerate(row):
-            if o in OBJECTS.keys():
+            if o == "P":
+                cls, kwargs = OBJECTS[o]
+                flagpole = world.createObject(cls, **kwargs)
+                world.addObject(x+j, y+i, Layer.FURNITURE, flagpole)
+                computer.flagpole = flagpole
+            elif o == "S":
+                desk = world.createObject("Table")
+                world.addObject(x+j, y+i, Layer.FURNITURE, desk)
+                desk.addObject(computer)
+            elif str.isdigit(o):
+                digit = int(o)
+                desk = world.createObject("Pupitre", facing="north")
+                world.addObject(x+j, y+i, Layer.FURNITURE, desk)
+                disk = world.createObject("FloppyDisk", program=PROGRAMS[digit], value=digit)
+                desk.addObject(disk)
+            elif o in OBJECTS.keys():
                 cls, kwargs = OBJECTS[o]
                 obj = world.createObject(cls, **kwargs)
                 world.addObject(x+j, y+i, Layer.FURNITURE, obj)
-            elif o == "S":
-                desk = world.createObject("Pupitre", facing="north")
-                world.addObject(x+j, y+i, Layer.FURNITURE, desk)
-
-                computer = world.createObject("CountingComputer")
-                desk.addObject(computer)

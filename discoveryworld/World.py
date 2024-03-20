@@ -550,7 +550,7 @@ class World:
                     for object in self.grid[x][y]["layers"][layer]:
                         #object.render(self.spriteLibrary, window, screenX, screenY, scale)
                         for spriteDict in object.getSpriteNamesWithContents():
-                            self.spriteLibrary.renderSprite(window, spriteDict["spriteName"], screenX + spriteDict.get("xOffset", 0), screenY + spriteDict.get("yOffset", 0), scale)
+                            self.spriteLibrary.renderSprite(window, spriteDict["spriteName"], screenX + spriteDict.get("xOffset", 0), screenY + spriteDict.get("yOffset", 0), scale * spriteDict.get("scale", 1.0))
 
 
         if renderGridLocations or includeGrid:

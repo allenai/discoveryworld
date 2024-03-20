@@ -256,6 +256,10 @@ class ObjectMaker:
             "Pupitre": Pupitre,
             "FlagPole": FlagPole,
             "TableWithSign": TableWithSign,
+            "CountingComputer": CountingComputer,
+            "Coin": Coin,
+            "Bookcase": Bookcase,
+            "FloppyDisk": FloppyDisk,
 
             # Colored objects
             "PaintBucket": PaintBucket,

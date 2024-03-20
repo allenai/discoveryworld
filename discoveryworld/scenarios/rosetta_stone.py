@@ -109,17 +109,17 @@ def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
     # dialogMaker = DialogMaker()
 
     # Add some number of user agents
-    for userAgentIdx in range(0, numUserAgents):
-        userAgent = Agent(world)
-        # TODO: Add starting tools for agent
-        # userAgent.addObject(world.createObject("Shovel"))
-        # userAgent.addObject(world.createObject("Seed"))
-        userAgent.addObject(world.createObject("Coin"))
-        # Add the agent to a specfic location
-        world.addObject(16+userAgentIdx, 18, Layer.AGENT, userAgent)      # Town Square
-        # world.addObject(12+userAgentIdx, 24, Layer.AGENT, userAgent)      # In key shop
-        # Register the agent with the World so we can keep track of it
-        world.addAgent(userAgent)
+    userAgent = Agent(world)
+    # TODO: Add starting tools for agent
+    # userAgent.addObject(world.createObject("Shovel"))
+    # userAgent.addObject(world.createObject("Seed"))
+    userAgent.addObject(world.createObject("Coin"))
+    # Add the agent to a specfic location
+    # world.addObject(16, 18, Layer.AGENT, userAgent)      # Town Square
+    # world.addObject(12, 24, Layer.AGENT, userAgent)      # In key shop
+    world.addObject(23, 10, Layer.AGENT, userAgent)      # In school
+    # Register the agent with the World so we can keep track of it
+    world.addAgent(userAgent)
 
 
     # Add teleport locations to world
@@ -127,6 +127,7 @@ def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
     world.addTeleportLocation("paint shop", 22, 24)
     world.addTeleportLocation("town square", 16, 18)
     world.addTeleportLocation("general store", 11, 10)
+    world.addTeleportLocation("school", 23, 10)
 
     # currentAgent = Agent(world)
     # #world.addObject(5, 8, Layer.AGENT, currentAgent)      # Near cave

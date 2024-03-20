@@ -46,7 +46,9 @@
 
                 "coin": { "baseTile": [6, 5],  "size": [1, 1] },
 
-                "test1": { "baseTile": [4, 4],  "size": [1, 1] }
+                "test1": { "baseTile": [4, 4],  "size": [1, 1] },
+
+                "bookcase": { "baseTile": [13, 12],  "size": [1, 2] }
             },
         "composites":
             {
@@ -295,15 +297,18 @@
             }
     },
     {
-        "sheetName": "flags",
-        "filename": "placeholder/flags.png",
+        "sheetName": "instruments2",
+        "filename": "placeholder/instruments2.png",
         "tileSize": [32, 32],
         "sprites":
             {
                 "flag_pole_top":     { "baseTile": [0, 0],  "size": [1, 1] },
                 "flag_pole_middle":  { "baseTile": [3, 0],  "size": [1, 1] },
                 "flag_pole_bottom":  { "baseTile": [1, 0],  "size": [1, 1] },
-                "flag":              { "baseTile": [2, 0],  "size": [1, 1] }
+                "flag_top":          { "baseTile": [2, 0],  "size": [1, 1] },
+                "flag_bottom":       { "baseTile": [2, 1],  "size": [1, 1] },
+
+                "floppy_disk":       { "baseTile": [4, 0],  "size": [1, 1] }
             },
         "composites":
             {

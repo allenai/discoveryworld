@@ -55,7 +55,7 @@ def main(args):
         gameParams = {
             "height": 1024,
             "width": 1024,
-            "fps": 60,
+            "fps": 30,
             "name": "DiscoveryWorld"
         }
 
