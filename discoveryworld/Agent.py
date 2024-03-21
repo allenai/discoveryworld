@@ -846,6 +846,12 @@ class Agent(Object):
                 return result
 
             else:
+                # Check if agent is standing in the passage.
+                if (self.attributes["gridX"] == objToOpenOrClose.attributes["gridX"] and self.attributes["gridY"] == objToOpenOrClose.attributes["gridY"]):
+                    result = ActionSuccess(False, "I can't close the " + objToOpenOrClose.name + " while I'm standing in it.")
+                    self.actionHistory.add(actionType=actionType, arg1=objToOpenOrClose, arg2=None, result=result)
+                    return result
+
                 objToOpenOrClose.attributes["isOpenPassage"] = False
                 objToOpenOrClose.invalidateSpritesThisWorldTile()
                 result = ActionSuccess(True, "I closed the " + objToOpenOrClose.name + ".")
@@ -3002,3 +3008,176 @@ class CrystalReactor(NPC):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+#
+class NPCDog(NPC):
+    # Constructor
+    def __init__(self, world, name):
+        # Default sprite name
+        Agent.__init__(self, world, "dog", name, defaultSpriteName="enemy06_04_agent_facing_south")
+
+        # Rendering
+        self.attributes["faceDirection"] = "south"
+        self.spriteCharacterPrefix = "enemy06_04_"
+
+        # Default attributes
+        self.attributes["isMovable"] = False                       # Can it be moved?
+
+        # Agent is a container for its inventory
+        # Container attributes
+        self.attributes['isContainer'] = True                      # Is it a container?
+        self.attributes['isOpenable'] = False                      # Can be opened
+        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
+
+        # Dialog attributes
+        self.attributes['isDialogable'] = True                     # Can it be dialoged with?
+
+        # NPC States
+        self.attributes['dialogAgentsSpokenWith'] = []             # List of dialog agents that this NPC has spoken with
+
+        # Pathfinder
+        self.pathfinder = Pathfinder()
+
+
+    #
+    #   Dialog Actions
+    #
+    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
+
+    #     # Step 1: Check if the agent has already spoken with this NPC
+    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
+    #         # Agent has already spoken with this NPC
+    #         return "I've already spoken with you."
+
+    #     # Add the agent to the list of agents that this NPC has spoken with
+    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
+
+    #     # If we reach here, the agent has not spoken with this NPC yet
+    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
+
+
+    #
+    #   Tick
+    #
+
+    # Tick
+    def tick(self):
+        # # Randomly move agent
+        # if (random.random() < 0.1):
+        #     # Randomly move the agent
+        #     deltaX = random.randint(-1, 1)
+        #     deltaY = random.randint(-1, 1)
+        #     self.actionMoveAgent(deltaX, deltaY)
+
+        # Stop if the object has already had tick() called this update -- this might have happened if the object moved locations in this current update cycle.
+        if (self.tickCompleted):
+            return
+
+        # Debug
+        print(f"NPCDog (id: {self.name}): {self.attributes['states']}")
+
+        # Call superclass
+        NPC.tick(self)
+
+        # Interpret any external states
+        if ("poisoned" in self.attributes['states']):
+            # If the agent is poisoned, then head for the infirmary
+            # Remove the "wandering" state
+            if ("wandering" in self.attributes['states']):
+                self.removeState("wandering")
+            # Head to the infirmary
+            self.attributes["goalLocation"] = (23, 7)   # Infirmary entrance
+
+
+        elif ("eatSignal" in self.attributes['states']):
+            # Remove the "wandering" state
+            if ("wandering" in self.attributes['states']):
+                self.removeState("wandering")
+            # Head to the cafeteria
+            self.attributes["goalLocation"] = (23, 23)
+            # remove "eatSignal" from external signals
+            self.removeState("eatSignal")
+            # Add "movingToCafeteria" to external signals
+            self.addState("movingToCafeteria")
+
+        elif ("takeFoodFromCafeteria" in self.attributes['states']):
+            # Look directly in front of the agent for something edible
+            # Get the location in front of the agent
+            (facingX, facingY) = self.getWorldLocationAgentIsFacing()
+            # Get all objects at that world location
+            objectsInFrontOfAgent = self.world.getObjectsAt(facingX, facingY)
+            # Print names of objects in front of agent
+            print("Objects in front of agent: " + str([x.name for x in objectsInFrontOfAgent]))
+
+            # Loop through all objects at that location, looking for edible objects
+            edibleObjects = [x for x in objectsInFrontOfAgent if x.attributes['isEdible']]
+            # Print names of edible objects in front of agent
+            print("Edible objects in front of agent: " + str([x.name for x in edibleObjects]))
+
+            if (len(edibleObjects) > 0):
+                print("I want to take the " + edibleObjects[0].name)
+                # Take the first edible object
+                edibleObject = edibleObjects[0]
+                # Take the object
+                successTake = self.actionPickUp(edibleObject)
+                print(successTake)
+
+                # Remove "takeFoodFromCafeteria" from external signals
+                self.removeState("takeFoodFromCafeteria")
+                # Add "eating" to external signals
+                self.addState("eating")
+
+                # Set which object to eat
+                self.attributes["objectToEat"] = edibleObject
+
+        elif ("eating" in self.attributes['states']):
+            # Eat the food in the inventory
+            if ("objectToEat" not in self.attributes):
+                # Error -- no object to eat is listed, shouldn't be here
+                print("Error: No object to eat is listed, shouldn't be here")
+            else:
+                objectToEat = self.attributes["objectToEat"]
+                # Eat the object
+                successEat = self.actionEat(objectToEat)
+                print(successEat)
+
+                # Remove "eating" from external signals
+                self.removeState("eating")
+                # Add "wandering" to external signals
+                self.addState("wandering")
+                # Remove "objectToEat" attribute
+                del self.attributes["objectToEat"]
+
+        else:
+            # Default behavior, if no other behaviors are present, is to wander
+            if ("wandering" not in self.attributes['states']):
+                self.addState("wandering")
+
+
+        # Pathfinding/Auto-navigation
+        if ("goalLocation" in self.attributes):
+            success = self._doNPCAutonavigation()
+            if (not success):
+                # If we're in the "movingToCafeteria" state, check to see if we're already in the goal location
+                if ("movingToCafeteria" in self.attributes['states']):
+                    if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
+                        # We're in the cafeteria -- eat!
+                        self.removeState("movingToCafeteria")
+                        self.addState("takeFoodFromCafeteria")
+                        # Remove the goal location
+                        del self.attributes["goalLocation"]
+
+                elif ("wandering" in self.attributes['states']):
+                    self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
+
+
+                # We failed to find a path to the goal location -- pick a new goal location
+                #self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
+        else:
+            if ("wandering" in self.attributes['states']):
+                self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
+
+        # DEBUG: End of tick -- display the agent's current state
+        print("NPC States (name: " + self.name + "): " + str(self.attributes))
