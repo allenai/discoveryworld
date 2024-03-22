@@ -658,3 +658,10 @@ class SoilTile(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+class Stick(Object):
+    # Constructor
+    def __init__(self, world):
+        super().__init__(world, "stick", "wood stick", defaultSpriteName="instruments2_stick")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?

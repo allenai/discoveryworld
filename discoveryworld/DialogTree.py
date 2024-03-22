@@ -514,3 +514,23 @@ class DialogMaker():
 
         # Store dialog tree in agent
         agent.setDialogTree(tree)
+
+    # Dialog tree for dog trainer
+    def mkDialogDogTrainer(self, agent, message):
+        # floatVariablesToModify
+        tree = DialogTree(agent)
+
+        # Root node (introduce the soil nutrient controller, give options to ask to change the nutrient levels)
+        rootNode = DialogNode("rootNode", f"You heard them say '{message}' to their dog.")
+
+        # Exit
+        rootNode.addDialogOption("Let's not interrupt their go-fetch game.", "endNode")
+        tree.addNode(rootNode)
+        tree.setRoot(rootNode.name)
+
+        ## OK node
+        endNodeOK = DialogNode("endNode", "Goodbye", statesToAdd = [], statesToRemove = [])
+        tree.addNode(endNodeOK)
+
+        # Store dialog tree in agent
+        agent.setDialogTree(tree)

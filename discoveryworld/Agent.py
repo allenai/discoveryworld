@@ -21,7 +21,7 @@ class Agent(Object):
     # Constructor
     def __init__(self, world, objectType="agent", objectName="agent", defaultSpriteName="character18_agent_facing_south"):
         # Default sprite name
-        Object.__init__(self, world, objectType, objectName, defaultSpriteName = defaultSpriteName)
+        super().__init__(world, objectType, objectName, defaultSpriteName = defaultSpriteName)
 
         # Rendering
         self.attributes["faceDirection"] = "south"
@@ -127,7 +127,13 @@ class Agent(Object):
 
     # Helper to get inventory
     def getInventory(self):
-        return self.getAllContainedObjectsRecursive(respectContainerStatus=True)
+        accessibleInventoryObjects = []
+        for obj in self.contents:
+            accessibleInventoryObjects.append(obj)
+            # If this is a container, and it's open, this will add its contents.
+            accessibleInventoryObjects.extend(obj.getAllContainedObjectsRecursive(respectContainerStatus=True))
+
+        return accessibleInventoryObjects
 
     # Get all objects in the world tile that the agent is facing
     def getObjectsAgentFacing(self, respectContainerStatus=True):
@@ -251,11 +257,11 @@ class Agent(Object):
                         "distance": distance
                     })
 
-#                    smallPacked = {
-#                        "name": obj.name,
-#                        "distance": distance,
-#                        "uuid": obj.uuid,
-#                    }
+    #                    smallPacked = {
+    #                        "name": obj.name,
+    #                        "distance": distance,
+    #                        "uuid": obj.uuid,
+    #                    }
                     #for direction in directions:
                     direction = "-".join(directions)
                     #visibleObjectsByDirection[direction].append(obj.name)
@@ -669,7 +675,7 @@ class Agent(Object):
     # Drop an object from the agent's inventory at the agent's current location
     def actionDrop(self, objToDrop):
         # First, check if the object is in the agent's inventory
-        objectsInInventory = self.getAllContainedObjectsRecursive(respectContainerStatus=True)
+        objectsInInventory = self.getInventory()
         print("OBJECTS IN INVENTORY: " + str(objectsInInventory))
         if (not objToDrop in objectsInInventory):
             # Object is not in the agent's inventory
@@ -689,9 +695,9 @@ class Agent(Object):
         return result
 
 
-    def actionPut(self, objToPut, newContainer):
+    def actionPut(self, objToPut, newContainer, bypassClosedContainerCheck=False):
         # First, check if the object is in the agent's inventory
-        objectsInInventory = self.getAllContainedObjectsRecursive(respectContainerStatus=True)
+        objectsInInventory = self.getInventory()
         if (not objToPut in objectsInInventory):
             # Object is not in the agent's inventory
             result = ActionSuccess(False, "That object (" + objToPut.name + ") is not in my inventory.")
@@ -715,7 +721,7 @@ class Agent(Object):
             return result
 
         # Next, check to see if the container is open
-        if (not newContainer.attributes["isOpenContainer"]):
+        if (not newContainer.attributes["isOpenContainer"] and not bypassClosedContainerCheck):
             # Container is not open
             result = ActionSuccess(False, "That container (" + newContainer.name + ") is not open.")
             self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
@@ -737,6 +743,26 @@ class Agent(Object):
         self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
         return result
 
+    def actionThrow(self, objToThrow, throwLocation):
+        # First, check if the object is in the agent's inventory
+        objectsInInventory = self.getInventory()
+        print("OBJECTS IN INVENTORY: " + str(objectsInInventory))
+        if (not objToThrow in objectsInInventory):
+            # Object is not in the agent's inventory
+            result = ActionSuccess(False, "That object (" + objToThrow.name + ") is not in my inventory.")
+            self.actionHistory.add(actionType=ActionType.DROP, arg1=objToThrow, arg2=None, result=result)
+            return result
+
+        # Next, throw the object at the throw location.
+        # (Note: throwing the item to a specific location should remove it from the agent's inventory)
+        self.world.addObject(throwLocation[0], throwLocation[1], Layer.OBJECTS, objToThrow)  # TODO: add animation for throwing
+
+        # Invalidate the sprites at the object's new location
+        objToThrow.invalidateSpritesThisWorldTile()
+
+        result = ActionSuccess(True, "I threw the " + objToThrow.name + " to (" + str(throwLocation[0]) + ", " + str(throwLocation[1]) + ").")
+        self.actionHistory.add(actionType=ActionType.DROP, arg1=objToThrow, arg2=None, result=result)
+        return result
 
     # Open or close an object
     # 'whichAction' should be "open" or "close"
@@ -816,7 +842,7 @@ class Agent(Object):
                 if (objToOpenOrClose.attributes["requiresKey"] > 0):
                     # Check for the key in the agents inventory
                     keyFound = False
-                    for obj in self.getAllContainedObjectsRecursive(respectContainerStatus=True):
+                    for obj in self.getInventory():
                         if (obj.attributes["keyID"] == objToOpenOrClose.attributes["requiresKey"]):
                             keyFound = True
                             key = obj
@@ -1427,6 +1453,7 @@ class Agent(Object):
     # Sprite
     #
 
+
     # This function updates what object the agent should be shown "holding".
     # It takes a list of objects (nominally from the last action the agent took), and will pick one that the agent is currently carying.
     # If the agent is not carrying any, then it will set 'objectToShow' to None.
@@ -1441,8 +1468,8 @@ class Agent(Object):
             self.attributes["objectToShow"] = None
             return
 
-        # Filter the list of objects to show only those that are in the agent's inventory
-        accessibleInventoryObjects = self.getAllContainedObjectsRecursive(respectContainerStatus=True)
+        # Filter the list of objects to show only those that are in the agent's inventory.
+        accessibleInventoryObjects = self.getInventory()
 
         filteredInInventory = []
         for obj in objList:
@@ -1503,10 +1530,9 @@ class Agent(Object):
 #
 class NPC(Agent):
     # Constructor
-    def __init__(self, world, name):
+    def __init__(self, world, name, defaultSpriteName="character17_agent_facing_south"):
         # Default sprite name
-        Agent.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
-        #Object.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
+        super().__init__(world, "agent", name, defaultSpriteName)
 
         # Rendering
         self.attributes["faceDirection"] = "south"
@@ -3008,176 +3034,3 @@ class CrystalReactor(NPC):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
-
-
-#
-class NPCDog(NPC):
-    # Constructor
-    def __init__(self, world, name):
-        # Default sprite name
-        Agent.__init__(self, world, "dog", name, defaultSpriteName="enemy06_04_agent_facing_south")
-
-        # Rendering
-        self.attributes["faceDirection"] = "south"
-        self.spriteCharacterPrefix = "enemy06_04_"
-
-        # Default attributes
-        self.attributes["isMovable"] = False                       # Can it be moved?
-
-        # Agent is a container for its inventory
-        # Container attributes
-        self.attributes['isContainer'] = True                      # Is it a container?
-        self.attributes['isOpenable'] = False                      # Can be opened
-        self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
-        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
-
-        # Dialog attributes
-        self.attributes['isDialogable'] = True                     # Can it be dialoged with?
-
-        # NPC States
-        self.attributes['dialogAgentsSpokenWith'] = []             # List of dialog agents that this NPC has spoken with
-
-        # Pathfinder
-        self.pathfinder = Pathfinder()
-
-
-    #
-    #   Dialog Actions
-    #
-    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
-
-    #     # Step 1: Check if the agent has already spoken with this NPC
-    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-    #         # Agent has already spoken with this NPC
-    #         return "I've already spoken with you."
-
-    #     # Add the agent to the list of agents that this NPC has spoken with
-    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
-
-    #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
-
-
-    #
-    #   Tick
-    #
-
-    # Tick
-    def tick(self):
-        # # Randomly move agent
-        # if (random.random() < 0.1):
-        #     # Randomly move the agent
-        #     deltaX = random.randint(-1, 1)
-        #     deltaY = random.randint(-1, 1)
-        #     self.actionMoveAgent(deltaX, deltaY)
-
-        # Stop if the object has already had tick() called this update -- this might have happened if the object moved locations in this current update cycle.
-        if (self.tickCompleted):
-            return
-
-        # Debug
-        print(f"NPCDog (id: {self.name}): {self.attributes['states']}")
-
-        # Call superclass
-        NPC.tick(self)
-
-        # Interpret any external states
-        if ("poisoned" in self.attributes['states']):
-            # If the agent is poisoned, then head for the infirmary
-            # Remove the "wandering" state
-            if ("wandering" in self.attributes['states']):
-                self.removeState("wandering")
-            # Head to the infirmary
-            self.attributes["goalLocation"] = (23, 7)   # Infirmary entrance
-
-
-        elif ("eatSignal" in self.attributes['states']):
-            # Remove the "wandering" state
-            if ("wandering" in self.attributes['states']):
-                self.removeState("wandering")
-            # Head to the cafeteria
-            self.attributes["goalLocation"] = (23, 23)
-            # remove "eatSignal" from external signals
-            self.removeState("eatSignal")
-            # Add "movingToCafeteria" to external signals
-            self.addState("movingToCafeteria")
-
-        elif ("takeFoodFromCafeteria" in self.attributes['states']):
-            # Look directly in front of the agent for something edible
-            # Get the location in front of the agent
-            (facingX, facingY) = self.getWorldLocationAgentIsFacing()
-            # Get all objects at that world location
-            objectsInFrontOfAgent = self.world.getObjectsAt(facingX, facingY)
-            # Print names of objects in front of agent
-            print("Objects in front of agent: " + str([x.name for x in objectsInFrontOfAgent]))
-
-            # Loop through all objects at that location, looking for edible objects
-            edibleObjects = [x for x in objectsInFrontOfAgent if x.attributes['isEdible']]
-            # Print names of edible objects in front of agent
-            print("Edible objects in front of agent: " + str([x.name for x in edibleObjects]))
-
-            if (len(edibleObjects) > 0):
-                print("I want to take the " + edibleObjects[0].name)
-                # Take the first edible object
-                edibleObject = edibleObjects[0]
-                # Take the object
-                successTake = self.actionPickUp(edibleObject)
-                print(successTake)
-
-                # Remove "takeFoodFromCafeteria" from external signals
-                self.removeState("takeFoodFromCafeteria")
-                # Add "eating" to external signals
-                self.addState("eating")
-
-                # Set which object to eat
-                self.attributes["objectToEat"] = edibleObject
-
-        elif ("eating" in self.attributes['states']):
-            # Eat the food in the inventory
-            if ("objectToEat" not in self.attributes):
-                # Error -- no object to eat is listed, shouldn't be here
-                print("Error: No object to eat is listed, shouldn't be here")
-            else:
-                objectToEat = self.attributes["objectToEat"]
-                # Eat the object
-                successEat = self.actionEat(objectToEat)
-                print(successEat)
-
-                # Remove "eating" from external signals
-                self.removeState("eating")
-                # Add "wandering" to external signals
-                self.addState("wandering")
-                # Remove "objectToEat" attribute
-                del self.attributes["objectToEat"]
-
-        else:
-            # Default behavior, if no other behaviors are present, is to wander
-            if ("wandering" not in self.attributes['states']):
-                self.addState("wandering")
-
-
-        # Pathfinding/Auto-navigation
-        if ("goalLocation" in self.attributes):
-            success = self._doNPCAutonavigation()
-            if (not success):
-                # If we're in the "movingToCafeteria" state, check to see if we're already in the goal location
-                if ("movingToCafeteria" in self.attributes['states']):
-                    if (self.attributes["gridX"] == self.attributes["goalLocation"][0]) and (self.attributes["gridY"] == self.attributes["goalLocation"][1]):
-                        # We're in the cafeteria -- eat!
-                        self.removeState("movingToCafeteria")
-                        self.addState("takeFoodFromCafeteria")
-                        # Remove the goal location
-                        del self.attributes["goalLocation"]
-
-                elif ("wandering" in self.attributes['states']):
-                    self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
-
-
-                # We failed to find a path to the goal location -- pick a new goal location
-                #self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
-        else:
-            if ("wandering" in self.attributes['states']):
-                self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
-
-        # DEBUG: End of tick -- display the agent's current state
-        print("NPC States (name: " + self.name + "): " + str(self.attributes))

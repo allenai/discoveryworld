@@ -238,7 +238,7 @@ def mkKeyShop(x, y, world):
         for j, c in enumerate(row):
             if c in COLORS.keys():
                 key = world.createObject("Key", color=COLORS[c], isRusted=False)  # TODO: change sign text to alien language.
-                table = world.createObject("TableWithSign", signText=key.name)
+                table = world.createObject("Table")
                 world.addObject(x+j, y+i, Layer.FURNITURE, table)
                 table.addObject(key)
 

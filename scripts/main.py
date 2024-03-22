@@ -39,8 +39,9 @@ def main(args):
 
     #windowMode = "small"
     windowMode = "big"
+
     # Game parameters
-    if (windowMode == "small"):
+    if windowMode == "small":
         gameParams = {
             "height": 750,
             "width": 800,
@@ -51,7 +52,7 @@ def main(args):
         # Step 2: Define the viewport size (in tiles)
         viewportSizeX = 24
         viewportSizeY = 16
-    else:
+    elif windowMode == "big":
         gameParams = {
             "height": 1024,
             "width": 1024,
@@ -63,6 +64,11 @@ def main(args):
         viewportSizeX = 32
         viewportSizeY = 32
 
+    scale = 1.0
+    # if os.environ.get("MARC", False):
+    #     scale = 2.0
+    #     viewportSizeX //= 2
+    #     viewportSizeY //= 2
 
 
     # Open window
@@ -240,7 +246,6 @@ def main(args):
                     ui.addTextMessageToQueue("This is a test\nThis is an extra long line apple orange banana pineapple fruit flower tree coconut sky water air summer water blue green yellow orange purple this is the end of the second line.\nThis is the second line.")
 
 
-
         # Rendering
 
         # Fill the window with black
@@ -254,9 +259,6 @@ def main(args):
 
             # Report task progress
             print( world.taskScorer.taskProgressStr() )
-
-
-
 
             frames += 1
             print("\n\n############################################################################################")
@@ -329,7 +331,6 @@ def main(args):
             exportFrame = True
 
 
-
         # Render the world
         #world.render(window, cameraX=0, cameraY=0)
 
@@ -338,12 +339,12 @@ def main(args):
         # Step 1: Get the agent's location
         agentLocation = currentAgent.getWorldLocation()
 
-
         # Step 3: Determine the worldStartX and worldStartY coordinates
         worldStartX = agentLocation[0] - int(viewportSizeX / 2)
         worldStartY = agentLocation[1] - int(viewportSizeY / 2)
         # Step 4: Render the viewport
-        world.renderViewport(window, worldStartX, worldStartY, viewportSizeX, viewportSizeY, 0, 0, scale=1.0, includeGrid=displayGrid)
+
+        world.renderViewport(window, worldStartX, worldStartY, viewportSizeX, viewportSizeY, 0, 0, scale=scale, includeGrid=displayGrid)
         # Step 5: Render the user interface
         ui.render()
 

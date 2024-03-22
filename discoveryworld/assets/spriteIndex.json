@@ -309,7 +309,9 @@
                 "flag_bottom":       { "baseTile": [2, 1],  "size": [1, 1] },
 
                 "floppy_disk":       { "baseTile": [4, 0],  "size": [1, 1] },
-                "box":       { "baseTile": [5, 0],  "size": [1, 1] }
+                "box":               { "baseTile": [5, 0],  "size": [1, 1] },
+
+                "stick":       { "baseTile": [6, 0],  "size": [1, 1] }
             },
         "composites":
             {
@@ -467,6 +469,37 @@
         "sprites":
             {
                 "missing":    { "baseTile": [0, 0],  "size": [1, 1] }
+            },
+        "composites":
+            {
+            }
+    },
+    {
+        "sheetName": "enemy06_04",
+        "filename": "pixymoon/CuteRPG_Enemies/Enemies_Sprite_Sheets/Enemy06_04.png",
+        "tileSize": [24, 24],
+        "padTo": [32, 32],
+        "sprites":
+            {
+                "agent_facing_north":    { "baseTile": [1, 3],  "size": [1, 1] },
+                "agent_facing_east":     { "baseTile": [1, 2],  "size": [1, 1] },
+                "agent_facing_south":    { "baseTile": [1, 0],  "size": [1, 1] },
+                "agent_facing_west":     { "baseTile": [1, 1],  "size": [1, 1] }
+            },
+        "composites":
+            {
+            }
+    },    {
+        "sheetName": "character35",
+        "filename": "pixymoon/CuteRPG_Sprites/Characters/Character_035.png",
+        "tileSize": [24, 24],
+        "padTo": [32, 32],
+        "sprites":
+            {
+                "agent_facing_north":    { "baseTile": [1, 3],  "size": [1, 1] },
+                "agent_facing_east":     { "baseTile": [1, 2],  "size": [1, 1] },
+                "agent_facing_south":    { "baseTile": [1, 0],  "size": [1, 1] },
+                "agent_facing_west":     { "baseTile": [1, 1],  "size": [1, 1] }
             },
         "composites":
             {

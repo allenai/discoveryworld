@@ -260,6 +260,7 @@ class ObjectMaker:
             "Coin": Coin,
             "Bookcase": Bookcase,
             "FloppyDisk": FloppyDisk,
+            "Stick": Stick,
 
             # Colored objects
             "PaintBucket": PaintBucket,
