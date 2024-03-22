@@ -308,7 +308,8 @@
                 "flag_top":          { "baseTile": [2, 0],  "size": [1, 1] },
                 "flag_bottom":       { "baseTile": [2, 1],  "size": [1, 1] },
 
-                "floppy_disk":       { "baseTile": [4, 0],  "size": [1, 1] }
+                "floppy_disk":       { "baseTile": [4, 0],  "size": [1, 1] },
+                "box":       { "baseTile": [5, 0],  "size": [1, 1] }
             },
         "composites":
             {
