@@ -77,6 +77,7 @@ We could have a map of the village with the houses number and people names on it
 - [ ] Add NPC to give the agent a task.
 - [ ] Implement TaskScorer
 - [ ] Add a top ball to the flagpole.
+- [ ] Init the flagpole at the 4th position to force the use of the reset card.
 - [X] Find how to teach "bring me" concept.
 - [X] Add NPCs playing with their dogs They throw a stick, they shout out the alien word for "bring me", and the dog brings it back to them.
   - [X] Add NPC

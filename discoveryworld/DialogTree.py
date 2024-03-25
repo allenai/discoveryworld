@@ -520,7 +520,6 @@ class DialogMaker():
         # floatVariablesToModify
         tree = DialogTree(agent)
 
-        # Root node (introduce the soil nutrient controller, give options to ask to change the nutrient levels)
         rootNode = DialogNode("rootNode", f"You heard them say '{message}' to their dog.")
 
         # Exit
@@ -530,6 +529,23 @@ class DialogMaker():
 
         ## OK node
         endNodeOK = DialogNode("endNode", "Goodbye", statesToAdd = [], statesToRemove = [])
+        tree.addNode(endNodeOK)
+
+        # Store dialog tree in agent
+        agent.setDialogTree(tree)
+
+    def mkDialogElder(self, agent, message):
+        tree = DialogTree(agent)
+
+        rootNode = DialogNode("rootNode", f"Elder: {message}.")
+
+        # Exit
+        rootNode.addDialogOption("You can't quite understand what the elder is saying, but that seems important.", "endNode")
+        tree.addNode(rootNode)
+        tree.setRoot(rootNode.name)
+
+        ## OK node
+        endNodeOK = DialogNode("endNode", "Goodbye", statesToAdd=["taskGiven"], statesToRemove = [])
         tree.addNode(endNodeOK)
 
         # Store dialog tree in agent

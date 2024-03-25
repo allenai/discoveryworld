@@ -113,7 +113,7 @@ class ObjectMaker:
         # Step 1: Check to see if the objectReferenceName is in the objectProperties dictionary, or whether it's a bare class name in the classIndex.
         if (objectReferenceName in self.objectProperties):
             # This object is in the objectProperties dictionary. Create a new instance of the object, then set its properties.
-            print("Object reference name: " + objectReferenceName + " is in the objectProperties dictionary.")
+            # print("Object reference name: " + objectReferenceName + " is in the objectProperties dictionary.")
             # Create a new instance of the base class
             baseClass = self.objectProperties[objectReferenceName]["BaseClass"]
             # Create a new instance of the class
@@ -163,7 +163,7 @@ class ObjectMaker:
         #elif (objectReferenceName in self.classIndex):
         else:
             # This object is in the classIndex dictionary. Create a new instance of the object, but do not add any new properties.
-            print("Object reference name: " + objectReferenceName + " is in the classIndex dictionary.")
+            # print("Object reference name: " + objectReferenceName + " is in the classIndex dictionary.")
             className = objectReferenceName
             # Create a new instance of the class
             obj = self._createObjectInstance(className, *args, **kwargs)

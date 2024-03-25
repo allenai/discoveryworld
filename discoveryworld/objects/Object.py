@@ -616,7 +616,7 @@ class Object:
         for key in self.attributes:
             value = self.attributes[key]
             # Skip any non-primitive types (but allow lists and dicts)
-            if (type(value) != str) and (type(value) != int) and (type(value) != float) and (type(value) != bool) and (type(value) != list) and (type(value) != dict):
+            if type(value) not in (str, int, float, bool, list, dict, set):
                 continue
             packed["attributes"][key] = value
 

@@ -41,8 +41,8 @@ class ScenarioMaker():
             return (True, "")
 
         elif (scenarioName == "lost_in_translation"):
-            makeScenarioRosettaStone(self.world, numUserAgents)
-            #self.world.addTaskByName("RosettaStoneTask")
+            scoringInfo = makeScenarioRosettaStone(self.world, numUserAgents)
+            self.world.addTaskByName("RosettaStoneTask", scoringInfo)
             return (True, "")
 
         elif (scenarioName == "reactor_lab"):

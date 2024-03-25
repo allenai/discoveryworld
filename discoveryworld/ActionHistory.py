@@ -133,27 +133,31 @@ class ActionHistory:
 
     # Query for a specific action
     # Queries for specific actions, but arg1 and arg2 should be objects (or None)
-    def queryActionObjects(self, actionType:ActionType, arg1, arg2, stopAtFirst:bool = False):
+    # If arg1 or arg2 are objects, then the query will be for the UUID of the object
+    # If arg1 or arg2 are '*', then the query will be for any object
+    def queryActionObjects(self, actionType:ActionType, arg1=None, arg2=None, stopAtFirst:bool = False):
         out = []
 
         # Find the UUIDs of the objects
-        arg1Query = None
-        arg2Query = None
-        if (arg1 != None):
-            if (isinstance(arg1, Object)):
-                arg1Query = arg1.uuid
-        if (arg2 != None):
-            if (isinstance(arg2, Object)):
-                arg2Query = arg2.uuid
+        arg1Query = arg1
+        arg2Query = arg2
+        if isinstance(arg1, Object):
+            arg1Query = arg1.uuid
+
+        if isinstance(arg2, Object):
+            arg2Query = arg2.uuid
 
         # Search for the query action
         #print("Query: " + str(actionType) + " " + str(arg1Query) + " " + str(arg2Query))
         for action in self.history:
             #print("Action: " + str(action['actionType']) + " " + str(action['arg1UUID']) + " " + str(action['arg2UUID']))
-            if (action['actionType'] == actionType and action['arg1UUID'] == arg1Query and action['arg2UUID'] == arg2Query):
+            if (action['actionType'] == actionType
+                and (action['arg1UUID'] == arg1Query or arg1Query == "*")
+                and (action['arg2UUID'] == arg2Query or arg2Query == "*")
+            ):
                 out.append(action)
                 #print("FOUND!!!!")
-                if (stopAtFirst):
+                if stopAtFirst:
                     break
 
         # Return the list of matching actions

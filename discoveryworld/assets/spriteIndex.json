@@ -489,7 +489,8 @@
         "composites":
             {
             }
-    },    {
+    },
+    {
         "sheetName": "character35",
         "filename": "pixymoon/CuteRPG_Sprites/Characters/Character_035.png",
         "tileSize": [24, 24],
@@ -500,6 +501,22 @@
                 "agent_facing_east":     { "baseTile": [1, 2],  "size": [1, 1] },
                 "agent_facing_south":    { "baseTile": [1, 0],  "size": [1, 1] },
                 "agent_facing_west":     { "baseTile": [1, 1],  "size": [1, 1] }
+            },
+        "composites":
+            {
+            }
+    },
+    {
+        "sheetName": "character9",
+        "filename": "pixymoon/CuteRPG_Sprites/Characters/Character_009.png",
+        "tileSize": [24, 24],
+        "padTo": [32, 32],
+        "sprites":
+            {
+                "agent_facing_north":    { "baseTile": [5, 3],  "size": [1, 1] },
+                "agent_facing_east":     { "baseTile": [5, 2],  "size": [1, 1] },
+                "agent_facing_south":    { "baseTile": [5, 0],  "size": [1, 1] },
+                "agent_facing_west":     { "baseTile": [5, 1],  "size": [1, 1] }
             },
         "composites":
             {

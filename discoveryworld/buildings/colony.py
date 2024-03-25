@@ -315,7 +315,8 @@ def mkGeneralStore(x, y, world):
 def mkSchool(x, y, world):
     # Create a building (shop sellings colored keys)
     signText = "École\n[The logo is a student hat]"
-    mkBuildingOneRoom(world, x=x, y=y, width=9, height=11, signText=signText)
+    schoolBounds = mkBuildingOneRoom(world, x=x, y=y, width=9, height=11, signText=signText)
+
     PROGRAMS = {
         0: "Remise à zéro",
         1: "Ajoute un",
@@ -332,7 +333,7 @@ def mkSchool(x, y, world):
         "t": ("Pupitre", {"facing": "north"}),
         "<": ("Pupitre", {"facing": "west"}),
         ">": ("Pupitre", {"facing": "east"}),
-        "P": ("FlagPole", {"height": 6}),
+        "P": ("FlagPole", {"height": 6, "current_height": 4}),
         "B": ("Bookcase", {}),
     }
     layout = [
@@ -350,6 +351,7 @@ def mkSchool(x, y, world):
     ]
 
     computer = world.createObject("CountingComputer")
+    resetDisk = None
     for i, row in enumerate(layout):
         for j, o in enumerate(row):
             if o == "P":
@@ -367,7 +369,11 @@ def mkSchool(x, y, world):
                 world.addObject(x+j, y+i, Layer.FURNITURE, desk)
                 disk = world.createObject("FloppyDisk", program=PROGRAMS[digit], value=digit)
                 desk.addObject(disk)
+                if digit == 0:
+                    resetDisk = disk
             elif o in OBJECTS.keys():
                 cls, kwargs = OBJECTS[o]
                 obj = world.createObject(cls, **kwargs)
                 world.addObject(x+j, y+i, Layer.FURNITURE, obj)
+
+    return computer, resetDisk, flagpole, schoolBounds

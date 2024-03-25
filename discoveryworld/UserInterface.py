@@ -340,8 +340,8 @@ class UserInterface:
         # The background color is based on the task score -- red for 0, green for 1, and a gradient in between.
         taskName = task.taskName
         # Clip taskName to 15 characters if too long
-        if (len(taskName) > 15):
-            taskName = taskName[:15] + "..."
+        if (len(taskName) > 14):
+            taskName = taskName[:14] + "…"
 
         taskScore = task.getScoreNormalized()
 
@@ -359,7 +359,7 @@ class UserInterface:
 
         # Draw the text
         # First, get the text
-        text = taskName + ": " + str(taskScore)
+        text = f"{taskName}:{taskScore:6.1%}"
         # Then, render the text
         textSurface = self.font.render(text, True, (0, 0, 0))
         self.window.blit(textSurface, (x, y))

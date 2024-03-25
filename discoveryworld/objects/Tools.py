@@ -218,12 +218,12 @@ class Coin(Object):
 
 class FlagPole(Object):
     # Constructor
-    def __init__(self, world, height=1):
+    def __init__(self, world, height=1, current_height=0):
         # Default sprite name
         Object.__init__(self, world, "flag", "flag", defaultSpriteName = "instruments2_flag_pole_bottom")
 
         self.height = height
-        self.current_height = 0
+        self.current_height = current_height
 
         self.attributes["isMovable"] = False
         self.attributes["isPassable"] = False
@@ -234,7 +234,7 @@ class FlagPole(Object):
         nb_flags = int(np.ceil(self.height / 2)) -1
 
         for i in range(1, nb_flags+1):
-            if i == self.height:
+            if i == nb_flags:
                 spriteList.append({"spriteName": "instruments2_flag_pole_top", "yOffset": -32*i})
             else:
                 spriteList.append({"spriteName": "instruments2_flag_pole_middle", "yOffset": -32*i})

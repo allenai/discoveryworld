@@ -52,13 +52,6 @@ class NPCDog(NPC):
         super().tick()
 
         # Interpret any external states
-        # stickHasMoved = self.stick not in self.ownerNPC.contents
-        # print(colored(f"Stick has moved: {stickHasMoved}", "cyan"))
-        # print(colored(f"Dog is ready: {self.dogIsReady}", "cyan"))
-        # if self.dogIsReady and stickHasMoved:
-        #     self.dogIsReady = False
-        #     self.addState("fetchSignal")
-
         if "fetchSignal" in self.attributes['states']:
             self.removeState("wandering")  # Stop wandering.
 
@@ -215,7 +208,36 @@ class NPCDogTrainer(NPC):
         print(f"NPCDogTrainer (id: {self.name}): {self.attributes}")
 
 
+class NPCElder(NPC):
+    def __init__(self, world, name):
+        # Default sprite name
+        super().__init__(world, name, defaultSpriteName="character9_agent_facing_south")
+
+        # Rendering
+        self.attributes["faceDirection"] = "south"
+        self.spriteCharacterPrefix = "character9_"
+
+        # Default attributes
+        self.attributes["isMovable"] = False                       # Elder cannot be picked.
+        self.attributes['isContainer'] = True                      # Elder's inventory is a container.
+        self.attributes['isOpenable'] = False                      # Can't be opened
+        self.attributes['isOpenContainer'] = False                 # Prevent other players from accessing its inventory.
+        self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
+
+        # Dialog attributes
+        self.attributes['isDialogable'] = True                    # Can it be dialoged with?
+
+        # NPC States
+        self.attributes['dialogAgentsSpokenWith'] = []             # List of dialog agents that this NPC has spoken with
+
+        self.pathfinder = Pathfinder()
+
+
 def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
+
+    scoringInfo = {}
+    scoringInfo["criticalHypotheses"] = []
+
     translation = {
         "Bring me the stick!": "Va chercher le bâton!",
     }
@@ -242,7 +264,12 @@ def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
     mkKeyShop(9, 21, world)
     mkPaintShop(19, 21, world)
     mkGeneralStore(7, 4, world)
-    mkSchool(19, 7, world)
+    countingComputer, resetDisk, flagpole, schoolBounds = mkSchool(19, 7, world)
+
+    scoringInfo["schoolBounds"] = schoolBounds
+    scoringInfo["flagpole"] = flagpole
+    scoringInfo["countingComputer"] = countingComputer
+    scoringInfo["resetDisk"] = resetDisk
 
     # We get an instruction in an alien language
     # e.g. You need the blue key to unlock the door.
@@ -338,3 +365,15 @@ def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
     world.addAgent(dogTrainer)
 
     dialogMaker.mkDialogDogTrainer(dogTrainer, message=translation["Bring me the stick!"])
+
+    elder = NPCElder(world, "Elder")
+    world.addObject(18, 18, Layer.AGENT, elder)
+    world.addAgent(elder)
+    dialogMaker.mkDialogElder(elder, message=translation["Bring me the stick!"])
+
+    scoringInfo["neededObjects"] = [stick]
+    scoringInfo["learningColor"] = True
+    scoringInfo["learningCount"] = True
+    scoringInfo["elder"] = elder
+
+    return scoringInfo

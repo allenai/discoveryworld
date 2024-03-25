@@ -60,6 +60,9 @@ def mkBuildingOneRoom(world, x, y, width, height, signText = "Default Sign Text"
         sign.setText(signText)
         world.addObject(x + int(width / 2)-1, y + height, Layer.FURNITURE, sign)
 
+    roomBounds = (x+1, y+1, x + width - 2, y + height - 2)
+    return roomBounds
+
 
 def mkBuildingDivided(world, x, y, width, height, dividerX, apertureX, dividerY, apertureY, doorX=0, signText="Default Sign Text"):
     # Walls
