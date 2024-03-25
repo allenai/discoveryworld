@@ -1,5 +1,5 @@
 import numpy as np
-from discoveryworld.ActionSuccess import ActionSuccess
+from discoveryworld.ActionSuccess import ActionSuccess, MessageImportance
 from discoveryworld.objects.Object import Object
 
 
@@ -245,3 +245,23 @@ class FlagPole(Object):
             spriteList.append({"spriteName": "instruments2_flag_top", "yOffset": -32*((self.current_height-1)//2)})
 
         return spriteList
+
+
+class MeasuringTape(Object):
+    def __init__(self, world):
+        super().__init__(world, "tape", "measuring tape", defaultSpriteName="instruments2_measuring_tape")
+        self.attributes['isUsable'] = True  # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+    def actionUseWith(self, otherObject=None):
+        if isinstance(otherObject, FlagPole):
+            flagpole = otherObject
+            useDescriptionStr = f"The flag is {flagpole.current_height} meter from the ground.\n"
+
+            if flagpole.current_height >= 2:
+                useDescriptionStr = useDescriptionStr.replace("meter", "meters")
+
+        else:
+            useDescriptionStr = "You need a measuring device first.\n"
+            return ActionSuccess(False, useDescriptionStr, importance=MessageImportance.LOW)
+
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.LOW)

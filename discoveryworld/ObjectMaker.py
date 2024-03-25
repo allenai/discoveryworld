@@ -261,6 +261,7 @@ class ObjectMaker:
             "Bookcase": Bookcase,
             "FloppyDisk": FloppyDisk,
             "Stick": Stick,
+            "MeasuringTape": MeasuringTape,
 
             # Colored objects
             "PaintBucket": PaintBucket,

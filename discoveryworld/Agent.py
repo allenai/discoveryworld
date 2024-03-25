@@ -720,6 +720,9 @@ class Agent(Object):
             self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
             return result
 
+        # Next, check if the container is a NPC. If so, give them the object.
+        bypassClosedContainerCheck = bypassClosedContainerCheck or newContainer.attributes.get("isNPC")
+
         # Next, check to see if the container is open
         if (not newContainer.attributes["isOpenContainer"] and not bypassClosedContainerCheck):
             # Container is not open
@@ -739,7 +742,11 @@ class Agent(Object):
         # Update to show the agent holding the container it put something in (if the container is in its inventory)
         self.updateLastInteractedObject([newContainer])
 
-        result = ActionSuccess(True, "I put the " + objToPut.name + " into the " + newContainer.name + ".")
+        if newContainer.attributes.get("isNPC"):
+            result = ActionSuccess(True, "I gave the " + objToPut.name + " to " + newContainer.name + ".")
+        else:
+            result = ActionSuccess(True, "I put the " + objToPut.name + " into the " + newContainer.name + ".")
+
         self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
         return result
 

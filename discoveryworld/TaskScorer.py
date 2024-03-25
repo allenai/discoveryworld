@@ -1237,6 +1237,7 @@ class RosettaStoneTask(Task):
                 isCompleted = len(associatedNotes) == len(self.scoringInfo["neededObjects"])
                 self.scorecardGiveObjects.updateScore(len(associatedNotes), isCompleted, associatedUUIDs, "\n".join(associatedNotes))
 
+        # Check scorecard for learning about counting.
         if self.scoringInfo["learningCount"] and not self.scorecardCount.completed:
             x0, y0, x1, y1 = self.scoringInfo["schoolBounds"]
             associatedUUIDs = []
@@ -1260,93 +1261,29 @@ class RosettaStoneTask(Task):
                 if agent.actionHistory.queryActionObjects(ActionType.USE, arg1=countingComputer, arg2=resetDisk, stopAtFirst=True):
                     self.scorecardResetComputer.updateScore(1, True, associatedUUIDs=[agent.uuid, countingComputer.uuid], associatedNotes=f"Agent (UUID: {agent.uuid}) has used the counting computer (UUID: {countingComputer.uuid}).")
 
+        if self.scoringInfo["learningCount"] and not self.scorecardMeasuringTape.completed:
+            flagpole = self.scoringInfo["flagpole"]
+            measuringTape = self.scoringInfo["measuringTape"]
+            for agent in self.world.agents:
+                if agent.actionHistory.queryActionObjects(ActionType.USE, arg1=flagpole, arg2=measuringTape, stopAtFirst=True):
+                    self.scorecardMeasuringTape.updateScore(1, True, associatedUUIDs=[agent.uuid, measuringTape.uuid, flagpole.uuid], associatedNotes=f"Agent (UUID: {agent.uuid}) has used the measuring tape (UUID: {measuringTape.uuid}) on the flagpole (UUID: {flagpole.uuid}).")
 
-        # if self.scoringInfo["learningColor"]:
-        #     self.scorecardColor = ScorecardElement("Visit the paint shop", "The agent visited the paint shop to learn about color.", maxScore=1)
-        #     self.scoreCard.append(self.scorecardColor)
+        # Check scorecard for learning about color.
+        if self.scoringInfo["learningColor"] and not self.scorecardColor.completed:
+            x0, y0, x1, y1 = self.scoringInfo["paintShopBounds"]
+            associatedUUIDs = []
+            for agent in self.world.agents:
+                if agent.isWithinLocationBounds(x0, y0, x1, y1):
+                    associatedUUIDs.append(agent.uuid)
 
-        #     self.scorecardColorSign = ScorecardElement("Read relevant paint sign", "The paint sign associated to the color has been read.", maxScore=1)
-        #     self.scoreCard.append(self.scorecardColorSign)
+            if associatedUUIDs:
+                self.scorecardColor.updateScore(1, True, associatedUUIDs=associatedUUIDs, associatedNotes=f"Agent (UUID: {', '.join(map(str, associatedUUIDs))}) has visited the school.")
 
-#         # Check whether each chemical dispenser has been used
-#         if (not self.scorecardUsedDispensers.completed):
-#             usedDispensers = set()
-#             for agent in self.world.agents:
-#                 for dispenser in self.scoringInfo['dispensers']:
-#                     # query the action history
-#                     foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=dispenser, arg2=self.scoringInfo['mixingJar'], stopAtFirst=True)
-#                     if (len(foundActions) > 0):
-#                         usedDispensers.add(dispenser.uuid)
-
-#             isCompleted = False
-#             if (len(usedDispensers) == 3):
-#                 isCompleted = True
-#             associatedNotes = str(len(usedDispensers)) + " of " + str(len(self.scoringInfo["dispensers"])) + " dispensers have been used"
-#             self.scorecardUsedDispensers.updateScore(len(usedDispensers), isCompleted, associatedUUIDs=list(usedDispensers), associatedNotes=associatedNotes)
-
-#         # Check whether the bottle cleaner has been used
-#         if (not self.scorecardUsedBottleCleaner.completed):
-#             usedBottleCleaner = False
-#             for agent in self.world.agents:
-#                 foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=self.scoringInfo['bottleCleaner'], arg2=self.scoringInfo['mixingJar'], stopAtFirst=True)
-#                 if (len(foundActions) > 0):
-#                     usedBottleCleaner = True
-#                     break
-#             if (usedBottleCleaner == True):
-#                 self.scorecardUsedBottleCleaner.updateScore(1, usedBottleCleaner, associatedUUIDs=[self.scoringInfo['bottleCleaner'].uuid], associatedNotes="The bottle cleaner has been used")
-
-#         # Check whether the jar contains a mixture of chemicals
-#         if (not self.scorecardMixtureInJar.completed):
-#             # Check to see whether the jar contains a substance, and if the substance has a mixture (mixtureDict)
-#             for cObj in self.scoringInfo['mixingJar'].contents:
-#                 if (cObj.type == "substance"):
-#                     mixtureSubstances = cObj.attributes['mixtureDict'].keys()
-#                     if (len(mixtureSubstances) > 1):
-#                         self.scorecardMixtureInJar.updateScore(1, True, associatedUUIDs=[cObj.uuid], associatedNotes="The mixing jar has contained two or more chemicals in a mixture (" + str(", ".join(mixtureSubstances)) + ")")
-#                         break
-
-#         # Check whether the key is in the jar
-#         if (not self.scorecardKeyInJar.completed):
-#             # Check whether the key's parent container is the jar
-#             key = self.scoringInfo['key']
-#             if (key.parentContainer != None) and (key.parentContainer.uuid == self.scoringInfo['mixingJar'].uuid):
-#                 self.scorecardKeyInJar.updateScore(1, True, associatedUUIDs=[key.uuid, key.parentContainer.uuid], associatedNotes="The key has been placed in the jar at least once")
-
-#         # Check whether the key is not rusted
-#         if (not self.scorecardKeyNotRusted.completed):
-#             # Check the rust level of the key
-#             key = self.scoringInfo['key']
-# #        self.attributes['isRusted'] = isRusted                    # Is the key rusted?
-# #        self.attributes['rustLevel'] = 3 if isRusted else 0       # Description of the rust (0=none, 1=light, 2=medium, 3=heavy)
-#             if (key.attributes['isRusted'] == False):
-#                 self.scorecardKeyNotRusted.updateScore(3, True, associatedUUIDs=[key.uuid], associatedNotes="The key is not rusted")
-#             else:
-#                 # Partial
-#                 rustScore = 3 - key.attributes['rustLevel']
-#                 if (rustScore == 3):
-#                     self.scorecardKeyNotRusted.updateScore(rustScore, completed=False, associatedUUIDs=[key.uuid], associatedNotes="The key is fully rusted")
-#                 else:
-#                     self.scorecardKeyNotRusted.updateScore(rustScore, completed=False, associatedUUIDs=[key.uuid], associatedNotes="The key is partially rusted")
-
-#         # Check to see whether one or more agents are outside of the room
-#         if (not self.scorecardAgentOutside.completed):
-#             # Bounds
-#             x0 = 16
-#             y0 = 10
-#             x1 = 16+6
-#             y1 = 10+3
-#             isOutside = False
-#             for agent in self.world.agents:
-#                 # Check if the agent is outside the room
-#                 # Get agent position
-#                 isWithinBounds = agent.isWithinLocationBounds(x0, y0, x1, y1)
-#                 if (isWithinBounds == False):
-#                     isOutside = True
-#                     break
-
-#             if (isOutside == True):
-#                 self.scorecardAgentOutside.updateScore(1, True, associatedUUIDs=[], associatedNotes="The agent is outside the shed")
-
+        if self.scoringInfo["learningColor"] and not self.scorecardColorSign.completed:
+            colorSign = self.scoringInfo["colorSign"]
+            for agent in self.world.agents:
+                if agent.actionHistory.queryActionObjects(ActionType.READ, arg1=colorSign, stopAtFirst=True):
+                    self.scorecardColorSign.updateScore(1, True, associatedUUIDs=[agent.uuid, colorSign.uuid], associatedNotes=f"Agent (UUID: {agent.uuid}) has read the relevant color sign (UUID: {colorSign.uuid}).")
 
         # Update score
         self.score = sum(element.score for element in self.scoreCard)

@@ -311,7 +311,8 @@
                 "floppy_disk":       { "baseTile": [4, 0],  "size": [1, 1] },
                 "box":               { "baseTile": [5, 0],  "size": [1, 1] },
 
-                "stick":       { "baseTile": [6, 0],  "size": [1, 1] }
+                "stick":             { "baseTile": [6, 0],  "size": [1, 1] },
+                "measuring_tape":    { "baseTile": [7, 0],  "size": [1, 1] }
             },
         "composites":
             {

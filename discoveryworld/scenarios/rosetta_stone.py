@@ -262,14 +262,18 @@ def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
     #mkHouse(4, 4, world, buildingMaker)
 
     mkKeyShop(9, 21, world)
-    mkPaintShop(19, 21, world)
+    colorSigns, paintShopBounds = mkPaintShop(19, 21, world)
     mkGeneralStore(7, 4, world)
-    countingComputer, resetDisk, flagpole, schoolBounds = mkSchool(19, 7, world)
+    countingComputer, resetDisk, measuringTape, flagpole, schoolBounds = mkSchool(19, 7, world)
+
+    scoringInfo["paintShopBounds"] = paintShopBounds
+    scoringInfo["colorSign"] = colorSigns['red']
 
     scoringInfo["schoolBounds"] = schoolBounds
     scoringInfo["flagpole"] = flagpole
     scoringInfo["countingComputer"] = countingComputer
     scoringInfo["resetDisk"] = resetDisk
+    scoringInfo["measuringTape"] = measuringTape
 
     # We get an instruction in an alien language
     # e.g. You need the blue key to unlock the door.

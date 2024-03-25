@@ -245,7 +245,7 @@ def mkKeyShop(x, y, world):
 
 def mkPaintShop(x, y, world):
     signText = "Magasin de peinture\n[The logo is a paint bucket]"
-    mkBuildingOneRoom(world, x=x, y=y, width=7, height=6, signText=signText)
+    paintShopBounds = mkBuildingOneRoom(world, x=x, y=y, width=7, height=6, signText=signText)
 
     COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "k": "black", "w": "white", "o": "orange"}
     layout = [
@@ -256,6 +256,7 @@ def mkPaintShop(x, y, world):
         "xxxxxxx",
         "xxxxxxx",
     ]
+    colorSigns = {}
     for i, row in enumerate(layout):
         for j, c in enumerate(row):
             if c in COLORS.keys():
@@ -263,6 +264,9 @@ def mkPaintShop(x, y, world):
                 table = world.createObject("TableWithSign", signText=paint.name)
                 world.addObject(x+j, y+i, Layer.FURNITURE, table)
                 table.addObject(paint)
+                colorSigns[COLORS[c]] = table
+
+    return colorSigns, paintShopBounds
 
 
 def mkGeneralStore(x, y, world):
@@ -328,7 +332,7 @@ def mkSchool(x, y, world):
 
     OBJECTS = {
         "c": ("Chair", {}),
-        "T": ("Table", {}),
+        #"T": ("Table", {}),
         "p": ("Pupitre", {"facing": "south"}),
         "t": ("Pupitre", {"facing": "north"}),
         "<": ("Pupitre", {"facing": "west"}),
@@ -351,6 +355,7 @@ def mkSchool(x, y, world):
     ]
 
     computer = world.createObject("CountingComputer")
+    measuringTape = world.createObject("MeasuringTape")
     resetDisk = None
     for i, row in enumerate(layout):
         for j, o in enumerate(row):
@@ -363,6 +368,10 @@ def mkSchool(x, y, world):
                 desk = world.createObject("Table")
                 world.addObject(x+j, y+i, Layer.FURNITURE, desk)
                 desk.addObject(computer)
+            elif o == "T":
+                desk = world.createObject("Table")
+                world.addObject(x+j, y+i, Layer.FURNITURE, desk)
+                desk.addObject(measuringTape)
             elif str.isdigit(o):
                 digit = int(o)
                 desk = world.createObject("Pupitre", facing="north")
@@ -376,4 +385,4 @@ def mkSchool(x, y, world):
                 obj = world.createObject(cls, **kwargs)
                 world.addObject(x+j, y+i, Layer.FURNITURE, obj)
 
-    return computer, resetDisk, flagpole, schoolBounds
+    return computer, resetDisk, measuringTape, flagpole, schoolBounds
