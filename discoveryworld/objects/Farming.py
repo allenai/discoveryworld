@@ -665,3 +665,33 @@ class Stick(Object):
         super().__init__(world, "stick", "wood stick", defaultSpriteName="instruments2_stick")
 
         self.attributes["isMovable"] = True                       # Can it be moved?
+
+
+class ColoredMushroom(Object):
+
+    def __init__(self, world, color):
+        super().__init__(world, "mushroom", f"{color} mushroom", defaultSpriteName = "instruments2_mushroom_white")
+        self.color = color
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+        self.attributes['isContainer'] = False                    # Is it a container?
+
+    def tick(self):
+        super().tick()
+        self.curSpriteModifiers.add(f"instruments2_mushroom_{self.color}")
+
+
+class ColoredFlower(Object):
+
+    def __init__(self, world, color):
+        super().__init__(world, "flower", f"{color} flower", defaultSpriteName = "instruments2_flower_white")
+        self.color = color
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+        self.attributes['isContainer'] = False                    # Is it a container?
+
+    def tick(self):
+        super().tick()
+        self.curSpriteModifiers.add(f"instruments2_flower_{self.color}")

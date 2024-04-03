@@ -1161,11 +1161,13 @@ class RosettaStoneTask(Task):
 
         if scoringInfo["neededObjects"]:
             # Taking critical objects
-            self.scorecardGetObjects = ScorecardElement("Collect objects", "Needed objects are in agent's inventory.", maxScore=len(scoringInfo["neededObjects"]))
+            #self.scorecardGetObjects = ScorecardElement("Collect objects", "Needed objects are in agent's inventory.", maxScore=len(scoringInfo["neededObjects"]))
+            self.scorecardGetObjects = ScorecardElement("Collect objects", "Needed objects are in agent's inventory.", maxScore=self.scoringInfo["count"])
             self.scoreCard.append(self.scorecardGetObjects)
 
             # Bring back the objects to the elder
-            self.scorecardGiveObjects = ScorecardElement("Give back objects", "Needed objects are in elder's inventory.", maxScore=len(scoringInfo["neededObjects"]))
+            # self.scorecardGiveObjects = ScorecardElement("Give back objects", "Needed objects are in elder's inventory.", maxScore=len(scoringInfo["neededObjects"]))
+            self.scorecardGiveObjects = ScorecardElement("Give back objects", "Needed objects are in elder's inventory.", maxScore=self.scoringInfo["count"])
             self.scoreCard.append(self.scorecardGiveObjects)
 
         if scoringInfo["learningColor"]:
@@ -1211,16 +1213,33 @@ class RosettaStoneTask(Task):
                 self.scorecardElder.updateScore(1, True, associatedUUIDs=[elder.uuid], associatedNotes=f"Agent has talked to the elder (UUID: {elder.uuid}).")
 
         # Taking critical objects
-        if self.scoringInfo["neededObjects"] and not self.scorecardGetObjects.completed:
+        # if self.scoringInfo["neededObjects"] and not self.scorecardGetObjects.completed:
+        #     associatedNotes = []
+        #     associatedUUIDs = []
+        #     for obj in self.scoringInfo["neededObjects"]:
+        #         if obj.parentContainer and obj.parentContainer.type == "agent" and not obj.parentContainer.attributes["isNPC"]:
+        #             associatedUUIDs.append((obj.uuid, obj.parentContainer.uuid))
+        #             associatedNotes.append(f"{obj.name} (UUID: {obj.uuid}) is in Agent (UUID: {obj.parentContainer.uuid})'s inventory.")
+
+        #     if associatedNotes:
+        #         isCompleted = len(associatedNotes) == len(self.scoringInfo["neededObjects"])
+        #         self.scorecardGetObjects.updateScore(len(associatedNotes), isCompleted, associatedUUIDs, "\n".join(associatedNotes))
+
+        if not self.scorecardGetObjects.completed:
             associatedNotes = []
             associatedUUIDs = []
-            for obj in self.scoringInfo["neededObjects"]:
-                if obj.parentContainer and obj.parentContainer.type == "agent" and not obj.parentContainer.attributes["isNPC"]:
-                    associatedUUIDs.append((obj.uuid, obj.parentContainer.uuid))
-                    associatedNotes.append(f"{obj.name} (UUID: {obj.uuid}) is in Agent (UUID: {obj.parentContainer.uuid})'s inventory.")
+
+            for agent in self.world.agents:
+                for obj in agent.getInventory():
+                    if self.scoringInfo["item"] in obj.name:
+                        if self.scoringInfo["learningColor"] and self.scoringInfo["color"] not in obj.name.split(" "):
+                            continue  # Color doesn't match
+
+                        associatedUUIDs.append((obj.uuid, agent.uuid))
+                        associatedNotes.append(f"{obj.name} (UUID: {obj.uuid}) is in Agent (UUID: {agent.uuid})'s inventory.")
 
             if associatedNotes:
-                isCompleted = len(associatedNotes) == len(self.scoringInfo["neededObjects"])
+                isCompleted = len(associatedNotes) == self.scoringInfo["count"]
                 self.scorecardGetObjects.updateScore(len(associatedNotes), isCompleted, associatedUUIDs, "\n".join(associatedNotes))
 
         # Give back critical objects to elder

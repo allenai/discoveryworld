@@ -277,22 +277,22 @@ def mkGeneralStore(x, y, world):
     COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "k": "black", "w": "white", "o": "orange"}
     OBJECTS = {
         "0": "",
-        "1": "Mushroom",
-        "2": "Pot",
-        "3": "Jar",
-        "4": "Shovel",
-        "5": "Seed",
-        "6": "FlowerPot",
-        "7": "Key",
-        "8": "Flag",
-        # "9": "PaintBucket",
+        "1": ("Mushroom", {}),
+        "2": ("Pot", {}),
+        "3": ("Jar", {}),
+        "4": ("Shovel", {}),
+        "5": ("Seed", {}),
+        "6": ("FlowerPot", {}),
+        "7": ("Key", {}),
+        "8": ("Flag", {}),
+        "9": ("ColoredFlower", {"color": "red"}),
         # "A": "Rock",
     }
     layout = [
         ".........",
         ".0400000.",
         ".........",
-        ".100.000.",
+        ".100.900.",
         ".........",
         ".002.000.",
         ".........",
@@ -307,7 +307,8 @@ def mkGeneralStore(x, y, world):
         for j, o in enumerate(row):
             if o in OBJECTS.keys():
                 if OBJECTS[o]:
-                    obj = world.createObject(OBJECTS[o])  # TODO: change sign text to alien language.
+                    cls, kwargs = OBJECTS[o]
+                    obj = world.createObject(cls, **kwargs)  # TODO: change sign text to alien language.
                     table = world.createObject("TableWithSign", signText=obj.name)
                     table.addObject(obj)
                 else:

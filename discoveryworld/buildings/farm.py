@@ -96,3 +96,37 @@ def mkFarm(x, y, world, rng=None):
 
     ## Debug, gives references to mushrooms added for agents to pick up
     return mushroomsAdded
+
+
+def mkMushroomAndFlowerFarm(x, y, world):
+
+    COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "k": "black", "w": "white", "o": "orange"}
+    layout = [
+        "rbywgok",
+        "xxxxxxx",
+        "xxxxxxx",
+    ]
+    coloredMushrooms = {c: [] for c in COLORS.values()}
+    for i, row in enumerate(layout):
+        for j, c in enumerate(row):
+            soilTile = world.createObject("SoilTile")
+            world.addObject(x+j, y+i, Layer.WORLD, soilTile)
+            if c in COLORS.keys():
+                mushroom = world.createObject("ColoredMushroom", color=COLORS[c])
+                world.addObject(x+j, y+i, Layer.OBJECTS, mushroom)
+                coloredMushrooms[COLORS[c]].append(mushroom)
+
+    layout = [
+        "xxxxxxx",
+        "xxxxxxx",
+        "rbywgok",
+    ]
+    coloredFlowers = {c: [] for c in COLORS.values()}
+    for i, row in enumerate(layout):
+        for j, c in enumerate(row):
+            if c in COLORS.keys():
+                flower = world.createObject("ColoredFlower", color=COLORS[c])
+                world.addObject(x+j, y+i, Layer.OBJECTS, flower)
+                coloredFlowers[COLORS[c]].append(flower)
+
+    return coloredMushrooms, coloredFlowers

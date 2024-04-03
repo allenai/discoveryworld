@@ -40,8 +40,9 @@ class ScenarioMaker():
             self.world.addTaskByName("SoilNutrientTask", scoringInfo)
             return (True, "")
 
-        elif (scenarioName == "lost_in_translation"):
-            scoringInfo = makeScenarioRosettaStone(self.world, numUserAgents)
+        elif (scenarioName.startswith("lost_in_translation")):
+            difficulty = scenarioName.rsplit("_")[-1]
+            scoringInfo = makeScenarioRosettaStone(self.world, numUserAgents, difficulty)
             self.world.addTaskByName("RosettaStoneTask", scoringInfo)
             return (True, "")
 

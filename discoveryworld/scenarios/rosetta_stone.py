@@ -7,6 +7,7 @@ from discoveryworld.DialogTree import DialogMaker
 from discoveryworld.Layer import Layer
 from discoveryworld.Pathfinding import Pathfinder
 from discoveryworld.buildings.colony import mkGeneralStore, mkKeyShop, mkPaintShop, mkSchool
+from discoveryworld.buildings.farm import mkMushroomAndFlowerFarm
 from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mkPathX, mkPathY, mkSignVillage, mkTownSquare
 
 from termcolor import colored
@@ -233,7 +234,7 @@ class NPCElder(NPC):
         self.pathfinder = Pathfinder()
 
 
-def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
+def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="hard"):
 
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
@@ -243,24 +244,57 @@ def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
     }
 
     # Make the Rosetta Stone scenario
-    rng = rng or random.Random()
+    rng = world.rng
+
+    ITEMS = ["mushroom", "flower", "key"]
+    COLORS = ["red", "green", "blue", "yellow", "black", "white", "orange"]
+    COUNTS = [1, 2, 3, 4, 5]
+
+    scoringInfo["learningColor"] = False
+    scoringInfo["learningCount"] = False
+    if difficulty == "easy":
+        scoringInfo["item"] = "stick"
+    elif difficulty == "medium":
+        if world.randomSeed % 2 == 0:
+            scoringInfo["learningColor"] = True  # Half the seeds will be about learning colors.
+        else:
+            scoringInfo["learningCount"] = True  # Half the seeds will be about learning counting.
+    elif difficulty == "hard":
+        scoringInfo["learningColor"] = True
+        scoringInfo["learningCount"] = True
+
+    scoringInfo["color"] = None
+    if scoringInfo["learningColor"]:
+        scoringInfo["color"] = rng.choice(COLORS)
+
+    scoringInfo["count"] = 1
+    if scoringInfo["learningCount"]:
+        scoringInfo["count"] = rng.choice(COUNTS)
+
+    if "item" not in scoringInfo:
+        scoringInfo["item"] = rng.choice(ITEMS)
+
+    print("************************")
+    print(f"Scoring Info: {scoringInfo}")
+    print(f"Difficulty: {difficulty}")
+    print(f"Translation: {translation}")
+    print(f"Color: {scoringInfo['color']}")
+    print(f"Count: {scoringInfo['count']}")
+    print(f"Item: {scoringInfo['item']}")
+    print("************************")
 
     # Set a limit for the number of user agents
-    MAX_NUM_AGENTS = 5
+    MAX_NUM_AGENTS = 1
     if (numUserAgents > MAX_NUM_AGENTS):
-        numUserAgents = MAX_NUM_AGENTS
+        raise ValueError("RosettaStone scenario supports only a single agent at the moment.")
 
     # Populate with structures/objects
     # Fill with grass
     mkGrassFill(world)
-    # Randomly place a few plants (plant1, plant2, plant3)
-    for i in range(0, 10):
-        randX = rng.randint(0, world.sizeX - 1)
-        randY = rng.randint(0, world.sizeY - 1)
+
+    coloredMushrooms, coloredFlowers = mkMushroomAndFlowerFarm(20, 3, world)
 
     # Buildings
-    #mkHouse(4, 4, world, buildingMaker)
-
     mkKeyShop(9, 21, world)
     colorSigns, paintShopBounds = mkPaintShop(19, 21, world)
     mkGeneralStore(7, 4, world)
@@ -331,6 +365,47 @@ def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
     # Add some plants
     world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))
 
+    plantCount = 0
+    minPlants = 15
+    while (plantCount < minPlants):
+        # Pick a random location
+        randX = world.rng.randint(0, world.sizeX - 1)
+        randY = world.rng.randint(0, world.sizeY - 1)
+
+        # Check to see if there are any objects other than grass there
+        objs = world.getObjectsAt(randX, randY)
+        # Get types of objects
+        objTypes = [obj.type for obj in objs]
+        # Check to see that there is grass here
+        if ("grass" in objTypes):
+            # Check that there is not other things here
+            if (len(objTypes) == 1):
+                # Add a plant
+                world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
+                plantCount += 1
+
+    toPlace = []
+    for c in COLORS:
+        for i in range(4):
+            toPlace.append(world.createObject("ColoredMushroom", color=c))
+            coloredMushrooms[c].append(toPlace[-1])
+            toPlace.append(world.createObject("ColoredFlower", color=c))
+            coloredFlowers[c].append(toPlace[-1])
+
+    while toPlace:
+        # Pick a random location
+        randX = world.rng.randint(0, world.sizeX - 1)
+        randY = world.rng.randint(0, world.sizeY - 1)
+
+        # If outside town delimited by fences, add a plant
+        if ((randX < 6 or 28 < randX) or (randY < 2 or 29 < randY)):
+            # Check to see if there are any objects other than grass there
+            objs = world.getObjectsAt(randX, randY)
+            objTypes = [obj.type for obj in objs]
+            # Check to see that there is only grass here.
+            if objTypes == ["grass"]:
+                world.addObject(randX, randY, Layer.OBJECTS, toPlace.pop())
+
     # DialogMaker
     dialogMaker = DialogMaker()
 
@@ -376,8 +451,6 @@ def makeScenarioRosettaStone(world, numUserAgents=1, rng=None):
     dialogMaker.mkDialogElder(elder, message=translation["Bring me the stick!"])
 
     scoringInfo["neededObjects"] = [stick]
-    scoringInfo["learningColor"] = True
-    scoringInfo["learningCount"] = True
     scoringInfo["elder"] = elder
 
     return scoringInfo

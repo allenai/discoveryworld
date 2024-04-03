@@ -72,12 +72,19 @@ We could have a map of the village with the houses number and people names on it
 
 
 # Miminal TODO
-- [X] Add color keys.
 - [ ] Player needs to pay to get items?
-- [ ] Add color flowers.
-- [ ] Add color mushrooms.
-- [ ] Randomize the color.
-- [ ] Randomize the count.
+- [ ] Remove black items?
+- [ ] Randomize key position in the key shop?
+- [ ] Elder message upong bringing valid/invalid item.
+- [ ] Use count and color and the taskscorer
+- [ ] In the key shop, use pile of keys to display.
+- [ ] Change name of the key in general store to remove "rusted"
+- [X] Add flower and mushrom to the general store to display their name.
+- [X] Add color keys.
+- [X] Add color flowers.
+- [X] Add color mushrooms.
+- [X] Randomize the color.
+- [X] Randomize the count.
 - [X] Add NPC to give the agent a task.
 - [X] Implement TaskScorer
 - [X] Add a top ball to the flagpole.
@@ -110,8 +117,6 @@ We could have a map of the village with the houses number and people names on it
  - Bring me number color key.
  - Bring me number color flower.
  - Bring me number color mushroom.
-
-# Long-term TODO
 
 
 # Long-term TODO

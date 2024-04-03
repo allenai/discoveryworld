@@ -312,7 +312,23 @@
                 "box":               { "baseTile": [5, 0],  "size": [1, 1] },
 
                 "stick":             { "baseTile": [6, 0],  "size": [1, 1] },
-                "measuring_tape":    { "baseTile": [7, 0],  "size": [1, 1] }
+                "measuring_tape":    { "baseTile": [7, 0],  "size": [1, 1] },
+
+                "mushroom_white":  { "baseTile": [4, 1],  "size": [1, 1], "color": "white" },
+                "mushroom_red":    { "baseTile": [4, 1],  "size": [1, 1], "color": "red" },
+                "mushroom_green":  { "baseTile": [4, 1],  "size": [1, 1], "color": "green" },
+                "mushroom_blue":   { "baseTile": [4, 1],  "size": [1, 1], "color": "blue" },
+                "mushroom_yellow": { "baseTile": [4, 1],  "size": [1, 1], "color": "yellow" },
+                "mushroom_black":  { "baseTile": [4, 1],  "size": [1, 1], "color": "black" },
+                "mushroom_orange": { "baseTile": [4, 1],  "size": [1, 1], "color": "orange" },
+
+                "flower_white":  { "baseTile": [5, 1],  "size": [1, 1], "color": "white" },
+                "flower_red":    { "baseTile": [5, 1],  "size": [1, 1], "color": "red" },
+                "flower_green":  { "baseTile": [5, 1],  "size": [1, 1], "color": "green" },
+                "flower_blue":   { "baseTile": [5, 1],  "size": [1, 1], "color": "blue" },
+                "flower_yellow": { "baseTile": [5, 1],  "size": [1, 1], "color": "yellow" },
+                "flower_black":  { "baseTile": [5, 1],  "size": [1, 1], "color": "black" },
+                "flower_orange": { "baseTile": [5, 1],  "size": [1, 1], "color": "orange" }
             },
         "composites":
             {
