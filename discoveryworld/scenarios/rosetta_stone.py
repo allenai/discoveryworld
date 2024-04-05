@@ -518,9 +518,9 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
     stick = world.createObject("Stick")
     # userAgent.addObject(stick)
     # Add the agent to a specfic location
-    # world.addObject(17, 0, Layer.AGENT, userAgent)      # Top Town Entrance
+    world.addObject(17, 0, Layer.AGENT, userAgent)      # Top Town Entrance
     # world.addObject(16, 18, Layer.AGENT, userAgent)      # Town Square
-    world.addObject(12, 24, Layer.AGENT, userAgent)      # In key shop
+    # world.addObject(12, 24, Layer.AGENT, userAgent)      # In key shop
     # world.addObject(23, 10, Layer.AGENT, userAgent)      # In school
 
     # Register the agent with the World so we can keep track of it

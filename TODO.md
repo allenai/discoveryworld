@@ -72,8 +72,7 @@ We could have a map of the village with the houses number and people names on it
 
 
 # TODO
-- [ ] Use Measuring tape on flag or vice-versa?
-- [ ] When facing up at the top border of the map, we don't see items to be picked up.
+- [X] When facing up at the top border of the map, we don't see items to be picked up.
 - [X] In the key shop, use pile of keys to display.
 - [X] Remove black items?
 - [X] Randomize the placement of multiple objects on a same table (to avoid items overlapping).
@@ -99,6 +98,7 @@ We could have a map of the village with the houses number and people names on it
   - [X] Add dog fetching stick routine
 
 # Abandonned
+- [ ] Use Measuring tape on flag or vice-versa?
 - [ ] Player needs to pay to get items?
 - [ ] Elder message upong bringing valid/invalid item.
 
