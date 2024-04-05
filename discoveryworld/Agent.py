@@ -137,21 +137,21 @@ class Agent(Object):
 
     # Get all objects in the world tile that the agent is facing
     def getObjectsAgentFacing(self, respectContainerStatus=True):
+        # Start by getting the objects at the agent's current location.
+        objsAtAgentLocation = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"], respectContainerStatus=respectContainerStatus, respectObscuringLowerLayers=True)
+
+        # But do not add itself
+        objs = [obj for obj in objsAtAgentLocation if (obj != self)]
+
         # Find a usable item at the location the agent is facing
         facingLocation = self.getWorldLocationAgentIsFacing()
         # Bound checking
-        if (self.world.isWithinBounds(facingLocation[0], facingLocation[1]) == False):
-            return []
+        if not self.world.isWithinBounds(facingLocation[0], facingLocation[1]):
+            return objs
 
-        # Get objects at location
-        #objs = self.world.getObjectsAt(facingLocation[0], facingLocation[1], respectContainerStatus=respectContainerStatus)
-        objs = self.world.getObjectsAt(facingLocation[0], facingLocation[1], respectContainerStatus=respectContainerStatus, respectObscuringLowerLayers=True)
-
-        ## NEW: Also include objects at the agent's current location
-        objsAtAgentLocation = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"], respectContainerStatus=respectContainerStatus, respectObscuringLowerLayers=True)
-        # But do not add itself
-        objsAtAgentLocation = [obj for obj in objsAtAgentLocation if (obj != self)]
-        objs += objsAtAgentLocation
+        # Get objects at facing location
+        objsInFront = self.world.getObjectsAt(facingLocation[0], facingLocation[1], respectContainerStatus=respectContainerStatus, respectObscuringLowerLayers=True)
+        objs = objsInFront + objs
 
         # Return the objects
         return objs
