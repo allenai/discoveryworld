@@ -265,3 +265,17 @@ class MeasuringTape(Object):
             return ActionSuccess(False, useDescriptionStr, importance=MessageImportance.LOW)
 
         return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.LOW)
+
+class ColoredKey(Object):
+
+    def __init__(self, world, color):
+        super().__init__(world, "key", f"{color} key", defaultSpriteName=f"instruments_key_{color}")
+        self.color = color
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+        self.attributes['isContainer'] = False                    # Is it a container?
+
+    def tick(self):
+        super().tick()
+        self.curSpriteModifiers.add(f"instruments_key_{self.color}")

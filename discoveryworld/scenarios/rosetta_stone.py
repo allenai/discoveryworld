@@ -1,5 +1,6 @@
 
 
+import os
 import random
 from discoveryworld.ActionSuccess import ActionSuccess, MessageImportance
 from discoveryworld.Agent import NPC, Agent
@@ -11,6 +12,85 @@ from discoveryworld.buildings.farm import mkMushroomAndFlowerFarm
 from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mkPathX, mkPathY, mkSignVillage, mkTownSquare
 
 from termcolor import colored
+
+
+ROSETTA_FRENCH = {
+    "Bring me the stick!": "Va chercher le bâton!",
+
+    "[Bring me]": "Rapporte-moi",
+    "[Add]": "Ajoute",
+    "[Reset]": "Remise à zéro",
+
+    "[the stick]": "le bâton",
+    "[key]": "clé",
+    "[flower]": "fleur",
+    "[mushroom]": "champignon",
+
+    "[red]": "rouge",
+    "[green]": "vert",
+    "[blue]": "bleu",
+    "[yellow]": "jaune",
+    "[black]": "noir",
+    "[white]": "blanc",
+    "[orange]": "orange",
+
+    "[one]": "un",
+    "[two]": "deux",
+    "[three]": "trois",
+    "[four]": "quatre",
+    "[five]": "cinq",
+
+    "[Paint Shop]": "Magasin de peinture",
+    "[General Store]": "Magasin général",
+    "[Key Shop]": "Magasin de clés",
+    "[School]": "École",
+
+    "[seed]": "graine",
+    "[shovel]": "pelle",
+    "[pot]": "pot",
+    "[jar]": "bocal",
+    "[flag]": "drapeau",
+    "[flowerpot]": "pot de fleurs",
+}
+
+ROSETTA_GIBBERISH = {
+    "Bring me the stick!": "Zorgle me flibber blonk!",
+
+    "[Bring me]": "Womple",
+    "[Add]": "Plonk",
+    "[Reset]": "Flibberwomp",
+
+    "[the stick]": "blonk",
+    "[key]": "squibble",
+    "[flower]": "florpt",
+    "[mushroom]": "mushblort",
+
+    "[red]": "blarg",
+    "[green]": "flib",
+    "[blue]": "womp",
+    "[yellow]": "zibble",
+    "[black]": "quark",
+    "[white]": "snoof",
+    "[orange]": "gleep",
+
+    "[one]": "blip",
+    "[two]": "blob",
+    "[three]": "blorp",
+    "[four]": "squarp",
+    "[five]": "zorp",
+
+    "[Paint Shop]": "Blorpt Shop",
+    "[General Store]": "Flibble Store",
+    "[Key Shop]": "Squibble Shop",
+    "[School]": "Womple Academy",
+
+    "[seed]": "snarf",
+    "[shovel]": "blurf",
+    "[pot]": "plink",
+    "[jar]": "klonk",
+    "[flag]": "flarp",
+    "[flowerpot]": "florptink",
+}
 
 
 class NPCDog(NPC):
@@ -193,8 +273,8 @@ class NPCDogTrainer(NPC):
         elif "tellDogToFetch" in self.attributes['states']:
             self.removeState("wandering")  # Stop wandering.
 
-            # Says something like "Go get it, Fido!"
-            ActionSuccess(True, f"[Va chercher], {self.dogNPC.name}!", importance=MessageImportance.HIGH)
+            # Says something like "Go get it, Fido!" TODO: random event with message doesn't work.
+            # ActionSuccess(True, f"[Va chercher], {self.dogNPC.name}!", importance=MessageImportance.HIGH)
 
             self.removeState("tellDogToFetch")
             self.dogNPC.addState("fetchSignal")
@@ -234,14 +314,25 @@ class NPCElder(NPC):
         self.pathfinder = Pathfinder()
 
 
-def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="hard"):
+def translate(text, rosetta):
+    for key in rosetta:
+        text = text.replace(key, rosetta[key])
+
+    # If there are any brackets left, print warning
+    if "[" in text or "]" in text:
+        print(colored(f"Untranslated text: {text}", "red"))
+
+    return text
+
+
+def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
 
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
 
-    translation = {
-        "Bring me the stick!": "Va chercher le bâton!",
-    }
+    rosetta = ROSETTA_GIBBERISH
+    if os.environ.get("FRENCH", False):
+        rosetta = ROSETTA_FRENCH
 
     # Make the Rosetta Stone scenario
     rng = world.rng
@@ -249,11 +340,14 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="hard"):
     ITEMS = ["mushroom", "flower", "key"]
     COLORS = ["red", "green", "blue", "yellow", "black", "white", "orange"]
     COUNTS = [1, 2, 3, 4, 5]
+    COUNT_WORDS = ["zero", "one", "two", "three", "four", "five"]
 
     scoringInfo["learningColor"] = False
     scoringInfo["learningCount"] = False
+    taskInstruction = None
     if difficulty == "easy":
         scoringInfo["item"] = "stick"
+        taskInstruction = "[Bring me] [the stick]!"
     elif difficulty == "medium":
         if world.randomSeed % 2 == 0:
             scoringInfo["learningColor"] = True  # Half the seeds will be about learning colors.
@@ -272,16 +366,29 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="hard"):
         scoringInfo["count"] = rng.choice(COUNTS)
 
     if "item" not in scoringInfo:
-        scoringInfo["item"] = rng.choice(ITEMS)
+        items = list(ITEMS)
+        if scoringInfo["count"] > 2:
+            items.remove("key")  # At the moment, keys are only available in counts of 1 or 2.
 
-    print("************************")
-    print(f"Scoring Info: {scoringInfo}")
-    print(f"Difficulty: {difficulty}")
-    print(f"Translation: {translation}")
-    print(f"Color: {scoringInfo['color']}")
-    print(f"Count: {scoringInfo['count']}")
-    print(f"Item: {scoringInfo['item']}")
-    print("************************")
+        scoringInfo["item"] = rng.choice(items)
+
+    scoringInfo["countWord"] = COUNT_WORDS[scoringInfo["count"]]
+
+    if scoringInfo["learningCount"] and scoringInfo["learningColor"]:
+        taskInstruction = f"[Bring me] [{scoringInfo['countWord']}] [{scoringInfo['color']}] [{scoringInfo['item']}]!"
+    elif scoringInfo["learningCount"]:
+        taskInstruction = f"[Bring me] [{scoringInfo['countWord']}] [{scoringInfo['item']}]!"
+    else:  # scoringInfo["learningColor"]:
+        taskInstruction = f"[Bring me] [{scoringInfo['color']}] [{scoringInfo['item']}]!"
+
+    print(colored("************************", "cyan"))
+    print(colored(f"Scoring Info: {scoringInfo}", "cyan"))
+    print(colored(f"Difficulty: {difficulty}", "cyan"))
+    print(colored(f"Rosetta Stone: {rosetta}", "cyan"))
+    print(colored(f"Color: {scoringInfo['color']}", "cyan"))
+    print(colored(f"Count: {scoringInfo['count']}", "cyan"))
+    print(colored(f"Item: {scoringInfo['item']}", "cyan"))
+    print(colored("************************", "cyan"))
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 1
@@ -411,13 +518,11 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="hard"):
 
     # Add some number of user agents
     userAgent = Agent(world)
-    # userAgent.addObject(world.createObject("Shovel"))
-    # userAgent.addObject(world.createObject("Seed"))
-    userAgent.addObject(world.createObject("Coin"))
+    # userAgent.addObject(world.createObject("Coin"))
     stick = world.createObject("Stick")
     # userAgent.addObject(stick)
     # Add the agent to a specfic location
-    world.addObject(16, 1, Layer.AGENT, userAgent)      # Top Town Entrance
+    world.addObject(17, 0, Layer.AGENT, userAgent)      # Top Town Entrance
     # world.addObject(16, 18, Layer.AGENT, userAgent)      # Town Square
     # world.addObject(12, 24, Layer.AGENT, userAgent)      # In key shop
     # world.addObject(23, 10, Layer.AGENT, userAgent)      # In school
@@ -443,14 +548,22 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="hard"):
     world.addObject(20, 1, Layer.AGENT, dogTrainer)
     world.addAgent(dogTrainer)
 
-    dialogMaker.mkDialogDogTrainer(dogTrainer, message=translation["Bring me the stick!"])
+    dialogMaker.mkDialogDogTrainer(dogTrainer, message=translate("[Bring me] [the stick]!", rosetta))
 
     elder = NPCElder(world, "Elder")
     world.addObject(18, 18, Layer.AGENT, elder)
     world.addAgent(elder)
-    dialogMaker.mkDialogElder(elder, message=translation["Bring me the stick!"])
+    dialogMaker.mkDialogElder(elder, message=translate(taskInstruction, rosetta))
 
-    scoringInfo["neededObjects"] = [stick]
     scoringInfo["elder"] = elder
+
+
+    # Apply the Rosetta Stone translation to all signs in the world.
+    for obj in world.getAllWorldObjects():
+        if obj.attributes.get("document") is not None:
+            obj.attributes["document"] = translate(obj.attributes["document"], rosetta)
+
+        if obj.type == "floppy disk":
+            obj.name = translate(obj.name, rosetta)
 
     return scoringInfo

@@ -520,7 +520,7 @@ class DialogMaker():
         # floatVariablesToModify
         tree = DialogTree(agent)
 
-        rootNode = DialogNode("rootNode", f"You heard them say '{message}' to their dog.")
+        rootNode = DialogNode("rootNode", f"You hear them say '{message}' to their dog.")
 
         # Exit
         rootNode.addDialogOption("Let's not interrupt their go-fetch game.", "endNode")

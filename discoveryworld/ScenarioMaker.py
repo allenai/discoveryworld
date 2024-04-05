@@ -4,7 +4,16 @@ from discoveryworld.scenarios import *
 
 import random
 
-SCENARIOS = ["food_illness", "combinatorial_chemistry", "archaeology_dating_simple", "archaeology_dating_challenge", "plant_nutrients", "lost_in_translation", "reactor_lab"]
+SCENARIOS = [
+    "food_illness",
+    "combinatorial_chemistry",
+    "archaeology_dating_simple",
+    "archaeology_dating_challenge",
+    "plant_nutrients",
+    "lost_in_translation_easy",
+    "lost_in_translation_medium",
+    "lost_in_translation_hard",
+    "reactor_lab"]
 
 class ScenarioMaker():
     # Constructor

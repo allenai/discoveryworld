@@ -222,7 +222,7 @@ def mkStorageShed(x, y, world, DOOR_KEY_ID, chemicalSolutionDict, scoringInfo):
 
 def mkKeyShop(x, y, world):
     # Create a building (shop sellings colored keys)
-    signText = "Magasin de clés\n[The logo is a key]"
+    signText = "[Key Shop]\n<The logo is a key>"
     mkBuildingOneRoom(world, x=x, y=y, width=7, height=6, signText=signText)
 
     COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "k": "black", "w": "white", "o": "orange"}
@@ -237,14 +237,14 @@ def mkKeyShop(x, y, world):
     for i, row in enumerate(layout):
         for j, c in enumerate(row):
             if c in COLORS.keys():
-                key = world.createObject("Key", color=COLORS[c], isRusted=False)  # TODO: change sign text to alien language.
+                key = world.createObject("ColoredKey", color=COLORS[c])
                 table = world.createObject("Table")
                 world.addObject(x+j, y+i, Layer.FURNITURE, table)
                 table.addObject(key)
 
 
 def mkPaintShop(x, y, world):
-    signText = "Magasin de peinture\n[The logo is a paint bucket]"
+    signText = "[Paint Shop]\n<The logo is a paint bucket>"
     paintShopBounds = mkBuildingOneRoom(world, x=x, y=y, width=7, height=6, signText=signText)
 
     COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "k": "black", "w": "white", "o": "orange"}
@@ -260,8 +260,8 @@ def mkPaintShop(x, y, world):
     for i, row in enumerate(layout):
         for j, c in enumerate(row):
             if c in COLORS.keys():
-                paint = world.createObject("PaintBucket", color=COLORS[c])  # TODO: change sign text to alien language.
-                table = world.createObject("TableWithSign", signText=paint.name)
+                paint = world.createObject("PaintBucket", color=COLORS[c])
+                table = world.createObject("TableWithSign", signText=f"[{COLORS[c]}]")
                 world.addObject(x+j, y+i, Layer.FURNITURE, table)
                 table.addObject(paint)
                 colorSigns[COLORS[c]] = table
@@ -271,7 +271,7 @@ def mkPaintShop(x, y, world):
 
 def mkGeneralStore(x, y, world):
     # Create a building (shop sellings colored keys)
-    signText = "Magasin général\n[The logo is a shopping cart]"
+    signText = "[General Store]\n<The logo is a shopping cart>"
     mkBuildingOneRoom(world, x=x, y=y, width=9, height=14, signText=signText)
 
     COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "k": "black", "w": "white", "o": "orange"}
@@ -283,7 +283,7 @@ def mkGeneralStore(x, y, world):
         "4": ("Shovel", {}),
         "5": ("Seed", {}),
         "6": ("FlowerPot", {}),
-        "7": ("Key", {}),
+        # "7": ("ColoredKey", {"color": "orange"}),
         "8": ("Flag", {}),
         "9": ("ColoredFlower", {"color": "red"}),
         # "A": "Rock",
@@ -292,24 +292,38 @@ def mkGeneralStore(x, y, world):
         ".........",
         ".0400000.",
         ".........",
-        ".100.900.",
+        ".100.90k.",
         ".........",
-        ".002.000.",
+        ".b02.00y.",
         ".........",
-        ".003.081.",
+        ".g03.081.",
         ".........",
-        ".040.070.",
+        ".040.00w.",
         ".........",
-        ".500.600.",
+        ".5r0.60o.",
         ".........",
     ]
     for i, row in enumerate(layout):
         for j, o in enumerate(row):
-            if o in OBJECTS.keys():
+            if o in COLORS.keys():
+                obj = world.createObject("ColoredKey", color=COLORS[o])
+                table = world.createObject("TableWithSign", signText=f"[{COLORS[o]}] [key]")
+                table.addObject(obj)
+
+                world.addObject(x+j, y+i, Layer.FURNITURE, table)
+
+            if o == "9":
+                obj = world.createObject("ColoredFlower", color="red")
+                table = world.createObject("TableWithSign", signText=f"[red] [flower]")
+                table.addObject(obj)
+
+                world.addObject(x+j, y+i, Layer.FURNITURE, table)
+
+            elif o in OBJECTS.keys():
                 if OBJECTS[o]:
                     cls, kwargs = OBJECTS[o]
                     obj = world.createObject(cls, **kwargs)  # TODO: change sign text to alien language.
-                    table = world.createObject("TableWithSign", signText=obj.name)
+                    table = world.createObject("TableWithSign", signText=f"[{obj.name}]")
                     table.addObject(obj)
                 else:
                     table = world.createObject("Table")
@@ -318,17 +332,16 @@ def mkGeneralStore(x, y, world):
 
 
 def mkSchool(x, y, world):
-    # Create a building (shop sellings colored keys)
-    signText = "École\n[The logo is a student hat]"
+    signText = "[School]\n<The logo is a student hat>"
     schoolBounds = mkBuildingOneRoom(world, x=x, y=y, width=9, height=11, signText=signText)
 
     PROGRAMS = {
-        0: "Remise à zéro",
-        1: "Ajoute un",
-        2: "Ajoute deux",
-        3: "Ajoute trois",
-        4: "Ajoute quatre",
-        5: "Ajoute cinq",
+        0: "[Reset]",
+        1: "[Add] [one]",
+        2: "[Add] [two]",
+        3: "[Add] [three]",
+        4: "[Add] [four]",
+        5: "[Add] [five]",
     }
 
     OBJECTS = {

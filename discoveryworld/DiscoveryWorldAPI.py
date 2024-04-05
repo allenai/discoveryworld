@@ -73,7 +73,7 @@ class DiscoveryWorldAPI:
         #### TODO: Refactor to use the new ScenarioMaker (which should take all this stuff into account)
 
         # Create the town scenario
-        scenarioMaker = ScenarioMaker(world = self.world, seed = randomSeed)
+        scenarioMaker = ScenarioMaker(world=self.world, seed=randomSeed)
         success, errorStr = scenarioMaker.setupScenario(scenarioName, self.numUserAgents)
 
         if (not success):

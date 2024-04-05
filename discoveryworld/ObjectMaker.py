@@ -267,6 +267,7 @@ class ObjectMaker:
             "PaintBucket": PaintBucket,
             "ColoredMushroom": ColoredMushroom,
             "ColoredFlower": ColoredFlower,
+            "ColoredKey": ColoredKey,
 
             # Seeds # possibleNutrients = ["potassium", "titanium", "lithium", "thorium", "barium"]
             "SeedNutrientPot1": [SeedRequiringNutrients, {"potassium": 1}],

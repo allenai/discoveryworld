@@ -1151,24 +1151,17 @@ class RosettaStoneTask(Task):
 
         super().__init__("RosettaStoneTask", taskDescription, world, scoringInfo)
 
-        scoringInfo["neededObjects"]
-        scoringInfo["learningColor"]
-        scoringInfo["learningCount"]
-
         # Scorecard elements (TODO)
         self.scorecardElder = ScorecardElement("Talk to elder", "The agent has learned about the elder's request.", maxScore=1)
         self.scoreCard.append(self.scorecardElder)
 
-        if scoringInfo["neededObjects"]:
-            # Taking critical objects
-            #self.scorecardGetObjects = ScorecardElement("Collect objects", "Needed objects are in agent's inventory.", maxScore=len(scoringInfo["neededObjects"]))
-            self.scorecardGetObjects = ScorecardElement("Collect objects", "Needed objects are in agent's inventory.", maxScore=self.scoringInfo["count"])
-            self.scoreCard.append(self.scorecardGetObjects)
+        # Taking critical objects
+        self.scorecardGetObjects = ScorecardElement("Collect objects", "Needed objects are in agent's inventory.", maxScore=self.scoringInfo["count"])
+        self.scoreCard.append(self.scorecardGetObjects)
 
-            # Bring back the objects to the elder
-            # self.scorecardGiveObjects = ScorecardElement("Give back objects", "Needed objects are in elder's inventory.", maxScore=len(scoringInfo["neededObjects"]))
-            self.scorecardGiveObjects = ScorecardElement("Give back objects", "Needed objects are in elder's inventory.", maxScore=self.scoringInfo["count"])
-            self.scoreCard.append(self.scorecardGiveObjects)
+        # Bring back the objects to the elder
+        self.scorecardGiveObjects = ScorecardElement("Give back objects", "Needed objects are in elder's inventory.", maxScore=self.scoringInfo["count"])
+        self.scoreCard.append(self.scorecardGiveObjects)
 
         if scoringInfo["learningColor"]:
             self.scorecardColor = ScorecardElement("Visit the paint shop", "The agent visited the paint shop to learn about color.", maxScore=1)
@@ -1213,18 +1206,6 @@ class RosettaStoneTask(Task):
                 self.scorecardElder.updateScore(1, True, associatedUUIDs=[elder.uuid], associatedNotes=f"Agent has talked to the elder (UUID: {elder.uuid}).")
 
         # Taking critical objects
-        # if self.scoringInfo["neededObjects"] and not self.scorecardGetObjects.completed:
-        #     associatedNotes = []
-        #     associatedUUIDs = []
-        #     for obj in self.scoringInfo["neededObjects"]:
-        #         if obj.parentContainer and obj.parentContainer.type == "agent" and not obj.parentContainer.attributes["isNPC"]:
-        #             associatedUUIDs.append((obj.uuid, obj.parentContainer.uuid))
-        #             associatedNotes.append(f"{obj.name} (UUID: {obj.uuid}) is in Agent (UUID: {obj.parentContainer.uuid})'s inventory.")
-
-        #     if associatedNotes:
-        #         isCompleted = len(associatedNotes) == len(self.scoringInfo["neededObjects"])
-        #         self.scorecardGetObjects.updateScore(len(associatedNotes), isCompleted, associatedUUIDs, "\n".join(associatedNotes))
-
         if not self.scorecardGetObjects.completed:
             associatedNotes = []
             associatedUUIDs = []
@@ -1243,17 +1224,20 @@ class RosettaStoneTask(Task):
                 self.scorecardGetObjects.updateScore(len(associatedNotes), isCompleted, associatedUUIDs, "\n".join(associatedNotes))
 
         # Give back critical objects to elder
-        if self.scoringInfo["neededObjects"] and not self.scorecardGiveObjects.completed:
+        if not self.scorecardGiveObjects.completed:
             elder = self.scoringInfo["elder"]
             associatedNotes = []
             associatedUUIDs = []
-            for obj in self.scoringInfo["neededObjects"]:
-                if obj.parentContainer and obj.parentContainer.uuid == elder.uuid:
-                    associatedUUIDs.append((obj.uuid, elder.uuid))
-                    associatedNotes.append(f"{obj.name} (UUID: {obj.uuid}) is in Elder (UUID: {elder.uuid})'s inventory.")
+            for obj in elder.getInventory():
+                if self.scoringInfo["item"] in obj.name:
+                        if self.scoringInfo["learningColor"] and self.scoringInfo["color"] not in obj.name.split(" "):
+                            continue  # Color doesn't match
+
+                        associatedUUIDs.append((obj.uuid, elder.uuid))
+                        associatedNotes.append(f"{obj.name} (UUID: {obj.uuid}) is in Elder (UUID: {elder.uuid})'s inventory.")
 
             if associatedNotes:
-                isCompleted = len(associatedNotes) == len(self.scoringInfo["neededObjects"])
+                isCompleted = len(associatedNotes) == self.scoringInfo["count"]
                 self.scorecardGiveObjects.updateScore(len(associatedNotes), isCompleted, associatedUUIDs, "\n".join(associatedNotes))
 
         # Check scorecard for learning about counting.
