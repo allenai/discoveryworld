@@ -228,21 +228,21 @@ class FlagPole(Object):
         self.attributes["isMovable"] = False
         self.attributes["isPassable"] = False
 
-    def getSpriteNamesWithContents(self, yOffset:int=0):
-        spriteList = super().getSpriteNamesWithContents(yOffset)
+    def getSpriteNamesWithContents(self, yOffset:int=0, xOffset:int=0):
+        spriteList = super().getSpriteNamesWithContents(yOffset, xOffset)
 
         nb_flags = int(np.ceil(self.height / 2)) -1
 
         for i in range(1, nb_flags+1):
             if i == nb_flags:
-                spriteList.append({"spriteName": "instruments2_flag_pole_top", "yOffset": -32*i})
+                spriteList.append({"spriteName": "instruments2_flag_pole_top", "yOffset": yOffset-32*i, "xOffset": xOffset})
             else:
-                spriteList.append({"spriteName": "instruments2_flag_pole_middle", "yOffset": -32*i})
+                spriteList.append({"spriteName": "instruments2_flag_pole_middle", "yOffset": yOffset-32*i, "xOffset": xOffset})
 
         if self.current_height % 2 == 0:
-            spriteList.append({"spriteName": "instruments2_flag_bottom", "yOffset": -32*(self.current_height//2)})
+            spriteList.append({"spriteName": "instruments2_flag_bottom", "yOffset": yOffset-32*(self.current_height//2), "xOffset": xOffset})
         else:
-            spriteList.append({"spriteName": "instruments2_flag_top", "yOffset": -32*((self.current_height-1)//2)})
+            spriteList.append({"spriteName": "instruments2_flag_top", "yOffset": yOffset-32*((self.current_height-1)//2), "xOffset": xOffset})
 
         return spriteList
 

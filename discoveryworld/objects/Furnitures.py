@@ -336,9 +336,9 @@ class TableWithSign(Object):
         # Rendering attributes
         self.attributes["screenYOffset"] = -7                      # Small Y offset. This is to make it look like the objects are on the table.
 
-    def getSpriteNamesWithContents(self, yOffset:int=0):
-        spriteList = super().getSpriteNamesWithContents(yOffset)
-        spriteList.append({"spriteName": self.sign.getSpriteName(), "yOffset": yOffset+7})
+    def getSpriteNamesWithContents(self, yOffset:int=0, xOffset:int=0):
+        spriteList = super().getSpriteNamesWithContents(yOffset, xOffset)
+        spriteList.append({"spriteName": self.sign.getSpriteName(), "yOffset": yOffset+7, "xOffset": xOffset})
         return spriteList
 
 
@@ -360,22 +360,22 @@ class Pupitre(Table):
         # Rendering attributes
         self.attributes["screenYOffset"] = -7                      # Small Y offset. This is to make it look like the objects are on the table.
 
-    def getSpriteNamesWithContents(self, yOffset:int=0):
+    def getSpriteNamesWithContents(self, yOffset:int=0, xOffset:int=0):
         spriteList = []
 
         # Pick the correct chair sprite according to the facing direction of the objects.
         # Depending on the facing direction, we either draw the table on top or not.
         if self.facing == "north":
-            spriteList.extend(super().getSpriteNamesWithContents(yOffset))
-            spriteList.append({"spriteName": "house1_chair_u_back", "yOffset": 7})
+            spriteList.extend(super().getSpriteNamesWithContents(yOffset, xOffset))
+            spriteList.append({"spriteName": "house1_chair_u_back", "xOffset": xOffset, "yOffset": yOffset+7})
         elif self.facing == "south":
-            spriteList.append({"spriteName": "house1_chair_d", "yOffset": -10})
-            spriteList.extend(super().getSpriteNamesWithContents(yOffset))
+            spriteList.append({"spriteName": "house1_chair_d", "xOffset": xOffset, "yOffset": yOffset-10})
+            spriteList.extend(super().getSpriteNamesWithContents(yOffset, xOffset))
         elif self.facing == "west":
-            spriteList.append({"spriteName": "house1_chair_r", "xOffset": -16, "yOffset": -3})
-            spriteList.extend(super().getSpriteNamesWithContents(yOffset))
+            spriteList.append({"spriteName": "house1_chair_r", "xOffset": xOffset-16, "yOffset": yOffset-3})
+            spriteList.extend(super().getSpriteNamesWithContents(yOffset, xOffset))
         elif self.facing == "east":
-            spriteList.append({"spriteName": "house1_chair_l", "xOffset": 16, "yOffset": -3})
-            spriteList.extend(super().getSpriteNamesWithContents(yOffset))
+            spriteList.append({"spriteName": "house1_chair_l", "xOffset": xOffset+16, "yOffset": yOffset-3})
+            spriteList.extend(super().getSpriteNamesWithContents(yOffset, xOffset))
 
         return spriteList

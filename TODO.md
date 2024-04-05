@@ -72,13 +72,11 @@ We could have a map of the village with the houses number and people names on it
 
 
 # TODO
-- [ ] Player needs to pay to get items?
-- [ ] Remove black items?
-- [ ] Randomize key position in the key shop?
-- [ ] In the key shop, use pile of keys to display.
-- [ ] Randomize the placement of multiple objects on a same table (to avoid items overlapping).
 - [ ] Use Measuring tape on flag or vice-versa?
 - [ ] When facing up at the top border of the map, we don't see items to be picked up.
+- [X] In the key shop, use pile of keys to display.
+- [X] Remove black items?
+- [X] Randomize the placement of multiple objects on a same table (to avoid items overlapping).
 - [X] Change name of the key in general store to remove "rusted"
 - [X] Use count and color and the taskscorer
 - [X] Add flower and mushrom to the general store to display their name.
@@ -100,7 +98,8 @@ We could have a map of the village with the houses number and people names on it
   - [X] Add shouting "bring me" routine
   - [X] Add dog fetching stick routine
 
-# Cancelled
+# Abandonned
+- [ ] Player needs to pay to get items?
 - [ ] Elder message upong bringing valid/invalid item.
 
 

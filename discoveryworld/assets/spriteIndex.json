@@ -268,7 +268,7 @@
                 "key_green":            { "baseTile": [2, 5],  "size": [1, 1], "color": "green" },
                 "key_blue":             { "baseTile": [2, 5],  "size": [1, 1], "color": "blue" },
                 "key_yellow":           { "baseTile": [2, 5],  "size": [1, 1], "color": "yellow" },
-                "key_black":            { "baseTile": [2, 5],  "size": [1, 1], "color": "black" },
+                "key_pink":             { "baseTile": [2, 5],  "size": [1, 1], "color": "deeppink" },
                 "key_orange":           { "baseTile": [2, 5],  "size": [1, 1], "color": "orange" },
 
                 "quantum_crystal":      { "baseTile": [6, 5],  "size": [1, 1] },
@@ -319,7 +319,7 @@
                 "mushroom_green":  { "baseTile": [4, 1],  "size": [1, 1], "color": "green" },
                 "mushroom_blue":   { "baseTile": [4, 1],  "size": [1, 1], "color": "blue" },
                 "mushroom_yellow": { "baseTile": [4, 1],  "size": [1, 1], "color": "yellow" },
-                "mushroom_black":  { "baseTile": [4, 1],  "size": [1, 1], "color": "black" },
+                "mushroom_pink":  { "baseTile": [4, 1],  "size": [1, 1], "color": "deeppink" },
                 "mushroom_orange": { "baseTile": [4, 1],  "size": [1, 1], "color": "orange" },
 
                 "flower_white":  { "baseTile": [5, 1],  "size": [1, 1], "color": "white" },
@@ -327,7 +327,7 @@
                 "flower_green":  { "baseTile": [5, 1],  "size": [1, 1], "color": "green" },
                 "flower_blue":   { "baseTile": [5, 1],  "size": [1, 1], "color": "blue" },
                 "flower_yellow": { "baseTile": [5, 1],  "size": [1, 1], "color": "yellow" },
-                "flower_black":  { "baseTile": [5, 1],  "size": [1, 1], "color": "black" },
+                "flower_pink":  { "baseTile": [5, 1],  "size": [1, 1], "color": "deeppink" },
                 "flower_orange": { "baseTile": [5, 1],  "size": [1, 1], "color": "orange" }
             },
         "composites":
@@ -361,7 +361,7 @@
                 "paint_green":  { "baseTile": [1, 3],  "size": [1, 1], "color": "green" },
                 "paint_blue":   { "baseTile": [1, 3],  "size": [1, 1], "color": "blue" },
                 "paint_yellow": { "baseTile": [1, 3],  "size": [1, 1], "color": "yellow" },
-                "paint_black":  { "baseTile": [1, 3],  "size": [1, 1], "color": "black" },
+                "paint_pink":   { "baseTile": [1, 3],  "size": [1, 1], "color": "deeppink" },
                 "paint_orange": { "baseTile": [1, 3],  "size": [1, 1], "color": "orange" },
                 "sick":         { "baseTile": [1, 0],  "size": [1, 1] },
                 "shovel":       { "baseTile": [1, 1],  "size": [1, 1] },

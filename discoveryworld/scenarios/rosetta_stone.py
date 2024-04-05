@@ -30,7 +30,7 @@ ROSETTA_FRENCH = {
     "[green]": "vert",
     "[blue]": "bleu",
     "[yellow]": "jaune",
-    "[black]": "noir",
+    "[pink]": "rose",
     "[white]": "blanc",
     "[orange]": "orange",
 
@@ -69,7 +69,7 @@ ROSETTA_GIBBERISH = {
     "[green]": "flib",
     "[blue]": "womp",
     "[yellow]": "zibble",
-    "[black]": "quark",
+    "[pink]": "quark",
     "[white]": "snoof",
     "[orange]": "gleep",
 
@@ -79,9 +79,9 @@ ROSETTA_GIBBERISH = {
     "[four]": "squarp",
     "[five]": "zorp",
 
-    "[Paint Shop]": "Blorpt Shop",
-    "[General Store]": "Flibble Store",
-    "[Key Shop]": "Squibble Shop",
+    "[Paint Shop]": "Blorpt Vloxurn",
+    "[General Store]": "Flibble Vloxurn",
+    "[Key Shop]": "Squibble Vloxurn",
     "[School]": "Womple Academy",
 
     "[seed]": "snarf",
@@ -338,7 +338,7 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
     rng = world.rng
 
     ITEMS = ["mushroom", "flower", "key"]
-    COLORS = ["red", "green", "blue", "yellow", "black", "white", "orange"]
+    COLORS = ["red", "green", "blue", "yellow", "pink", "white", "orange"]
     COUNTS = [1, 2, 3, 4, 5]
     COUNT_WORDS = ["zero", "one", "two", "three", "four", "five"]
 
@@ -366,11 +366,7 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
         scoringInfo["count"] = rng.choice(COUNTS)
 
     if "item" not in scoringInfo:
-        items = list(ITEMS)
-        if scoringInfo["count"] > 2:
-            items.remove("key")  # At the moment, keys are only available in counts of 1 or 2.
-
-        scoringInfo["item"] = rng.choice(items)
+        scoringInfo["item"] = rng.choice(ITEMS)
 
     scoringInfo["countWord"] = COUNT_WORDS[scoringInfo["count"]]
 
@@ -522,9 +518,9 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
     stick = world.createObject("Stick")
     # userAgent.addObject(stick)
     # Add the agent to a specfic location
-    world.addObject(17, 0, Layer.AGENT, userAgent)      # Top Town Entrance
+    # world.addObject(17, 0, Layer.AGENT, userAgent)      # Top Town Entrance
     # world.addObject(16, 18, Layer.AGENT, userAgent)      # Town Square
-    # world.addObject(12, 24, Layer.AGENT, userAgent)      # In key shop
+    world.addObject(12, 24, Layer.AGENT, userAgent)      # In key shop
     # world.addObject(23, 10, Layer.AGENT, userAgent)      # In school
 
     # Register the agent with the World so we can keep track of it

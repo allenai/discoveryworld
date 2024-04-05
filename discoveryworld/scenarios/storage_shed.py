@@ -19,7 +19,7 @@ def mkRandomChemicalCombination(rng, numChemicals:int=3, minChemicals:int=2, min
     # Randomly shuffle the chemical names
     rng.shuffle(chemicalNames)
     # Randomly choose between minChemicals and maxAmount
-    numChemicals = rng.randint(minChemicals, maxAmount)
+    numChemicals = rng.randint(minChemicals, maxAmount-1)
 
     # Randomly choose the chemicals
     chemicalDict = {}

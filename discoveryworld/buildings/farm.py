@@ -100,9 +100,9 @@ def mkFarm(x, y, world, rng=None):
 
 def mkMushroomAndFlowerFarm(x, y, world):
 
-    COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "k": "black", "w": "white", "o": "orange"}
+    COLORS = {"r": "red", "g": "green", "b": "blue", "y": "yellow", "p": "pink", "w": "white", "o": "orange"}
     layout = [
-        "rbywgok",
+        "rbywgop",
         "xxxxxxx",
         "xxxxxxx",
     ]
@@ -119,7 +119,7 @@ def mkMushroomAndFlowerFarm(x, y, world):
     layout = [
         "xxxxxxx",
         "xxxxxxx",
-        "rbywgok",
+        "rbywgop",
     ]
     coloredFlowers = {c: [] for c in COLORS.values()}
     for i, row in enumerate(layout):

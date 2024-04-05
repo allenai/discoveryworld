@@ -424,7 +424,7 @@ class UserInterface:
         #for spriteName in object.getSpriteNamesWithContents():
         #    self.spriteLibrary.renderSprite(self.window, spriteName, x, y, scale, adjustY=True)
         for spriteDict in object.getSpriteNamesWithContents():
-            self.spriteLibrary.renderSprite(self.window, spriteDict["spriteName"], x, y + spriteDict["yOffset"], scale, adjustY=True)
+            self.spriteLibrary.renderSprite(self.window, spriteDict["spriteName"], x + spriteDict["xOffset"], y + spriteDict["yOffset"], scale, adjustY=True)
 
 
     # Render a box that shows (graphically) a set of objects the agent might select from.
@@ -1040,7 +1040,7 @@ class UserInterface:
         if NUMBERS_TO_CHANGE_ITEMS:
             whichBox = 1
             message = lambda: f"Changed argument box 1 to {self.curSelectedArgument1Obj.name if self.curSelectedArgument1Obj else None}"
-            if keys[pygame.K_LSHIFT]:
+            if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
                 whichBox = 2
                 message = lambda: f"Changed argument box 2 to {self.curSelectedArgument2Obj.name if self.curSelectedArgument2Obj else None}"
 
