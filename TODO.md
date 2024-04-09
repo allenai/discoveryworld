@@ -4,7 +4,6 @@ The goal of a Rosetta Stone game is to discover the meaning of some words in an 
 With that new knowledge, the agent should be able to complete a task given by the elder in that alien language.
 
 
-
 # Tasks:
 #   put  [X] in/on [Y] (where X is an object and Y is receptacle/container),
 #   open [X] with  [Y] (where X is a door/chest and Y is a key),
@@ -72,6 +71,8 @@ We could have a map of the village with the houses number and people names on it
 
 
 # TODO
+- [ ] Use "v" logbook to log the conversation you had so far.
+- [ ] How to keep track of the words learned?
 - [X] When facing up at the top border of the map, we don't see items to be picked up.
 - [X] In the key shop, use pile of keys to display.
 - [X] Remove black items?
@@ -134,8 +135,6 @@ We could have a map of the village with the houses number and people names on it
 - [ ] Create a list of number's name
 - [ ] Create a list of shop's name
 - [ ] Add color wheel and add it somewhere in the village (e.g., in the shop selling paint)
-- [ ] Use "v" logbook to log the conversation you had so far.
-- [ ] How to keep track of the words learned?
 
 
 
@@ -171,3 +170,34 @@ Food and Drink: Names of common food items and drinks, along with actions like e
 Clothing: Various clothing items and accessories.
 Nature: Flora and fauna names, along with verbs related to interaction with nature (like grow, bloom, fly).
 Each concept can be introduced through interactive elements, puzzles, and story-driven content to make the learning process engaging and intuitive.
+
+
+
+
+# How to build a rocket (it's not rocket science...).
+
+### Unknown variables
+- Gravity
+- Air resistance
+- Fuel energy output
+
+### Controllable variables
+- Thrust
+- Fuel source
+- Angle of launch
+
+### Target variables
+- Orbit distance from planet
+- Orbital speed
+
+
+## Small experiments to figure out the unknown variables
+- Drop a ball from different heights to measure gravity.
+  - Or we keep the same constant G but we have to figure out the mass of the planet.
+- Drop a feather and a ball to measure air resistance.
+- Burn different fuels to measure energy output.
+
+## Bigger experiments to figure out the optimal launch parameters to reach orbit
+- Launch a rocket at different angles to measure the optimal angle for orbit.
+- Launch a rocket with different fuel sources to measure the optimal fuel source for orbit.
+- Launch a rocket with different thrust to measure the optimal thrust for orbit.

@@ -374,7 +374,7 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
         taskInstruction = f"[Bring me] [{scoringInfo['countWord']}] [{scoringInfo['color']}] [{scoringInfo['item']}]!"
     elif scoringInfo["learningCount"]:
         taskInstruction = f"[Bring me] [{scoringInfo['countWord']}] [{scoringInfo['item']}]!"
-    else:  # scoringInfo["learningColor"]:
+    elif scoringInfo["learningColor"]:
         taskInstruction = f"[Bring me] [{scoringInfo['color']}] [{scoringInfo['item']}]!"
 
     print(colored("************************", "cyan"))
