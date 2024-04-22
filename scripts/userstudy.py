@@ -227,24 +227,54 @@ def main(args):
                     doNextTurn = True
 
 
-                # Manual "run for 100 cycles"
-                elif (keys[pygame.K_0]):
-                    # Run for 100 cycles
-                    autoRunCycles = 100
-                    print("Setting autorun cycles to 100...")
-                    doNextTurn = True
+                # # Manual "run for 100 cycles"
+                # elif (keys[pygame.K_0]):
+                #     # Run for 100 cycles
+                #     autoRunCycles = 100
+                #     print("Setting autorun cycles to 100...")
+                #     doNextTurn = True
 
-                # Manual "run for 500 cycles"
-                elif (keys[pygame.K_9]):
-                    # Run for 500 cycles
-                    autoRunCycles = 500
-                    print("Setting autorun cycles to 500...")
-                    doNextTurn = True
+                # # Manual "run for 500 cycles"
+                # elif (keys[pygame.K_9]):
+                #     # Run for 500 cycles
+                #     autoRunCycles = 500
+                #     print("Setting autorun cycles to 500...")
+                #     doNextTurn = True
 
                 # Test the text message queue
                 elif (keys[pygame.K_5]):
                     # Test the text message queue
-                    ui.addTextMessageToQueue("This is a test\nThis is an extra long line apple orange banana pineapple fruit flower tree coconut sky water air summer water blue green yellow orange purple this is the end of the second line.\nThis is the second line.")
+
+                    #ui.addTextMessageToQueue("This is a test\nThis is an extra long line apple orange banana pineapple fruit flower tree coconut sky water air summer water blue green yellow orange purple this is the end of the second line.\nThis is the second line.")
+                    tasks = world.taskScorer.tasks
+                    if (len(tasks) <= 0):
+                        ui.addTextMessageToQueue("Task Information:\n\nNo tasks are currently active.\n\nPress SPACE to close this message.")
+                    else:
+                        # Get the first task
+                        task = tasks[0]
+
+                        taskDescription = task.taskDescription
+                        taskScore = int(task.getScoreNormalized() * 100)
+                        isCompleted = task.isCompleted()
+                        isCompletedSuccessfully = task.isCompletedSuccessfully()
+
+                        # If the task description is longer than 80 characters, break it up into multiple lines
+                        # Use a library to do this
+                        #taskDescription = "This is a test of a long task description that will be split into multiple lines. This is a test of a long task description that will be split into multiple lines. This is a test of a long task description that will be split into multiple lines."
+                        import textwrap
+                        taskDescriptionWrapped = textwrap.fill(taskDescription, 80)
+                        taskStr = "Task Description:\n\n"
+                        taskStr += taskDescriptionWrapped + "\n\n"
+                        taskStr += "Task Score: " + str(taskScore) + "%\n"
+                        taskStr += "Task Completed: " + str(isCompleted) + "\n"
+                        taskStr += "Task Completed Successfully: " + str(isCompletedSuccessfully) + "\n\n"
+                        taskStr += "Press SPACE to close this message."
+
+                        # Add the task information to the text message queue
+                        ui.addTextMessageToQueue(taskStr)
+
+
+
 
 
         # Rendering

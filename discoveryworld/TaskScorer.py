@@ -190,7 +190,7 @@ class ScorecardElement():
 class EatMushroomTask(Task):
     # Constructor
     def __init__(self, world, scoringInfo):
-        taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist are sometimes getting sick.  Your task is to figure out why people are getting sick, and to prevent it.  You must demonstrate this by having 10 colonists successfully eat mushrooms without eventually getting sick."
+        taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist are sometimes getting sick.  Your task is to figure out why people are getting sick, and to prevent it.  You must demonstrate this by having 10 colonists successfully eat mushrooms without eventually getting sick. "
         taskDescription += "Since the food causes only mild illness, and getting the colony established is important, the colonists have volunteered to be test subjects.  The Chef in the Cafeteria can help you collect mushrooms, serve mushrooms from the cafeteria pot to the tables, and let the colonists know a meal is ready to eat, when you're ready."
         Task.__init__(self, "EatMushroomTask", taskDescription, world, scoringInfo)
         self.score = 0
@@ -794,7 +794,7 @@ class SoilNutrientTask(Task):
         taskDescription += "Other scientists have narrowed down the nutrient to be one of the following: Potassium, Titanium, Lithium, Thorium, or Barium. "
         taskDescription += "Your task is to figure out which nutrient it is, and what specific amount of the nutrient (low, medium, or high) is required in the soil for the plant to grow. "
         taskDescription += "To support your work, a pilot field was set up with 12 plots of soil, each with a different combination of nutrients.  The pilot field is located to the south west part of the research station. "
-        taskDescription += "The research station is equipped with three test fields, where you can configure the nutrient levels in the field using the nearby soil nutrient controller. Once you configure the nutrients for a field, it can't be changed again."
+        taskDescription += "The research station is equipped with three test fields, where you can configure the nutrient levels in the field using the nearby soil nutrient controller. Once you configure the nutrients for a field, it can't be changed again. "
         taskDescription += "Under the right conditions, the plant tends to grow very quickly, so you should be able to see the results of your work within a few steps. "
         taskDescription += "Inside the storage facility are some tools that may be helpful for you work, including a soil nutrient meter, a jar of seeds, and a shovel. "
         taskDescription += "To plant the seeds, dig a hole in the soil, place a seed in the hole, then put the soil back into the hole.  If the conditions are correct, the plant will grow from the seed. "
@@ -965,7 +965,7 @@ class ReactorTask(Task):
         taskDescription += "Through great effort, a previous research scientist manually stumbled upon the correct frequencies for Crystal 1 and Crystal 2, which are in their respective reactors. "
         taskDescription += "Your task is to use science to figure out the correct frequency for Crystal 3 and Crystal 4, set their reactors to the appropriate frequency, and install the crystals. "
         taskDescription += "Once all four crystals are installed, the reactor will be able to generate a great deal of power. "
-        taskDescription += "To support your task, a number of scientific instruments are available in the lab."
+        taskDescription += "To support your task, a number of scientific instruments are available in the lab. "
 
         Task.__init__(self, "ReactorTask", taskDescription, world, scoringInfo)
         self.score = 0
@@ -1146,7 +1146,7 @@ class RosettaStoneTask(Task):
 
     def __init__(self, world, scoringInfo):
         taskDescription = "You found yourselve venturing into a small village of Planet X where everyone speaks a dialect unknown to you. Some elder is trying to tell you something that seems very important. "
-        taskDescription += "You need to figure out what the older is saying. "
+        taskDescription += "You need to figure out what the older is saying. \n"
         taskDescription += "Some helpful notes: \n"
         taskDescription += "1. Even though you don't understand them, you can still interact with the inhabitants. \n"
         taskDescription += "2. Look for signs to read, you might be able to decipher some words from them. \n"
