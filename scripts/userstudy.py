@@ -273,6 +273,34 @@ def main(args):
                         # Add the task information to the text message queue
                         ui.addTextMessageToQueue(taskStr)
 
+                # Help Screen (question mark/slash key)
+                elif (keys[pygame.K_SLASH]):
+                    # Display the help screen
+                    helpStr = "DiscoveryWorld Help\n\n"
+                    helpStr += "Arrow keys: Move the agent\n"
+                    helpStr += "TAB:   View current task information\n"
+                    helpStr += "SPACE: Pick up object (in Arg 1 slot)\n"
+                    helpStr += "D:     Drop inventory item (in Arg 1 slot)\n"
+                    helpStr += "P:     Put an item (Arg 1) in a specific container (Arg 2)\n"
+                    helpStr += "O/C:   Open/close a container (in Arg 1 slot)\n"
+                    helpStr += "A/S:   Activate/deactive a device (in Arg 1 slot)\n"
+                    helpStr += "T:     Talk to another character (in Arg 1 slot)\n"
+                    helpStr += "E:     Eat an item (in Arg 1 slot)\n"
+                    helpStr += "U:     Use an item (Arg 1), optionally on another item (Arg 2)\n"
+                    helpStr += "Z:     Teleport to a random important location\n"
+                    helpStr += "W:     Wait a step (do nothing)\n"
+                    helpStr += "[ / ]: Cycle through inventory items (Arg 1)\n"
+                    helpStr += "; / \": Cycle through inventory items (Arg 2)\n"
+                    helpStr += "~:     Display this help message\n"
+                    helpStr += "ESC:   Quit the game\n"
+                    helpStr += "\n"
+                    helpStr += "Press SPACE to close this message."
+
+                    # Add the help message to the text message queue
+                    ui.addTextMessageToQueue(helpStr)
+
+
+
 
 
 
