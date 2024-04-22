@@ -242,7 +242,7 @@ def main(args):
                 #     doNextTurn = True
 
                 # Test the text message queue
-                elif (keys[pygame.K_5]):
+                elif (keys[pygame.K_TAB]):
                     # Test the text message queue
 
                     #ui.addTextMessageToQueue("This is a test\nThis is an extra long line apple orange banana pineapple fruit flower tree coconut sky water air summer water blue green yellow orange purple this is the end of the second line.\nThis is the second line.")
