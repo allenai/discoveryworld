@@ -3,3 +3,4 @@ pathfinding
 psutil
 openai
 numpy
+termcolor

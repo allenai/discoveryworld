@@ -107,8 +107,10 @@ class Task():
     # String representing task progress
     def taskProgressStr(self):
         outStr = ""
-        outStr += "Task Progress (" + self.taskName + "):  Score: " + str(self.score) + ", MaxScore: " + str(self.maxScore) + ", Normalized Score: " + str(format(self.getScoreNormalized(), '.2f')) + ", Completed: " + str(self.completed) + ", Completed Successfully: " + str(self.completedSuccessfully)
-        outStr += "\nScorecard:"
+        outStr += "Task Progress (" + self.taskName + "):\n"
+        outStr += "\tTask Description: " + self.taskDescription + "\n"
+        outStr += "\tScore: " + str(self.score) + ", MaxScore: " + str(self.maxScore) + ", Normalized Score: " + str(format(self.getScoreNormalized(), '.2f')) + ", Completed: " + str(self.completed) + ", Completed Successfully: " + str(self.completedSuccessfully) + "\n"
+        outStr += "Scorecard:"
         for element in self.scoreCard:
             #outStr += "\n" + element.name + ": " + str(element.score) + "/" + str(element.maxScore) + ", Completed: " + str(element.completed)
             # As above, but with constant witdh formatting, completed should be 'completed' or 'not completed', and the task description should be there too
