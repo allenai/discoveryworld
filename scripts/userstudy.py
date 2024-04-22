@@ -7,6 +7,7 @@ import random
 import time
 import subprocess
 import psutil
+import textwrap
 from discoveryworld.ActionSuccess import MessageImportance
 from discoveryworld.KnowledgeScorer import Measurement
 from discoveryworld.UserInterface import UserInterface
@@ -134,6 +135,8 @@ def main(args):
     autoRunCycles = 0
     lastMove = time.time()        # Time of last move (in seconds since start of game)
     lastSize = 0
+    taskCompletedMessageShown = False
+
     while running:
         #print("Frame: " + str(frames))
         exportFrame = False
@@ -146,15 +149,37 @@ def main(args):
             if event.type == pygame.QUIT:
                 running = False
 
+        # Check whether the task has been completed -- and if so, show a message
+        tasks = world.taskScorer.tasks
+        if (len(tasks) > 0):
+            task = tasks[0]
+            if (task.isCompleted() == True) and (taskCompletedMessageShown == False):
+                taskCompletedMessageShown = True
+                taskCompletedMessage = "THE GAME HAS COMPLETED.\n"
+                if (task.isCompletedSuccessfully() == True):
+                    taskCompletedMessage += "Congratulations! You have successfully completed the task successfully.\n"
+                else:
+                    taskCompletedMessage += "Unfortunately, the task was not completed successfully.\n"
+                taskCompletedMessage += "\n"
+                taskCompletedMessage += "Task Description:\n"
+                taskCompletedMessage += textwrap.fill(task.taskDescription, 80) + "\n\n"
+
+                taskScore = int(task.getScoreNormalized() * 100)
+                taskCompletedMessage += "Task Score: " + str(taskScore) + "%\n"
+                taskCompletedMessage += "\n"
+                taskCompletedMessage += "Press SPACE to close this message. Press ESC to quit the game."
+
+                ui.addTextMessageToQueue(taskCompletedMessage)
+
+
         # Check for keyboard input
         keys = pygame.key.get_pressed()
 
         # Signify whether the agent has done their move this turn
         doNextTurn = False
-
         if (ui.inModal):
             # Pressing any key will close the modal
-            if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN]):
+            if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN] or keys[pygame.K_ESCAPE]):
                 ui.closeModal()
                 doNextTurn = True
 
@@ -261,7 +286,6 @@ def main(args):
                         # If the task description is longer than 80 characters, break it up into multiple lines
                         # Use a library to do this
                         #taskDescription = "This is a test of a long task description that will be split into multiple lines. This is a test of a long task description that will be split into multiple lines. This is a test of a long task description that will be split into multiple lines."
-                        import textwrap
                         taskDescriptionWrapped = textwrap.fill(taskDescription, 80)
                         taskStr = "Task Description:\n\n"
                         taskStr += taskDescriptionWrapped + "\n\n"
