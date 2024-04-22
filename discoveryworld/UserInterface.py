@@ -218,6 +218,13 @@ class UserInterface:
                 y = self.window.get_height() - 120
                 self.renderTaskProgress(x, y, task)
 
+        # Help text
+        textSurface = self.fontBold.render("Press ? for Help", True, (200, 200, 200))
+        helpX = self.window.get_width() - 150
+        helpY = self.window.get_height() - 20
+        self.window.blit(textSurface, (helpX, helpY))
+
+
         pass
 
     # A JSON version of the user interface
