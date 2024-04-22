@@ -151,6 +151,7 @@ def main(args):
 
         # Check whether the task has been completed -- and if so, show a message
         tasks = world.taskScorer.tasks
+        task = None
         if (len(tasks) > 0):
             task = tasks[0]
             if (task.isCompleted() == True) and (taskCompletedMessageShown == False):
@@ -189,7 +190,11 @@ def main(args):
                 running = False
 
             # Parse any action keys
-            (doTick, success) = ui.parseKeys(keys)
+            doTick = True
+            success = None
+            if (taskCompletedMessageShown == False):
+                # Only parse action keys if the task has not been completed
+                (doTick, success) = ui.parseKeys(keys)
 
             if (success != None):
                 # Export the frame, regardless of whether the action was successful, or whether it was a non-tick (e.g. UI) action
@@ -271,13 +276,10 @@ def main(args):
                     # Test the text message queue
 
                     #ui.addTextMessageToQueue("This is a test\nThis is an extra long line apple orange banana pineapple fruit flower tree coconut sky water air summer water blue green yellow orange purple this is the end of the second line.\nThis is the second line.")
-                    tasks = world.taskScorer.tasks
-                    if (len(tasks) <= 0):
+                    #tasks = world.taskScorer.tasks
+                    if (task is None):
                         ui.addTextMessageToQueue("Task Information:\n\nNo tasks are currently active.\n\nPress SPACE to close this message.")
                     else:
-                        # Get the first task
-                        task = tasks[0]
-
                         taskDescription = task.taskDescription
                         taskScore = int(task.getScoreNormalized() * 100)
                         isCompleted = task.isCompleted()
@@ -343,7 +345,11 @@ def main(args):
         # If the agent has taken their turn, then update the world
         if (doNextTurn) or (autoRunCycles > 0):
             # Update the world
-            world.tick()
+
+            # If the task is completed, then the world will not tick
+            if (task is None) or (task.isCompleted() == False):
+                # Update the world
+                world.tick()
 
             # Report task progress
             print( world.taskScorer.taskProgressStr() )

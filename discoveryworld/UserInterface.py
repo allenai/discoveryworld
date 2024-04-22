@@ -224,6 +224,21 @@ class UserInterface:
         helpY = self.window.get_height() - 20
         self.window.blit(textSurface, (helpX, helpY))
 
+        # If the task has been completed, then display a message
+        if (self.currentAgent != None):
+            task = None
+            if (len(self.currentAgent.world.taskScorer.tasks) > 0):
+                task = self.currentAgent.world.taskScorer.tasks[0]
+            if (task != None and task.isCompleted()):
+                taskCompletedX = self.window.get_width()/2 - 75
+                taskCompletedY = self.window.get_height()/2 + 100
+                pygame.draw.rect(self.window, (100, 100, 100), (taskCompletedX-6, taskCompletedY-5, 175, 50))
+                # Then, render the text
+                textSurface = self.fontBold.render("Task Completed", True, (200, 200, 200))
+                self.window.blit(textSurface, (taskCompletedX, taskCompletedY))
+                textSurface = self.fontBold.render("Press ESC to quit.", True, (200, 200, 200))
+                self.window.blit(textSurface, (taskCompletedX, taskCompletedY+20))
+
 
         pass
 
