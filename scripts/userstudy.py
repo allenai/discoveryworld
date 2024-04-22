@@ -37,8 +37,8 @@ def main(args):
 
     # 32 pixels/tile * 32 tiles = 1024 pixels
 
-    #windowMode = "small"
-    windowMode = "big"
+    windowMode = "small"
+    #windowMode = "big"
 
     # Game parameters
     if windowMode == "small":
@@ -52,6 +52,7 @@ def main(args):
         # Step 2: Define the viewport size (in tiles)
         viewportSizeX = 24
         viewportSizeY = 16
+
     elif windowMode == "big":
         gameParams = {
             "height": 1024,

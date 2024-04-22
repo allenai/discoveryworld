@@ -170,12 +170,12 @@ class UserInterface:
         if (self.curSelectedArgument1Idx >= len(allObjs)):
             self.curSelectedArgument1Idx = len(allObjs) - 1
         self.changeArgumentBox(delta=0, whichBox=1)     # Bound checking/Make sure the references to the selected objects are up to date
-        self.renderObjectSelectionBox(objsInv, objsEnv, self.curSelectedArgument1Idx, offsetX=32, offsetY=-(32*9), labelPrefixStr="Arg 1: ")
+        self.renderObjectSelectionBox(objsInv, objsEnv, self.curSelectedArgument1Idx, offsetX=32, offsetY=-(32*9)+20, labelPrefixStr="Arg 1: ")
         # Render argument 2 box
         if (self.curSelectedArgument2Idx >= len(allObjs)):
             self.curSelectedArgument2Idx = len(allObjs) - 1
         self.changeArgumentBox(delta=0, whichBox=2)     # Bound checking/Make sure the references to the selected objects are up to date
-        self.renderObjectSelectionBox(objsInv, objsEnv, self.curSelectedArgument2Idx, offsetX=32, offsetY=-(32*6), labelPrefixStr="Arg 2: ")
+        self.renderObjectSelectionBox(objsInv, objsEnv, self.curSelectedArgument2Idx, offsetX=32, offsetY=-(32*6)+20, labelPrefixStr="Arg 2: ")
 
 
 
@@ -214,7 +214,7 @@ class UserInterface:
             for idx, task in enumerate(taskList):
                 # x should be 200 from the right
                 # y should start 100 from the bottom
-                x = self.window.get_width() - 250
+                x = self.window.get_width() - 100
                 y = self.window.get_height() - 120
                 self.renderTaskProgress(x, y, task)
 
@@ -355,14 +355,24 @@ class UserInterface:
         else:
             color = (int(255 * (1-taskScore)), int(255 * (taskScore)), 0)
         # Then, draw the background
-        pygame.draw.rect(self.window, color, (x, y, 200, 20))
+        pygame.draw.rect(self.window, color, (x-5, y-5, 55, 50))
 
         # Draw the text
         # First, get the text
-        text = f"{taskName}:{taskScore:6.1%}"
+        #text = f"{taskName}:{taskScore:6.1%}"
+        taskScorePercent = int(round(taskScore * 100, 0))
+        scoreText = f"{taskScorePercent}%"
+        if (taskScorePercent < 1):
+            scoreText = f"  {taskScorePercent}%"
+        elif (taskScorePercent < 10):
+            scoreText = f" {taskScorePercent}%"
+
         # Then, render the text
-        textSurface = self.font.render(text, True, (0, 0, 0))
+        textSurface = self.fontBold.render("Score", True, (0, 0, 0))
         self.window.blit(textSurface, (x, y))
+
+        textSurface = self.fontBold.render(scoreText, True, (0, 0, 0))
+        self.window.blit(textSurface, (x, y+20))
 
 
     def renderTaskProgressJSON(self, task):
