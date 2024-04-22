@@ -136,6 +136,7 @@ def main(args):
     lastMove = time.time()        # Time of last move (in seconds since start of game)
     lastSize = 0
     taskCompletedMessageShown = False
+    confirmingQuit = False
 
     while running:
         #print("Frame: " + str(frames))
@@ -179,15 +180,35 @@ def main(args):
         # Signify whether the agent has done their move this turn
         doNextTurn = False
         if (ui.inModal):
-            # Pressing any key will close the modal
-            if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN] or keys[pygame.K_ESCAPE]):
-                ui.closeModal()
-                doNextTurn = True
+            # # Pressing any key will close the modal
+            # if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN]):
+            #     ui.closeModal()
+            #     doNextTurn = True
+
+            # If a 'quit confirm' modal is open, then pressing 'Y' will quit the game
+            if (confirmingQuit == True):
+                # Quit modal
+                if (keys[pygame.K_y]):
+                    running = False
+                if (keys[pygame.K_n]):
+                    ui.closeModal()
+                    confirmingQuit = False
+                    time.sleep(0.50)     # wait for half a second for the key to be released
+                    # Flush the key buffer
+                    pygame.event.clear()
+
+            else:
+                # General moedel: Pressing SPACE or RETURN will close the modal
+                if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN]):
+                    ui.closeModal()
+                    doNextTurn = True
+
 
         else:
             # Escape -- quits the game
             if (keys[pygame.K_ESCAPE]):
-                running = False
+                ui.addTextMessageToQueue("Are you sure you want to quit the game?\nY - Quit\nN - Continue")
+                confirmingQuit = True
 
             # Parse any action keys
             doTick = True
