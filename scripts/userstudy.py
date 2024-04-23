@@ -232,7 +232,7 @@ def pickScenario(window):
         scenarioName = None
     # Scenario 4: Reactor Lab
     elif (choiceTaskName == "Reactor Lab") and (choiceDifficulty == optionsDifficulty[0]):
-        scenarioName = "lost_in_translation_hard"
+        scenarioName = "reactor_lab"
     elif (choiceTaskName == "Reactor Lab") and (choiceDifficulty == optionsDifficulty[1]):
         scenarioName = None
     # Scenario 5: Lost in Translation
@@ -365,7 +365,10 @@ def main(args):
 
         welcomeStr = "Welcome to DiscoveryWorld!\n\n"
         welcomeStr += "Here is your task description:\n"
-        welcomeStr += textwrap.fill(taskDescription, 80) + "\n\n"
+        for line in taskDescription.split("\n"):
+            welcomeStr += textwrap.fill(line, 80) + "\n"
+        welcomeStr += "\n"
+        #welcomeStr += textwrap.fill(taskDescription, 80) + "\n\n"
 
         welcomeStr += "While playing, press ? for help, and TAB to display this task information again.\n"
         welcomeStr += "Press SPACE to close this message."
@@ -423,7 +426,9 @@ def main(args):
                     taskCompletedMessage += "Unfortunately, the task was not completed successfully.\n"
                 taskCompletedMessage += "\n"
                 taskCompletedMessage += "Task Description:\n"
-                taskCompletedMessage += textwrap.fill(task.taskDescription, 80) + "\n\n"
+                for line in taskDescription.split("\n"):
+                    taskCompletedMessage += textwrap.fill(line, 80) + "\n"
+                taskCompletedMessage += "\n"
 
                 taskScore = int(task.getScoreNormalized() * 100)
                 taskCompletedMessage += "Task Score: " + str(taskScore) + "%\n"
@@ -568,9 +573,11 @@ def main(args):
                         # If the task description is longer than 80 characters, break it up into multiple lines
                         # Use a library to do this
                         #taskDescription = "This is a test of a long task description that will be split into multiple lines. This is a test of a long task description that will be split into multiple lines. This is a test of a long task description that will be split into multiple lines."
-                        taskDescriptionWrapped = textwrap.fill(taskDescription, 80)
                         taskStr = "Task Description:\n\n"
-                        taskStr += taskDescriptionWrapped + "\n\n"
+                        for line in taskDescription.split("\n"):
+                            taskStr += textwrap.fill(line, 80) + "\n"
+                        taskStr += "\n"
+
                         taskStr += "Task Score: " + str(taskScore) + "%\n"
                         taskStr += "Task Completed: " + str(isCompleted) + "\n"
                         taskStr += "Task Completed Successfully: " + str(isCompletedSuccessfully) + "\n\n"
