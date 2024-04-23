@@ -46,28 +46,33 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
         # Clear the event queue
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
+                # Quit the game
+                pygame.quit()
+
+            if (event.type == pygame.KEYDOWN):
                 # Use arrow keys to select options (up/down).  Should move once when key is pressed, then reset when key is released
-                if event.key == pygame.K_UP:
+                if (event.key == pygame.K_UP):
                     if (arrowKeyDown == False):
                         currentOption -= 1
                         if (currentOption < 0):
                             currentOption = len(options) - 1
                         arrowKeyDown = True
-                if event.key == pygame.K_DOWN:
+                if (event.key == pygame.K_DOWN):
                     if (arrowKeyDown == False):
                         currentOption += 1
                         if (currentOption >= len(options)):
                             currentOption = 0
                         arrowKeyDown = True
                 # Pressing RETURN will select the current option
-                if event.key == pygame.K_RETURN:
+                if (event.key == pygame.K_RETURN):
                     running = False
+
+                # Pressing ESC will quit the dialog, returning NONE
+                if (event.key == pygame.K_ESCAPE):
+                    return None
 
             if (event.type == pygame.KEYUP):
                 arrowKeyDown = False
-
 
 
         # Clear screen (optional, depends on design)
@@ -89,6 +94,12 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
             textRect = textMessage.get_rect()
             textRect.center = (window.get_width() // 2, 250)
             window.blit(textMessage, textRect)
+
+        # Also display a message at the bottom to indicate how to select an option
+        textMessage = fontBold.render("Use the arrow keys to scroll between options, and press RETURN to select an option.", True, (200, 200, 200))
+        textRect = textMessage.get_rect()
+        textRect.center = (window.get_width() // 2, window.get_height() - 50)
+        window.blit(textMessage, textRect)
 
         # Display the options
         for i, optionStr in enumerate(options):
@@ -131,7 +142,7 @@ def pickScenario(window):
     font = pygame.font.SysFont("monospace", 15)
     fontBold = pygame.font.SysFont("monospace", 15, bold=True)
 
-    options = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5"]
+    options = ["Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "TODO 1", "TODO 2"]
     result = dialogPickOption(window, options, displayMessage="Select a scenario:")
 
     # Clean up pygame
