@@ -272,10 +272,18 @@ def pickScenario(window):
 # Save log
 def saveLog(world, logInfo, verboseLogFilename, pygameWindow, pygame, lastScreenExportFilename):
     # Save the log file
-
     world.exportWorldHistoryJSON(logInfo, verboseLogFilename, pygameWindow, pygame, lastScreenExportFilename)
-
     print("Log file saved to: " + verboseLogFilename)
+    # Archive the entire log directory
+    archiveFilename = "logs/" + logInfo["verboseLogFilenameNoPathNoExt"] + ".zip"
+    print("Archiving log directory to: " + archiveFilename)
+    import zipfile
+    with zipfile.ZipFile(archiveFilename, 'w') as zipf:
+        for root, dirs, files in os.walk(logInfo["verboseFolder"]):
+            for file in files:
+                zipf.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(logInfo["verboseFolder"], '..')))
+    print("Log directory archived to: " + archiveFilename)
+
 
 
 
@@ -426,7 +434,8 @@ def main(args):
         "dateStarted": time.strftime("%Y-%m-%d %H:%M:%S"),
         # Make a verbose filename for the log
         "verboseFolder": verboseFolder,
-        "verboseLogFilename": verboseLogFilename
+        "verboseLogFilename": verboseLogFilename,
+        "verboseLogFilenameNoPathNoExt": verboseLogFilename.split("/")[-1].replace(".json", "")
     }
 
     # Main rendering loop
