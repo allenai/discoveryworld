@@ -270,7 +270,11 @@ def main(args):
     pygame.font.init()
 
     # Show the screen to pick the scenario
-    pickScenario(window)
+    # If no scenario specified on the command line, then show the scenario picker
+    if (args.scenario == None):
+        scenarioInfo = pickScenario(window)
+        args.scenario = scenarioInfo["scenario"]
+        args.seed = scenarioInfo["seed"]
 
     # Intialize world
     world = World(assetPath=None, filenameSpriteIndex="spriteIndex.json", dataPath=None, filenameObjectData="objects.tsv", filenameMaterialData="materials.tsv", filenameDiscoveryFeed="discoveryFeed.json")
@@ -692,8 +696,8 @@ def main(args):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Play DiscoveryWorld.")
-    parser.add_argument('--scenario', choices=SCENARIOS, default=SCENARIOS[0])
-    parser.add_argument('--seed', type=int, default=20240404)
+    parser.add_argument('--scenario', choices=SCENARIOS, default=None)
+    parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--debug', action="store_true")
 
     args = parser.parse_args()
