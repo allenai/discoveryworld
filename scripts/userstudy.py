@@ -6,6 +6,9 @@ import json
 import time
 import psutil
 import textwrap
+import random
+import math
+
 from os.path import join as pjoin
 
 from discoveryworld.ActionSuccess import MessageImportance
@@ -33,7 +36,7 @@ from discoveryworld.constants import ASSETS_PATH
 
 # from JSONEncoder import CustomJSONEncoder
 
-
+# Helper for showing a dialog box containing a number of options, with the user able to pick one using arrow keys/return.
 def dialogPickOption(window, options:list, displayMessage:str=None):
     # Initialize Pygame fonts
     pygame.font.init()
@@ -81,6 +84,8 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
         # Clear screen (optional, depends on design)
         window.fill((0, 0, 0))
 
+        # Draw a starfield
+        mkStarfield(window)
         # Show DiscoveryWorld Logo at the top
         # For now, just draw this in a large font
 
@@ -136,6 +141,47 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
     return None
 
 
+# Starfield animation
+starfieldNumStars = 100
+starfieldStarCoordinates = []
+starfieldStarVelocities = []
+starfieldStarAngles = []
+
+def mkStarfield(window):
+    # If the starfield has not been initialized, then initialize it
+    if (len(starfieldStarCoordinates) == 0):
+        for i in range(starfieldNumStars):
+            x = random.randint(0, window.get_width())
+            y = random.randint(0, window.get_height())
+            starfieldStarCoordinates.append((x, y))
+            # Velocity, in pixels per update
+            randVelocity = random.uniform(0.1, 0.3)
+            starfieldStarVelocities.append(randVelocity)
+            starfieldStarAngles.append(random.randint(0, 360))
+
+    # Draw the starfield
+    for i in range(starfieldNumStars):
+        x = starfieldStarCoordinates[i][0]
+        y = starfieldStarCoordinates[i][1]
+        # Draw the star
+        pygame.draw.circle(window, (255, 255, 255), (x, y), 1)
+
+        # Move the star
+        angle = starfieldStarAngles[i]
+        velocity = starfieldStarVelocities[i]
+        x += velocity * math.cos(math.radians(angle))
+        y += velocity * math.sin(math.radians(angle))
+
+        # If the star goes off the edge of the screen, respawn it at the center of the screen
+        if (x < 0) or (x > window.get_width()) or (y < 0) or (y > window.get_height()):
+            x = window.get_width() // 2
+            y = window.get_height() // 2
+            angle = random.randint(0, 360)
+
+        starfieldStarCoordinates[i] = (x, y)
+
+
+# Main function for picking a scenario, difficulty, and task variation
 def pickScenario(window):
     # Initialize Pygame fonts
     pygame.font.init()
