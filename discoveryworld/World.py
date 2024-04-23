@@ -3,6 +3,7 @@
 import time
 import zlib
 import pickle
+import json
 from os.path import join as pjoin
 
 import pygame
@@ -14,6 +15,8 @@ from discoveryworld.TaskScorer import *
 from discoveryworld.UUIDGenerator import *
 from discoveryworld.DiscoveryFeed import *
 from discoveryworld.constants import DATA_PATH
+
+from discoveryworld.JSONEncoder import CustomJSONEncoder
 
 # Storage class for the world (including the full environment grid)
 class World:
@@ -387,13 +390,20 @@ class World:
         # Keep track of time
         startTime = time.time()
 
+        # Task scoring
+        taskScores = []
+        for task in self.taskScorer.tasks:
+            taskScores.append(task.taskProgressDict())
+
+
         # First, create a new world history dictionary.
         packed = {
             "step": self.step,
             "sizeX": self.sizeX,
             "sizeY": self.sizeY,
             "grid": [],
-            "discoveryFeed": self.discoveryFeed.toDict()
+            "discoveryFeed": self.discoveryFeed.toDict(),
+            "taskScores": taskScores,
         }
 
         # Clone everything in the grid into this record
@@ -456,6 +466,92 @@ class World:
         f.write(pickle.dumps(self.worldHistory))
         f.close()
         print("Export complete.")
+
+    # Export the world history to JSON
+    def exportWorldHistoryJSON(self, logInfo, filename, pygameWindow, pygame, lastScreenExportFilename):
+        print("Exporting world history to JSON file: " + filename + "...")
+
+        # Break apart into multiple files, each containing a maximum of 100 steps
+        # This is necessary because the JSON file can get very large
+
+        # First, figure out how many "parts" we need to break the history into
+        MAX_STEPS_PER_FILE = 20
+        numParts = int(len(self.worldHistory) / MAX_STEPS_PER_FILE) + 1
+        originalFilename = filename
+        for partIdx in range(numParts):
+            startStep = partIdx * MAX_STEPS_PER_FILE
+            endStep = (partIdx + 1) * MAX_STEPS_PER_FILE
+
+            filenamePart = originalFilename.replace(".json", ".part" + str(partIdx) + "of" + str(numParts) + ".json")
+            print("Exporting part " + str(partIdx) + " of " + str(numParts) + " to file: " + filenamePart + "...")
+
+            # Deep copy logInfo
+            logInfoCopy = logInfo.copy()
+            logInfoCopy["partIdx"] = partIdx
+            logInfoCopy["numParts"] = numParts
+            logInfoCopy["startStep"] = startStep
+            logInfoCopy["endStep"] = endStep
+
+            with open(filenamePart, 'w') as outfile:
+                # First, export the logInfo
+                outfile.write("{\n")
+                outfile.write("\t\"logInfo\": " + json.dumps(logInfoCopy) + ",\n")
+                outfile.write("\t\"worldHistory\": [\n")
+                #json.dump(packed, outfile, indent=4)
+                # Actually must export each step in the world history separately, since it has to be unpacked
+                #for step in range(len(self.worldHistory)):
+                endRange = min(endStep, len(self.worldHistory))
+                for step in range(startStep, endRange):
+                    if (step % 50 == 0):
+                        print("Exporting step " + str(step) + " of " + str(len(self.worldHistory)) + "...")
+                    historyStep = self.getWorldHistoryAtStep(step)
+                    #json.dump(history, outfile, indent=4)
+                    json.dump(historyStep, outfile, indent=4, cls=CustomJSONEncoder)
+
+                    outfile.write("\n")
+                    if (step < endRange - 1):
+                        outfile.write(",\n")
+
+                    # Show a progress indicator on the PyGame window
+                    if (pygameWindow != None) and (pygame != None):
+                        pygameWindow.fill((0, 0, 0))
+                        # Display the last screenshot on the window as a background
+                        if (lastScreenExportFilename != None):
+                            #img = pygame.image.load(lastScreenExportFilename)
+                            #pygameWindow.blit(img, (0, 0))
+                            # As above, but make it faded out
+                            img = pygame.image.load(lastScreenExportFilename)
+                            img.set_alpha(128)
+                            pygameWindow.blit(img, (0, 0))
+
+                        # Blank a rectangle in the middle of the screen
+                        rectWidth = 400
+                        rectHeight = 80
+                        rectX = (pygameWindow.get_width() - rectWidth) / 2
+                        rectY = (pygameWindow.get_height() - rectHeight) / 2
+                        pygame.draw.rect(pygameWindow, (100, 100, 100), (rectX, rectY, rectWidth, rectHeight))
+
+                        font = pygame.font.SysFont("monospace", 15, bold=True)
+                        text1 = font.render("Saving History (this may take a moment...)", True, (200, 200, 200))
+                        text2 = font.render(str(step) + " / " + str(len(self.worldHistory)), True, (200, 200, 200))
+
+                        # Center text in the rectangle
+                        textX = rectX + (rectWidth - text1.get_width()) / 2
+                        textY = rectY + (rectHeight - text1.get_height()) / 2
+                        pygameWindow.blit(text1, (textX, textY - 20))
+                        textX = rectX + (rectWidth - text2.get_width()) / 2
+                        pygameWindow.blit(text2, (textX, textY + 20))
+
+                        pygame.display.flip()
+
+                outfile.write("\t]\n")
+                outfile.write("}\n")
+
+        print("Export complete.")
+
+
+
+
 
 
     #

@@ -269,7 +269,17 @@ def pickScenario(window):
     }
 
 
+# Save log
+def saveLog(world, logInfo, verboseLogFilename, pygameWindow, pygame, lastScreenExportFilename):
+    # Save the log file
 
+    world.exportWorldHistoryJSON(logInfo, verboseLogFilename, pygameWindow, pygame, lastScreenExportFilename)
+
+    print("Log file saved to: " + verboseLogFilename)
+
+
+
+# Main entry point
 def main(args):
     print("Initializing...")
     displayGrid = args.debug
@@ -305,6 +315,7 @@ def main(args):
         viewportSizeY = 32
 
     scale = 1.0
+    lastScreenExportFilename = None
     # if os.environ.get("MARC", False):
     #     scale = 2.0
     #     viewportSizeX //= 2
@@ -393,6 +404,30 @@ def main(args):
     for filename in os.listdir(FRAME_DIR):
         os.remove(FRAME_DIR + "/" + filename)
 
+    # Check that there's a "logs" subdirectory on the current folder
+    if (not os.path.exists("logs")):
+        print("Creating 'logs' directory...")
+        os.mkdir("logs")
+    verboseFolder = "logs/discoveryworld-playlog-" + args.scenario.replace(" ", "_") + ".seed" + str(args.seed) + "." + time.strftime("%Y%m%d_%H%M%S") + "/"
+    if (not os.path.exists(verboseFolder)):
+        os.mkdir(verboseFolder)
+    # Also make a 'frames' directory
+    verboseFramesFolder = verboseFolder + "frames"
+    if (not os.path.exists(verboseFramesFolder)):
+        os.mkdir(verboseFramesFolder)
+
+    # Create a structure that records the log file parameters
+    verboseLogFilename = verboseFolder + "/discoveryworld-playlog-" + args.scenario.replace(" ", "_") + ".seed" + str(args.seed) + "." + time.strftime("%Y%m%d_%H%M%S") + ".log.json"
+    logInfo = {
+        "scenario": args.scenario,
+        "seed": args.seed,
+        "taskDescription": taskDescription,
+        # Add the date and time started
+        "dateStarted": time.strftime("%Y-%m-%d %H:%M:%S"),
+        # Make a verbose filename for the log
+        "verboseFolder": verboseFolder,
+        "verboseLogFilename": verboseLogFilename
+    }
 
     # Main rendering loop
     running = True
@@ -402,10 +437,15 @@ def main(args):
     lastSize = 0
     taskCompletedMessageShown = False
     confirmingQuit = False
-
+    saveNextFrame = False
     while running:
         #print("Frame: " + str(frames))
         exportFrame = False
+
+        # Check for a request to save the frame
+        if (saveNextFrame) and (not ui.inModal):
+            saveLog(world, logInfo, verboseLogFilename, pygameWindow=window, pygame=pygame, lastScreenExportFilename=lastScreenExportFilename)
+            saveNextFrame = False
 
         curTime = time.time()
         clock.tick(gameParams["fps"])
@@ -415,7 +455,7 @@ def main(args):
             if event.type == pygame.QUIT:
                 running = False
 
-        # Check whether the task has been completed -- and if so, show a message
+        # Check whether the task has been completed -- and if so, show a message (AND, export the logfile)
         tasks = world.taskScorer.tasks
         task = None
         if (len(tasks) > 0):
@@ -439,6 +479,10 @@ def main(args):
                 taskCompletedMessage += "Press SPACE to close this message. Press ESC to quit the game."
 
                 ui.addTextMessageToQueue(taskCompletedMessage)
+
+                # Export the logfile
+                saveNextFrame = True
+                #saveLog(world, logInfo, verboseLogFilename, pygameWindow=window, pygame=pygame, lastScreenExportFilename=lastScreenExportFilename)
 
 
         # Check for keyboard input
@@ -657,6 +701,9 @@ def main(args):
             for post in world.discoveryFeed.updatePosts:
                 print(post)
 
+            ## Debug: Export the logfile every 10 steps
+            if (frames % 10 == 0):
+                saveLog(world, logInfo, verboseLogFilename, pygameWindow=window, pygame=pygame, lastScreenExportFilename=lastScreenExportFilename)
 
             # Dump the world history to a JSON file
             # prevStep = world.step - 1
@@ -727,7 +774,6 @@ def main(args):
         # Step 5: Render the user interface
         ui.render()
 
-
         # # Find a usable item at the location the agent is facing
         # facingLocation = currentAgent.getWorldLocationAgentIsFacing()
         # # Bound checking
@@ -742,9 +788,11 @@ def main(args):
 
         # Save the screen frame to a file
         if (exportFrame):
+            FRAME_DIR = verboseFolder + "frames/"
             frameFilename = FRAME_DIR + "/frame_" + str(frames) + ".png"
             pygame.image.save(window, frameFilename)
-            time.sleep(0.10)
+            time.sleep(0.1)
+            lastScreenExportFilename = frameFilename
 
         # Display the sprite
         #world.spriteLibrary.renderSprite(window, "house1_wall1", 100, 100)

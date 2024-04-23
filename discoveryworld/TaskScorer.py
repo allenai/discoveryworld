@@ -134,6 +134,7 @@ class Task():
         outDict["taskDescription"] = self.taskDescription
         outDict["score"] = self.score
         outDict["maxScore"] = self.maxScore
+        outDict["scoreNormalized"] = self.getScoreNormalized()
         outDict["completed"] = self.completed
         outDict["completedSuccessfully"] = self.completedSuccessfully
         outDict["scoreCard"] = self.getScorecard()
