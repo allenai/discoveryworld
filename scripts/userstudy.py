@@ -308,6 +308,22 @@ def main(args):
     ui.setAgent(currentAgent)
 
 
+    # Set the initial task message for the user
+    if (len(world.taskScorer.tasks) > 0):
+        task = world.taskScorer.tasks[0]
+        taskDescription = task.taskDescription
+
+        welcomeStr = "Welcome to DiscoveryWorld!\n\n"
+        welcomeStr += "Here is your task description:\n"
+        welcomeStr += textwrap.fill(taskDescription, 80) + "\n\n"
+
+        welcomeStr += "While playing, press ? for help, and TAB to display this task information again.\n"
+        welcomeStr += "Press SPACE to close this message."
+
+        # Add the task information to the text message queue
+        ui.addTextMessageToQueue(welcomeStr)
+
+
     # Create a directory "/video" for storing video frames
     VIDEO_DIR = "video"
     FRAME_DIR = "video/frames"
@@ -318,6 +334,8 @@ def main(args):
     # Empty the frames directory
     for filename in os.listdir(FRAME_DIR):
         os.remove(FRAME_DIR + "/" + filename)
+
+
 
 
     # Main rendering loop
