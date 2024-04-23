@@ -580,7 +580,7 @@ def main(args):
                         ui.addTextMessageToQueue(taskStr)
 
                 # Help Screen (question mark/slash key)
-                elif (keys[pygame.K_SLASH]) or (keys[pygame.K_QUESTION]):
+                elif (keys[pygame.K_SLASH]) or (keys[pygame.K_QUESTION]) or keys[233]:
                     # Display the help screen
                     helpStr = "DiscoveryWorld Help\n\n"
                     helpStr += "Arrow keys: Move the agent\n"
@@ -609,12 +609,7 @@ def main(args):
 
                     # Add the help message to the text message queue
                     ui.addTextMessageToQueue(helpStr)
-
-
-
-
-
-
+                    doNextTurn = False
 
         # Rendering
 
@@ -671,12 +666,12 @@ def main(args):
 
             knowledgeScorer = currentAgent.knowledgeScorer
             # Create a measurement
-    #         jsonStr = """
-    # {
-    #     "object": {"objectUUID": 1234, "scope":[{"propertyName":"color", "propertyOperator":"equals", "propertyValue":"red"}, {"propertyName":"size", "propertyOperator":"less_than", "propertyValue":5}]},
-    #     "property": {"propertyName":"color", "propertyOperator":"equals", "propertyValue":"blue"}
-    # }
-    #     """
+            #         jsonStr = """
+            # {
+            #     "object": {"objectUUID": 1234, "scope":[{"propertyName":"color", "propertyOperator":"equals", "propertyValue":"red"}, {"propertyName":"size", "propertyOperator":"less_than", "propertyValue":5}]},
+            #     "property": {"propertyName":"color", "propertyOperator":"equals", "propertyValue":"blue"}
+            # }
+            #     """
             jsonStr = """
     {
         "object": {"objectType": "mushroom", "scope":[]},
