@@ -438,6 +438,7 @@ def main(args):
     taskCompletedMessageShown = False
     confirmingQuit = False
     saveNextFrame = False
+    saveSuccessful = False
     while running:
         #print("Frame: " + str(frames))
         exportFrame = False
@@ -446,6 +447,7 @@ def main(args):
         if (saveNextFrame) and (not ui.inModal):
             saveLog(world, logInfo, verboseLogFilename, pygameWindow=window, pygame=pygame, lastScreenExportFilename=lastScreenExportFilename)
             saveNextFrame = False
+            saveSuccessful = True
 
         curTime = time.time()
         clock.tick(gameParams["fps"])
@@ -809,10 +811,10 @@ def main(args):
     # Call FFMPEG (forces overwrite)
     #subprocess.call(["ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
 
+    if (saveSuccessful == False):
+        # Save the data, because the game is exiting but the data hasn't been saved yet (i.e. from having completed the task, which triggers a save)
+        saveLog(world, logInfo, verboseLogFilename, pygameWindow=window, pygame=pygame, lastScreenExportFilename=lastScreenExportFilename)
 
-    # Print the action history of the farmer agent
-    #print("Farmer agent action history:")
-    #print(npcFarmer.actionHistory)
 
 if __name__ == "__main__":
 
