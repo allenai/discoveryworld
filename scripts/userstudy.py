@@ -8,6 +8,7 @@ import psutil
 import textwrap
 import random
 import math
+import sys
 
 from os.path import join as pjoin
 
@@ -51,9 +52,8 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
         # Clear the event queue
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                # Go back to previous menu.
-                # pygame.quit()
-                return
+                pygame.quit()
+                sys.exit(0)
 
             if (event.type == pygame.KEYDOWN):
                 # Use arrow keys to select options (up/down).  Should move once when key is pressed, then reset when key is released
@@ -348,22 +348,20 @@ def main(args):
     smSuccess, smErrorStr = scenarioMaker.setupScenario(args.scenario)
     if (not smSuccess):
         print("ERROR: ScenarioMaker failed to setup scenario: " + smErrorStr)
-        exit(1)
+        sys.exit(1)
 
     # Initial world tick
     world.tick()
-
 
     # Find a user agent
     userAgents = world.getUserAgents()
     if (len(userAgents) == 0):
         print("ERROR: No user agents found!")
-        exit(1)
+        sys.exit(1)
     currentAgent = userAgents[0]
 
     # Attach the user interface to the agent
     ui.setAgent(currentAgent)
-
 
     # Set the initial task message for the user
     if (len(world.taskScorer.tasks) > 0):
