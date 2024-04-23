@@ -8,6 +8,7 @@ import psutil
 import textwrap
 import random
 import math
+import sys
 
 from os.path import join as pjoin
 
@@ -51,9 +52,8 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
         # Clear the event queue
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                # Quit the game
                 pygame.quit()
-                exit(0)
+                sys.exit(0)
 
             if (event.type == pygame.KEYDOWN):
                 # Use arrow keys to select options (up/down).  Should move once when key is pressed, then reset when key is released
@@ -183,35 +183,39 @@ def mkStarfield(window):
 
 # Main function for picking a scenario, difficulty, and task variation
 def pickScenario(window):
-    # Initialize Pygame fonts
-    pygame.font.init()
-    font = pygame.font.SysFont("monospace", 15)
-    fontBold = pygame.font.SysFont("monospace", 15, bold=True)
+    stage = "scenario"
+    while stage != "done":
+        # Choice 1: Select a scenario
+        if stage == "scenario":
+            optionsTaskName = ["Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "TODO 1", "TODO 2"]
+            choiceTaskName = dialogPickOption(window, optionsTaskName, displayMessage="Select a scenario:")
+            if choiceTaskName is None:
+                print("User quit the game.")
+                pygame.quit()
+                return
 
-    # Choice 1: Select a scenario
-    optionsTaskName = ["Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "TODO 1", "TODO 2"]
-    choiceTaskName = dialogPickOption(window, optionsTaskName, displayMessage="Select a scenario:")
-    if (choiceTaskName == None):
-        print("User quit the game.")
-        pygame.quit()
-        exit(0)
+            stage = "difficulty"
 
-    # Choice 2: Select a difficulty
-    optionsDifficulty = ["Easy", "Challenge"]
-    choiceDifficulty = dialogPickOption(window, optionsDifficulty, displayMessage="Select a difficulty:")
-    if (choiceDifficulty == None):
-        print("User quit the game.")
-        pygame.quit()
-        exit(0)
+        # Choice 2: Select a difficulty
+        if stage == "difficulty":
+            optionsDifficulty = ["Easy", "Challenge"]
+            choiceDifficulty = dialogPickOption(window, optionsDifficulty, displayMessage="Select a difficulty:")
+            if choiceDifficulty is None:
+                stage = "scenario"
+                continue  # Go back to the scenario selection
 
-    # Choice 3: Select a task variation
-    optionsVariation = ["1", "2", "3", "4", "5"]
-    choiceVariation = dialogPickOption(window, optionsVariation, displayMessage="Select a task variation:")
-    if (choiceVariation == None):
-        print("User quit the game.")
-        pygame.quit()
-        exit(0)
+            stage = "variation"
 
+        # Choice 3: Select a task variation
+        if stage == "variation":
+            optionsVariation = ["1", "2", "3", "4", "5"]
+            choiceVariation = dialogPickOption(window, optionsVariation, displayMessage="Select a task variation:")
+            if choiceVariation is None:
+                stage = "difficulty"
+                continue  # Go back to the difficulty selection
+
+            # If we reach this point, then we have selected a scenario, difficulty, and task variation
+            stage = "done"
 
     # Map between the choice and the scenario name
     scenarioName = None
@@ -321,8 +325,11 @@ def main(args):
 
     # Show the screen to pick the scenario
     # If no scenario specified on the command line, then show the scenario picker
-    if (args.scenario == None):
+    if args.scenario is None:
         scenarioInfo = pickScenario(window)
+        if scenarioInfo is None:
+            return
+
         args.scenario = scenarioInfo["scenario"]
         args.seed = scenarioInfo["seed"]
 
@@ -341,22 +348,20 @@ def main(args):
     smSuccess, smErrorStr = scenarioMaker.setupScenario(args.scenario)
     if (not smSuccess):
         print("ERROR: ScenarioMaker failed to setup scenario: " + smErrorStr)
-        exit(1)
+        sys.exit(1)
 
     # Initial world tick
     world.tick()
-
 
     # Find a user agent
     userAgents = world.getUserAgents()
     if (len(userAgents) == 0):
         print("ERROR: No user agents found!")
-        exit(1)
+        sys.exit(1)
     currentAgent = userAgents[0]
 
     # Attach the user interface to the agent
     ui.setAgent(currentAgent)
-
 
     # Set the initial task message for the user
     if (len(world.taskScorer.tasks) > 0):
@@ -387,8 +392,6 @@ def main(args):
     # Empty the frames directory
     for filename in os.listdir(FRAME_DIR):
         os.remove(FRAME_DIR + "/" + filename)
-
-
 
 
     # Main rendering loop
