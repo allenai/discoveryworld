@@ -50,6 +50,7 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
             if event.type == pygame.QUIT:
                 # Quit the game
                 pygame.quit()
+                exit(0)
 
             if (event.type == pygame.KEYDOWN):
                 # Use arrow keys to select options (up/down).  Should move once when key is pressed, then reset when key is released
@@ -147,6 +148,7 @@ def pickScenario(window):
     if (choiceTaskName == None):
         print("User quit the game.")
         pygame.quit()
+        exit(0)
 
     # Choice 2: Select a difficulty
     optionsDifficulty = ["Easy", "Challenge"]
@@ -154,6 +156,7 @@ def pickScenario(window):
     if (choiceDifficulty == None):
         print("User quit the game.")
         pygame.quit()
+        exit(0)
 
     # Choice 3: Select a task variation
     optionsVariation = ["1", "2", "3", "4", "5"]
@@ -161,6 +164,7 @@ def pickScenario(window):
     if (choiceVariation == None):
         print("User quit the game.")
         pygame.quit()
+        exit(0)
 
 
     # Map between the choice and the scenario name
