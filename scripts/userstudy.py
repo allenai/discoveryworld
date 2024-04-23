@@ -51,8 +51,8 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
         # Clear the event queue
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                # Quit the game
-                pygame.quit()
+                # Go back to previous menu.
+                # pygame.quit()
                 return
 
             if (event.type == pygame.KEYDOWN):
@@ -183,35 +183,39 @@ def mkStarfield(window):
 
 # Main function for picking a scenario, difficulty, and task variation
 def pickScenario(window):
-    # Initialize Pygame fonts
-    pygame.font.init()
-    font = pygame.font.SysFont("monospace", 15)
-    fontBold = pygame.font.SysFont("monospace", 15, bold=True)
+    stage = "scenario"
+    while stage != "done":
+        # Choice 1: Select a scenario
+        if stage == "scenario":
+            optionsTaskName = ["Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "TODO 1", "TODO 2"]
+            choiceTaskName = dialogPickOption(window, optionsTaskName, displayMessage="Select a scenario:")
+            if choiceTaskName is None:
+                print("User quit the game.")
+                pygame.quit()
+                return
 
-    # Choice 1: Select a scenario
-    optionsTaskName = ["Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "TODO 1", "TODO 2"]
-    choiceTaskName = dialogPickOption(window, optionsTaskName, displayMessage="Select a scenario:")
-    if (choiceTaskName == None):
-        print("User quit the game.")
-        pygame.quit()
-        return
+            stage = "difficulty"
 
-    # Choice 2: Select a difficulty
-    optionsDifficulty = ["Easy", "Challenge"]
-    choiceDifficulty = dialogPickOption(window, optionsDifficulty, displayMessage="Select a difficulty:")
-    if (choiceDifficulty == None):
-        print("User quit the game.")
-        pygame.quit()
-        return
+        # Choice 2: Select a difficulty
+        if stage == "difficulty":
+            optionsDifficulty = ["Easy", "Challenge"]
+            choiceDifficulty = dialogPickOption(window, optionsDifficulty, displayMessage="Select a difficulty:")
+            if choiceDifficulty is None:
+                stage = "scenario"
+                continue  # Go back to the scenario selection
 
-    # Choice 3: Select a task variation
-    optionsVariation = ["1", "2", "3", "4", "5"]
-    choiceVariation = dialogPickOption(window, optionsVariation, displayMessage="Select a task variation:")
-    if (choiceVariation == None):
-        print("User quit the game.")
-        pygame.quit()
-        return
+            stage = "variation"
 
+        # Choice 3: Select a task variation
+        if stage == "variation":
+            optionsVariation = ["1", "2", "3", "4", "5"]
+            choiceVariation = dialogPickOption(window, optionsVariation, displayMessage="Select a task variation:")
+            if choiceVariation is None:
+                stage = "difficulty"
+                continue  # Go back to the difficulty selection
+
+            # If we reach this point, then we have selected a scenario, difficulty, and task variation
+            stage = "done"
 
     # Map between the choice and the scenario name
     scenarioName = None
@@ -387,8 +391,6 @@ def main(args):
     # Empty the frames directory
     for filename in os.listdir(FRAME_DIR):
         os.remove(FRAME_DIR + "/" + filename)
-
-
 
 
     # Main rendering loop
