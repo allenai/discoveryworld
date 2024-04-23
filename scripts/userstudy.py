@@ -67,7 +67,7 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
                         arrowKeyDown = True
                 # Pressing RETURN will select the current option
                 if (event.key == pygame.K_RETURN):
-                    running = False
+                    return options[currentOption]
 
                 # Pressing ESC will quit the dialog, returning NONE
                 if (event.key == pygame.K_ESCAPE):
@@ -132,10 +132,7 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
         # Update the display
         pygame.display.flip()
 
-    # Clean up pygame
-    #pygame.quit()
-
-    pass
+    return None
 
 
 def pickScenario(window):
@@ -144,8 +141,28 @@ def pickScenario(window):
     font = pygame.font.SysFont("monospace", 15)
     fontBold = pygame.font.SysFont("monospace", 15, bold=True)
 
+    # Choice 1: Select a scenario
     options = ["Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "TODO 1", "TODO 2"]
-    result = dialogPickOption(window, options, displayMessage="Select a scenario:")
+    choiceTaskName = dialogPickOption(window, options, displayMessage="Select a scenario:")
+    if (choiceTaskName == None):
+        print("User quit the game.")
+        pygame.quit()
+
+    # Choice 2: Select a difficulty
+    options = ["Easy", "Challenge"]
+    choiceDifficulty = dialogPickOption(window, options, displayMessage="Select a difficulty:")
+    if (choiceDifficulty == None):
+        print("User quit the game.")
+        pygame.quit()
+
+    # Choice 3: Select a task variation
+    options = ["1", "2", "3", "4", "5"]
+    choiceVariation = dialogPickOption(window, options, displayMessage="Select a task variation:")
+    if (choiceVariation == None):
+        print("User quit the game.")
+        pygame.quit()
+
+
 
     # Clean up pygame
     #pygame.quit()
