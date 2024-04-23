@@ -142,34 +142,78 @@ def pickScenario(window):
     fontBold = pygame.font.SysFont("monospace", 15, bold=True)
 
     # Choice 1: Select a scenario
-    options = ["Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "TODO 1", "TODO 2"]
-    choiceTaskName = dialogPickOption(window, options, displayMessage="Select a scenario:")
+    optionsTaskName = ["Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "TODO 1", "TODO 2"]
+    choiceTaskName = dialogPickOption(window, optionsTaskName, displayMessage="Select a scenario:")
     if (choiceTaskName == None):
         print("User quit the game.")
         pygame.quit()
 
     # Choice 2: Select a difficulty
-    options = ["Easy", "Challenge"]
-    choiceDifficulty = dialogPickOption(window, options, displayMessage="Select a difficulty:")
+    optionsDifficulty = ["Easy", "Challenge"]
+    choiceDifficulty = dialogPickOption(window, optionsDifficulty, displayMessage="Select a difficulty:")
     if (choiceDifficulty == None):
         print("User quit the game.")
         pygame.quit()
 
     # Choice 3: Select a task variation
-    options = ["1", "2", "3", "4", "5"]
-    choiceVariation = dialogPickOption(window, options, displayMessage="Select a task variation:")
+    optionsVariation = ["1", "2", "3", "4", "5"]
+    choiceVariation = dialogPickOption(window, optionsVariation, displayMessage="Select a task variation:")
     if (choiceVariation == None):
         print("User quit the game.")
         pygame.quit()
 
 
+    # Map between the choice and the scenario name
+    scenarioName = None
+    # Scenario 1: Combinatorial Chemistry
+    if (choiceTaskName == "Combinatorial Chemistry") and (choiceDifficulty == optionsDifficulty[0]):
+        scenarioName = "combinatorial_chemistry"
+    elif (choiceTaskName == "Combinatorial Chemistry") and (choiceDifficulty == optionsDifficulty[1]):
+        scenarioName = None
+    # Scenario 2: Archaeology Dating
+    elif (choiceTaskName == "Archaeology Dating") and (choiceDifficulty == optionsDifficulty[0]):
+        scenarioName = "archaeology_dating_simple"
+    elif (choiceTaskName == "Archaeology Dating") and (choiceDifficulty == optionsDifficulty[1]):
+        scenarioName = "archaeology_dating_simple"
+    # Scenario 3: Plant Nutrients
+    elif (choiceTaskName == "Plant Nutrients") and (choiceDifficulty == optionsDifficulty[0]):
+        scenarioName = "plant_nutrients"
+    elif (choiceTaskName == "Plant Nutrients") and (choiceDifficulty == optionsDifficulty[1]):
+        scenarioName = None
+    # Scenario 4: Reactor Lab
+    elif (choiceTaskName == "Reactor Lab") and (choiceDifficulty == optionsDifficulty[0]):
+        scenarioName = "lost_in_translation_hard"
+    elif (choiceTaskName == "Reactor Lab") and (choiceDifficulty == optionsDifficulty[1]):
+        scenarioName = None
+    # Scenario 5: Lost in Translation
+    elif (choiceTaskName == "Lost in Translation") and (choiceDifficulty == optionsDifficulty[0]):
+        scenarioName = "lost_in_translation_easy"
+    elif (choiceTaskName == "Lost in Translation") and (choiceDifficulty == optionsDifficulty[1]):
+        scenarioName = "lost_in_translation_hard"
+    # Scenario 6: Space Sick
+    elif (choiceTaskName == "Space Sick") and (choiceDifficulty == optionsDifficulty[0]):
+        scenarioName = "food_illness"
+    elif (choiceTaskName == "Space Sick") and (choiceDifficulty == optionsDifficulty[1]):
+        scenarioName = None
+    # Scenario 7: TODO 1
+    elif (choiceTaskName == "TODO 1") and (choiceDifficulty == optionsDifficulty[0]):
+        scenarioName = None
+    elif (choiceTaskName == "TODO 1") and (choiceDifficulty == optionsDifficulty[1]):
+        scenarioName = None
+    # Scenario 8: TODO 2
+    elif (choiceTaskName == "TODO 2") and (choiceDifficulty == optionsDifficulty[0]):
+        scenarioName = None
+    elif (choiceTaskName == "TODO 2") and (choiceDifficulty == optionsDifficulty[1]):
+        scenarioName = None
 
-    # Clean up pygame
-    #pygame.quit()
+    # Map between variation and random seed
+    seed = int(choiceVariation)-1
 
+    return {
+        "scenario": scenarioName,
+        "seed": seed
+    }
 
-
-    pass
 
 
 def main(args):
