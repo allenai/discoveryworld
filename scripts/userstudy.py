@@ -3,17 +3,19 @@ import argparse
 import pygame
 import os
 import json
-import random
 import time
-import subprocess
 import psutil
 import textwrap
+from os.path import join as pjoin
+
 from discoveryworld.ActionSuccess import MessageImportance
 from discoveryworld.KnowledgeScorer import Measurement
 from discoveryworld.UserInterface import UserInterface
 from discoveryworld.ScenarioMaker import ScenarioMaker, SCENARIOS
 
 from discoveryworld.World import World
+from discoveryworld.constants import ASSETS_PATH
+
 
 # Sprite library
 # import SpriteLibrary
@@ -83,7 +85,7 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
 
         # Display the DiscoveryWorld logo
         # Load the logo image
-        logoImage = pygame.image.load("assets/logo/logo.png")
+        logoImage = pygame.image.load(pjoin(ASSETS_PATH, "logo", "logo.png"))
         logoRect = logoImage.get_rect()
         logoRect.center = (window.get_width() // 2, 120)
         window.blit(logoImage, logoRect)
