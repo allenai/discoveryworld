@@ -703,7 +703,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print("Starting DiscoveryWorld...")
-    print("Scenario: " + args.scenario)
+    print("Scenario: " + str(args.scenario))
     print("Seed: " + str(args.seed))
 
     main(args)
