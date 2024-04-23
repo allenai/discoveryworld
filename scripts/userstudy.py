@@ -32,6 +32,116 @@ from discoveryworld.World import World
 # from JSONEncoder import CustomJSONEncoder
 
 
+def dialogPickOption(window, options:list, displayMessage:str=None):
+    # Initialize Pygame fonts
+    pygame.font.init()
+    font = pygame.font.SysFont("monospace", 15)
+    fontBold = pygame.font.SysFont("monospace", 15, bold=True)
+
+    # Main loop
+    running = True
+    currentOption = 0
+    arrowKeyDown = False
+    while running:
+        # Clear the event queue
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                # Use arrow keys to select options (up/down).  Should move once when key is pressed, then reset when key is released
+                if event.key == pygame.K_UP:
+                    if (arrowKeyDown == False):
+                        currentOption -= 1
+                        if (currentOption < 0):
+                            currentOption = len(options) - 1
+                        arrowKeyDown = True
+                if event.key == pygame.K_DOWN:
+                    if (arrowKeyDown == False):
+                        currentOption += 1
+                        if (currentOption >= len(options)):
+                            currentOption = 0
+                        arrowKeyDown = True
+                # Pressing RETURN will select the current option
+                if event.key == pygame.K_RETURN:
+                    running = False
+
+            if (event.type == pygame.KEYUP):
+                arrowKeyDown = False
+
+
+
+        # Clear screen (optional, depends on design)
+        window.fill((0, 0, 0))
+
+        # Show DiscoveryWorld Logo at the top
+        # For now, just draw this in a large font
+
+        # Display the DiscoveryWorld logo
+        # Load the logo image
+        logoImage = pygame.image.load("assets/logo/logo.png")
+        logoRect = logoImage.get_rect()
+        logoRect.center = (window.get_width() // 2, 120)
+        window.blit(logoImage, logoRect)
+
+        # Display text message, centered, at 150 pixels down from the top of the screen
+        if (displayMessage != None):
+            textMessage = fontBold.render(displayMessage, True, (200, 200, 200))
+            textRect = textMessage.get_rect()
+            textRect.center = (window.get_width() // 2, 250)
+            window.blit(textMessage, textRect)
+
+        # Display the options
+        for i, optionStr in enumerate(options):
+            # Background -- grey if not current option, blue if current option
+            # All options should be centered
+
+            textOption = fontBold.render(optionStr, True, (200, 200, 200))
+            textRect = textOption.get_rect()
+            textRect.center = (window.get_width() // 2, 300 + (i * 40))
+
+            # Draw the background rectangle
+            # This should be a new rectangle, that's at least 300 pixels wide, and centered on the same center
+            backgroundRect = pygame.Rect(textRect.left - 5, textRect.top - 5, textRect.width + 10, textRect.height + 10)
+            # Make at least 300 pixels wide
+            if (backgroundRect.width < 300):
+                backgroundRect.width = 300
+                backgroundRect.left = textRect.center[0] - 150
+
+            if (i == currentOption):
+                pygame.draw.rect(window, (0, 0, 200), (backgroundRect.left - 5, backgroundRect.top - 5, backgroundRect.width + 10, backgroundRect.height + 10))
+            else:
+                pygame.draw.rect(window, (100, 100, 100), (backgroundRect.left - 5, backgroundRect.top - 5, backgroundRect.width + 10, backgroundRect.height + 10))
+
+            # Draw the background text, centered
+            window.blit(textOption, textRect)
+
+
+        # Update the display
+        pygame.display.flip()
+
+    # Clean up pygame
+    #pygame.quit()
+
+    pass
+
+
+def pickScenario(window):
+    # Initialize Pygame fonts
+    pygame.font.init()
+    font = pygame.font.SysFont("monospace", 15)
+    fontBold = pygame.font.SysFont("monospace", 15, bold=True)
+
+    options = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5"]
+    result = dialogPickOption(window, options, displayMessage="Select a scenario:")
+
+    # Clean up pygame
+    #pygame.quit()
+
+
+
+    pass
+
+
 def main(args):
     print("Initializing...")
     displayGrid = args.debug
@@ -84,6 +194,9 @@ def main(args):
 
     # Initialize font renderer
     pygame.font.init()
+
+    # Show the screen to pick the scenario
+    pickScenario(window)
 
     # Intialize world
     world = World(assetPath=None, filenameSpriteIndex="spriteIndex.json", dataPath=None, filenameObjectData="objects.tsv", filenameMaterialData="materials.tsv", filenameDiscoveryFeed="discoveryFeed.json")
@@ -321,7 +434,7 @@ def main(args):
                         ui.addTextMessageToQueue(taskStr)
 
                 # Help Screen (question mark/slash key)
-                elif (keys[pygame.K_SLASH]):
+                elif (keys[pygame.K_SLASH]) or (keys[pygame.K_QUESTION]):
                     # Display the help screen
                     helpStr = "DiscoveryWorld Help\n\n"
                     helpStr += "Arrow keys: Move the agent\n"
