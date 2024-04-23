@@ -704,8 +704,8 @@ def main(args):
                 print(post)
 
             ## Debug: Export the logfile every 10 steps
-            if (frames % 10 == 0):
-                saveLog(world, logInfo, verboseLogFilename, pygameWindow=window, pygame=pygame, lastScreenExportFilename=lastScreenExportFilename)
+            #if (frames % 10 == 0):
+            #    saveLog(world, logInfo, verboseLogFilename, pygameWindow=window, pygame=pygame, lastScreenExportFilename=lastScreenExportFilename)
 
             # Dump the world history to a JSON file
             # prevStep = world.step - 1

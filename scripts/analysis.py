@@ -5,8 +5,9 @@ import os
 
 
 # Load all the JSON files from a given path
-def loadData(path:str):
+def loadDataJSON(path:str):
     filterPrefix = "discoveryworld-playlog"
+
     jsonFiles = [pos_json for pos_json in os.listdir(path) if pos_json.endswith('.json')]
     # Filter out the files that don't start with the prefix
     jsonFiles = [file for file in jsonFiles if file.startswith(filterPrefix)]
@@ -36,6 +37,60 @@ def loadData(path:str):
             worldHistory.extend(loadedHistory)
 
     return worldHistory
+
+
+# Load all the JSON files from a given path
+def loadDataZIPPED(path:str):
+    filterPrefix = "discoveryworld-playlog"
+
+
+    jsonFiles = [pos_json for pos_json in os.listdir(path) if pos_json.endswith('.zip')]
+    # Filter out the files that don't start with the prefix
+    jsonFiles = [file for file in jsonFiles if file.startswith(filterPrefix)]
+
+    # The files will be of the form "<filename>.partXofY.json" -- Try to parse out the number of parts
+    # and sort the files accordingly
+    jsonFiles.sort()
+    numParts = 0
+    if len(jsonFiles) > 0:
+        numParts = int(jsonFiles[-1].split(".part")[1].split("of")[1].split(".zip")[0])
+
+    print("Number of parts: " + str(numParts))
+
+    # Get the part of the filename before the ".partXofY.json" part
+    filePrefix = jsonFiles[0].split(".part")[0]
+
+    # Load each file, one by one
+    worldHistory = []
+    for i in range(numParts):
+        filenameZIP = filePrefix + ".part" + str(i) + "of" + str(numParts) + ".zip"
+        filenameJSON = filePrefix + ".part" + str(i) + "of" + str(numParts) + ".json"
+        print("Loading file: " + filenameZIP)
+
+        #with open(path + "/" + filename) as f:
+        # Note: This is a zip file, so we need to extract the file f
+        import zipfile
+        with zipfile.ZipFile(path + "/" + filenameZIP, 'r') as zip_ref:
+            zip_ref.extractall(path)
+            # Keep track of the extracted files, to delete later
+            print("Extracted files: " + str(zip_ref.namelist()))
+            extractedFiles = zip_ref.namelist()
+
+        with open(path + "/" + filenameJSON) as f:
+            data = json.load(f)
+            # Extract just the world history part
+            loadedHistory = data["worldHistory"]
+            # Add this part to the world history
+            worldHistory.extend(loadedHistory)
+
+        # Delete the extracted files
+        for extractedFile in extractedFiles:
+            print("Removing extracted file: " + extractedFile)
+            os.remove(path + "/" + extractedFile)
+
+    return worldHistory
+
+
 
 
 def getAgents(step):
@@ -95,12 +150,14 @@ def summaryStatistics(worldHistory):
 #   Main
 #
 if __name__ == "__main__":
-    dataPath = "logs/discoveryworld-playlog-archaeology_dating_simple.seed0.20240423_152952"
-    statistics = loadData(dataPath)
+    #dataPath = "logs/discoveryworld-playlog-archaeology_dating_simple.seed0.20240423_152952"
+    dataPath = "logs/discoveryworld-playlog-archaeology_dating_simple.seed0.20240423_160045"
+    #data = loadDataJSON(dataPath)   # Folder of JSON files
+    data = loadDataZIPPED(dataPath) # Folder of ZIP files
 
     # Print the summary statistics
     print("Summary statistics:")
-    summaryStats = summaryStatistics(statistics)
+    summaryStats = summaryStatistics(data)
     print(json.dumps(summaryStats, indent=4))
 
     print("Done.")

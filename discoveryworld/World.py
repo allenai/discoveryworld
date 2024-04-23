@@ -475,7 +475,7 @@ class World:
         # This is necessary because the JSON file can get very large
 
         # First, figure out how many "parts" we need to break the history into
-        MAX_STEPS_PER_FILE = 20
+        MAX_STEPS_PER_FILE = 100
         numParts = int(len(self.worldHistory) / MAX_STEPS_PER_FILE) + 1
         originalFilename = filename
         for partIdx in range(numParts):
@@ -546,6 +546,17 @@ class World:
 
                 outfile.write("\t]\n")
                 outfile.write("}\n")
+
+            # Compress the file into a ZIP
+            import zipfile
+            zipFilename = filenamePart.replace(".json", ".zip")
+            print("Compressing part " + str(partIdx) + " of " + str(numParts) + " to file: " + zipFilename + "...")
+            with zipfile.ZipFile(zipFilename, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                zipf.write(filenamePart, arcname=filenamePart.split("/")[-1])
+            # Remove the original JSON file
+            import os
+            os.remove(filenamePart)
+
 
         print("Export complete.")
 
