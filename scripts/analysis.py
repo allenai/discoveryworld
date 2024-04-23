@@ -139,6 +139,8 @@ def summaryStatistics(worldHistory):
     statistics["taskCompleted"] = taskCompleted
     statistics["taskCompletedSuccessfully"] = taskCompletedSuccessfully
 
+    # TODO: Total time to complete the task
+
 
     return statistics
 
@@ -151,7 +153,8 @@ def summaryStatistics(worldHistory):
 #
 if __name__ == "__main__":
     #dataPath = "logs/discoveryworld-playlog-archaeology_dating_simple.seed0.20240423_152952"
-    dataPath = "logs/discoveryworld-playlog-archaeology_dating_simple.seed0.20240423_160045"
+    #dataPath = "logs/discoveryworld-playlog-archaeology_dating_simple.seed0.20240423_160045"
+    dataPath = "logs/discoveryworld-playlog-archaeology_dating_simple.seed0.20240423_161942"
     #data = loadDataJSON(dataPath)   # Folder of JSON files
     data = loadDataZIPPED(dataPath) # Folder of ZIP files
 

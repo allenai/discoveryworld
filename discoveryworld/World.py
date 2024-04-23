@@ -404,6 +404,8 @@ class World:
             "grid": [],
             "discoveryFeed": self.discoveryFeed.toDict(),
             "taskScores": taskScores,
+            # Add a timestamp that's easily parsed, in ISO format
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
         }
 
         # Clone everything in the grid into this record
