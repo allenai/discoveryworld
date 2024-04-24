@@ -377,7 +377,8 @@ def main(args):
             welcomeStr += textwrap.fill(line, 80) + "\n"
         welcomeStr += "\n"
         #welcomeStr += textwrap.fill(taskDescription, 80) + "\n\n"
-
+        welcomeStr += "You are welcome to use external tools (notebooks, spreadsheets, statistics, etc.) to help you solve the task.\n"
+        welcomeStr += "When the task is complete, the game will automatically end.\n"
         welcomeStr += "While playing, press ? for help, and TAB to display this task information again.\n"
         welcomeStr += "Press SPACE to close this message."
 
@@ -573,7 +574,10 @@ def main(args):
                             taskStr += textwrap.fill(line, 80) + "\n"
                         taskStr += "\n"
 
-                        taskStr += "Task Score: " + str(taskScore) + "%\n"
+                        taskStr += "You are welcome to use external tools (notebooks, spreadsheets, statistics, etc.) to help you solve the task.\n"
+                        taskStr += "When the task is complete, the game will automatically end.\n"
+
+                        #taskStr += "Task Score: " + str(taskScore) + "%\n"
                         taskStr += "Task Completed: " + str(isCompleted) + "\n"
                         taskStr += "Task Completed Successfully: " + str(isCompletedSuccessfully) + "\n\n"
                         taskStr += "Press SPACE to close this message."

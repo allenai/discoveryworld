@@ -610,7 +610,7 @@ class UserInterface:
 
         # Text box should be centered in X, and 1/3 of the way down the screen in Y
         x = self.window.get_width() / 2
-        y = self.window.get_height() / 3
+        y = self.window.get_height() / 2 - 100
         # Calculate total height of the text box
         totalHeight = len(linesToRender) * 16
         # Calculate total width of the text box
