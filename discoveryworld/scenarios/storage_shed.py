@@ -108,6 +108,21 @@ def makeScenarioStorageShed(world, numUserAgents=1):
     # Paths
     mkPathX(17, 15, 15, world)       # Town square to farm
 
+    world.addObject(14, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(20, 8, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(18, 6, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(16, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(18, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(25, 11, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(24, 16, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(28, 16, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(14, 18, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(12, 16, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(11, 9, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(7, 11, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(8, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(29, 8, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+
     # Add some plants
     world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))
 
