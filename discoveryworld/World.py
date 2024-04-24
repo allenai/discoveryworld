@@ -68,6 +68,9 @@ class World:
         # Add a dictionary of teleport locations (key = location name), to make an agent's navigation task easier
         self.teleportLocations = {}
 
+        # Add start time
+        self.startTime = time.time()
+
 
     #
     #   Initialization (agents, tasks)
@@ -404,8 +407,7 @@ class World:
             "grid": [],
             "discoveryFeed": self.discoveryFeed.toDict(),
             "taskScores": taskScores,
-            # Add a timestamp that's easily parsed, in ISO format
-            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "runtime_seconds": round(time.time() - self.startTime, 1),
         }
 
         # Clone everything in the grid into this record
