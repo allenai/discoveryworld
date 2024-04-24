@@ -16,7 +16,7 @@ NUMBERS_TO_CHANGE_ITEMS = os.environ.get("MARC", False)
 
 class UserInterface:
     # Constructor
-    def __init__(self, window, spriteLibrary):
+    def __init__(self, window, spriteLibrary, showScoreToUser=False):
         # Fonts
         self.font = pygame.font.SysFont("monospace", 15)
         self.fontBold = pygame.font.SysFont("monospace", 15, bold=True)
@@ -28,6 +28,9 @@ class UserInterface:
         # Current agent and related values
         self.currentAgent = None
         self.curSelectedInventoryIdx = 0
+
+        # Should we show the score to the user? (Normally disabled except for debugging)
+        self.showScoreToUser = showScoreToUser
 
         # Most recent action result/message (to place on the bottom of the UI)
         self.lastActionMessage = ""
@@ -209,7 +212,7 @@ class UserInterface:
         self.renderLastActionMessage()
 
         # Render the task progress
-        if (self.currentAgent != None):
+        if (self.currentAgent != None) and (self.showScoreToUser == True):
             taskList = self.currentAgent.world.taskScorer.tasks
             for idx, task in enumerate(taskList):
                 # x should be 200 from the right

@@ -342,7 +342,7 @@ def main(args):
     print (world.spriteLibrary.getSpriteNames())
 
     # Initialize the user interface
-    ui = UserInterface(window, world.spriteLibrary)
+    ui = UserInterface(window, world.spriteLibrary, showScoreToUser=args.showScoreToUser)
 
     # Create a new random number generator (for deterministic behavior) with a specific seed
     #r = random.Random()
@@ -770,6 +770,7 @@ if __name__ == "__main__":
     parser.add_argument('--scenario', choices=SCENARIOS, default=None)
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--debug', action="store_true")
+    parser.add_argument('--showScoreToUser', action="store_true", default=False)
 
     args = parser.parse_args()
 
