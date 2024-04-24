@@ -4,8 +4,6 @@
         {"step": 0, "author": "Unknown", "title": "Comparative Study of Flora on DiscoveryWorld", "content": "One of the most interesting aspects of DiscoveryWorld from a biological perspective is its apparent remarkable lack of biodiversity. There are only a few different types of plants, and no animals, that we have observed here. Though, perhaps more are yet to be discovered", "signals": [], "type": "article"}
     ],
     "updatePosts": [
-        {"step": 0, "author": "Chef", "content": "There are a lot of space mushrooms in the kitchen.", "signals":[], "type": "update" },
-        {"step": 0, "author": "Colonist 1", "content": "I just love being a space colonist.", "signals":[], "type": "update" },
-        {"step": 0, "author": "Farmer", "content": "Thanks to everyone who helped me plant seeds yesterday. The crop is coming in nicely.", "signals":[], "type": "update" }
+        {"step": 0, "author": "Colony Founder", "content": "Welcome to Discovery World!", "signals":[], "type": "update" }
     ]
 }

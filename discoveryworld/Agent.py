@@ -1055,7 +1055,7 @@ class Agent(Object):
 
     # Get the most recent updates from the discovery feed
     def actionDiscoveryFeedGetPosts(self, startFromID=0):
-        numPostsToRetrieve = 8 # Number of posts to retrieve
+        numPostsToRetrieve = 7 # Number of posts to retrieve
         postDelimiter = "---\n"
         allPosts = self.world.discoveryFeed.getPosts()
         lastPosts = []

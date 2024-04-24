@@ -601,8 +601,11 @@ def main(args):
                     helpStr += "U:     Use an item (Arg 1), optionally on another item (Arg 2)\n"
                     helpStr += "Z:     Teleport to a random important location\n"
                     helpStr += "W:     Wait a step (do nothing)\n"
+                    helpStr += "V:     View recent posts on Discovery Feed\n"
                     helpStr += "[ / ]: Cycle through inventory items (Arg 1)\n"
                     helpStr += "; / \": Cycle through inventory items (Arg 2)\n"
+
+
                     helpStr += "?:     Display this help message\n"
                     helpStr += "ESC:   Quit the game\n"
                     helpStr += "\n"

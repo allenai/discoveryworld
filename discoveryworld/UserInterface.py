@@ -1143,17 +1143,18 @@ class UserInterface:
         # Reading articles
         if (keys[pygame.K_v]):
             return (False, self.getDiscoveryFeedUpdates(startFromID=0))
-        elif (keys[pygame.K_b]):
-            return (False, self.getDiscoveryFeedArticles(startFromID=0))
-        elif (keys[pygame.K_n]):
-            # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
-            randPostID = math.floor(random.random() * 10) + 1
-            return (False, self.getSpecificDiscoveryFeedPost(postID=randPostID))
+        # These are disabled for now since they're not used
+        #elif (keys[pygame.K_b]):
+        #    return (False, self.getDiscoveryFeedArticles(startFromID=0))
+        #elif (keys[pygame.K_n]):
+        #    # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
+        #    randPostID = math.floor(random.random() * 10) + 1
+        #    return (False, self.getSpecificDiscoveryFeedPost(postID=randPostID))
         # Creating articles
-        elif (keys[pygame.K_m]):
-            return (False, self.createDiscoveryFeedUpdate(contentStr="This is a test update."))
-        elif (keys[pygame.K_COMMA]):
-            return (False, self.createDiscoveryFeedArticle(titleStr="Test Article", contentStr="This is a test article."))
+        #elif (keys[pygame.K_m]):
+        #    return (False, self.createDiscoveryFeedUpdate(contentStr="This is a test update."))
+        #elif (keys[pygame.K_COMMA]):
+        #    return (False, self.createDiscoveryFeedArticle(titleStr="Test Article", contentStr="This is a test article."))
 
 
         # If we reach here, then no known key was pressed

@@ -194,8 +194,9 @@ class ScorecardElement():
 class EatMushroomTask(Task):
     # Constructor
     def __init__(self, world, scoringInfo):
-        taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist are sometimes getting sick.  Your task is to figure out why people are getting sick, and to prevent it.  You must demonstrate this by having 10 colonists successfully eat mushrooms without eventually getting sick. "
-        taskDescription += "Since the food causes only mild illness, and getting the colony established is important, the colonists have volunteered to be test subjects.  The Chef in the Cafeteria can help you collect mushrooms, serve mushrooms from the cafeteria pot to the tables, and let the colonists know a meal is ready to eat, when you're ready."
+        taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist are sometimes have upset stomachs.  Your task is to figure out why people are feeling ill, and to prevent it.  You must demonstrate this by having 10 colonists successfully eat mushrooms without eventually feeling sick. "
+        taskDescription += "Since the food causes only mild illness, and getting the colony established is important, the colonists have volunteered to be test subjects.  The Chef in the Cafeteria can help you collect mushrooms, serve mushrooms from the cafeteria pot to the tables, and let the colonists know a meal is ready to eat, when you're ready. "
+        taskDescription += "The colonists may post their status (like if they're feeling unwell) on the Discovery Feed."
         Task.__init__(self, "EatMushroomTask", taskDescription, world, scoringInfo)
         self.score = 0
         self.maxScore = 10                       # Maximum score
