@@ -1314,11 +1314,10 @@ class RosettaStoneTask(Task):
 class TutorialTask(Task):
 
     def __init__(self, world, scoringInfo):
-        taskDescription = "Where am I?! You just wake up in a room that doesn't look familiar at all. \n"
-        taskDescription += "I better leave. \n"
-        taskDescription += "Some helpful notes: \n"
+        taskDescription = "Where am I?! You just wake up in a strange place... It's discovery time!\n"
+        taskDescription += "\nSome helpful notes: \n"
         taskDescription += "1. Feel free to explore your surroundings. \n"
-        taskDescription += "2. You need to read the sign outside the house and report the number it mentions. \n"
+        taskDescription += "2. The elder knows the completion code for the tutorial. \n"
 
         super().__init__("TutorialTask", taskDescription, world, scoringInfo)
 
@@ -1330,11 +1329,11 @@ class TutorialTask(Task):
         self.scorecardGetKey = ScorecardElement("Collect key", "The key is in the agent's inventory.", maxScore=1)
         self.scoreCard.append(self.scorecardGetKey)
 
-        # # Bring back the objects to the elder
-        # self.scorecardGiveObjects = ScorecardElement("Give back objects", "Needed objects are in elder's inventory.", maxScore=self.scoringInfo["count"])
+        # Read the sign
+        # self.scorecardGiveObjects = ScorecardElement("Read the sign", "Needed objects are in elder's inventory.", maxScore=self.scoringInfo["count"])
         # self.scoreCard.append(self.scorecardGiveObjects)
 
-        self.scorecardExit = ScorecardElement("Exit the room", "The agent has left the room.", maxScore=1)
+        self.scorecardExit = ScorecardElement("Exit the room", "The agent has left the roo  m.", maxScore=1)
         self.scoreCard.append(self.scorecardExit)
 
         # Add hypotheses from scoringInfo

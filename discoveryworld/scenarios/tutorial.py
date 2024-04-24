@@ -72,7 +72,7 @@ class NPCElder(NPC):
 
 def mkTutorialHouse(x, y, world):
     # Create a building (house)
-    houseBounds = mkBuildingOneRoom(world, x=x, y=y, width=10, height=7, doorKeyID=42, signText="Dr. House\nCode: 3981")
+    houseBounds = mkBuildingOneRoom(world, x=x, y=y, width=10, height=7, doorKeyID=42, signText="Dr. House")
 
     OBJECTS = {
         "B": ("Bed", {}, Layer.FURNITURE),

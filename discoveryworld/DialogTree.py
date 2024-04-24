@@ -572,7 +572,7 @@ class DialogMaker():
 
         rootNode = DialogNode("rootNode", f"Elder: I'm starving. Can you please help me?")
         rootNode.addDialogOption("Of course. What can I do?", "trustNode", antiStates=["taskAccepted"])
-        rootNode.addDialogOption("No. I don't trust you. I want to leave.", "noTrustNode", antiStates=["taskAccepted"])
+        rootNode.addDialogOption("No. I need to leave.", "noTrustNode", antiStates=["taskAccepted"])
 
         rootNode.addDialogOption("Here's you meal.", "checkMealNode", requiresStates=["taskAccepted"], antiStates=["hasPot"])
 
@@ -586,8 +586,8 @@ class DialogMaker():
         trustNode.addDialogOption("I will be right back.", "endNodeOK")
         tree.addNode(trustNode)
 
-        noTrustNode = DialogNode("noTrustNode", "Good luck leaving without my key.")
-        noTrustNode.addDialogOption("Try again.", "rootNode")
+        noTrustNode = DialogNode("noTrustNode", "Please do this task and I'll give you the code to complete the tutorial...")
+        noTrustNode.addDialogOption("Okay okay.", "rootNode")
         tree.addNode(noTrustNode)
 
         # OK node
@@ -602,7 +602,7 @@ class DialogMaker():
         mealIsColdNode.addDialogOption("Alright, alright! I'll be right back.", "endNodeOK")
         tree.addNode(mealIsColdNode)
 
-        mealIsWarmNode = DialogNode("mealIsWarmNode", "Yum! That's perfect. Here's the key.", statesToAdd=["giveKey"])
+        mealIsWarmNode = DialogNode("mealIsWarmNode", "Yum! That's perfect.\n\nYour completion code is 3981.\n\nBy the way, here's the key to access the rest of the village.", statesToAdd=["giveKey"])
         mealIsWarmNode.addDialogOption("Enjoy your meal.", "endNodeOK")
         tree.addNode(mealIsWarmNode)
 

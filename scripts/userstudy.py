@@ -506,6 +506,7 @@ def main(args):
                     taskCompletedMessage += "Congratulations! You have successfully completed the task successfully.\n"
                 else:
                     taskCompletedMessage += "Unfortunately, the task was not completed successfully.\n"
+
                 taskCompletedMessage += "\n"
                 taskCompletedMessage += "Task Description:\n"
                 for line in taskDescription.split("\n"):
