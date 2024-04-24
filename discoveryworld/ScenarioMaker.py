@@ -5,6 +5,7 @@ from discoveryworld.scenarios import *
 import random
 
 SCENARIOS = [
+    "tutorial",
     "food_illness",
     "combinatorial_chemistry",
     "archaeology_dating_simple",
@@ -58,6 +59,11 @@ class ScenarioMaker():
         elif (scenarioName == "reactor_lab"):
             scoringInfo = makeScenarioReactorLab(self.world, numUserAgents)
             self.world.addTaskByName("ReactorTask", scoringInfo)
+            return (True, "")
+
+        elif (scenarioName.startswith("tutorial")):
+            scoringInfo = makeScenarioTutorial(self.world, numUserAgents)
+            self.world.addTaskByName("TutorialTask", scoringInfo)
             return (True, "")
 
         # If we reach here, the scenario was not recognized

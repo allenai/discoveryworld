@@ -35,7 +35,7 @@ def mkBarracks(x, y, world):
 
 def mkInfirmary(x, y, world):
     # Create a building (barracks)
-    mkBuildingOneRoom(world, x=x, y=y, width=8, height=5)
+    mkBuildingOneRoom(world, x=x, y=y, width=8, height=5, signText="Infirmary")
 
     # Add 4 beds
     world.addObject(x+1, y+1, Layer.FURNITURE, world.createObject("Bed"))

@@ -6,6 +6,7 @@ from discoveryworld.scenarios.storage_shed import makeScenarioStorageShed
 from discoveryworld.scenarios.reactor_lab import makeScenarioReactorLab
 from discoveryworld.scenarios.town import makeScenarioTown
 from discoveryworld.scenarios.reactor_lab import makeScenarioReactorLab
+from discoveryworld.scenarios.tutorial import makeScenarioTutorial
 
 SCENARIOS = {
     "Town": makeScenarioTown,
@@ -15,4 +16,5 @@ SCENARIOS = {
     "ArchaeologicalDigGenericRadioisotope": makeScenarioArchaeologicalDigGenericRadioisotope,
     "RosettaStone": makeScenarioRosettaStone,
     "ReactorLab": makeScenarioReactorLab,
+    "Tutorial": makeScenarioTutorial,
 }

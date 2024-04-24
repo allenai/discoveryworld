@@ -550,3 +550,27 @@ class DialogMaker():
 
         # Store dialog tree in agent
         agent.setDialogTree(tree)
+
+    def mkDialogElderTutorial(self, agent):
+        tree = DialogTree(agent)
+
+        rootNode = DialogNode("rootNode", f"Elder: I'm starving. Can you please help me?")
+        rootNode.addDialogOption("Of course. What can I do?", "trustNode")
+        rootNode.addDialogOption("No. I don't trust you. I want to leave.", "noTrustNode")
+        tree.addNode(rootNode)
+        tree.setRoot(rootNode.name)
+
+        trustNode = DialogNode("trustNode", "There's some meal in the fridge. You can heat it up in the stove.")
+        trustNode.addDialogOption("I will be right back.", "endNodeOK")
+        tree.addNode(trustNode)
+
+        noTrustNode = DialogNode("noTrustNode", "Good luck leaving without my key.")
+        noTrustNode.addDialogOption("Try again.", "rootNode")
+        tree.addNode(noTrustNode)
+
+        # OK node
+        endNodeOK = DialogNode("endNodeOK", "Thank you.")
+        tree.addNode(endNodeOK)
+
+        # Store dialog tree in agent
+        agent.setDialogTree(tree)

@@ -1,11 +1,10 @@
 from discoveryworld.Layer import Layer
 
 
-def mkHouse(x, y, world, buildingMaker):
+def mkHouse(x, y, world):
     # Create a building (house)
-    buildingMaker.mkBuildingOneRoom(world, x=x+0, y=x+0, width=7, height=7)
-    #buildingMaker.mkTableAndChairs(world, x=6, y=9, chairsPresent=["n", "s", "e", "w"])
-    buildingMaker.mkTableAndChairs(world, x=x+1, y=y+4, chairsPresent=["n", "s", "", ""])
+    mkBuildingOneRoom(world, x=x, y=y, width=7, height=7)
+    mkTableAndChairs(world, x=x+1, y=y+4, chairsPresent=["n", "s", "", ""])
 
     world.addObject(x+1, y+1, Layer.FURNITURE, world.createObject("Fridge"))
     world.addObject(x+2, y+1, Layer.FURNITURE, world.createObject("Sink"))
@@ -14,7 +13,7 @@ def mkHouse(x, y, world, buildingMaker):
     world.addObject(x+5, y+1, Layer.FURNITURE, world.createObject("Bed"))
 
 
-def mkBuildingOneRoom(world, x, y, width, height, signText = "Default Sign Text", includeDoor=True, doorKeyID=0):
+def mkBuildingOneRoom(world, x, y, width, height, signText="Default Sign Text", includeDoor=True, doorKeyID=0):
     # Walls
     # Sprite names: ['house1_house_corner_b', 'house1_house_corner_bl', 'house1_house_corner_br', 'house1_house_corner_l', 'house1_house_corner_r', 'house1_house_corner_t', 'house1_house_corner_tl', 'house1_house_corner_tr']
     # Check that it has a minimum size (e.g. at least 4x4)

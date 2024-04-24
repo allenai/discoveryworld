@@ -65,10 +65,10 @@ def main(args):
         viewportSizeY = 32
 
     scale = 1.0
-    # if os.environ.get("MARC", False):
-    #     scale = 2.0
-    #     viewportSizeX //= 2
-    #     viewportSizeY //= 2
+    if os.environ.get("MARC", False):
+        scale = 2.0
+        viewportSizeX //= 2
+        viewportSizeY //= 2
 
 
     # Open window
