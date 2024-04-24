@@ -103,9 +103,6 @@ class DialogTree():
             if (numRuns > 50):
                 complete = True
 
-
-
-
         # Get the options of what the user can say to this agent
         dialogOptions = currentNode.dialogOptions
         # Old: Filter to include only 'thingsToSay'
@@ -150,8 +147,28 @@ class DialogTree():
         # Get the dialog options
         dialogOptions = currentNode.dialogOptions
 
-        # Find the dialog option that matches what the user said
+        # New: Filter to include only 'thingsToSay', but make sure that the state requirements are met
+        filteredDialogOptions = []
         for dialogOption in dialogOptions:
+            # Check if the state requirements are met
+            requiresStates = dialogOption["requiresStates"]
+            antiStates = dialogOption["antiStates"]
+
+            hasAllRequired = True
+            for state in requiresStates:
+                if (not self.agent.hasState(state)):
+                    hasAllRequired = False
+                    break
+            hasNoAnti = True
+            for state in antiStates:
+                if (self.agent.hasState(state)):
+                    hasNoAnti = False
+                    break
+            if (hasAllRequired and hasNoAnti):
+                filteredDialogOptions.append(dialogOption)
+
+        # Find the dialog option that matches what the user said
+        for dialogOption in filteredDialogOptions:
             if dialogOption["thingToSay"] == thingToSay:
                 # Also, modify any variables, if requested
                 varsToModify = dialogOption["floatVariablesToModify"]
@@ -166,7 +183,6 @@ class DialogTree():
 
                 # Set the current node to the next node
                 self.setCurrentNode(dialogOption["nextNodeName"])
-
 
                 return True
 
@@ -555,12 +571,18 @@ class DialogMaker():
         tree = DialogTree(agent)
 
         rootNode = DialogNode("rootNode", f"Elder: I'm starving. Can you please help me?")
-        rootNode.addDialogOption("Of course. What can I do?", "trustNode")
-        rootNode.addDialogOption("No. I don't trust you. I want to leave.", "noTrustNode")
+        rootNode.addDialogOption("Of course. What can I do?", "trustNode", antiStates=["taskAccepted"])
+        rootNode.addDialogOption("No. I don't trust you. I want to leave.", "noTrustNode", antiStates=["taskAccepted"])
+
+        rootNode.addDialogOption("Here's you meal.", "checkMealNode", requiresStates=["taskAccepted"], antiStates=["hasPot"])
+
+        rootNode.addDialogOption("How's your meal?", "mealIsColdNode", requiresStates=["taskAccepted", "potIsCold", "hasPot"])
+        rootNode.addDialogOption("How's your meal?", "mealIsWarmNode", requiresStates=["taskAccepted", "potIsWarm", "hasPot"])
+
         tree.addNode(rootNode)
         tree.setRoot(rootNode.name)
 
-        trustNode = DialogNode("trustNode", "There's some meal in the fridge. You can heat it up in the stove.")
+        trustNode = DialogNode("trustNode", "There's some meal in the fridge. You can heat it up in the stove.", statesToAdd=["taskAccepted"])
         trustNode.addDialogOption("I will be right back.", "endNodeOK")
         tree.addNode(trustNode)
 
@@ -571,6 +593,18 @@ class DialogMaker():
         # OK node
         endNodeOK = DialogNode("endNodeOK", "Thank you.")
         tree.addNode(endNodeOK)
+
+        checkMealNode = DialogNode("checkMealNode", "Great! Give it to me using the 'Put' command.")
+        checkMealNode.addDialogOption("Will do.", "endNodeOK")
+        tree.addNode(checkMealNode)
+
+        mealIsColdNode = DialogNode("mealIsColdNode", "Ew! That's still cold. You didn't heat it up enough.", statesToAdd=["giveBack"])
+        mealIsColdNode.addDialogOption("Alright, alright! I'll be right back.", "endNodeOK")
+        tree.addNode(mealIsColdNode)
+
+        mealIsWarmNode = DialogNode("mealIsWarmNode", "Yum! That's perfect. Here's the key.", statesToAdd=["giveKey"])
+        mealIsWarmNode.addDialogOption("Enjoy your meal.", "endNodeOK")
+        tree.addNode(mealIsWarmNode)
 
         # Store dialog tree in agent
         agent.setDialogTree(tree)

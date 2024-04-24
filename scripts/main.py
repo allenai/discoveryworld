@@ -7,6 +7,7 @@ import random
 import time
 import subprocess
 import psutil
+from termcolor import colored
 from discoveryworld.ActionSuccess import MessageImportance
 from discoveryworld.KnowledgeScorer import Measurement
 from discoveryworld.UserInterface import UserInterface
@@ -133,6 +134,7 @@ def main(args):
     autoRunCycles = 0
     lastMove = time.time()        # Time of last move (in seconds since start of game)
     lastSize = 0
+
     while running:
         #print("Frame: " + str(frames))
         exportFrame = False
@@ -144,6 +146,14 @@ def main(args):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+            # if event.type == pygame.KEYDOWN:
+            #     # print key
+            #     print(colored(f"KEYDOWN: {event.key} | {event.unicode} | {pygame.key.name(event.key)}", 'red'))
+            #     time.sleep(0.1)
+            #     # Check for keyboard input
+            #     keys = pygame.key.get_pressed()
+            #     print(colored(keys.count(1), "red"))
 
         # Check for keyboard input
         keys = pygame.key.get_pressed()

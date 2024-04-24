@@ -13,7 +13,7 @@ from termcolor import colored
 
 
 class NPCElder(NPC):
-    def __init__(self, world, name):
+    def __init__(self, world, name, pot, key):
         # Default sprite name
         super().__init__(world, name, defaultSpriteName="character9_agent_facing_east")
 
@@ -35,6 +35,40 @@ class NPCElder(NPC):
         self.attributes['dialogAgentsSpokenWith'] = []             # List of dialog agents that this NPC has spoken with
 
         self.pathfinder = Pathfinder()
+
+        self.pot = pot
+        self.key = key
+
+    def tick(self):
+        # Stop if the object has already had tick() called this update -- this might have happened if the object moved locations in this current update cycle.
+        if (self.tickCompleted):
+            return
+
+        # Debug
+        print(f"NPCElder (id: {self.name}): {self.attributes['states']}")
+        super().tick()
+
+        # Interpret any external states
+        if self.pot in self.contents:
+            self.addState("hasPot")
+            # Check if temperature of pot is below 0C
+            if self.pot.attributes['temperatureC'] < 0:
+                self.addState("potIsCold")
+            else:
+                self.addState("potIsWarm")
+
+        if "giveBack" in self.attributes['states']:
+            self.removeState("giveBack")
+            self.removeState("hasPot")
+            self.removeState("potIsCold")
+            self.actionDrop(self.pot)
+
+        if "giveKey" in self.attributes['states']:
+            self.removeState("giveKey")
+            self.actionDrop(self.key)
+            self.addState("keyGiven")
+
+        print(f"NPCElder (id: {self.name}): {self.attributes}")
 
 def mkTutorialHouse(x, y, world):
     # Create a building (house)
@@ -80,11 +114,26 @@ def mkTutorialHouse(x, y, world):
     pot.addObject(world.createObject("Mushroom"))
     pot.addObject(world.createObject("Mushroom"))
 
+    # # Set temperature of pot and its contents to 4C.
+    # pot.attributes['temperatureC'] = 4
+    # for obj in pot.contents:
+    #     obj.attributes['temperatureC'] = 4
+
     # Add pot to fridge
     fridge.addObject(pot)
+    return pot
 
 
 def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
+
+    # TODO:
+    # [X] Drop the initial temperature of the meal
+    # [X] Using the Stove should increase the temperature of objects in it.
+    # [ ] Bringing back the meal to the elder should teach the "put X in Y" aka give.
+    # [ ] Should talk to the elder once the meal has been given to him.
+    # [ ] Elder should give a key to the user after that.
+    # [ ] Unlock the door "use key on door".
+    # [ ] Detect the player has left the house and end the scenario.
 
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
@@ -105,7 +154,7 @@ def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
 
     # Buildings
     mkKeyShop(9, 21, world)
-    mkTutorialHouse(18, 20, world)
+    pot = mkTutorialHouse(18, 20, world)
     mkGeneralStore(7, 4, world)
     mkSchool(19, 7, world)
 
@@ -173,7 +222,7 @@ def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
     userAgent = Agent(world)
     # Add the agent to a specfic location
     #world.addObject(25, 22, Layer.AGENT, userAgent)      # In the bedroom
-    world.addObject(19, 24, Layer.AGENT, userAgent)      # Next to the elder.
+    world.addObject(20, 24, Layer.AGENT, userAgent)      # Next to the elder.
 
     # Register the agent with the World so we can keep track of it
     world.addAgent(userAgent)
@@ -185,14 +234,14 @@ def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
     world.addTeleportLocation("general store", 11, 10)
     world.addTeleportLocation("school", 23, 10)
 
-    elder = NPCElder(world, "Elder")
-    world.addObject(19, 25, Layer.AGENT, elder)
+    # Create key to front door and give it to elder.
+    key = world.createObject("Key", isRusted=False)
+    key.setKeyID(42)
+
+    elder = NPCElder(world, "Elder", pot=pot, key=key)
+    world.addObject(19, 24, Layer.AGENT, elder)
     world.addAgent(elder)
     dialogMaker.mkDialogElderTutorial(elder)
-
-    # Create key to front door and give it to elder.
-    key = world.createObject("Key")
-    key.setKeyID(42)
     elder.addObject(key)
 
     scoringInfo["elder"] = elder
