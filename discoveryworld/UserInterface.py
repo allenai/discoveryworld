@@ -243,8 +243,6 @@ class UserInterface:
                 self.window.blit(textSurface, (taskCompletedX, taskCompletedY+20))
 
 
-        pass
-
     # A JSON version of the user interface
     def renderJSON(self):
         # Out

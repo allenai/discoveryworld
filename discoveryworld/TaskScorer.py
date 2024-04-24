@@ -1318,6 +1318,7 @@ class TutorialTask(Task):
         taskDescription += "I better leave. \n"
         taskDescription += "Some helpful notes: \n"
         taskDescription += "1. Feel free to explore your surroundings. \n"
+        taskDescription += "2. You need to read the sign outside the house and report the number it mentions. \n"
 
         super().__init__("TutorialTask", taskDescription, world, scoringInfo)
 
@@ -1352,94 +1353,36 @@ class TutorialTask(Task):
 
         if not self.scorecardElder.completed:
             elder = self.scoringInfo["elder"]
-            if "taskGiven" in elder.attributes["states"]:
+            if "taskAccepted" in elder.attributes["states"]:
                 self.scorecardElder.updateScore(1, True, associatedUUIDs=[elder.uuid], associatedNotes=f"Agent has talked to the elder (UUID: {elder.uuid}).")
 
-        # # Taking critical objects
-        # if not self.scorecardGetObjects.completed:
-        #     associatedNotes = []
-        #     associatedUUIDs = []
+        # Taking critical objects
+        if not self.scorecardGetKey.completed:
+            associatedNotes = []
+            associatedUUIDs = []
 
-        #     for agent in self.world.agents:
-        #         if isinstance(agent, NPC):
-        #             continue
+            for agent in self.world.agents:
+                if isinstance(agent, NPC):
+                    continue
 
-        #         for obj in agent.getInventory():
-        #             if self.scoringInfo["item"] in obj.name:
-        #                 if self.scoringInfo["learningColor"] and self.scoringInfo["color"] not in obj.name.split(" "):
-        #                     continue  # Color doesn't match
+                for obj in agent.getInventory():
+                    if "key" in obj.name:
+                        associatedUUIDs.append((obj.uuid, agent.uuid))
+                        associatedNotes.append(f"{obj.name} (UUID: {obj.uuid}) is in Agent (UUID: {agent.uuid})'s inventory.")
 
-        #                 associatedUUIDs.append((obj.uuid, agent.uuid))
-        #                 associatedNotes.append(f"{obj.name} (UUID: {obj.uuid}) is in Agent (UUID: {agent.uuid})'s inventory.")
+            if associatedNotes:
+                self.scorecardGetKey.updateScore(1, True, associatedUUIDs, "\n".join(associatedNotes))
 
-        #     if associatedNotes:
-        #         isCompleted = len(associatedNotes) == self.scoringInfo["count"]
-        #         self.scorecardGetObjects.updateScore(len(associatedNotes), isCompleted, associatedUUIDs, "\n".join(associatedNotes))
+        # Check scorecard for leaving the house.
+        if not self.scorecardExit.completed:
+            x0, y0, x1, y1 = self.scoringInfo["houseBounds"]
+            associatedUUIDs = []
+            for agent in self.world.agents:
+                if not agent.isWithinLocationBounds(x0, y0, x1, y1):
+                    associatedUUIDs.append(agent.uuid)
 
-        # # Give back critical objects to elder
-        # if not self.scorecardGiveObjects.completed:
-        #     elder = self.scoringInfo["elder"]
-        #     associatedNotes = []
-        #     associatedUUIDs = []
-        #     for obj in elder.getInventory():
-        #         if self.scoringInfo["item"] in obj.name:
-        #                 if self.scoringInfo["learningColor"] and self.scoringInfo["color"] not in obj.name.split(" "):
-        #                     continue  # Color doesn't match
-
-        #                 associatedUUIDs.append((obj.uuid, elder.uuid))
-        #                 associatedNotes.append(f"{obj.name} (UUID: {obj.uuid}) is in Elder (UUID: {elder.uuid})'s inventory.")
-
-        #     if associatedNotes:
-        #         isCompleted = len(associatedNotes) == self.scoringInfo["count"]
-        #         self.scorecardGiveObjects.updateScore(len(associatedNotes), isCompleted, associatedUUIDs, "\n".join(associatedNotes))
-
-        # # Check scorecard for learning about counting.
-        # if self.scoringInfo["learningCount"] and not self.scorecardCount.completed:
-        #     x0, y0, x1, y1 = self.scoringInfo["schoolBounds"]
-        #     associatedUUIDs = []
-        #     for agent in self.world.agents:
-        #         if agent.isWithinLocationBounds(x0, y0, x1, y1):
-        #             associatedUUIDs.append(agent.uuid)
-
-        #     if associatedUUIDs:
-        #         self.scorecardCount.updateScore(1, True, associatedUUIDs=associatedUUIDs, associatedNotes=f"Agent (UUID: {', '.join(map(str, associatedUUIDs))}) has visited the school.")
-
-        # if self.scoringInfo["learningCount"] and not self.scorecardUseComputer.completed:
-        #     countingComputer = self.scoringInfo["countingComputer"]
-        #     for agent in self.world.agents:
-        #         if agent.actionHistory.queryActionObjects(ActionType.USE, arg1=countingComputer, arg2="*", stopAtFirst=True):
-        #             self.scorecardUseComputer.updateScore(1, True, associatedUUIDs=[agent.uuid, countingComputer.uuid], associatedNotes=f"Agent (UUID: {agent.uuid}) has used the counting computer (UUID: {countingComputer.uuid}).")
-
-        # if self.scoringInfo["learningCount"] and not self.scorecardResetComputer.completed:
-        #     countingComputer = self.scoringInfo["countingComputer"]
-        #     resetDisk = self.scoringInfo["resetDisk"]
-        #     for agent in self.world.agents:
-        #         if agent.actionHistory.queryActionObjects(ActionType.USE, arg1=countingComputer, arg2=resetDisk, stopAtFirst=True):
-        #             self.scorecardResetComputer.updateScore(1, True, associatedUUIDs=[agent.uuid, countingComputer.uuid], associatedNotes=f"Agent (UUID: {agent.uuid}) has used the counting computer (UUID: {countingComputer.uuid}).")
-
-        # if self.scoringInfo["learningCount"] and not self.scorecardMeasuringTape.completed:
-        #     flagpole = self.scoringInfo["flagpole"]
-        #     measuringTape = self.scoringInfo["measuringTape"]
-        #     for agent in self.world.agents:
-        #         if agent.actionHistory.queryActionObjects(ActionType.USE, arg1=flagpole, arg2=measuringTape, stopAtFirst=True):
-        #             self.scorecardMeasuringTape.updateScore(1, True, associatedUUIDs=[agent.uuid, measuringTape.uuid, flagpole.uuid], associatedNotes=f"Agent (UUID: {agent.uuid}) has used the measuring tape (UUID: {measuringTape.uuid}) on the flagpole (UUID: {flagpole.uuid}).")
-
-        # # Check scorecard for learning about color.
-        # if self.scoringInfo["learningColor"] and not self.scorecardColor.completed:
-        #     x0, y0, x1, y1 = self.scoringInfo["paintShopBounds"]
-        #     associatedUUIDs = []
-        #     for agent in self.world.agents:
-        #         if agent.isWithinLocationBounds(x0, y0, x1, y1):
-        #             associatedUUIDs.append(agent.uuid)
-
-        #     if associatedUUIDs:
-        #         self.scorecardColor.updateScore(1, True, associatedUUIDs=associatedUUIDs, associatedNotes=f"Agent (UUID: {', '.join(map(str, associatedUUIDs))}) has visited the school.")
-
-        # if self.scoringInfo["learningColor"] and not self.scorecardColorSign.completed:
-        #     colorSign = self.scoringInfo["colorSign"]
-        #     for agent in self.world.agents:
-        #         if agent.actionHistory.queryActionObjects(ActionType.READ, arg1=colorSign, stopAtFirst=True):
-        #             self.scorecardColorSign.updateScore(1, True, associatedUUIDs=[agent.uuid, colorSign.uuid], associatedNotes=f"Agent (UUID: {agent.uuid}) has read the relevant color sign (UUID: {colorSign.uuid}).")
+            if associatedUUIDs:
+                self.scorecardExit.updateScore(1, True, associatedUUIDs=associatedUUIDs, associatedNotes=f"Agent (UUID: {', '.join(map(str, associatedUUIDs))}) has left the house.")
 
         # Update score
         self.score = sum(element.score for element in self.scoreCard)

@@ -21,6 +21,47 @@ from discoveryworld.World import World
 from discoveryworld.constants import ASSETS_PATH
 
 
+SCENARIO_NAMES = ["Tutorial", "Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "TODO 1", "TODO 2"]
+SCENARIO_INFOS = {
+    "Tutorial": {
+        "difficulty": ["Easy"],
+        "variations": ["1"],
+    },
+    "Combinatorial Chemistry": {
+        "difficulty": ["Easy", "Challenge"],
+        "variations": ["1", "2", "3", "4", "5"],
+    },
+    "Archaeology Dating": {
+        "difficulty": ["Easy", "Challenge"],
+        "variations": ["1", "2", "3", "4", "5"],
+    },
+    "Plant Nutrients": {
+        "difficulty": ["Easy", "Challenge"],
+        "variations": ["1", "2", "3", "4", "5"],
+    },
+    "Reactor Lab": {
+        "difficulty": ["Easy", "Challenge"],
+        "variations": ["1", "2", "3", "4", "5"],
+    },
+    "Lost in Translation": {
+        "difficulty": ["Easy", "Challenge"],
+        "variations": ["1", "2", "3", "4", "5"],
+    },
+    "Space Sick": {
+        "difficulty": ["Easy", "Challenge"],
+        "variations": ["1", "2", "3", "4", "5"],
+    },
+    "TODO 1": {
+        "difficulty": ["Easy", "Challenge"],
+        "variations": ["1", "2", "3", "4", "5"],
+    },
+    "TODO 2": {
+        "difficulty": ["Easy", "Challenge"],
+        "variations": ["1", "2", "3", "4", "5"],
+    },
+}
+
+
 # Helper for showing a dialog box containing a number of options, with the user able to pick one using arrow keys/return.
 def dialogPickOption(window, options:list, displayMessage:str=None):
     # Initialize Pygame fonts
@@ -171,8 +212,7 @@ def pickScenario(window):
     while stage != "done":
         # Choice 1: Select a scenario
         if stage == "scenario":
-            optionsTaskName = ["Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "TODO 1", "TODO 2"]
-            choiceTaskName = dialogPickOption(window, optionsTaskName, displayMessage="Select a scenario:")
+            choiceTaskName = dialogPickOption(window, SCENARIO_NAMES, displayMessage="Select a scenario:")
             if choiceTaskName is None:
                 print("User quit the game.")
                 pygame.quit()
@@ -182,7 +222,7 @@ def pickScenario(window):
 
         # Choice 2: Select a difficulty
         if stage == "difficulty":
-            optionsDifficulty = ["Easy", "Challenge"]
+            optionsDifficulty = SCENARIO_INFOS[choiceTaskName]["difficulty"]
             choiceDifficulty = dialogPickOption(window, optionsDifficulty, displayMessage="Select a difficulty:")
             if choiceDifficulty is None:
                 stage = "scenario"
@@ -192,7 +232,7 @@ def pickScenario(window):
 
         # Choice 3: Select a task variation
         if stage == "variation":
-            optionsVariation = ["1", "2", "3", "4", "5"]
+            optionsVariation = SCENARIO_INFOS[choiceTaskName]["variations"]
             choiceVariation = dialogPickOption(window, optionsVariation, displayMessage="Select a task variation:")
             if choiceVariation is None:
                 stage = "difficulty"
@@ -203,8 +243,11 @@ def pickScenario(window):
 
     # Map between the choice and the scenario name
     scenarioName = None
+    # Scenario 0: Tutorial
+    if choiceTaskName == "Tutorial":
+        scenarioName = "tutorial"
     # Scenario 1: Combinatorial Chemistry
-    if (choiceTaskName == "Combinatorial Chemistry") and (choiceDifficulty == optionsDifficulty[0]):
+    elif (choiceTaskName == "Combinatorial Chemistry") and (choiceDifficulty == optionsDifficulty[0]):
         scenarioName = "combinatorial_chemistry"
     elif (choiceTaskName == "Combinatorial Chemistry") and (choiceDifficulty == optionsDifficulty[1]):
         scenarioName = None
@@ -479,7 +522,6 @@ def main(args):
                 # Export the logfile
                 saveNextFrame = True
                 #saveLog(world, logInfo, verboseLogFilename, pygameWindow=window, pygame=pygame, lastScreenExportFilename=lastScreenExportFilename)
-
 
         # Check for keyboard input
         keys = pygame.key.get_pressed()

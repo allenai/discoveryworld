@@ -72,7 +72,7 @@ class NPCElder(NPC):
 
 def mkTutorialHouse(x, y, world):
     # Create a building (house)
-    mkBuildingOneRoom(world, x=x, y=y, width=10, height=7, doorKeyID=42)
+    houseBounds = mkBuildingOneRoom(world, x=x, y=y, width=10, height=7, doorKeyID=42, signText="Dr. House\nCode: 3981")
 
     OBJECTS = {
         "B": ("Bed", {}, Layer.FURNITURE),
@@ -121,19 +121,14 @@ def mkTutorialHouse(x, y, world):
 
     # Add pot to fridge
     fridge.addObject(pot)
-    return pot
+    return pot, houseBounds
 
 
 def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
 
     # TODO:
-    # [X] Drop the initial temperature of the meal
-    # [X] Using the Stove should increase the temperature of objects in it.
-    # [ ] Bringing back the meal to the elder should teach the "put X in Y" aka give.
-    # [ ] Should talk to the elder once the meal has been given to him.
-    # [ ] Elder should give a key to the user after that.
-    # [ ] Unlock the door "use key on door".
-    # [ ] Detect the player has left the house and end the scenario.
+    # [ ] Add signs with random numbers on them outside the house.
+    # [ ] Make the elder say which sign is the correct one.
 
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
@@ -154,10 +149,9 @@ def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
 
     # Buildings
     mkKeyShop(9, 21, world)
-    pot = mkTutorialHouse(18, 20, world)
+    pot, houseBounds = mkTutorialHouse(18, 20, world)
     mkGeneralStore(7, 4, world)
     mkSchool(19, 7, world)
-
 
     mkTownSquare(16, 18, world)
 
@@ -221,8 +215,8 @@ def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
     # Add some number of user agents
     userAgent = Agent(world)
     # Add the agent to a specfic location
-    #world.addObject(25, 22, Layer.AGENT, userAgent)      # In the bedroom
-    world.addObject(20, 24, Layer.AGENT, userAgent)      # Next to the elder.
+    world.addObject(25, 22, Layer.AGENT, userAgent)      # In the bedroom
+    # world.addObject(20, 24, Layer.AGENT, userAgent)      # Next to the elder.
 
     # Register the agent with the World so we can keep track of it
     world.addAgent(userAgent)
@@ -243,7 +237,9 @@ def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
     world.addAgent(elder)
     dialogMaker.mkDialogElderTutorial(elder)
     elder.addObject(key)
+    #userAgent.addObject(key)
 
     scoringInfo["elder"] = elder
+    scoringInfo["houseBounds"] = houseBounds
 
     return scoringInfo
