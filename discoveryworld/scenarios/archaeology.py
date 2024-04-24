@@ -122,6 +122,38 @@ def makeScenarioArchaeologicalDig(world, numUserAgents=1):
                 plantCount += 1
 
 
+    # Add some trees (statically placed)
+    world.addObject(14, 7, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(18, 8, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(8, 12, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(19, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(10, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(16, 18, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(20, 19, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+
+    # Add some trees (randomly placed)
+    plantCount = 0
+    minPlants = 4
+    while (plantCount < minPlants):
+        # Pick a random location
+        randX = world.rng.randint(2, world.sizeX - 2)
+        randY = world.rng.randint(2, world.sizeY - 2)
+
+        # Check to see if there are any objects other than grass there
+        objs = world.getObjectsAt(randX, randY)
+        # Get types of objects
+        objTypes = [obj.type for obj in objs]
+        # Check to see that there is grass here
+        if ("grass" in objTypes):
+            # Check that there is not other things here
+            if (len(objTypes) == 1):
+                # Add a plant
+                world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+                plantCount += 1
+
+
+
+
     # DialogMaker
     dialogMaker = DialogMaker()
 
@@ -387,6 +419,34 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
                 world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
                 plantCount += 1
 
+    # Add some trees (statically placed)
+    world.addObject(14, 7, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(18, 8, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(8, 12, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(19, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(10, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(16, 18, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(20, 19, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+
+    # Add some trees (randomly placed)
+    plantCount = 0
+    minPlants = 4
+    while (plantCount < minPlants):
+        # Pick a random location
+        randX = world.rng.randint(2, world.sizeX - 2)
+        randY = world.rng.randint(2, world.sizeY - 2)
+
+        # Check to see if there are any objects other than grass there
+        objs = world.getObjectsAt(randX, randY)
+        # Get types of objects
+        objTypes = [obj.type for obj in objs]
+        # Check to see that there is grass here
+        if ("grass" in objTypes):
+            # Check that there is not other things here
+            if (len(objTypes) == 1):
+                # Add a plant
+                world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+                plantCount += 1
 
     # DialogMaker
     dialogMaker = DialogMaker()
