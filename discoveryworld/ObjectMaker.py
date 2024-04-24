@@ -213,6 +213,7 @@ class ObjectMaker:
             "Fridge": Fridge,
             "Microscope": Microscope,
             "PlantGeneric": PlantGeneric,
+            "PlantRandomSmall": PlantRandomSmall,
             "Mushroom": Mushroom,
             "Mold": Mold,
             "Statue": Statue,

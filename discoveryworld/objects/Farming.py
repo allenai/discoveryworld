@@ -239,6 +239,21 @@ class PlantGeneric(Object):
         # Call superclass
         Object.tick(self)
 
+# Small plant with a random sprite
+class PlantRandomSmall(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "plant (small)", "plant (small)", defaultSpriteName = "forest1_plant1")
+        randomSprites = ["forest1_plant1", "forest1_plant1b", "forest1_plant1c", "forest1_plant2", "forest1_plant2b", "forest1_plant2c", "forest1_plant3", "forest1_plant3b", "forest1_plant3c", "forest1_plant4", "forest1_plant4b", "forest1_plant4c"]
+        self.defaultSpriteName = self.rng.choice(randomSprites)
+        self.curSpriteName = self.defaultSpriteName
+
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
 
 class PlantTreeBig(Object):
     # Constructor

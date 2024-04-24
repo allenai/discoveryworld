@@ -128,12 +128,12 @@ def makeScenarioArchaeologicalDig(world, numUserAgents=1):
     world.addObject(8, 12, Layer.OBJECTS, world.createObject("PlantTreeBig"))
     world.addObject(19, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
     world.addObject(10, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(16, 18, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    #world.addObject(16, 18, Layer.OBJECTS, world.createObject("PlantTreeBig"))
     world.addObject(20, 19, Layer.OBJECTS, world.createObject("PlantTreeBig"))
 
-    # Add some trees (randomly placed)
+    # Add some small plants (randomly placed)
     plantCount = 0
-    minPlants = 4
+    minPlants = 15
     while (plantCount < minPlants):
         # Pick a random location
         randX = world.rng.randint(2, world.sizeX - 2)
@@ -148,9 +148,8 @@ def makeScenarioArchaeologicalDig(world, numUserAgents=1):
             # Check that there is not other things here
             if (len(objTypes) == 1):
                 # Add a plant
-                world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+                world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantRandomSmall"))
                 plantCount += 1
-
 
 
 
@@ -425,12 +424,12 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
     world.addObject(8, 12, Layer.OBJECTS, world.createObject("PlantTreeBig"))
     world.addObject(19, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
     world.addObject(10, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(16, 18, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    #world.addObject(16, 18, Layer.OBJECTS, world.createObject("PlantTreeBig"))
     world.addObject(20, 19, Layer.OBJECTS, world.createObject("PlantTreeBig"))
 
-    # Add some trees (randomly placed)
+    # Add some small plants (randomly placed)
     plantCount = 0
-    minPlants = 4
+    minPlants = 15
     while (plantCount < minPlants):
         # Pick a random location
         randX = world.rng.randint(2, world.sizeX - 2)
@@ -445,7 +444,7 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
             # Check that there is not other things here
             if (len(objTypes) == 1):
                 # Add a plant
-                world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+                world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantRandomSmall"))
                 plantCount += 1
 
     # DialogMaker
