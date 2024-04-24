@@ -250,12 +250,12 @@ def pickScenario(window):
     elif (choiceTaskName == "Combinatorial Chemistry") and (choiceDifficulty == optionsDifficulty[0]):
         scenarioName = "combinatorial_chemistry"
     elif (choiceTaskName == "Combinatorial Chemistry") and (choiceDifficulty == optionsDifficulty[1]):
-        scenarioName = None
+        scenarioName = "combinatorial_chemistry_challenge"
     # Scenario 2: Archaeology Dating
     elif (choiceTaskName == "Archaeology Dating") and (choiceDifficulty == optionsDifficulty[0]):
         scenarioName = "archaeology_dating_simple"
     elif (choiceTaskName == "Archaeology Dating") and (choiceDifficulty == optionsDifficulty[1]):
-        scenarioName = "archaeology_dating_simple"
+        scenarioName = "archaeology_dating_challenge"
     # Scenario 3: Plant Nutrients
     elif (choiceTaskName == "Plant Nutrients") and (choiceDifficulty == optionsDifficulty[0]):
         scenarioName = "plant_nutrients"
@@ -457,6 +457,7 @@ def main(args):
     logInfo = {
         "scenario": args.scenario,
         "seed": args.seed,
+        "scenarioName": args.scenario,
         "taskDescription": taskDescription,
         # Add the date and time started
         "dateStarted": time.strftime("%Y-%m-%d %H:%M:%S"),

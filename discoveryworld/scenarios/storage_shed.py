@@ -3,7 +3,7 @@ import random
 from discoveryworld.Agent import Agent
 from discoveryworld.DialogTree import DialogMaker
 from discoveryworld.Layer import Layer
-from discoveryworld.buildings.colony import mkStorageShed
+from discoveryworld.buildings.colony import mkStorageShed, mkStorageShedChallenge
 from discoveryworld.buildings.terrain import mkGrassFill, mkPathX
 
 # Randomly create a chemical combination
@@ -85,6 +85,121 @@ def makeScenarioStorageShed(world, numUserAgents=1):
 
     # Buildings
     mkStorageShed(15, 10, world, DOOR_KEY_ID, chemicalSolutionDict, scoringInfo)
+
+    # Critical Hypothesis
+    #scoringInfo["criticalHypotheses"] = ["If the key is placed in a mixture of 1 part Chemical A and 2 parts Chemical C, then the rust will be removed."]
+    # TODO: Use the chemical solution dict to generate the critical hypothesis parametrically
+
+    # Should be of the form "X part(s) Chemical A, Y part(s) Chemical B, ..., *AND* Z part(s) Chemical C"
+    mixtureStrElems = []
+    for key in sorted(chemicalSolutionDict.keys()):
+        if (chemicalSolutionDict[key] == 1):
+            mixtureStrElems.append(str(chemicalSolutionDict[key]) + " part " + key)
+        else:
+            mixtureStrElems.append(str(chemicalSolutionDict[key]) + " parts " + key)
+    for i in range(0, len(mixtureStrElems)):
+        if (i == len(mixtureStrElems) - 1):
+            mixtureStrElems[i] = "and " + mixtureStrElems[i]
+        else:
+            mixtureStrElems[i] = mixtureStrElems[i] + ", "
+    scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of " + "".join(mixtureStrElems) + ", then the rust will be removed.")
+    #scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of 1 part Chemical A and 2 parts Chemical C, then the rust will be removed.")
+
+    # Paths
+    mkPathX(17, 15, 15, world)       # Town square to farm
+
+    world.addObject(14, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(20, 8, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(18, 6, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(16, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(18, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(25, 11, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(24, 16, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(28, 16, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(14, 18, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(12, 16, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(11, 9, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(7, 11, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(8, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    world.addObject(29, 8, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+
+    # Add some plants
+    world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))
+
+    plantCount = 0
+    minPlants = 15
+    while (plantCount < minPlants):
+        # Pick a random location
+        randX = world.rng.randint(0, world.sizeX - 1)
+        randY = world.rng.randint(0, world.sizeY - 1)
+
+        # Check to see if there are any objects other than grass there
+        objs = world.getObjectsAt(randX, randY)
+        # Get types of objects
+        objTypes = [obj.type for obj in objs]
+        # Check to see that there is grass here
+        if ("grass" in objTypes):
+            # Check that there is not other things here
+            if (len(objTypes) == 1):
+                # Add a plant
+                world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
+                plantCount += 1
+
+
+    # DialogMaker
+    dialogMaker = DialogMaker()
+
+    # Add some number of user agents
+    for userAgentIdx in range(0, numUserAgents):
+        userAgent = Agent(world)
+        # TODO: Add starting tools for agent
+        # TODO: ADD KEY
+
+        # Add the agent to a specfic location
+        #world.addObject(14+userAgentIdx, 14, Layer.AGENT, userAgent)      # In farm field
+        world.addObject(18+userAgentIdx, 12, Layer.AGENT, userAgent)      # Near farm
+        # Register the agent with the World so we can keep track of it
+        world.addAgent(userAgent)
+
+
+    # Add teleport locations to world
+    world.addTeleportLocation("shed", 18, 12)
+
+
+    return scoringInfo
+
+
+
+def makeScenarioStorageShedChallenge(world, numUserAgents=1):
+    scoringInfo = {}
+    scoringInfo["criticalHypotheses"] = []
+    DOOR_KEY_ID = 123
+
+    # Set a limit for the number of user agents
+    MAX_NUM_AGENTS = 1
+    if (numUserAgents > MAX_NUM_AGENTS):
+        numUserAgents = MAX_NUM_AGENTS
+
+    # Populate with structures/objects
+    # Fill with grass
+    mkGrassFill(world)
+    # Randomly place a few plants (plant1, plant2, plant3)
+    for i in range(0, 10):
+        randY = world.rng.randint(0, world.sizeY - 1)
+        randX = world.rng.randint(0, world.sizeX - 1)
+
+    # Make the random solution
+    chemicalSolutionDict = {}
+    if (world.randomSeed == 0):
+        # Hardcode the first version of the task
+        chemicalSolutionDict = {"Substance B": 1, "Substance C": 2}
+    else:
+        chemicalSolutionDict = mkRandomChemicalCombination(world.rng, numChemicals=4, minChemicals=2, minAmount=3, maxAmount=4)
+    scoringInfo["chemicalSolutionDict"] = chemicalSolutionDict
+    print("Chemical solution: " + str(chemicalSolutionDict))
+
+    # Buildings
+    mkStorageShedChallenge(15, 10, world, DOOR_KEY_ID, chemicalSolutionDict, scoringInfo)
 
     # Critical Hypothesis
     #scoringInfo["criticalHypotheses"] = ["If the key is placed in a mixture of 1 part Chemical A and 2 parts Chemical C, then the rust will be removed."]

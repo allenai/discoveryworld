@@ -90,7 +90,7 @@ def main(args):
     print (world.spriteLibrary.getSpriteNames())
 
     # Initialize the user interface
-    ui = UserInterface(window, world.spriteLibrary)
+    ui = UserInterface(window, world.spriteLibrary, showScoreToUser=True)
 
     # Create a new random number generator (for deterministic behavior) with a specific seed
     #r = random.Random()
@@ -328,7 +328,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Play DiscoveryWorld.")
     parser.add_argument('--scenario', choices=SCENARIOS, default=SCENARIOS[0])
-    parser.add_argument('--seed', type=int, default=20240404)
+    parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--debug', action="store_true")
 
     args = parser.parse_args()

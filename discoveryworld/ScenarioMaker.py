@@ -8,6 +8,7 @@ SCENARIOS = [
     "tutorial",
     "food_illness",
     "combinatorial_chemistry",
+    "combinatorial_chemistry_challenge",
     "archaeology_dating_simple",
     "archaeology_dating_challenge",
     "plant_nutrients",
@@ -33,6 +34,11 @@ class ScenarioMaker():
         elif (scenarioName == "combinatorial_chemistry"):
             scoringInfo = makeScenarioStorageShed(self.world, numUserAgents)
             self.world.addTaskByName("RustedKeyTask", scoringInfo)
+            return (True, "")
+
+        elif (scenarioName == "combinatorial_chemistry_challenge"):
+            scoringInfo = makeScenarioStorageShedChallenge(self.world, numUserAgents)
+            self.world.addTaskByName("RustedKeyTaskChallenge", scoringInfo)
             return (True, "")
 
         elif (scenarioName == "archaeology_dating_simple"):

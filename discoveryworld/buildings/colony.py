@@ -219,6 +219,80 @@ def mkStorageShed(x, y, world, DOOR_KEY_ID, chemicalSolutionDict, scoringInfo):
     world.addObject(x+2, y+2, Layer.OBJECTS, rustyKey)
     scoringInfo['key'] = rustyKey
 
+# As above but with 4 dispensers instead of 3
+def mkStorageShedChallenge(x, y, world, DOOR_KEY_ID, chemicalSolutionDict, scoringInfo):
+    # Create a small building
+    houseSizeX = 8
+    houseSizeY = 4
+    mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Storage Shed", includeDoor=True, doorKeyID = DOOR_KEY_ID)
+
+    # Add a table in the farm house
+    compoundTable1 = world.createObject("Table")
+    compoundTable2 = world.createObject("Table")
+    compoundTable3 = world.createObject("Table")
+    compoundTable4 = world.createObject("Table")
+    compoundTable5 = world.createObject("Table")
+    compoundTable6 = world.createObject("Table")
+
+    # Create chemical dispensers
+    dispenser1 = world.createObject("ChemicalDispenser")
+    dispenser2 = world.createObject("ChemicalDispenser")
+    dispenser3 = world.createObject("ChemicalDispenser")
+    dispenser4 = world.createObject("ChemicalDispenser")
+    dispenser1.name = "Dispenser (Substance A)"
+    dispenser2.name = "Dispenser (Substance B)"
+    dispenser3.name = "Dispenser (Substance C)"
+    dispenser4.name = "Dispenser (Substance D)"
+    scoringInfo['dispensers'] = [dispenser1, dispenser2, dispenser3, dispenser4]
+
+    # Fill with chemicals
+    #dispenser1.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
+    dispenser1.setAutoFill(checkObjectName="Substance A", fillObjectName="SubstanceA", minCount=1, replenishTime=0)
+    dispenser2.setAutoFill(checkObjectName="Substance B", fillObjectName="SubstanceB", minCount=1, replenishTime=0)
+    dispenser3.setAutoFill(checkObjectName="Substance C", fillObjectName="SubstanceC", minCount=1, replenishTime=0)
+    dispenser4.setAutoFill(checkObjectName="Substance D", fillObjectName="SubstanceD", minCount=1, replenishTime=0)
+
+    # Add dispensers to tables
+    compoundTable2.addObject(dispenser1)
+    compoundTable3.addObject(dispenser2)
+    compoundTable4.addObject(dispenser3)
+    compoundTable5.addObject(dispenser4)
+
+    # Add bottle cleaner
+    BottleCleaner = world.createObject("BottleCleaner")
+    compoundTable6.addObject(BottleCleaner)
+    scoringInfo['bottleCleaner'] = BottleCleaner
+
+    # Add tables to world
+    world.addObject(x+2, y+1, Layer.FURNITURE, compoundTable1)
+    world.addObject(x+3, y+1, Layer.FURNITURE, compoundTable2)
+    world.addObject(x+4, y+1, Layer.FURNITURE, compoundTable3)
+    world.addObject(x+5, y+1, Layer.FURNITURE, compoundTable4)
+    world.addObject(x+6, y+1, Layer.FURNITURE, compoundTable5)
+    world.addObject(x+7, y+1, Layer.FURNITURE, compoundTable6)
+
+    mixingJar = world.createObject("Jar")
+    # Add to first table
+    compoundTable1.addObject(mixingJar)
+    scoringInfo['mixingJar'] = mixingJar
+
+    # Add substance
+    #substance1 = world.createObject("TestSubstance")
+    #substance2 = world.createObject("PurpleSubstance")
+    #mixingJar.addObject(substance1)
+    #mixingJar.addObject(substance2)
+
+    #substanceCleaner = world.createObject("substanceCleaner")
+    #mixingJar.addObject(substanceCleaner)
+
+    # Add rusty key
+    #rustyKey = world.createObject("Key")
+    rustyKey = world.createObject("KeyRustyParametric")
+    rustyKey.setRustRemovalDict(chemicalSolutionDict)
+    rustyKey.setKeyID(DOOR_KEY_ID)
+    world.addObject(x+2, y+2, Layer.OBJECTS, rustyKey)
+    scoringInfo['key'] = rustyKey
+
 
 def mkKeyShop(x, y, world):
     # Create a building (shop sellings colored keys)

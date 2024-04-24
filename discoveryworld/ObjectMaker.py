@@ -292,7 +292,8 @@ class ObjectMaker:
             "substanceCleaner": [Substance, "cleaner"],
             "SubstanceA": [Substance, "Substance A"],
             "SubstanceB": [Substance, "Substance B"],
-            "SubstanceC": [Substance, "Substance C"]
+            "SubstanceC": [Substance, "Substance C"],
+            "SubstanceD": [Substance, "Substance D"]
         }
 
 
