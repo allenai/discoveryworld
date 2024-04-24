@@ -503,7 +503,7 @@ def main(args):
                 taskCompletedMessageShown = True
                 taskCompletedMessage = "THE GAME HAS COMPLETED.\n"
                 if (task.isCompletedSuccessfully() == True):
-                    taskCompletedMessage += "Congratulations! You have successfully completed the task successfully.\n"
+                    taskCompletedMessage += "Congratulations! You have completed the task successfully.\n"
                 else:
                     taskCompletedMessage += "Unfortunately, the task was not completed successfully.\n"
 
