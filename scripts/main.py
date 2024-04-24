@@ -158,14 +158,11 @@ def main(args):
                 doNextTurn = True
 
         else:
-            # Escape -- quits the game
-            if (keys[pygame.K_ESCAPE]):
-                running = False
 
             # Parse any action keys
             (doTick, success) = ui.parseKeys(keys)
 
-            if (success != None):
+            if success is not None:
                 # Export the frame, regardless of whether the action was successful, or whether it was a non-tick (e.g. UI) action
                 exportFrame = True
 
@@ -182,69 +179,20 @@ def main(args):
 
             else:
 
+                # Escape -- quits the game
+                if (keys[pygame.K_ESCAPE]):
+                    running = False
+
                 if (keys[pygame.K_g]):
                     displayGrid = not displayGrid
                     doNextTurn = True
                     success = True
-
-                # # Manual state adjustment
-                if (keys[pygame.K_1]):
-                    pass
-                #     # Change the colonist NPC external signal
-                #     print("Sending 'eatSignal' to colonist NPC")
-                #     for npcColonist in npcColonists:
-                #          npcColonist.attributes['states'].add("eatSignal")
-
-                #     doNextTurn = True
-
-                # elif (keys[pygame.K_2]):
-                #     # Change the Chef NPC external signal
-                #     print("Sending 'collectSignal' to chef NPC")
-                #     npcChef.attributes['states'].add("collectSignal")
-
-                #     doNextTurn = True
-
-                # elif (keys[pygame.K_3]):
-                #     # Change the Chef NPC external signal
-                #     print("Sending 'serveSignal' to chef NPC")
-                #     npcChef.attributes['states'].add("serveSignal")
-
-                #     doNextTurn = True
-
-                # elif (keys[pygame.K_4]):
-                #     # Change the Farmer's external signal
-                #     print("Sending 'plantSignal' to Farmer NPC")
-                #     npcFarmer.attributes['states'].add("plantSignal")
-
-                #     doNextTurn = True
-
 
                 # Manual "wait"
                 elif (keys[pygame.K_w]):
                     # Wait a turn
                     print("Waiting (taking no action this turn)...")
                     doNextTurn = True
-
-
-                # Manual "run for 100 cycles"
-                elif (keys[pygame.K_0]):
-                    # Run for 100 cycles
-                    autoRunCycles = 100
-                    print("Setting autorun cycles to 100...")
-                    doNextTurn = True
-
-                # Manual "run for 500 cycles"
-                elif (keys[pygame.K_9]):
-                    # Run for 500 cycles
-                    autoRunCycles = 500
-                    print("Setting autorun cycles to 500...")
-                    doNextTurn = True
-
-                # Test the text message queue
-                elif (keys[pygame.K_5]):
-                    # Test the text message queue
-                    ui.addTextMessageToQueue("This is a test\nThis is an extra long line apple orange banana pineapple fruit flower tree coconut sky water air summer water blue green yellow orange purple this is the end of the second line.\nThis is the second line.")
-
 
         # Rendering
 
@@ -258,7 +206,8 @@ def main(args):
             world.tick()
 
             # Report task progress
-            print( world.taskScorer.taskProgressStr() )
+            if args.debug:
+                print(world.taskScorer.taskProgressStr())
 
             frames += 1
             print("\n\n############################################################################################")
@@ -267,11 +216,12 @@ def main(args):
             else:
                 print("Step: " + str(frames))
 
-            # Print current memory usage
-            curSize = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
-            delta = curSize - lastSize
-            print("Current memory usage: " + str( curSize ) + " MB      (delta: " + str(delta) + " MB)")
-            lastSize = curSize
+            if args.debug:
+                # Print current memory usage
+                curSize = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
+                delta = curSize - lastSize
+                print("Current memory usage: " + str( curSize ) + " MB      (delta: " + str(delta) + " MB)")
+                lastSize = curSize
 
             # Show all discovery feed posts
             print("Discovery feed:")
@@ -297,18 +247,18 @@ def main(args):
 
             knowledgeScorer = currentAgent.knowledgeScorer
             # Create a measurement
-    #         jsonStr = """
-    # {
-    #     "object": {"objectUUID": 1234, "scope":[{"propertyName":"color", "propertyOperator":"equals", "propertyValue":"red"}, {"propertyName":"size", "propertyOperator":"less_than", "propertyValue":5}]},
-    #     "property": {"propertyName":"color", "propertyOperator":"equals", "propertyValue":"blue"}
-    # }
-    #     """
+            #         jsonStr = """
+            # {
+            #     "object": {"objectUUID": 1234, "scope":[{"propertyName":"color", "propertyOperator":"equals", "propertyValue":"red"}, {"propertyName":"size", "propertyOperator":"less_than", "propertyValue":5}]},
+            #     "property": {"propertyName":"color", "propertyOperator":"equals", "propertyValue":"blue"}
+            # }
+            #     """
             jsonStr = """
-    {
-        "object": {"objectType": "mushroom", "scope":[]},
-        "property": {"propertyName":"color", "propertyOperator":"equals", "propertyValue":"red"}
-    }
-        """
+                {
+                    "object": {"objectType": "mushroom", "scope":[]},
+                    "property": {"propertyName":"color", "propertyOperator":"equals", "propertyValue":"red"}
+                }
+            """
 
             # Convert to a dictionary
             dictIn = json.loads(jsonStr)
@@ -322,14 +272,11 @@ def main(args):
             print("Score justification: " + str(measurement.scoreJustification))
 
             print("############################################################################################\n")
-            #time.sleep(0.25)
-
 
             if (autoRunCycles > 0):
                 autoRunCycles -= 1
 
             exportFrame = True
-
 
         # Render the world
         #world.render(window, cameraX=0, cameraY=0)
@@ -348,19 +295,6 @@ def main(args):
         # Step 5: Render the user interface
         ui.render()
 
-
-        # # Find a usable item at the location the agent is facing
-        # facingLocation = currentAgent.getWorldLocationAgentIsFacing()
-        # # Bound checking
-        # if (world.isWithinBounds(facingLocation[0], facingLocation[1])):
-        #     # Get objects at location
-        #     objs = world.getObjectsAt(facingLocation[0], facingLocation[1])
-        #     # Step 6: Display the object inventory box
-        #     ui.renderObjectSelectionBox(objs, curSelectedObjIdx=2)
-
-        #     print("List of objects the agent is facing: " + str(objs))
-
-
         # Save the screen frame to a file
         if (exportFrame):
             frameFilename = FRAME_DIR + "/frame_" + str(frames) + ".png"
@@ -372,9 +306,6 @@ def main(args):
 
         # Flip the backbuffer
         pygame.display.flip()
-        #frames += 1
-
-        #time.sleep(1)
 
     # If we get here, the game loop is over.
     # Convert the frames to a video
@@ -382,10 +313,6 @@ def main(args):
     # Call FFMPEG (forces overwrite)
     #subprocess.call(["ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
 
-
-    # Print the action history of the farmer agent
-    #print("Farmer agent action history:")
-    #print(npcFarmer.actionHistory)
 
 if __name__ == "__main__":
 

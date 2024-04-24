@@ -257,32 +257,8 @@ class Agent(Object):
                         "distance": distance
                     })
 
-    #                    smallPacked = {
-    #                        "name": obj.name,
-    #                        "distance": distance,
-    #                        "uuid": obj.uuid,
-    #                    }
-                    #for direction in directions:
-                    direction = "-".join(directions)
-                    #visibleObjectsByDirection[direction].append(obj.name)
-                    visibleObjectsByDirection[direction].append({"name": obj.name, "uuid": obj.uuid, "description": obj.getTextDescription(), "distance": distance})
-
-        return visibleObjectsFull, visibleObjects, visibleObjectsByDirection
-
-
-    #
-    #   Tick
-    #
-
     # Tick
     def tick(self):
-        print("")
-        # # Randomly move agent
-        # if (random.random() < 0.1):
-        #     # Randomly move the agent
-        #     deltaX = random.randint(-1, 1)
-        #     deltaY = random.randint(-1, 1)
-        #     self.actionMoveAgent(deltaX, deltaY)
 
         # Call superclass
         Object.tick(self)
@@ -311,8 +287,6 @@ class Agent(Object):
             if (self.attributes['isPoisoned'] == True):
                 self.actionDiscoveryFeedMakeUpdatePost("I'm feeling better.", signals=[])
                 self.attributes['isPoisoned'] = False
-
-
 
 
     #
@@ -892,7 +866,6 @@ class Agent(Object):
                 return result
 
 
-
     # Activate/Deactivate an object
     # 'whichAction' should be "activate" or "deactivate"
     def actionActivateDeactivate(self, objToActivateOrDeactivate, whichAction="activate"):
@@ -942,8 +915,6 @@ class Agent(Object):
             result = ActionSuccess(True, "I deactivated the " + objToActivateOrDeactivate.name + ".")
             self.actionHistory.add(actionType=actionType, arg1=objToActivateOrDeactivate, arg2=None, result=result)
             return result
-
-
 
     # Eat an object
     def actionEat(self, objToEat):
@@ -995,8 +966,6 @@ class Agent(Object):
         self.actionHistory.add(actionType=ActionType.EAT, arg1=objToEat, arg2=None, result=result)
         return result
 
-
-
     # Read an object
     def actionRead(self, objToRead):
         # First, check if the object to read is within reach (i.e. +/- 1 grid location)
@@ -1031,9 +1000,11 @@ class Agent(Object):
             return result
 
 
-
     # Use an object on another object
     def actionUse(self, objToUse, objToUseOn):
+        if isinstance(objToUse, NPCDevice):
+            return self.actionDialog(objToUse, dialogStrToSay="")
+
         # First, check if the object to use is within reach (i.e. +/- 1 grid location)
         distX = abs(objToUse.attributes["gridX"] - self.attributes["gridX"])
         distY = abs(objToUse.attributes["gridY"] - self.attributes["gridY"])
@@ -1355,7 +1326,6 @@ class Agent(Object):
         return outStr
 
 
-
     #
     #   Dialog Actions
     #
@@ -1381,9 +1351,6 @@ class Agent(Object):
         if (self.isInDialog()):
             self.attributes['inDialogWith'].dialogTree.endDialog()
         self.setNotInDialog()
-
-
-
 
     # If 'dialogStrToSay' is None, then it will stop the dialog with 'agentToTalkTo'
     def actionDialog(self, agentToTalkTo, dialogStrToSay=None):
@@ -1451,15 +1418,9 @@ class Agent(Object):
                 agentToTalkTo.setInDialogWith(self)
                 return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
 
-
-        # Return a dialog placeholder
-        #return ActionSuccess(True, "We are talking.  You said: " + str(dialogStrToSay), MessageImportance.HIGH)
-
-
     #
     # Sprite
     #
-
 
     # This function updates what object the agent should be shown "holding".
     # It takes a list of objects (nominally from the last action the agent took), and will pick one that the agent is currently carying.
@@ -1568,23 +1529,6 @@ class NPC(Agent):
         self.pathfinder = Pathfinder()
 
     #
-    #   Dialog Actions
-    #
-    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
-
-    #     # Step 1: Check if the agent has already spoken with this NPC
-    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-    #         # Agent has already spoken with this NPC
-    #         return "I've already spoken with you."
-
-    #     # Add the agent to the list of agents that this NPC has spoken with
-    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
-
-    #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
-
-
-    #
     #   NPC Auto-navigation
     #
     def _doNPCAutonavigation(self):
@@ -1648,14 +1592,6 @@ class NPC(Agent):
 
         return True
 
-        # else:
-        #     # No success -- means either (a) we're already in the goal location, or (b) there's no path to the goal location
-        #     # In either case, we'll just pick a new goal location
-        #     print("Finding new goal location")
-        #     #time.sleep(1)
-        #     self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
-
-
 
 #
 #   Non-player character (controlled by the simulation)
@@ -1669,29 +1605,6 @@ class NPCChef(NPC):
         # Rendering
         self.attributes["faceDirection"] = "south"
         self.spriteCharacterPrefix = "character17_"
-
-
-
-    #
-    #   Dialog Actions
-    #
-    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
-
-    #     # Step 1: Check if the agent has already spoken with this NPC
-    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-    #         # Agent has already spoken with this NPC
-    #         return "I've already spoken with you."
-
-    #     # Add the agent to the list of agents that this NPC has spoken with
-    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
-
-    #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
-
-
-    #
-    #   Tick
-    #
 
     # Tick
     def tick(self):
@@ -1994,28 +1907,6 @@ class NPCColonist(NPC):
         # Pathfinder
         self.pathfinder = Pathfinder()
 
-
-    #
-    #   Dialog Actions
-    #
-    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
-
-    #     # Step 1: Check if the agent has already spoken with this NPC
-    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-    #         # Agent has already spoken with this NPC
-    #         return "I've already spoken with you."
-
-    #     # Add the agent to the list of agents that this NPC has spoken with
-    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
-
-    #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
-
-
-    #
-    #   Tick
-    #
-
     # Tick
     def tick(self):
         # # Randomly move agent
@@ -2179,29 +2070,6 @@ class NPCColonist1(NPC):
         container = whereToPlace
         self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(fieldX, fieldY, fieldWidth, fieldHeight, objectTypes, container) )
 
-
-
-    #
-    #   Dialog Actions
-    #
-    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
-
-    #     # Step 1: Check if the agent has already spoken with this NPC
-    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-    #         # Agent has already spoken with this NPC
-    #         return "I've already spoken with you."
-
-    #     # Add the agent to the list of agents that this NPC has spoken with
-    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
-
-    #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
-
-
-    #
-    #   Tick
-    #
-
     # Tick
     def tick(self):
         # # Randomly move agent
@@ -2296,26 +2164,6 @@ class NPCChef1(NPC):
         #     self.autopilotActionQueue.append( AutopilotAction_PickupObj(pot) )
         #     # Since the rest is dependent upon the pot's contents at pick-up time, the rest of the actions are added in tick()
 
-    #
-    #   Dialog Actions
-    #
-    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
-
-    #     # Step 1: Check if the agent has already spoken with this NPC
-    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-    #         # Agent has already spoken with this NPC
-    #         return "I've already spoken with you."
-
-    #     # Add the agent to the list of agents that this NPC has spoken with
-    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
-
-    #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
-
-
-    #
-    #   Tick
-    #
 
     # Tick
     def tick(self):
@@ -2479,26 +2327,6 @@ class NPCColonistAuto2(NPC):
         # Add default action (wandering), which has a low priority
         self.addAutopilotActionToQueue( AutopilotAction_Wander() )
 
-    #
-    #   Dialog Actions
-    #
-    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
-
-    #     # Step 1: Check if the agent has already spoken with this NPC
-    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-    #         # Agent has already spoken with this NPC
-    #         return "I've already spoken with you."
-
-    #     # Add the agent to the list of agents that this NPC has spoken with
-    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
-
-    #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
-
-
-    #
-    #   Tick
-    #
 
     # Tick
     def tick(self):
@@ -2632,26 +2460,6 @@ class NPCFarmer1(NPC):
         #     self.autopilotActionQueue.append( AutopilotAction_PickupObj(pot) )
         #     # Since the rest is dependent upon the pot's contents at pick-up time, the rest of the actions are added in tick()
 
-    #
-    #   Dialog Actions
-    #
-    # def actionDialog(self, agentDoingTalking, dialogStrToSay):
-
-    #     # Step 1: Check if the agent has already spoken with this NPC
-    #     if (agentDoingTalking.name in self.attributes['dialogAgentsSpokenWith']):
-    #         # Agent has already spoken with this NPC
-    #         return "I've already spoken with you."
-
-    #     # Add the agent to the list of agents that this NPC has spoken with
-    #     self.attributes['dialogAgentsSpokenWith'].append(agentDoingTalking.name)
-
-    #     # If we reach here, the agent has not spoken with this NPC yet
-    #     return "Hello, " + agentDoingTalking.name + ".  I am " + self.name + ".  Nice to meet you."
-
-
-    #
-    #   Tick
-    #
 
     # Tick
     def tick(self):
@@ -2806,12 +2614,17 @@ class NPCFarmer1(NPC):
         print("--------------------\n")
 
 
+#
+# Devices
+#
+class NPCDevice(NPC):
+    pass
 
 
 #
 #   Object: Soil Controller
 #
-class SoilController(NPC):
+class SoilController(NPCDevice):
     # Constructor
     def __init__(self, world):
         #Object.__init__(self, world, "soil controller", "soil controller", defaultSpriteName = "instruments_soil_controller")
@@ -2863,10 +2676,6 @@ class SoilController(NPC):
         # return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
         pass
 
-
-    #
-    #   Tick
-    #
     def tick(self):
         # Call superclass
         NPC.tick(self)
@@ -2924,8 +2733,6 @@ class SoilController(NPC):
         #self.inferSpriteName()
         print("DEFAULT SPRITE NAME: " + self.defaultSpriteName)
 
-
-
     # Sprite
     # Updates the current sprite name based on the current state of the object
     def inferSpriteName(self, force:bool=False):
@@ -2938,7 +2745,7 @@ class SoilController(NPC):
 #
 #   Quantum Crystal Reactor
 #
-class CrystalReactor(NPC):
+class CrystalReactor(NPCDevice):
     # Constructor
     def __init__(self, world):
         # Default sprite name
@@ -3023,7 +2830,6 @@ class CrystalReactor(NPC):
 
         # Call superclass
         Object.tick(self)
-
 
 
     # Sprite

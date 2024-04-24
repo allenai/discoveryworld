@@ -506,9 +506,10 @@ class World:
                 for step in range(startStep, endRange):
                     if (step % 50 == 0):
                         print("Exporting step " + str(step) + " of " + str(len(self.worldHistory)) + "...")
+
                     historyStep = self.getWorldHistoryAtStep(step)
                     #json.dump(history, outfile, indent=4)
-                    json.dump(historyStep, outfile, indent=4, cls=CustomJSONEncoder)
+                    json.dump(historyStep, outfile, indent=2, cls=CustomJSONEncoder)
 
                     outfile.write("\n")
                     if (step < endRange - 1):
@@ -561,11 +562,6 @@ class World:
 
 
         print("Export complete.")
-
-
-
-
-
 
     #
     #   Rendering

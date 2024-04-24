@@ -1,4 +1,5 @@
 # TaskScorer.py
+from discoveryworld.Agent import NPC
 from discoveryworld.objects import *
 from discoveryworld.ActionHistory import *
 
@@ -1214,6 +1215,9 @@ class RosettaStoneTask(Task):
             associatedUUIDs = []
 
             for agent in self.world.agents:
+                if isinstance(agent, NPC):
+                    continue
+
                 for obj in agent.getInventory():
                     if self.scoringInfo["item"] in obj.name:
                         if self.scoringInfo["learningColor"] and self.scoringInfo["color"] not in obj.name.split(" "):

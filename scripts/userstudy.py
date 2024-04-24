@@ -21,22 +21,6 @@ from discoveryworld.World import World
 from discoveryworld.constants import ASSETS_PATH
 
 
-# Sprite library
-# import SpriteLibrary
-# from ObjectMaker import ObjectMaker
-# from World import World
-# from Layer import Layer
-# from BuildingMaker import BuildingMaker
-# from ScenarioMaker import *
-# from ObjectModel import *
-# from Agent import *
-# from ActionSuccess import *
-# from UserInterface import UserInterface
-# from DialogTree import DialogMaker
-# from KnowledgeScorer import *
-
-# from JSONEncoder import CustomJSONEncoder
-
 # Helper for showing a dialog box containing a number of options, with the user able to pick one using arrow keys/return.
 def dialogPickOption(window, options:list, displayMessage:str=None):
     # Initialize Pygame fonts
@@ -290,7 +274,7 @@ def saveLog(world, logInfo, verboseLogFilename, pygameWindow, pygame, lastScreen
 # Main entry point
 def main(args):
     print("Initializing...")
-    displayGrid = args.debug
+    displayGrid = False
 
     # 32 pixels/tile * 32 tiles = 1024 pixels
 
@@ -520,18 +504,13 @@ def main(args):
                     pygame.event.clear()
 
             else:
-                # General moedel: Pressing SPACE or RETURN will close the modal
-                if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN]):
+                # General modal: Pressing SPACE or RETURN will close the modal
+                if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN] or keys[pygame.K_ESCAPE]):
                     ui.closeModal()
                     doNextTurn = True
 
 
         else:
-            # Escape -- quits the game
-            if (keys[pygame.K_ESCAPE]):
-                ui.addTextMessageToQueue("Are you sure you want to quit the game?\nY - Quit\nN - Continue")
-                confirmingQuit = True
-
             # Parse any action keys
             doTick = True
             success = None
@@ -556,63 +535,21 @@ def main(args):
 
             else:
 
+                # Escape -- quits the game
+                if (keys[pygame.K_ESCAPE]):
+                    ui.addTextMessageToQueue("Are you sure you want to quit the game?\nY - Quit\nN - Continue")
+                    confirmingQuit = True
+
                 if (keys[pygame.K_g]):
                     displayGrid = not displayGrid
                     doNextTurn = True
                     success = True
-
-                # # Manual state adjustment
-                if (keys[pygame.K_1]):
-                    pass
-                #     # Change the colonist NPC external signal
-                #     print("Sending 'eatSignal' to colonist NPC")
-                #     for npcColonist in npcColonists:
-                #          npcColonist.attributes['states'].add("eatSignal")
-
-                #     doNextTurn = True
-
-                # elif (keys[pygame.K_2]):
-                #     # Change the Chef NPC external signal
-                #     print("Sending 'collectSignal' to chef NPC")
-                #     npcChef.attributes['states'].add("collectSignal")
-
-                #     doNextTurn = True
-
-                # elif (keys[pygame.K_3]):
-                #     # Change the Chef NPC external signal
-                #     print("Sending 'serveSignal' to chef NPC")
-                #     npcChef.attributes['states'].add("serveSignal")
-
-                #     doNextTurn = True
-
-                # elif (keys[pygame.K_4]):
-                #     # Change the Farmer's external signal
-                #     print("Sending 'plantSignal' to Farmer NPC")
-                #     npcFarmer.attributes['states'].add("plantSignal")
-
-                #     doNextTurn = True
-
 
                 # Manual "wait"
                 elif (keys[pygame.K_w]):
                     # Wait a turn
                     print("Waiting (taking no action this turn)...")
                     doNextTurn = True
-
-
-                # # Manual "run for 100 cycles"
-                # elif (keys[pygame.K_0]):
-                #     # Run for 100 cycles
-                #     autoRunCycles = 100
-                #     print("Setting autorun cycles to 100...")
-                #     doNextTurn = True
-
-                # # Manual "run for 500 cycles"
-                # elif (keys[pygame.K_9]):
-                #     # Run for 500 cycles
-                #     autoRunCycles = 500
-                #     print("Setting autorun cycles to 500...")
-                #     doNextTurn = True
 
                 # Test the text message queue
                 elif (keys[pygame.K_TAB]):
@@ -691,8 +628,9 @@ def main(args):
                 # Update the world
                 world.tick()
 
-            # Report task progress
-            print( world.taskScorer.taskProgressStr() )
+            if args.debug:
+                # Report task progress
+                print(world.taskScorer.taskProgressStr())
 
             frames += 1
             print("\n\n############################################################################################")
@@ -701,11 +639,12 @@ def main(args):
             else:
                 print("Step: " + str(frames))
 
-            # Print current memory usage
-            curSize = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
-            delta = curSize - lastSize
-            print("Current memory usage: " + str( curSize ) + " MB      (delta: " + str(delta) + " MB)")
-            lastSize = curSize
+            if args.debug:
+                # Print current memory usage
+                curSize = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
+                delta = curSize - lastSize
+                print("Current memory usage: " + str( curSize ) + " MB      (delta: " + str(delta) + " MB)")
+                lastSize = curSize
 
             # Show all discovery feed posts
             print("Discovery feed:")
@@ -741,11 +680,11 @@ def main(args):
             # }
             #     """
             jsonStr = """
-    {
-        "object": {"objectType": "mushroom", "scope":[]},
-        "property": {"propertyName":"color", "propertyOperator":"equals", "propertyValue":"red"}
-    }
-        """
+                {
+                    "object": {"objectType": "mushroom", "scope":[]},
+                    "property": {"propertyName":"color", "propertyOperator":"equals", "propertyValue":"red"}
+                }
+            """
 
             # Convert to a dictionary
             dictIn = json.loads(jsonStr)

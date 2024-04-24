@@ -808,6 +808,7 @@ class UserInterface:
 
         # If the agent is not in a dialog, then return
         if (self.currentAgent.isInDialog() == False):
+            assert False
             return ActionSuccess(success=False, message="Agent is not in a dialog.")
 
         # First, get an integer representing which key was pressed (0-9).  If it wasn't in that range, then set to -1
@@ -835,6 +836,11 @@ class UserInterface:
         elif (keys[pygame.K_ESCAPE]):
             # Exit the dialog
             self.currentAgent.exitDialog()
+            return (False, ActionSuccess(success=True, message="Ending the dialog."))
+
+        if key == -1:
+            # No valid key was pressed
+            return (False, ActionSuccess(success=False, message=""))
 
         # Get the current dialog options from the dialog tree
         agentInDialogWith = self.currentAgent.getAgentInDialogWith()
@@ -842,14 +848,14 @@ class UserInterface:
         npcResponse, nextDialogOptions = agentInDialogWith.dialogTree.getCurrentDialog()
 
         # If the key is not in range, do nothing
-        if (key < 1 or key > len(nextDialogOptions)):
+        if key > len(nextDialogOptions):
             return (False, ActionSuccess(success=False, message="Unknown dialog option."))
 
         # If the key is in range, then select that dialog option
         selectedDialogOption = nextDialogOptions[key-1]
 
         # Say that response back to the NPC
-        actionResult = self.currentAgent.actionDialog(agentToTalkTo = agentInDialogWith, dialogStrToSay = selectedDialogOption)
+        actionResult = self.currentAgent.actionDialog(agentToTalkTo=agentInDialogWith, dialogStrToSay=selectedDialogOption)
 
         # Also note that if the new dialog tree state has no options, then we need to exit the dialog.
         npcResponse, nextDialogOptions = agentInDialogWith.dialogTree.getCurrentDialog()
@@ -910,8 +916,6 @@ class UserInterface:
         # First, check if we're in the middle of a dialog
         if (self.currentAgent.isInDialog()):
             # If so, we need to parse the dialog keys
-            print("### IS IN DIALOG")
-            print(self.currentAgent.attributes["states"])
             return self._parseDialogKeys(keys)
         else:
             self.dialogToDisplay = None
@@ -1048,6 +1052,13 @@ class UserInterface:
                 return (False, False)
 
             result = self.actionUse(objToUse = self.curSelectedArgument1Obj, objToUseWith = self.curSelectedArgument2Obj)
+
+            # If the agent is in dialog, then we need to display the dialog options
+            if (self.currentAgent.isInDialog()):
+                npcResponse, nextDialogOptions = self.currentAgent.getAgentInDialogWith().dialogTree.getCurrentDialog()
+                self.dialogToDisplay = {}
+                self.dialogToDisplay['dialogText'] = npcResponse
+                self.dialogToDisplay['dialogOptions'] = nextDialogOptions
 
             # # If there is a .generatedItems populated in this result, then process it
             # if ('generatedItems' in result.data):
