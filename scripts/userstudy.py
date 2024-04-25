@@ -94,12 +94,13 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
                         if (currentOption >= len(options)):
                             currentOption = 0
                         arrowKeyDown = True
+
                 # Pressing RETURN will select the current option
                 if (event.key == pygame.K_RETURN):
                     return options[currentOption]
 
                 # Pressing ESC will quit the dialog, returning NONE
-                if (event.key == pygame.K_ESCAPE):
+                if (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
                     return None
 
             if (event.type == pygame.KEYUP):
@@ -414,15 +415,11 @@ def main(args):
         task = world.taskScorer.tasks[0]
         taskDescription = task.taskDescription
 
-        welcomeStr = "Welcome to DiscoveryWorld!\n\n"
-        welcomeStr += "Here is your task description:\n"
-        for line in taskDescription.split("\n"):
-            welcomeStr += textwrap.fill(line, 80) + "\n"
-        welcomeStr += "\n"
-        #welcomeStr += textwrap.fill(taskDescription, 80) + "\n\n"
-        welcomeStr += "You are welcome to use external tools (notebooks, spreadsheets, statistics, etc.) to help you solve the task.\n"
-        welcomeStr += "When the task is complete, the game will automatically end.\n"
-        welcomeStr += "While playing, press ? for help, and TAB to display this task information again.\n"
+        welcomeStr = "-= Welcome to DiscoveryWorld! =-\n\n"
+        welcomeStr += taskDescription + "\n\n"
+        welcomeStr += "You are welcome to use external tools (notebooks, spreadsheets, statistics, etc.) to help you solve the task. "
+        welcomeStr += "Once the task is completed, the game will automatically end. "
+        welcomeStr += "While playing, press ? for help, and TAB to display this task information again.\n\n"
         welcomeStr += "Press SPACE to close this message."
 
         # Add the task information to the text message queue
@@ -502,7 +499,7 @@ def main(args):
             task = tasks[0]
             if (task.isCompleted() == True) and (taskCompletedMessageShown == False):
                 taskCompletedMessageShown = True
-                taskCompletedMessage = "THE GAME HAS COMPLETED.\n"
+                taskCompletedMessage = "THE GAME HAS ENDED.\n\n"
                 if (task.isCompletedSuccessfully() == True):
                     taskCompletedMessage += "Congratulations! You have completed the task successfully.\n"
                 else:
@@ -510,14 +507,12 @@ def main(args):
 
                 taskCompletedMessage += "\n"
                 taskCompletedMessage += "Task Description:\n"
-                for line in taskDescription.split("\n"):
-                    taskCompletedMessage += textwrap.fill(line, 80) + "\n"
-                taskCompletedMessage += "\n"
+                taskCompletedMessage += taskDescription + "\n\n"
 
-                taskScore = int(task.getScoreNormalized() * 100)
-                taskCompletedMessage += "Task Score: " + str(taskScore) + "%\n"
-                taskCompletedMessage += "\n"
-                taskCompletedMessage += "Press SPACE to close this message. Press ESC to quit the game."
+                # taskScore = int(task.getScoreNormalized() * 100)
+                # taskCompletedMessage += "Task Score: " + str(taskScore) + "%\n"
+                # taskCompletedMessage += "\n"
+                taskCompletedMessage += "Press SPACE to close this message, then press ESC to quit the game."
 
                 ui.addTextMessageToQueue(taskCompletedMessage)
 
@@ -553,7 +548,6 @@ def main(args):
                 if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN] or keys[pygame.K_ESCAPE]):
                     ui.closeModal()
                     doNextTurn = True
-
 
         else:
             # Parse any action keys
@@ -610,20 +604,15 @@ def main(args):
                         isCompleted = task.isCompleted()
                         isCompletedSuccessfully = task.isCompletedSuccessfully()
 
-                        # If the task description is longer than 80 characters, break it up into multiple lines
-                        # Use a library to do this
-                        #taskDescription = "This is a test of a long task description that will be split into multiple lines. This is a test of a long task description that will be split into multiple lines. This is a test of a long task description that will be split into multiple lines."
                         taskStr = "Task Description:\n\n"
-                        for line in taskDescription.split("\n"):
-                            taskStr += textwrap.fill(line, 80) + "\n"
-                        taskStr += "\n"
 
-                        taskStr += "You are welcome to use external tools (notebooks, spreadsheets, statistics, etc.) to help you solve the task.\n"
-                        taskStr += "When the task is complete, the game will automatically end.\n"
+                        taskStr += taskDescription + "\n\n"
+                        taskStr += "You are welcome to use external tools (notebooks, spreadsheets, statistics, etc.) to help you solve the task. "
+                        taskStr += "Once the task is completed, the game will automatically end.\n\n"
 
                         #taskStr += "Task Score: " + str(taskScore) + "%\n"
-                        taskStr += "Task Completed: " + str(isCompleted) + "\n"
-                        taskStr += "Task Completed Successfully: " + str(isCompletedSuccessfully) + "\n\n"
+                        # taskStr += "Task Completed: " + str(isCompleted) + "\n"
+                        # taskStr += "Task Completed Successfully: " + str(isCompletedSuccessfully) + "\n\n"
                         taskStr += "Press SPACE to close this message."
 
                         # Add the task information to the text message queue

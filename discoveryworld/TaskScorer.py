@@ -983,13 +983,13 @@ class SoilNutrientTask(Task):
     def __init__(self, world, scoringInfo):
         # TODO: modify description
         # ["potassium", "titanium", "lithium", "thorium", "barium"]
-        taskDescription = "You are at a botanical research station on Planet X.  An species of plant has been identified that appears to grow very quickly in the presence of an unusual nutrient uncommon on Earth. "
+        taskDescription = "You are at a botanical research station on Planet X.  A species of plant has been identified that appears to grow very quickly in the presence of an unusual nutrient uncommon on Earth. "
         taskDescription += "Other scientists have narrowed down the nutrient to be one of the following: Potassium, Titanium, Lithium, Thorium, or Barium. "
         taskDescription += "Your task is to figure out which nutrient it is, and what specific amount of the nutrient (low, medium, or high) is required in the soil for the plant to grow. "
-        taskDescription += "To support your work, a pilot field was set up with 12 plots of soil, each with a different combination of nutrients.  The pilot field is located to the south west part of the research station. "
-        taskDescription += "The research station is equipped with three test fields, where you can configure the nutrient levels in the field using the nearby soil nutrient controller. Once you configure the nutrients for a field, it can't be changed again. "
+        taskDescription += "\n\nTo support your work, a pilot field was set up with 12 plots of soil, each with a different combination of nutrients.  The pilot field is located to the south west part of the research station. "
+        taskDescription += "The research station is equipped with three test fields, where you can configure the nutrient levels in the field using the nearby soil nutrient controller. Once you configure the nutrients for a field, it *can't* be changed again. "
         taskDescription += "Under the right conditions, the plant tends to grow very quickly, so you should be able to see the results of your work within a few steps. "
-        taskDescription += "Inside the storage facility are some tools that may be helpful for you work, including a soil nutrient meter, a jar of seeds, and a shovel. "
+        taskDescription += "Inside the storage facility are some tools that may be helpful for your work, including a soil nutrient meter, a jar of seeds, and a shovel. "
         taskDescription += "To plant the seeds, dig a hole in the soil, place a seed in the hole, then put the soil back into the hole.  If the conditions are correct, the plant will grow from the seed. "
         taskDescription += "As part of your discovery process, you should grow at least 2 new plants to maturity. "
 
@@ -1505,7 +1505,7 @@ class TutorialTask(Task):
         taskDescription = "Where am I?! You just wake up in a strange place... It's discovery time!\n"
         taskDescription += "\nSome helpful notes: \n"
         taskDescription += "1. Feel free to explore your surroundings. \n"
-        taskDescription += "2. The elder knows the completion code for the tutorial. \n"
+        taskDescription += "2. The elder knows the completion code for the tutorial."
 
         super().__init__("TutorialTask", taskDescription, world, scoringInfo)
 
