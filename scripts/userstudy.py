@@ -21,7 +21,10 @@ from discoveryworld.World import World
 from discoveryworld.constants import ASSETS_PATH
 
 
-SCENARIO_NAMES = ["Tutorial", "Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "TODO 1", "TODO 2"]
+SCENARIO_NAMES = [
+    "Tutorial", "Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick",
+#    "TODO 1", "TODO 2"
+]
 SCENARIO_INFOS = {
     "Tutorial": {
         "difficulty": ["Easy"],
@@ -36,11 +39,11 @@ SCENARIO_INFOS = {
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Plant Nutrients": {
-        "difficulty": ["Easy", "Challenge"],
+        "difficulty": ["Easy"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Reactor Lab": {
-        "difficulty": ["Easy", "Challenge"],
+        "difficulty": ["Easy"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Lost in Translation": {
@@ -48,17 +51,17 @@ SCENARIO_INFOS = {
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Space Sick": {
-        "difficulty": ["Easy", "Challenge"],
+        "difficulty": ["Easy"],
         "variations": ["1", "2", "3", "4", "5"],
     },
-    "TODO 1": {
-        "difficulty": ["Easy", "Challenge"],
-        "variations": ["1", "2", "3", "4", "5"],
-    },
-    "TODO 2": {
-        "difficulty": ["Easy", "Challenge"],
-        "variations": ["1", "2", "3", "4", "5"],
-    },
+    # "TODO 1": {
+    #     "difficulty": ["Easy", "Challenge"],
+    #     "variations": ["1", "2", "3", "4", "5"],
+    # },
+    # "TODO 2": {
+    #     "difficulty": ["Easy", "Challenge"],
+    #     "variations": ["1", "2", "3", "4", "5"],
+    # },
 }
 
 
