@@ -4,7 +4,7 @@ from discoveryworld.Agent import Agent
 from discoveryworld.DialogTree import DialogMaker
 from discoveryworld.Layer import Layer
 from discoveryworld.buildings.colony import mkStorageShed, mkStorageShedChallenge
-from discoveryworld.buildings.terrain import mkGrassFill, mkPathX
+from discoveryworld.buildings.terrain import mkGrassFill, mkPathX, mkTallTree
 
 # Randomly create a chemical combination
 # numChemicals: The number of chemical possibilities (e.g. if there are 5 checmical dispensers, then numChemicals=5)
@@ -108,20 +108,20 @@ def makeScenarioStorageShed(world, numUserAgents=1):
     # Paths
     mkPathX(17, 15, 15, world)       # Town square to farm
 
-    world.addObject(14, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(20, 8, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(18, 6, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(16, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(18, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(25, 11, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(24, 16, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(28, 16, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(14, 18, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(12, 16, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(11, 9, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(7, 11, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(8, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(29, 8, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    mkTallTree(14, 10, world)
+    mkTallTree(20, 8, world)
+    mkTallTree(18, 6, world)
+    mkTallTree(16, 15, world)
+    mkTallTree(18, 20, world)
+    mkTallTree(25, 11, world)
+    mkTallTree(24, 16, world)
+    mkTallTree(28, 16, world)
+    mkTallTree(14, 18, world)
+    mkTallTree(12, 16, world)
+    mkTallTree(11, 9, world)
+    mkTallTree(7, 11, world)
+    mkTallTree(8, 15, world)
+    mkTallTree(29, 8, world)
 
     # Add some plants
     world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))
@@ -223,20 +223,20 @@ def makeScenarioStorageShedChallenge(world, numUserAgents=1):
     # Paths
     mkPathX(17, 15, 15, world)       # Town square to farm
 
-    world.addObject(14, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(20, 8, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(18, 6, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(16, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(18, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(25, 11, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(24, 16, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(28, 16, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(14, 18, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(12, 16, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(11, 9, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(7, 11, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(8, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(29, 8, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    mkTallTree(14, 10, world)
+    mkTallTree(20, 8, world)
+    mkTallTree(18, 6, world)
+    mkTallTree(16, 15, world)
+    mkTallTree(18, 20, world)
+    mkTallTree(25, 11, world)
+    mkTallTree(24, 16, world)
+    mkTallTree(28, 16, world)
+    mkTallTree(14, 18, world)
+    mkTallTree(12, 16, world)
+    mkTallTree(11, 9, world)
+    mkTallTree(7, 11, world)
+    mkTallTree(8, 15, world)
+    mkTallTree(29, 8, world)
 
     # Add some plants
     world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))

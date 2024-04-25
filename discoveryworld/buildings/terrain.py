@@ -55,3 +55,8 @@ def mkSignVillage(x, y, world):
     world.addObject(x+1, y, Layer.BUILDING, world.createObject("SignVillage", part="center"))
     world.addObject(x+2, y, Layer.BUILDING, world.createObject("SignVillage", part="post_right"))
     world.addObject(x, y-1, Layer.AIR, world.createObject("SignVillage", part="banner"))
+
+
+def mkTallTree(x, y, world):
+    world.addObject(x, y, Layer.OBJECTS, world.createObject("PlantTreeBig", part="trunk"))
+    world.addObject(x, y-1, Layer.AIR, world.createObject("PlantTreeBig", part="leaves"))

@@ -8,6 +8,7 @@ from discoveryworld.Layer import Layer
 
 from discoveryworld.buildings import mkGrassFill
 from discoveryworld.buildings.archaeology import mkDigSite, mkDigSiteWithObj
+from discoveryworld.buildings.terrain import mkTallTree
 
 
 # This is the SIMPLE version of the task, with a radiocarbon meter
@@ -123,13 +124,12 @@ def makeScenarioArchaeologicalDig(world, numUserAgents=1):
 
 
     # Add some trees (statically placed)
-    world.addObject(14, 7, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(18, 8, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(8, 12, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(19, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(10, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    #world.addObject(16, 18, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(20, 19, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    mkTallTree(14, 7, world)
+    mkTallTree(18, 8, world)
+    mkTallTree(8, 12, world)
+    mkTallTree(19, 15, world)
+    mkTallTree(10, 20, world)
+    mkTallTree(20, 19, world)
 
     # Add some small plants (randomly placed)
     plantCount = 0
@@ -419,13 +419,12 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
                 plantCount += 1
 
     # Add some trees (statically placed)
-    world.addObject(14, 7, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(18, 8, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(8, 12, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(19, 15, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(10, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    #world.addObject(16, 18, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(20, 19, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    mkTallTree(14, 7, world)
+    mkTallTree(18, 8, world)
+    mkTallTree(8, 12, world)
+    mkTallTree(19, 15, world)
+    mkTallTree(10, 20, world)
+    mkTallTree(20, 19, world)
 
     # Add some small plants (randomly placed)
     plantCount = 0

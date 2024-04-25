@@ -4,7 +4,7 @@ from discoveryworld.DialogTree import DialogMaker
 
 from discoveryworld.Layer import Layer
 from discoveryworld.buildings.soil_research import mkRandomSoilNutrientsWithSetValues, mkSoilFieldControlled, mkSoilResearchBuilding
-from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mkPathX, mkPathY
+from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mkPathX, mkPathY, mkTallTree
 
 from discoveryworld.objects import *
 
@@ -138,16 +138,16 @@ def makeScenarioPlantGrowing(world, numUserAgents=1):
     world.addObject(13, 21, Layer.FURNITURE, sign)
 
     # Add big trees to either side of the research facility
-    world.addObject(11, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(9, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(7, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    mkTallTree(11, 10, world)
+    mkTallTree(9, 10, world)
+    mkTallTree(7, 10, world)
 
-    world.addObject(18, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(20, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(22, 10, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    mkTallTree(18, 10, world)
+    mkTallTree(20, 10, world)
+    mkTallTree(22, 10, world)
 
-    world.addObject(12, 21, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(18, 21, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    mkTallTree(12, 21, world)
+    mkTallTree(18, 21, world)
 
 
     # Randomly place a few decorative plants

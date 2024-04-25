@@ -244,14 +244,14 @@ def makeScenarioReactorLab(world, numUserAgents=1):
     mkPathY(13, 21, 2, world)   # Down from plaza
 
     # Trees
-    world.addObject(9, 23, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(23, 23, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    mkTallTree(9, 23, world)
+    mkTallTree(23, 23, world)
 
-    world.addObject(9, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(23, 20, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    mkTallTree(9, 20, world)
+    mkTallTree(23, 20, world)
 
-    world.addObject(9, 17, Layer.OBJECTS, world.createObject("PlantTreeBig"))
-    world.addObject(23, 17, Layer.OBJECTS, world.createObject("PlantTreeBig"))
+    mkTallTree(9, 17, world)
+    mkTallTree(23, 17, world)
 
     # Fences
     # Top-left corner

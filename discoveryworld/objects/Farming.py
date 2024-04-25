@@ -257,12 +257,12 @@ class PlantRandomSmall(Object):
 
 class PlantTreeBig(Object):
     # Constructor
-    def __init__(self, world):
-        # Default sprite name
-        Object.__init__(self, world, "tree (big)", "tree (big)", defaultSpriteName = "forest1_tree_big")
+    def __init__(self, world, part=None):
+        assert part in ("leaves", "trunk")
+        super().__init__(world, "tree (big)", f"tree (big) {part}", defaultSpriteName=f"forest1_tree_big_{part}")
 
         self.attributes["isMovable"] = False                       # Can it be moved?
-        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+        self.attributes["isPassable"] = (part == "leaves")         # Agen't can't walk over this
 
     def tick(self):
         # Call superclass
