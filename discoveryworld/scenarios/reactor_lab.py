@@ -140,6 +140,11 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
     elif (keyDimension == 4):
         scoringInfo['criticalInstrument'] = instrumentSpectrometer
 
+    scoringInfo["criticalHypotheses"] = []
+    # Add the critical hypotheses
+    #scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading.")
+    scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading, with a slope of " + str(randomSlope) + " and an offset of " + str(randomOffset) + ".")
+
     # Generate the quantum crystals
     for i in range(0, 4):
         quantumCrystal = world.createObject("QuantumCrystal")
