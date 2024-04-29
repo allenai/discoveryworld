@@ -47,7 +47,8 @@ def mkCrystalProperties(quantumCrystalIn, rng, keyDimension:int=0, slope:float=1
             spectrum.append(channelValue)
         fauxMaterial['spectrum'] = spectrum            # The spectrum of the crystal (on 5 spectral channels)
         fauxMaterial['microscopeDesc'] = "The quantum gap of this crystal appears to be " + str(quantumCrystalIn.attributes['quantumSize']) + " nm"  # The description of the crystal under a microscope
-        quantumCrystalIn.attributes['materials'].append(fauxMaterial)
+        ##quantumCrystalIn.attributes['materials'].append(fauxMaterial)     ## OLD -- adds a new material, so there are two materials (the default, and this one) -- generates lots of bugs with instruments.
+        quantumCrystalIn.attributes['materials'] = [ fauxMaterial ]       ## NEW -- replaces the default material with this generated one
 
         # Pick one dimension (density, temperature, quantumSize, radiation, or spectrum) to be the "key" dimension.  Dimensions are numbered (0, 1, 2, 3, 4)
         keyValue = 0
