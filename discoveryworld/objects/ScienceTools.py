@@ -283,8 +283,8 @@ class RadiationMeter(Object):
 
         # Report the radiation level (to 2 decimal place(s)
         useDescriptionStr += "The radiation meter reports a level of " + "{:.2f}".format(radiationLevelMicroSeivertsPerHour) + " micro Seiverts per hour.\n"
-        useDescriptionStr += "DEBUG:\n Background radiation: " + "{:.2f}".format(backgroundRadiation) + " micro Seiverts per hour.\n"
-        useDescriptionStr += "DEBUG:\n Background near location: " + "{:.2f}".format(backgroundNearLocation) + " micro Seiverts per hour.\n"
+        ##useDescriptionStr += "DEBUG:\n Background radiation: " + "{:.2f}".format(backgroundRadiation) + " micro Seiverts per hour.\n"
+        ##useDescriptionStr += "DEBUG:\n Background near location: " + "{:.2f}".format(backgroundNearLocation) + " micro Seiverts per hour.\n"
 
         return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
     #
