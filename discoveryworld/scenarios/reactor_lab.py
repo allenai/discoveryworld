@@ -103,11 +103,11 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
     instrumentRadiationMeter = world.createObject("RadiationMeter")
     instrumentThermometer = world.createObject("Thermometer")
     instrumentDensitometer = world.createObject("Densitometer")
-    instruments.append(instrumentMicroscope)
-    instruments.append(instrumentSpectrometer)
-    instruments.append(instrumentRadiationMeter)
-    instruments.append(instrumentThermometer)
     instruments.append(instrumentDensitometer)
+    instruments.append(instrumentSpectrometer)
+    instruments.append(instrumentMicroscope)
+    instruments.append(instrumentThermometer)
+    instruments.append(instrumentRadiationMeter)
 
     scoringInfo['instruments'] = instruments
 
