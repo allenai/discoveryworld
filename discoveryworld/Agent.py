@@ -2820,12 +2820,22 @@ class CrystalReactor(NPCDevice):
                 self.attributes['isActivated'] = False
                 self.name = "crystal reactor (uncalibrated)"
 
+            # If the frequency is within 1 Hz of the correct value, then change the reactor's resonance frequency to be the same as the crystal's
+            #if (abs(self.attributes['resonanceFreq'] - containsCrystal.attributes['resonanceFreq']) < 1.0):
+            #    self.attributes['resonanceFreq'] = containsCrystal.attributes['resonanceFreq']
+            # Otherwise, change the reactor's frequency to be truncated
+            #else:
+            #    self.attributes['resonanceFreq'] = int(self.attributes['resonanceFreq'])
+
         else:
             # No crystal present
             if (self.attributes['isActivated']):
                 self.needsSpriteNameUpdate = True
             self.attributes['isActivated'] = False
             self.name = "crystal reactor (no crystal present)"
+            # Truncate the resonance frequency to be an integer (since no crystal is present)
+            #self.attributes['resonanceFreq'] = int(self.attributes['resonanceFreq'])
+
 
 
         # Call superclass

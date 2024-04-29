@@ -67,8 +67,8 @@ def mkCrystalProperties(quantumCrystalIn, rng, keyDimension:int=0, slope:float=1
 
         # The value of 'resonanceFreq' will be a linear function of the keyValue, with the specified slope and offset
         resonanceFreq = (slope * keyValue) + offset
-        # resonanceFreq should be an integer
-        resonanceFreq = round(resonanceFreq)
+        # NOTE, resonance frequency is now a float, rounded to 2 decimal places
+        resonanceFreq = round(resonanceFreq, 2)
         quantumCrystalIn.attributes['resonanceFreq'] = resonanceFreq
 
         # Return
