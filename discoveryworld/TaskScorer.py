@@ -1220,8 +1220,8 @@ class ReactorTask(Task):
     # Update the task progress
     def updateTick(self):
         # Do not update the score if the task is already marked as completed
-        if (self.completed == True):
-            return
+        #if (self.completed == True):
+        #    return
 
         # Clear the previous score and scorecard
         #self.scoreCard = []
@@ -1291,7 +1291,8 @@ class ReactorTask(Task):
         print("unknown crystals: " + str(unknownCrystals))
         for idx, reactor in enumerate(self.scoringInfo["reactorsToChange"]):
             crystalFreq = unknownCrystals[idx].attributes["resonanceFreq"]
-            if (reactor.attributes["resonanceFreq"] == crystalFreq):
+            #if (reactor.attributes["resonanceFreq"] == crystalFreq):
+            if (reactor.attributes["isActivated"] == True):
                 numReactorsSet += 1
 
         isComplete = False
@@ -1300,26 +1301,26 @@ class ReactorTask(Task):
         self.scorecardReactorsSet.updateScore(score=numReactorsSet, completed=isComplete, associatedUUIDs=[reactor.uuid for reactor in self.scoringInfo["reactors"]], associatedNotes="The following reactors have been set to the correct resonance frequency: " + str([reactor.uuid for reactor in self.scoringInfo["reactors"]]))
 
         # Check if the reactors have been activated
-        if (not self.scorecardReactorsOn.completed):
-            numReactorsActivated = 0
-            for reactor in self.scoringInfo["reactors"]:
-                if (reactor.attributes["isActivated"] == True):
-                    numReactorsActivated += 1
+        #if (not self.scorecardReactorsOn.completed):
+        numReactorsActivated = 0
+        for reactor in self.scoringInfo["reactors"]:
+            if (reactor.attributes["isActivated"] == True):
+                numReactorsActivated += 1
 
-            allReactorsOn = False
-            if (numReactorsActivated >= 4):
-                allReactorsOn = True
+        allReactorsOn = False
+        if (numReactorsActivated >= 4):
+            allReactorsOn = True
 
-            # Score
-            self.scorecardReactorsOn.updateScore(score=numReactorsActivated, completed=allReactorsOn, associatedUUIDs=[reactor.uuid for reactor in self.scoringInfo["reactors"]], associatedNotes="The following reactors have been activated: " + str([reactor.uuid for reactor in self.scoringInfo["reactors"]]))
+        # Score
+        self.scorecardReactorsOn.updateScore(score=numReactorsActivated, completed=allReactorsOn, associatedUUIDs=[reactor.uuid for reactor in self.scoringInfo["reactors"]], associatedNotes="The following reactors have been activated: " + str([reactor.uuid for reactor in self.scoringInfo["reactors"]]))
 
-            # If this task is complete, then the task is complete
-            if (allReactorsOn == True):
-                self.completed = True
-                self.completedSuccessfully = True
-            else:
-                self.completed = False
-                self.completedSuccessfully = False
+        # If this task is complete, then the task is complete
+        if (allReactorsOn == True):
+            self.completed = True
+            self.completedSuccessfully = True
+        else:
+            self.completed = False
+            self.completedSuccessfully = False
 
 
         # Count the score, based on the scorecard

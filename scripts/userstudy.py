@@ -501,27 +501,29 @@ def main(args):
         if (len(tasks) > 0):
             task = tasks[0]
             if (task.isCompleted() == True) and (taskCompletedMessageShown == False):
-                taskCompletedMessageShown = True
-                taskCompletedMessage = "THE GAME HAS ENDED.\n\n"
-                if (task.isCompletedSuccessfully() == True):
-                    taskCompletedMessage += "Congratulations! You have completed the task successfully.\n"
-                else:
-                    taskCompletedMessage += "Unfortunately, the task was not completed successfully.\n"
+                # If we're here, the task is completed.  Now check if it's an appropriate time to mark it as completed
+                if (not ui.inModal) and (ui.dialogToDisplay == None):    # Make sure we're not in a modal dialog, or actively engaged in dialog
+                    taskCompletedMessageShown = True
+                    taskCompletedMessage = "THE GAME HAS ENDED.\n\n"
+                    if (task.isCompletedSuccessfully() == True):
+                        taskCompletedMessage += "Congratulations! You have completed the task successfully.\n"
+                    else:
+                        taskCompletedMessage += "Unfortunately, the task was not completed successfully.\n"
 
-                taskCompletedMessage += "\n"
-                taskCompletedMessage += "Task Description:\n"
-                taskCompletedMessage += taskDescription + "\n\n"
+                    taskCompletedMessage += "\n"
+                    taskCompletedMessage += "Task Description:\n"
+                    taskCompletedMessage += taskDescription + "\n\n"
 
-                # taskScore = int(task.getScoreNormalized() * 100)
-                # taskCompletedMessage += "Task Score: " + str(taskScore) + "%\n"
-                # taskCompletedMessage += "\n"
-                taskCompletedMessage += "Press SPACE to close this message, then press ESC to quit the game."
+                    # taskScore = int(task.getScoreNormalized() * 100)
+                    # taskCompletedMessage += "Task Score: " + str(taskScore) + "%\n"
+                    # taskCompletedMessage += "\n"
+                    taskCompletedMessage += "Press SPACE to close this message, then press ESC to quit the game."
 
-                ui.addTextMessageToQueue(taskCompletedMessage)
+                    ui.addTextMessageToQueue(taskCompletedMessage)
 
-                # Export the logfile
-                saveNextFrame = True
-                #saveLog(world, logInfo, verboseLogFilename, pygameWindow=window, pygame=pygame, lastScreenExportFilename=lastScreenExportFilename)
+                    # Export the logfile
+                    saveNextFrame = True
+                    #saveLog(world, logInfo, verboseLogFilename, pygameWindow=window, pygame=pygame, lastScreenExportFilename=lastScreenExportFilename)
 
         # Check for keyboard input
         keys = pygame.key.get_pressed()
@@ -667,7 +669,11 @@ def main(args):
             # Update the world
 
             # If the task is completed, then the world will not tick
-            if (task is None) or (task.isCompleted() == False):
+            doUpdate = True
+            if ((task is not None) and (ui.inModal == False) and (ui.dialogToDisplay == None) and (task.isCompleted() == True)):
+                doUpdate = False
+            #if (task is None) or (task.isCompleted() == False):
+            if (doUpdate):
                 # Update the world
                 world.tick()
 
