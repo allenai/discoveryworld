@@ -505,7 +505,7 @@ class Thermometer(Object):
             return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
 
         # Report the temperature (to 1 decimal place(s)
-        useDescriptionStr += "The thermometer reports a temperature of " + "{:.1f}".format(patientTemperature) + " degrees Celsius.\n"
+        useDescriptionStr += "The thermometer reports a temperature of " + "{:.2f}".format(patientTemperature) + " degrees Celsius.\n"
 
         return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
 

@@ -68,7 +68,7 @@ def mkCrystalProperties(quantumCrystalIn, rng, keyDimension:int=0, slope:float=1
         # The value of 'resonanceFreq' will be a linear function of the keyValue, with the specified slope and offset
         resonanceFreq = (slope * keyValue) + offset
         # resonanceFreq should be an integer
-        resonanceFreq = int(resonanceFreq)
+        resonanceFreq = round(resonanceFreq)
         quantumCrystalIn.attributes['resonanceFreq'] = resonanceFreq
 
         # Return
@@ -146,6 +146,7 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
     #scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading.")
     scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading, with a slope of " + str(randomSlope) + " and an offset of " + str(randomOffset) + ".")
 
+
     # Generate the quantum crystals
     for i in range(0, 4):
         quantumCrystal = world.createObject("QuantumCrystal")
@@ -162,6 +163,7 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
     for i in range(0, 4):
         quantumCrystals[i].name = "quantum crystal " + str(i+1)
         #print("Quantum Crystal " + str(i+1) + " resonance frequency: " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz")
+        scoringInfo["criticalHypotheses"].append("The resonance frequency of " + quantumCrystals[i].name + " is " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz.")
     #import time
     #time.sleep(10)
     #exit(1)
