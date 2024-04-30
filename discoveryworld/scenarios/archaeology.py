@@ -45,15 +45,23 @@ def makeScenarioArchaeologicalDig(world, numUserAgents=1):
     # Add 3 dig sites
     scoringInfo["unknownArtifacts"] = []
     scoringInfo["signs"] = []
+    otherArtifactAges = []
+    goldDigSiteIdx = -1
     for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
         artifact, sign = mkDigSite(digSiteLocation[0], digSiteLocation[1], world, world.rng, digSiteIdx+1, artifactAges[digSiteIdx])
         scoringInfo["unknownArtifacts"].append(artifact)
         scoringInfo["signs"].append(sign)
         if (artifact.attributes["radiocarbonAge"] == oldestArtifactAge):
             scoringInfo["targetSign"] = sign
+            goldDigSiteIdx = digSiteIdx+1
+        else:
+            otherArtifactAges.append(artifactAges[digSiteIdx])
 
     # TODO: Critical hypotheses
-    scoringInfo["criticalHypotheses"] = ["TODO: Add critical hypotheses here"]
+    #scoringInfo["criticalHypotheses"] = ["TODO: Add critical hypotheses here"]
+
+    scoringInfo["criticalHypotheses"].append("The artifact at Dig Site #" + str(goldDigSiteIdx) + " is the oldest, with an age of " + str(oldestArtifactAge) + " years. The ages of the other artifacts (in years) are: " + ", ".join([str(age) for age in otherArtifactAges]) + ".")
+
 
     # Add a table at the start of the dig site
     instrumentTable = world.createObject("Table")
@@ -309,7 +317,6 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
     # TODO: Critical hypotheses
     scoringInfo["criticalHypotheses"] = ["The lower a value an artifact has on Radioisotope Channel " + str(realChannel) + ", the older it is."]
 
-
     # Now the 3 unknown artifacts
     unknownArtifacts = []
     unknownArtifactAges = [oldArtifactAge, mediumArtifactAge, youngArtifactAge]
@@ -333,6 +340,7 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
     scoringInfo["seedArtifacts"] = []
     scoringInfo["unknownArtifacts"] = []
     scoringInfo["signs"] = []
+    goldDigSiteIdx = -1
     for digSiteIdx, digSiteLocation in enumerate(digSiteLocations):
         if (digSiteIdx < 3):
             # Seed artifact
@@ -349,6 +357,9 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
             # Also make a special note of the target (i.e. winning) sign
             if (artifact.attributes["radiocarbonAge"] == oldArtifactAge):
                 scoringInfo["targetSign"] = addedSign
+                goldDigSiteIdx = digSiteIdx+1
+
+    scoringInfo["criticalHypotheses"].append("The artifact at Dig Site #" + str(goldDigSiteIdx) + " is the oldest, with an age of " + str(oldArtifactAge) + " years. The ages of the other artifacts (in years) are: " + str(mediumArtifactAge) + ", " + str(youngArtifactAge) + ".")
 
 
     # Add a table at the start of the dig site

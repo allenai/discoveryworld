@@ -144,7 +144,8 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
     scoringInfo["criticalHypotheses"] = []
     # Add the critical hypotheses
     #scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading.")
-    scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading, with a slope of " + str(randomSlope) + " and an offset of " + str(randomOffset) + ".")
+    functionStr = "That is, the resonance frequency = (" + str(randomSlope) + " * " + scoringInfo['criticalInstrument'].name + " reading) + " + str(randomOffset) + "."
+    scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading, with a slope of " + str(randomSlope) + " and an offset of " + str(randomOffset) + ". " + functionStr)
 
 
     # Generate the quantum crystals
