@@ -504,15 +504,15 @@ class DialogMaker():
         # Root node (introduce the soil nutrient controller, give options to ask to change the nutrient levels)
         rootNode = DialogNode("rootNode", "Hello, I am Crystal Reactor #" + str(reactorNum) + ".\nThe current resonance frequence is: {resonanceFreq} Hertz.\nThe allowable range is 0 to 10,000 Hz.", statesToAdd = [], statesToRemove = [])
         # Increase frequency
-        rootNode.addDialogOption("Increase frequency by 1000 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 1000}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
-        rootNode.addDialogOption("Increase frequency by 100 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 100}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
-        rootNode.addDialogOption("Increase frequency by 10 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 10}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
-        rootNode.addDialogOption("Increase frequency by 1 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 1}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
+        rootNode.addDialogOption("Increase frequency by 1000 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 1000}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.checkResonanceFreq)
+        rootNode.addDialogOption("Increase frequency by 100 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 100}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.checkResonanceFreq)
+        rootNode.addDialogOption("Increase frequency by 10 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 10}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.checkResonanceFreq)
+        rootNode.addDialogOption("Increase frequency by 1 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 1}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.checkResonanceFreq)
         # Decrease frequency
-        rootNode.addDialogOption("Decrease frequency by 1000 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -1000}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
-        rootNode.addDialogOption("Decrease frequency by 100 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -100}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
-        rootNode.addDialogOption("Decrease frequency by 10 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -10}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
-        rootNode.addDialogOption("Decrease frequency by 1 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -1}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
+        rootNode.addDialogOption("Decrease frequency by 1000 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -1000}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.checkResonanceFreq)
+        rootNode.addDialogOption("Decrease frequency by 100 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -100}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.checkResonanceFreq)
+        rootNode.addDialogOption("Decrease frequency by 10 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -10}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.checkResonanceFreq)
+        rootNode.addDialogOption("Decrease frequency by 1 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -1}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.checkResonanceFreq)
         # Exit
         rootNode.addDialogOption("Exit", "endNode")
         tree.addNode(rootNode)

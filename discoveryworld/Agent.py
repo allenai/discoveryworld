@@ -2784,16 +2784,12 @@ class CrystalReactor(NPCDevice):
         # Also change the name of the reactor
         self.name = "crystal reactor " + str(self.attributes['reactorNum'])
 
-
-    def tick(self):
+    def checkResonanceFreq(self):
         # Make sure the resonance frequency is within bounds
         if (self.attributes['resonanceFreq'] < 0):
             self.attributes['resonanceFreq'] = 0
         elif (self.attributes['resonanceFreq'] > 10000):
             self.attributes['resonanceFreq'] = 10000
-
-        # Call superclass
-        NPC.tick(self)
 
         # Check if it contains a quantum crystal in the contents
         containsCrystal = None
@@ -2834,11 +2830,11 @@ class CrystalReactor(NPCDevice):
             self.attributes['isActivated'] = False
             self.name = "crystal reactor (no crystal present)"
             # Truncate the resonance frequency to be an integer (since no crystal is present)
-            #self.attributes['resonanceFreq'] = int(self.attributes['resonanceFreq'])
+            self.attributes['resonanceFreq'] = int(self.attributes['resonanceFreq'])
 
-        # Call superclass
-        Object.tick(self)
-
+    def tick(self):
+        self.checkResonanceFreq()
+        super().tick()
 
     # Sprite
     # Updates the current sprite name based on the current state of the object
