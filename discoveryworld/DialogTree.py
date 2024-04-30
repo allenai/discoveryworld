@@ -561,7 +561,7 @@ class DialogMaker():
         # Store dialog tree in agent
         agent.setDialogTree(tree)
 
-    def mkDialogElderTutorial(self, agent):
+    def mkDialogElderTutorial(self, agent, completionCode="3981"):
         tree = DialogTree(agent)
 
         rootNode = DialogNode("rootNode", f"Elder: I'm starving. Can you please help me?")
@@ -596,7 +596,7 @@ class DialogMaker():
         mealIsColdNode.addDialogOption("Alright, alright! I'll be right back.", "endNodeOK")
         tree.addNode(mealIsColdNode)
 
-        mealIsWarmNode = DialogNode("mealIsWarmNode", "Yum! That's perfect.\n\nYour completion code is 3981.\n\nBy the way, here's the key to access the rest of the village.", statesToAdd=["giveKey"])
+        mealIsWarmNode = DialogNode("mealIsWarmNode", "Yum! That's perfect.\n\nYour completion code is " + str(completionCode) + ".\n\nBy the way, here's the key to access the rest of the village.", statesToAdd=["giveKey"])
         mealIsWarmNode.addDialogOption("Enjoy your meal.", "endNodeOK")
         tree.addNode(mealIsWarmNode)
 

@@ -239,9 +239,11 @@ def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
     elder = NPCElder(world, "Elder", pot=pot, key=key)
     world.addObject(19, 24, Layer.AGENT, elder)
     world.addAgent(elder)
-    dialogMaker.mkDialogElderTutorial(elder)
+    completionCode = "3941"
+    dialogMaker.mkDialogElderTutorial(elder, completionCode=completionCode)
     elder.addObject(key)
     #userAgent.addObject(key)
+    scoringInfo["criticalHypotheses"].append("The completion code is " + str(completionCode) + ".")
 
     scoringInfo["elder"] = elder
     scoringInfo["houseBounds"] = houseBounds
