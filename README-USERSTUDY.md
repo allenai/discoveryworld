@@ -47,8 +47,11 @@ python scripts/userstudy.py
 ```
 
 ## Step 2: Playing
+### 2.1 Tutorial
 
-### 2.1 Selecting a scenario
+Please complete the first scenario, "Tutorial", first, and give the completion code at the end to the experimenter. 
+
+### 2.2 Selecting a scenario
 
 DiscoveryWorld contains a number of scenarios, which are shown on a menu when you run the user study.  Currently the following are officially supported:
 ```
@@ -60,19 +63,19 @@ Reactor Lab
 
 Scenarios not on this list may not be ready yet.
 
-### 2.2 Selecting a difficulty and variation
+### 2.3 Selecting a difficulty and variation
 
 Using the menus, you should select a difficulty of `normal` and a variation of `1` (the first option).
 
-### 2.3 Task Instructions
+### 2.4 Task Instructions
 
 Upon starting a game, it will present the instructions for your task to you.  These can always be pulled up again by pressing the **TAB** key.
 
-### 2.4 External Tools
+### 2.5 External Tools
 
 You are welcome, and strongly encouraged, to use any external tools that you'd like -- for example, a spreadsheet, and your favorite statistics program.
 
-### 2.5 User Notebook
+### 2.6 User Notebook
 
 Please keep a notebook (in a text editor of your choice, as long as it's saved in something we can open -- e.g. `.txt`, `.pdf`, `.doc`) where you write down your notes/work in solving each scenario.
 
@@ -101,17 +104,17 @@ SUPPORTING EVIDENCE:
 ```
 
 
-### 2.6 Completion
+### 2.7 Completion
 
 When a game scenario is completed, it will automatically notify you, and then begin saving log files.
 
 If you reach a time limit or decide to quit early, the game will also save log files before you exit.
 
-### 2.7 Log files
+### 2.8 Log files
 
 The `userstudy.py` user interface saves extensive logs after each run, including the full game state at each step, the user actions, and frame captures of the game at each step (to assemble a video).  These are stored in the `logs` subdirectory.  A new subdirecty is made each time you play a scenario.  After the log files are saved, the entire log file directory will be automatically archived (zipped up).
 
-### 2.8 Controls
+### 2.9 Controls
 
 The following controls are supported.  Note that these are also accessible in-game by pressing the `?` key:
 * **Arrow keys for movement:** `left/right` keys rotate the agent, `up/down` move forward/backward
