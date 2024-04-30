@@ -2817,10 +2817,14 @@ class CrystalReactor(NPCDevice):
                 self.name = "crystal reactor (uncalibrated)"
 
             # If the frequency is within 1 Hz of the correct value, then change the reactor's resonance frequency to be the same as the crystal's
-            if (abs(self.attributes['resonanceFreq'] - containsCrystal.attributes['resonanceFreq']) < 1.0):
-               self.attributes['resonanceFreq'] = containsCrystal.attributes['resonanceFreq']
-            # Otherwise, change the reactor's frequency to be truncated
+            #if (abs(self.attributes['resonanceFreq'] - containsCrystal.attributes['resonanceFreq']) < 1.0):
+            freqReactorInt = int(self.attributes['resonanceFreq'])
+            freqCrystalInt = int(containsCrystal.attributes['resonanceFreq'])
+            if (freqReactorInt == freqCrystalInt):
+                # Report the exact frequency
+                self.attributes['resonanceFreq'] = containsCrystal.attributes['resonanceFreq']
             else:
+               # Otherwise, change the reactor's frequency to be truncated (i.e. just an integer, no decimal places)
                self.attributes['resonanceFreq'] = int(self.attributes['resonanceFreq'])
 
         else:
