@@ -67,7 +67,11 @@ Using the menus, you should select a difficulty of `normal` and a variation of `
 
 Upon starting a game, it will present the instructions for your task to you.  These can always be pulled up again by pressing the **TAB** key. 
 
-### 2.4 User Notebook
+### 2.4 External Tools
+
+You are welcome, and strongly encouraged, to use any external tools that you'd like -- for example, a spreadsheet, and your favorite statistics program.
+
+### 2.5 User Notebook
 
 Please keep a notebook (in a text editor of your choice, as long as it's saved in something we can open -- e.g. `.txt`, `.pdf`, `.doc`) where you write down your notes/work in solving each scenario. 
 
@@ -77,6 +81,13 @@ START OF NOTES FOR:
 Scenario: Reactor Lab
 Difficulty: Normal
 Variation: 1
+```
+
+Please include a list of any tools you used:
+```
+TOOLS I USED WHEN SOLVING THIS SCENARIO:
+Spreadsheet: Excel
+Statistics: R
 ```
 
 At the end of the notes for a given scenario, it would be helpful if you clearly included the following:
@@ -89,17 +100,17 @@ SUPPORTING EVIDENCE:
 ```
 
 
-### 2.5 Completion
+### 2.6 Completion
 
 When a game scenario is completed, it will automatically notify you, and then begin saving log files. 
 
 If you reach a time limit or decide to quit early, the game will also save log files before you exit. 
 
-### 2.6 Log files
+### 2.7 Log files
 
 The `userstudy.py` user interface saves extensive logs after each run, including the full game state at each step, the user actions, and frame captures of the game at each step (to assemble a video).  These are stored in the `logs` subdirectory.  A new subdirecty is made each time you play a scenario.  After the log files are saved, the entire log file directory will be automatically archived (zipped up). 
 
-### 2.7 Controls
+### 2.8 Controls
 
 The following controls are supported.  Note that these are also accessible in-game by pressing the `?` key:
 * **Arrow keys for movement:** `left/right` keys rotate the agent, `up/down` move forward/backward
