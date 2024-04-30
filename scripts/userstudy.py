@@ -27,31 +27,31 @@ SCENARIO_NAMES = [
 ]
 SCENARIO_INFOS = {
     "Tutorial": {
-        "difficulty": ["Easy"],
+        "difficulty": ["Normal"],
         "variations": ["1"],
     },
     "Combinatorial Chemistry": {
-        "difficulty": ["Easy", "Challenge"],
+        "difficulty": ["Normal", "Challenge"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Archaeology Dating": {
-        "difficulty": ["Easy", "Challenge"],
+        "difficulty": ["Normal", "Challenge"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Plant Nutrients": {
-        "difficulty": ["Easy"],
+        "difficulty": ["Normal"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Reactor Lab": {
-        "difficulty": ["Easy"],
+        "difficulty": ["Normal"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Lost in Translation": {
-        "difficulty": ["Easy", "Challenge"],
+        "difficulty": ["Normal", "Challenge"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Space Sick": {
-        "difficulty": ["Easy"],
+        "difficulty": ["Normal"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     # "TODO 1": {
