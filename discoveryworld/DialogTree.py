@@ -82,26 +82,7 @@ class DialogTree():
         currentNodeText = currentNode.currentNodeText
         # Replace any variables in the text. Variables are of the form {varName}, and are replaced with the value of the variable in this agent's self.attributes[] dictionary
 
-        complete = False
-        numRuns = 0
-        while ("{" in currentNodeText) and (complete == False):
-            # Look for the first "{"
-            firstBracketIndex = currentNodeText.index("{")
-            # Look for the next "}" after it
-            secondBracketIndex = currentNodeText.index("}", firstBracketIndex)
-            # Get the variable name
-            varName = currentNodeText[firstBracketIndex + 1:secondBracketIndex]
-            # If the variable name is in the agent's attributes, replace it
-            if (varName in self.agent.attributes):
-                currentNodeText = currentNodeText[:firstBracketIndex] + str(self.agent.attributes[varName]) + currentNodeText[secondBracketIndex + 1:]
-            else:
-                #currentNodeText = currentNodeText[:firstBracketIndex] + "UNKNOWN" + currentNodeText[secondBracketIndex + 1:]
-                complete = True
-
-            # Just in case something goes wonky, limit the number of runs so we don't go in an infinite loop.
-            numRuns += 1
-            if (numRuns > 50):
-                complete = True
+        currentNodeText = currentNodeText.format(**self.agent.attributes)
 
         # Get the options of what the user can say to this agent
         dialogOptions = currentNode.dialogOptions
@@ -170,6 +151,7 @@ class DialogTree():
         # Find the dialog option that matches what the user said
         for dialogOption in filteredDialogOptions:
             if dialogOption["thingToSay"] == thingToSay:
+
                 # Also, modify any variables, if requested
                 varsToModify = dialogOption["floatVariablesToModify"]
                 minMaxRange = dialogOption["minMaxRange"]
@@ -187,6 +169,10 @@ class DialogTree():
                     else:
                         # The agent doesn't have the variable
                         print("ERROR: DialogTree: Agent doesn't have variable '" + varName + "'")
+
+                callback = dialogOption.get("callback")
+                if callback:
+                    callback()
 
                 # Set the current node to the next node
                 self.setCurrentNode(dialogOption["nextNodeName"])
@@ -211,14 +197,15 @@ class DialogNode():
         self.dialogOptions = []
 
 
-    def addDialogOption(self, thingToSay, nextNodeName, requiresStates = [], antiStates = [], floatVariablesToModify = {}, minMaxRange = {}):
+    def addDialogOption(self, thingToSay, nextNodeName, requiresStates = [], antiStates = [], floatVariablesToModify = {}, minMaxRange = {}, callback=None):
         packed = {
             "thingToSay": thingToSay,
             "nextNodeName": nextNodeName,
             "requiresStates": requiresStates,
             "antiStates": antiStates,
             "floatVariablesToModify": floatVariablesToModify,
-            "minMaxRange": minMaxRange
+            "minMaxRange": minMaxRange,
+            "callback": callback,
         }
 
         self.dialogOptions.append(packed)
@@ -517,15 +504,15 @@ class DialogMaker():
         # Root node (introduce the soil nutrient controller, give options to ask to change the nutrient levels)
         rootNode = DialogNode("rootNode", "Hello, I am Crystal Reactor #" + str(reactorNum) + ".\nThe current resonance frequence is: {resonanceFreq} Hertz.\nThe allowable range is 0 to 10,000 Hz.", statesToAdd = [], statesToRemove = [])
         # Increase frequency
-        rootNode.addDialogOption("Increase frequency by 1000 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 1000}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}})
-        rootNode.addDialogOption("Increase frequency by 100 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 100}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}})
-        rootNode.addDialogOption("Increase frequency by 10 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 10}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}})
-        rootNode.addDialogOption("Increase frequency by 1 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 1}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}})
+        rootNode.addDialogOption("Increase frequency by 1000 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 1000}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
+        rootNode.addDialogOption("Increase frequency by 100 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 100}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
+        rootNode.addDialogOption("Increase frequency by 10 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 10}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
+        rootNode.addDialogOption("Increase frequency by 1 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": 1}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
         # Decrease frequency
-        rootNode.addDialogOption("Decrease frequency by 1000 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -1000}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}})
-        rootNode.addDialogOption("Decrease frequency by 100 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -100}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}})
-        rootNode.addDialogOption("Decrease frequency by 10 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -10}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}})
-        rootNode.addDialogOption("Decrease frequency by 1 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -1}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}})
+        rootNode.addDialogOption("Decrease frequency by 1000 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -1000}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
+        rootNode.addDialogOption("Decrease frequency by 100 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -100}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
+        rootNode.addDialogOption("Decrease frequency by 10 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -10}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
+        rootNode.addDialogOption("Decrease frequency by 1 Hz", "rootNode", floatVariablesToModify={"resonanceFreq": -1}, minMaxRange={"resonanceFreq": {"min": 0, "max": 10000}}, callback=agent.tick)
         # Exit
         rootNode.addDialogOption("Exit", "endNode")
         tree.addNode(rootNode)
@@ -534,7 +521,6 @@ class DialogMaker():
         # OK node
         endNodeOK = DialogNode("endNode", "Exiting crystal reactor controls.", statesToAdd = [], statesToRemove = [])
         tree.addNode(endNodeOK)
-
 
         # Store dialog tree in agent
         agent.setDialogTree(tree)
