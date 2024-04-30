@@ -316,7 +316,8 @@ def makeScenarioReactorLab(world, numUserAgents=1):
 
     # Add teleport locations to world
     # TODO
-    world.addTeleportLocation("science lab", 14, 18)
+    world.addTeleportLocation("science lab (instruments)", 13, 17)
+    world.addTeleportLocation("science lab (crystal bench)", 14, 18)
     world.addTeleportLocation("reactor lab", 20, 18)
 
     # Return scoring info

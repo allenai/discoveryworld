@@ -222,11 +222,15 @@ def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
     world.addAgent(userAgent)
 
     # Add teleport locations to world
-    world.addTeleportLocation("key shop", 12, 24)
-    world.addTeleportLocation("paint shop", 22, 24)
-    world.addTeleportLocation("town square", 16, 18)
-    world.addTeleportLocation("general store", 11, 10)
-    world.addTeleportLocation("school", 23, 10)
+    #world.addTeleportLocation("key shop", 12, 24)
+    #world.addTeleportLocation("paint shop", 22, 24)
+    #world.addTeleportLocation("town square", 16, 18)
+    #world.addTeleportLocation("general store", 11, 10)
+    #world.addTeleportLocation("school", 23, 10)
+    world.addTeleportLocation("Starting Location", 25, 22)
+    world.addTeleportLocation("Near Elder", 20, 24)
+    world.addTeleportLocation("Kitchen", 20, 22)
+    world.addTeleportLocation("Front Door", 23, 25)
 
     # Create key to front door and give it to elder.
     key = world.createObject("Key", isRusted=False)
