@@ -54,9 +54,9 @@ class NPCElder(NPC):
         mushrooms = [obj for obj in allContents if obj.type == "mushroom1"]
         pots = [obj for obj in allContents if obj.type == "pot"]
 
-        print("### All contents: " + str([obj.type for obj in allContents]))
-        print("### Mushrooms: " + str(len(mushrooms)))
-        print("### Pots: " + str(len(pots)))
+        #print("### All contents: " + str([obj.type for obj in allContents]))
+        #print("### Mushrooms: " + str(len(mushrooms)))
+        #print("### Pots: " + str(len(pots)))
 
         if (len(pots) > 0) and (len(mushrooms) > 0):
         #if self.pot in self.contents:
