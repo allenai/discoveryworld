@@ -708,6 +708,11 @@ class UserInterface:
 
         return self.actionMoveAgentForward()
 
+    def actionRotateOrMoveAgentForward(self, direction):
+        if self.currentAgent.attributes["faceDirection"] == direction:
+            return self.actionMoveAgentForward()
+
+        return self.currentAgent.actionRotateAgentFacingDirectionAbsolute(direction)
 
     # Pick up an object
     def actionPickupObject(self, objToPickUp):
@@ -940,21 +945,37 @@ class UserInterface:
                 return (True, self.actionRotateAndMoveAgentForward("east"))
 
         else:
-            # Move the agent forward
+            # # Move the agent forward
+            # if (keys[pygame.K_UP]):
+            #     return (True, self.actionMoveAgentForward())
+
+            # # Move the agent backward
+            # elif (keys[pygame.K_DOWN]):
+            #     return (True, self.actionMoveAgentBackward())
+
+            # # Rotate the agent counterclockwise
+            # elif (keys[pygame.K_LEFT]):
+            #     return (True, self.actionRotateAgentCounterclockwise())
+
+            # # Rotate the agent clockwise
+            # elif (keys[pygame.K_RIGHT]):
+            #     return (True, self.actionRotateAgentClockwise())
+
+            # Face north, or move forward if already facing that direction.
             if (keys[pygame.K_UP]):
-                return (True, self.actionMoveAgentForward())
+                return (True, self.actionRotateOrMoveAgentForward("north"))
 
-            # Move the agent backward
+            # Face south, or move forward if already facing that direction.
             elif (keys[pygame.K_DOWN]):
-                return (True, self.actionMoveAgentBackward())
+                return (True, self.actionRotateOrMoveAgentForward("south"))
 
-            # Rotate the agent counterclockwise
+            # Face west, or move forward if already facing that direction.
             elif (keys[pygame.K_LEFT]):
-                return (True, self.actionRotateAgentCounterclockwise())
+                return (True, self.actionRotateOrMoveAgentForward("west"))
 
-            # Rotate the agent clockwise
+            # Face east, or move forward if already facing that direction.
             elif (keys[pygame.K_RIGHT]):
-                return (True, self.actionRotateAgentClockwise())
+                return (True, self.actionRotateOrMoveAgentForward("east"))
 
         # Pick-up Object in arg1 slot
         if (keys[pygame.K_SPACE]):
