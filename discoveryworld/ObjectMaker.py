@@ -254,7 +254,7 @@ class ObjectMaker:
             "GeneratorSideRight": GeneratorSideRight,
             "GeneratorCenter": GeneratorCenter,
             "Densitometer": Densitometer,
-            "Pupitre": Pupitre,
+            "Desk": Desk,
             "FlagPole": FlagPole,
             "TableWithSign": TableWithSign,
             "CountingComputer": CountingComputer,

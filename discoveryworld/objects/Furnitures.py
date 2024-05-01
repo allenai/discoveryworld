@@ -391,10 +391,10 @@ class TableWithSign(Object):
         return spriteList
 
 
-class Pupitre(Table):
+class Desk(Table):
     def __init__(self, world, facing="north"):
         self.facing = facing
-        Object.__init__(self, world, "pupitre", "pupitre", defaultSpriteName = "house1_table")
+        Object.__init__(self, world, "desk", "desk", defaultSpriteName = "house1_table")
         #self.chair = world.createObject("Chair")
 
         self.attributes["isMovable"] = False                       # Can it be moved?
