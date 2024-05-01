@@ -171,4 +171,4 @@ Please send:
 
 ## Contact
 
-For any questions, please contact **TODO**.
+For any questions, please contact Erin Bransom (erinbransom@allenai.org).
