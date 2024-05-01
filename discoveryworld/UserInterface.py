@@ -12,7 +12,6 @@ from discoveryworld.ActionHistory import *
 
 
 ARROWS_FACE_AND_MOVE = os.environ.get("MARC", False)
-NUMBERS_TO_CHANGE_ITEMS = os.environ.get("MARC", False)
 
 class UserInterface:
     # Constructor
@@ -1083,61 +1082,59 @@ class UserInterface:
             result = self.actionTeleportToLocation(location = randomLocationName)
             return (True, result)
 
-        if NUMBERS_TO_CHANGE_ITEMS:
-            whichBox = 1
-            message = lambda: f"Changed argument box 1 to {self.curSelectedArgument1Obj.name if self.curSelectedArgument1Obj else None}"
-            if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
-                whichBox = 2
-                message = lambda: f"Changed argument box 2 to {self.curSelectedArgument2Obj.name if self.curSelectedArgument2Obj else None}"
+        whichBox = 1
+        message = lambda: f"Changed argument box 1 to {self.curSelectedArgument1Obj.name if self.curSelectedArgument1Obj else None}"
+        if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+            whichBox = 2
+            message = lambda: f"Changed argument box 2 to {self.curSelectedArgument2Obj.name if self.curSelectedArgument2Obj else None}"
 
-            if (keys[pygame.K_1]):
-                self.selectArgumentBox(0, whichBox)
-                return (False, ActionSuccess(success=True, message=message()))
-            elif (keys[pygame.K_2]):
-                self.selectArgumentBox(1, whichBox)
-                return (False, ActionSuccess(success=True, message=message()))
-            elif (keys[pygame.K_3]):
-                self.selectArgumentBox(2, whichBox)
-                return (False, ActionSuccess(success=True, message=message()))
-            elif (keys[pygame.K_4]):
-                self.selectArgumentBox(3, whichBox)
-                return (False, ActionSuccess(success=True, message=message()))
-            elif (keys[pygame.K_5]):
-                self.selectArgumentBox(4, whichBox)
-                return (False, ActionSuccess(success=True, message=message()))
-            elif (keys[pygame.K_6]):
-                self.selectArgumentBox(5, whichBox)
-                return (False, ActionSuccess(success=True, message=message()))
-            elif (keys[pygame.K_7]):
-                self.selectArgumentBox(6, whichBox)
-                return (False, ActionSuccess(success=True, message=message()))
-            elif (keys[pygame.K_8]):
-                self.selectArgumentBox(7, whichBox)
-                return (False, ActionSuccess(success=True, message=message()))
-            elif (keys[pygame.K_9]):
-                self.selectArgumentBox(8, whichBox)
-                return (False, ActionSuccess(success=True, message=message()))
-            elif (keys[pygame.K_0]):
-                self.selectArgumentBox(9, whichBox)
-                return (False, ActionSuccess(success=True, message=message()))
+        if (keys[pygame.K_1]):
+            self.selectArgumentBox(0, whichBox)
+            return (False, ActionSuccess(success=True, message=message()))
+        elif (keys[pygame.K_2]):
+            self.selectArgumentBox(1, whichBox)
+            return (False, ActionSuccess(success=True, message=message()))
+        elif (keys[pygame.K_3]):
+            self.selectArgumentBox(2, whichBox)
+            return (False, ActionSuccess(success=True, message=message()))
+        elif (keys[pygame.K_4]):
+            self.selectArgumentBox(3, whichBox)
+            return (False, ActionSuccess(success=True, message=message()))
+        elif (keys[pygame.K_5]):
+            self.selectArgumentBox(4, whichBox)
+            return (False, ActionSuccess(success=True, message=message()))
+        elif (keys[pygame.K_6]):
+            self.selectArgumentBox(5, whichBox)
+            return (False, ActionSuccess(success=True, message=message()))
+        elif (keys[pygame.K_7]):
+            self.selectArgumentBox(6, whichBox)
+            return (False, ActionSuccess(success=True, message=message()))
+        elif (keys[pygame.K_8]):
+            self.selectArgumentBox(7, whichBox)
+            return (False, ActionSuccess(success=True, message=message()))
+        elif (keys[pygame.K_9]):
+            self.selectArgumentBox(8, whichBox)
+            return (False, ActionSuccess(success=True, message=message()))
+        elif (keys[pygame.K_0]):
+            self.selectArgumentBox(9, whichBox)
+            return (False, ActionSuccess(success=True, message=message()))
 
-        else:
-            # UI element (incrementing argument boxes with [, ], ;, and ')
-            if (keys[pygame.K_LEFTBRACKET]):
-                self.changeArgumentBox(delta=-1, whichBox=1)
-                return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
+        # UI element (incrementing argument boxes with [, ], ;, and ')
+        if (keys[pygame.K_LEFTBRACKET]):
+            self.changeArgumentBox(delta=-1, whichBox=1)
+            return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
 
-            elif (keys[pygame.K_RIGHTBRACKET]):
-                self.changeArgumentBox(delta=1, whichBox=1)
-                return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
+        elif (keys[pygame.K_RIGHTBRACKET]):
+            self.changeArgumentBox(delta=1, whichBox=1)
+            return (False, ActionSuccess(success=True, message="Changed argument box 1 to " + str(self.curSelectedArgument1Obj.name)))
 
-            elif (keys[pygame.K_SEMICOLON]):
-                self.changeArgumentBox(delta=-1, whichBox=2)
-                return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
+        elif (keys[pygame.K_SEMICOLON]):
+            self.changeArgumentBox(delta=-1, whichBox=2)
+            return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
 
-            elif (keys[pygame.K_QUOTE]):
-                self.changeArgumentBox(delta=1, whichBox=2)
-                return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
+        elif (keys[pygame.K_QUOTE]):
+            self.changeArgumentBox(delta=1, whichBox=2)
+            return (False, ActionSuccess(success=True, message="Changed argument box 2 to " + str(self.curSelectedArgument2Obj.name)))
 
         # DiscoveryFeed Actions
         # Reading articles
