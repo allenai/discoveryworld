@@ -502,7 +502,13 @@ class UserInterface:
 
             # Display the background sprite
             if (objIdx == curSelectedObjIdx):
-                self.spriteLibrary.renderSprite(self.window, "ui_inventory_selected", x, y, scale)
+                # Inventory object
+                if (objIdx >= len(objsInv)):
+                    # Environmental inventory spot (slightly different background)
+                    self.spriteLibrary.renderSprite(self.window, "ui_inventory_env_selected", x, y, scale)
+                else:
+                    # Inventory spot
+                    self.spriteLibrary.renderSprite(self.window, "ui_inventory_selected", x, y, scale)
             else:
                 if (objIdx >= len(objectList)):
                     # Empty inventory spot
@@ -531,9 +537,6 @@ class UserInterface:
         # Render the selected object's name
         selectedObjectName = ""
         if (curSelectedObjIdx < len(objectList)):
-            # Below adds the UUID
-            ##selectedObjectName = objectList[curSelectedObjIdx].name + "[uuid: " + str(objectList[curSelectedObjIdx].uuid) + "] : " + objectList[curSelectedObjIdx].getTextDescription()
-            # Below removes the UUID
             selectedObjectName = objectList[curSelectedObjIdx].getTextDescription()
 
         # Render the name above the box
