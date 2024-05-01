@@ -51,10 +51,10 @@ class NPCElder(NPC):
         if self.pot in self.contents:
             self.addState("hasPot")
 
-            # Check if at least one of the contents of the pot are marked as "isCooked" == True
+            # Check if at least one of the contents of the pot are marked as ()"isCooked" == True), AND the temperature is at least 50 C
             cooked = False
             for obj in self.pot.contents:
-                if (obj.attributes["isCooked"] == True):
+                if (obj.attributes["isCooked"] == True) and (obj.attributes["temperatureC"] >= 50):
                     cooked = True
                     break
             if (cooked == True):
