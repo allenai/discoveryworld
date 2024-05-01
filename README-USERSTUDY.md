@@ -6,6 +6,7 @@ DiscoveryWorld is a top-down, turn-based 2D game containing scenarios that model
 
 The purpose of the user study is to have a control to see how well humans solve these same scenarios.
 
+While we plan to publicly release this game in the next few months, we ask that you do not distribute the experiment materials (including but not limited to the game code for this alpha version) with anyone.
 
 # User study procedure
 
