@@ -50,11 +50,18 @@ class NPCElder(NPC):
         # Interpret any external states
         if self.pot in self.contents:
             self.addState("hasPot")
-            # Check if temperature of pot is below 0C
-            if self.pot.attributes['temperatureC'] < 0:
-                self.addState("potIsCold")
-            else:
+
+            # Check if at least one of the contents of the pot are marked as "isCooked" == True
+            cooked = False
+            for obj in self.pot.contents:
+                if (obj.attributes["isCooked"] == True):
+                    cooked = True
+                    break
+            if (cooked == True):
                 self.addState("potIsWarm")
+            else:
+                self.addState("potIsCold")
+
 
         if "giveBack" in self.attributes['states']:
             self.removeState("giveBack")

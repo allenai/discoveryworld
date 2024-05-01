@@ -147,6 +147,22 @@ class Pot(Object):
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")
         self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
 
+    # attributes['temperatureC']
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+        if (self.attributes['temperatureC'] <= 10):
+            addedProperties.append("cold")
+        elif (self.attributes['temperatureC'] > 10) and (self.attributes['temperatureC'] < 100):
+            addedProperties.append("warm")
+        elif (self.attributes['temperatureC'] >= 100):
+            addedProperties.append("hot")
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
+
     def tick(self):
         # Call superclass
         Object.tick(self)

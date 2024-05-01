@@ -94,6 +94,7 @@ class Object:
 
         # Food attributes
         self.attributes['isEdible'] = False                         # Can it be eaten?
+        self.attributes['isCooked'] = False                         # Is it cooked?
 
         # Poison/health attributes
         self.attributes['isPoisonous'] = False                     # Is it poisonous?
@@ -426,13 +427,19 @@ class Object:
     #
     def getTextDescription(self):
         # Get a text description of this object
-        outStr = self.name
+        outStr = self.name + self._getContainerTextDescription()
+        return outStr
+
+    # Helper intended to write "... (in <containerName> (uuid))" at the end of text descriptions
+    def _getContainerTextDescription(self):
+        outStr = ""
         if (self.parentContainer != None):
             containerName = self.parentContainer.name + ( " [uuid: " + str(self.parentContainer.uuid) + "]")
             containerPrefix = self.parentContainer.attributes.get("containerPrefix", "in")
             outStr += " (" + containerPrefix + " " + containerName + ")"
 
         return outStr
+
 
 
     def getTextObservationMicroscopic(self):

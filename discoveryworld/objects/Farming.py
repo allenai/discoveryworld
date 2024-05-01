@@ -174,7 +174,7 @@ class Mushroom(Object):
     # Constructor
     def __init__(self, world, color:str=""):
         # Default sprite name
-        Object.__init__(self, world, "mushroom", "mushroom", defaultSpriteName = "forest1_mushroom_pink")
+        Object.__init__(self, world, "mushroom1", "mushroom", defaultSpriteName = "forest1_mushroom_pink")
 
         #self.attributes["color"] = "pink"                           # Color of the mushroom (valid: "yellow", "pink", "red", "green")
         # Randomly choose a color
@@ -193,9 +193,36 @@ class Mushroom(Object):
         #    self.attributes['isPoisonous'] = True
 
 
+    #
+    #   Text Observations
+    #
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's cooked
+        if (self.attributes['isCooked'] == True):
+            addedProperties.append("cooked")
+
+        # DEBUG (add temperature)
+        #addedProperties.append(str(round(self.attributes["temperatureC"], 1)) + "C")
+
+        # Add color
+        addedProperties.append(self.attributes["color"])
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
+
     def tick(self):
         # Call superclass
         Object.tick(self)
+
+        # If the mushroom ever goes above 100C, then it's cooked
+        if (self.attributes['temperatureC'] >= 100):
+            self.attributes['isCooked'] = True
+
 
     # Sprite
     # Updates the current sprite name based on the current state of the object
@@ -221,12 +248,7 @@ class Mushroom(Object):
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
 
-    #
-    #   Text Observations
-    #
-    def getTextDescription(self):
-        # Get a text description of this object
-        return self.attributes["color"] + " " + self.name
+
 
 
 class PlantGeneric(Object):
