@@ -245,7 +245,7 @@ class Substance(Object):
         if (self.tickCompleted):
             return
 
-        print("## Substance tick: " + str(self.attributes["substanceName"]) + " (" + str(self.name) + ") UUID: " + str(self.uuid))
+        #print("## Substance tick: " + str(self.attributes["substanceName"]) + " (" + str(self.name) + ") UUID: " + str(self.uuid))
 
         # Call superclass
         Object.tick(self)
@@ -258,7 +258,7 @@ class Substance(Object):
             # Pure substance, keep current substance name
             #self.attributes["substanceName"] = "unknown substance"
             self.attributes['mixtureDict'] = {self.attributes["substanceName"]: 1.0}
-            print("SUBSTANCE TICK: Pure substance")
+            #print("SUBSTANCE TICK: Pure substance")
             pass
 
         # Case 2: Single substance
@@ -272,7 +272,7 @@ class Substance(Object):
 
             self.attributes['mixtureDict'] = {self.attributes["substanceName"]: 1.0}
 
-            print("SUBSTANCE TICK: Only 1 substance")
+            #print("SUBSTANCE TICK: Only 1 substance")
         # Case 3: Multiple substances
         else:
             # First, create a frequency counter of the substances
@@ -286,7 +286,7 @@ class Substance(Object):
                     else:
                         contentsFreq[subName] = 1
 
-            print("SUBSTANCE TICK: Multiple substances: " + str(contentsFreq) + " (old: " + str(oldSubstanceName) + ")")
+            #print("SUBSTANCE TICK: Multiple substances: " + str(contentsFreq) + " (old: " + str(oldSubstanceName) + ")")
 
             # Check if there are zero keys in the frequency counter
             if (len(contentsFreq) == 0):
@@ -327,11 +327,11 @@ class Substance(Object):
                     return reduce(math.gcd, listOfInts)
                 gcd = findGCDList(parts)
                 # If the gcd is greater than 1, then we can simplify the mixtureDict
-                print("GCD: " + str(gcd) + " (mixtureDict: " + str(self.attributes['mixtureDict']) + ")")
+                #print("GCD: " + str(gcd) + " (mixtureDict: " + str(self.attributes['mixtureDict']) + ")")
                 if (gcd > 1):
                     for key in self.attributes['mixtureDict'].keys():
                         self.attributes['mixtureDict'][key] = self.attributes['mixtureDict'][key] / gcd
-                    print("Simplified mixtureDict: " + str(self.attributes['mixtureDict']))
+                    #print("Simplified mixtureDict: " + str(self.attributes['mixtureDict']))
 
 
 
@@ -358,7 +358,7 @@ class Substance(Object):
                         if (len(obj.contents) == 0):
                             substancesInContainer.append(obj)
                             numUnmixedFound += 1
-                            print("\t Looking for reactants: Pure substance found: " + str(obj.attributes["substanceName"]) + " (" + str(obj.name) + ", UUID: " + str(obj.uuid) + ")")
+                            #print("\t Looking for reactants: Pure substance found: " + str(obj.attributes["substanceName"]) + " (" + str(obj.name) + ", UUID: " + str(obj.uuid) + ")")
                         # If it contains something, then it's a mixture
                         else:
                             found = False
@@ -369,7 +369,7 @@ class Substance(Object):
                             if (found):
                                 numUnmixedFound += 1
                                 mixturesToPossiblyRemove.append(obj)
-                                print("\t Looking for reactants: Mixture found: " + str(obj.attributes["substanceName"]) + " (" + str(obj.name) + ", UUID: " + str(obj.uuid) + ")")
+                                #print("\t Looking for reactants: Mixture found: " + str(obj.attributes["substanceName"]) + " (" + str(obj.name) + ", UUID: " + str(obj.uuid) + ")")
 
             if (numUnmixedFound > 1):
                 # Check to see that there is more than one different type of substance in the container (by 'substanceName' attribute)
@@ -382,8 +382,8 @@ class Substance(Object):
 
                 # DEBUG: Show a list of names of the substances that are about to react
                 substancesNamesInContainer = [sub.attributes["substanceName"] for sub in substancesInContainer]
-                print("Self-reacting substance detected.  Reacting substances: " + str(substancesNamesInContainer))
-                print("UUIDs of reacting substances: " + str([sub.uuid for sub in substancesInContainer]))
+                #print("Self-reacting substance detected.  Reacting substances: " + str(substancesNamesInContainer))
+                #print("UUIDs of reacting substances: " + str([sub.uuid for sub in substancesInContainer]))
 
                 # The way reactions are handled is by making a new Substance ("reacting substance"), and adding all the substances in the container to it.
                 reactingSubstance = Substance(self.world, "reacting substance")
@@ -403,7 +403,7 @@ class Substance(Object):
                     self.world.removeObject(mix)
 
                 # (TODO: Also tick the reacting substances?)
-                print("Created new reacting substance (UUID: " + str(reactingSubstance.uuid) + ")")
+                #print("Created new reacting substance (UUID: " + str(reactingSubstance.uuid) + ")")
                 #print("Calling Tick() on new substance (reacting substance, UUID: " + str(reactingSubstance.uuid) + ")")
                 #import time
                 #time.sleep(1)
@@ -473,7 +473,7 @@ class Key(Object):
             parentContainerContents = self.parentContainer.contents
             # Check if the parent container contains a specific substance
             containsCleaner = False
-            print("### KEY: Checking for cleaner substance in parent container")
+            #print("### KEY: Checking for cleaner substance in parent container")
             partialEvidenceLevel = 0
 
             # Check to make sure there are not more than 1 subtances in the container
@@ -483,31 +483,31 @@ class Key(Object):
                     numSubstances += 1
 
             if (numSubstances > 1):
-                print("## More than 1 substance in container.  Not evaluating rust reduction further, since those subtances may react later.")
+                #print("## More than 1 substance in container.  Not evaluating rust reduction further, since those subtances may react later.")
                 return
 
             for obj in parentContainerContents:
-                print("## Key: Mixture dictionary: " + str(obj.attributes['mixtureDict']) + " (containsCleaner: " + str(containsCleaner) + ")")
+                #print("## Key: Mixture dictionary: " + str(obj.attributes['mixtureDict']) + " (containsCleaner: " + str(containsCleaner) + ")")
                 # Check for "Cleaner"
                 if (obj.type == "substance") and (obj.attributes["substanceName"] == "cleaner"):
                     containsCleaner = True
                     break
                 # Check for a specific mixture (1 part Substance A, 2 parts substance C)
                 if (obj.type == "substance") and (len(obj.attributes['mixtureDict']) == 2):
-                    print("### In container with substance  (mixtureDict: " + str(obj.attributes['mixtureDict']) + ")")
+                    #print("### In container with substance  (mixtureDict: " + str(obj.attributes['mixtureDict']) + ")")
                     if ("Substance A" in obj.attributes['mixtureDict']) and ("Substance C" in obj.attributes['mixtureDict']):
-                        print("### In container with Substance A and C")
+                        #print("### In container with Substance A and C")
                         if (obj.attributes['mixtureDict']["Substance A"] == 1) and (obj.attributes['mixtureDict']["Substance C"] == 2):
-                            print("### In container with Substance A and C, and the right proportions")
+                            #print("### In container with Substance A and C, and the right proportions")
                             containsCleaner = True
                             break
                 # Partial evidence -- give some help for hill-climbing
                 if ("Substance A" in obj.attributes['mixtureDict']) and ("Substance B" not in obj.attributes['mixtureDict']):
                     partialEvidenceLevel += 1
-                    print("## Partial evidence (Substance A)")
+                    #print("## Partial evidence (Substance A)")
                 if ("Substance C" in obj.attributes['mixtureDict']) and ("Substance B" not in obj.attributes['mixtureDict']):
                     partialEvidenceLevel += 1
-                    print("## Partial evidence (Substance C)")
+                    #print("## Partial evidence (Substance C)")
 
             # If the parent container contains the cleaner substance, then remove the rust from the key
             if (containsCleaner):
@@ -517,7 +517,7 @@ class Key(Object):
                 self.needsSpriteNameUpdate = True
 
             # Handle partial evidence -- describe the key as less rusty, if certain combinations of substances are found
-            print("### Partial evidence level: " + str(partialEvidenceLevel))
+            #print("### Partial evidence level: " + str(partialEvidenceLevel))
             if (partialEvidenceLevel > 0):
                 # If the partial evidence level is high enough, then remove the rust from the key
                 newRustLevel = 3 - partialEvidenceLevel
@@ -617,7 +617,7 @@ class KeyRustyParametric(Object):
         magnitude2 = math.sqrt(sum([list2[i] ** 2 for i in range(len(list2))]))
         cosineSimilarity = dotProduct / (magnitude1 * magnitude2)
 
-        print("### RUST COSINE: " + str(cosineSimilarity) + " (dict1: " + str(self.attributes['rustRemovalDict']) + ", dict2: " + str(chemicalDict) + ")")
+        #print("### RUST COSINE: " + str(cosineSimilarity) + " (dict1: " + str(self.attributes['rustRemovalDict']) + ", dict2: " + str(chemicalDict) + ")")
 
         return cosineSimilarity
 
@@ -635,7 +635,7 @@ class KeyRustyParametric(Object):
             parentContainerContents = self.parentContainer.contents
             # Check if the parent container contains a specific substance
             containsCleaner = False
-            print("### KEY: Checking for cleaner substance in parent container")
+            #print("### KEY: Checking for cleaner substance in parent container")
             partialEvidenceLevel = 0
 
             # Check to make sure there are not more than 1 subtances in the container
@@ -645,11 +645,11 @@ class KeyRustyParametric(Object):
                     numSubstances += 1
 
             if (numSubstances > 1):
-                print("## More than 1 substance in container.  Not evaluating rust reduction further, since those subtances may react later.")
+                #print("## More than 1 substance in container.  Not evaluating rust reduction further, since those subtances may react later.")
                 return
 
             for obj in parentContainerContents:
-                print("## Key: Mixture dictionary: " + str(obj.attributes['mixtureDict']) + " (containsCleaner: " + str(containsCleaner) + ")")
+                #print("## Key: Mixture dictionary: " + str(obj.attributes['mixtureDict']) + " (containsCleaner: " + str(containsCleaner) + ")")
                 # Check for "Cleaner"
                 if (obj.type == "substance") and (obj.attributes["substanceName"] == "cleaner"):
                     containsCleaner = True
@@ -671,7 +671,7 @@ class KeyRustyParametric(Object):
                         #self.attributes['rustLevel'] = 3
                         partialEvidenceLevel = 3
 
-                    print("Partial Evidence Level: " + str(partialEvidenceLevel) + " (cosine: " + str(cosine) + ")")
+                    #print("Partial Evidence Level: " + str(partialEvidenceLevel) + " (cosine: " + str(cosine) + ")")
 
             # If the parent container contains the cleaner substance, then remove the rust from the key
             if (containsCleaner):
@@ -681,7 +681,7 @@ class KeyRustyParametric(Object):
                 self.needsSpriteNameUpdate = True
 
             # Handle partial evidence -- describe the key as less rusty, if certain combinations of substances are found
-            print("### Partial evidence level: " + str(partialEvidenceLevel))
+            #print("### Partial evidence level: " + str(partialEvidenceLevel))
             if (partialEvidenceLevel > 0):
                 if (partialEvidenceLevel < self.attributes['rustLevel']):
                     self.attributes['rustLevel'] = partialEvidenceLevel

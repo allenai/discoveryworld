@@ -44,7 +44,7 @@ class NPCElder(NPC):
             return
 
         # Debug
-        print(f"NPCElder (id: {self.name}): {self.attributes['states']}")
+        #print(f"NPCElder (id: {self.name}): {self.attributes['states']}")
         super().tick()
 
         # Interpret any external states
@@ -104,7 +104,7 @@ class NPCElder(NPC):
             self.actionDrop(self.key)
             self.addState("keyGiven")
 
-        print(f"NPCElder (id: {self.name}): {self.attributes}")
+        #print(f"NPCElder (id: {self.name}): {self.attributes}")
 
 def mkTutorialHouse(x, y, world):
     # Create a building (house)

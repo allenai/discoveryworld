@@ -279,7 +279,7 @@ class Agent(Object):
             elif (self.attributes['poisonedCounter'] > -1):
                 # Poisoned and actively affecting the agent
                 self.addState('poisoned')
-                print("Agent " + self.name + ": I don't feel very well!")
+                #print("Agent " + self.name + ": I don't feel very well!")
         else:
             # Remove state of 'poisoned' from the agent
             if ('poisoned' in self.attributes['states']):
@@ -650,7 +650,7 @@ class Agent(Object):
     def actionDrop(self, objToDrop):
         # First, check if the object is in the agent's inventory
         objectsInInventory = self.getInventory()
-        print("OBJECTS IN INVENTORY: " + str(objectsInInventory))
+        #print("OBJECTS IN INVENTORY: " + str(objectsInInventory))
         if (not objToDrop in objectsInInventory):
             # Object is not in the agent's inventory
             result = ActionSuccess(False, "That object (" + objToDrop.name + ") is not in my inventory.")
@@ -727,7 +727,7 @@ class Agent(Object):
     def actionThrow(self, objToThrow, throwLocation):
         # First, check if the object is in the agent's inventory
         objectsInInventory = self.getInventory()
-        print("OBJECTS IN INVENTORY: " + str(objectsInInventory))
+        #print("OBJECTS IN INVENTORY: " + str(objectsInInventory))
         if (not objToThrow in objectsInInventory):
             # Object is not in the agent's inventory
             result = ActionSuccess(False, "That object (" + objToThrow.name + ") is not in my inventory.")
@@ -936,9 +936,9 @@ class Agent(Object):
 
         # If we reach here, the object is edible and within reach.  Eat it.
         objToEat.invalidateSpritesThisWorldTile()            # Invalidate the sprites at the object's current location
-        print("EATEN OBJECT PARENT CONTAINER: " + str(objToEat.parentContainer))
+        #print("EATEN OBJECT PARENT CONTAINER: " + str(objToEat.parentContainer))
         self.world.removeObject(objToEat)                    # Remove the object from the world
-        print("EATEN OBJECT PARENT CONTAINER: " + str(objToEat.parentContainer))
+        #print("EATEN OBJECT PARENT CONTAINER: " + str(objToEat.parentContainer))
 
         # When the agent eats something, it eats all of that object's contained objects (and, parts).
         # First, collect all the parts that are being consumed
@@ -956,10 +956,10 @@ class Agent(Object):
 
         # Process any of the attributes of the objects being eaten
         for eatenObj in objsAndParts:
-            print("## Eating object: " + eatenObj.name + " with attributes: " + str(eatenObj.attributes))
+            #print("## Eating object: " + eatenObj.name + " with attributes: " + str(eatenObj.attributes))
             # If the object is poisonous, set the poisonedCounter randomly to (-2, -20)
             if (eatenObj.attributes["isPoisonous"] == True):
-                print("DEBUG: POISONED! (from " + eatenObj.name + ")")
+                #print("DEBUG: POISONED! (from " + eatenObj.name + ")")
                 self.attributes["poisonedCounter"] = random.randint(-20, -2)
 
         result = ActionSuccess(True, "I ate the " + objToEat.name + ".")
@@ -1538,19 +1538,19 @@ class NPC(Agent):
     def _doNPCAutonavigation(self):
         # Check to see if there's a goal location attribute
         if ("goalLocation" not in self.attributes):
-            print("_doNPCAutonavigation: No goal location attribute found.  Exiting. (agent: " + self.name + ")")
+            #print("_doNPCAutonavigation: No goal location attribute found.  Exiting. (agent: " + self.name + ")")
             return False
             #self.attributes["goalLocation"] = (10, 10)
 
         pathSuccess, nextX, nextY, pathLength = self.pathfinder.findPathNextStep(self.world, self.attributes["gridX"], self.attributes["gridY"], self.attributes["goalLocation"][0], self.attributes["goalLocation"][1])
 
         if (not pathSuccess):
-            print("_doNPCAutonavigation: No path found to goal location.  Exiting. (agent: " + self.name + ")")
+            #print("_doNPCAutonavigation: No path found to goal location.  Exiting. (agent: " + self.name + ")")
             return False
 
         if ("doorNeedsToBeClosed" in self.attributes) and (self.attributes["doorNeedsToBeClosed"] != None) and (self.attributes["movesSinceDoorOpen"] == 1):
             # We recently opened a door -- close it
-            print("AGENT: CLOSING DOOR")
+            #print("AGENT: CLOSING DOOR")
             doorToClose = self.attributes["doorNeedsToBeClosed"]
             self.actionOpenClose(doorToClose, "close")
             self.attributes["doorNeedsToBeClosed"] = None
@@ -1564,7 +1564,7 @@ class NPC(Agent):
             desiredDirection = self.convertXYDeltasToDirection(deltaX, deltaY)
             if (desiredDirection != self.attributes["faceDirection"]):
                 # We're not facing the correct direction -- rotate
-                print("AGENT: ROTATING TO FACE DIRECTION (curDirection: " + self.attributes["faceDirection"] + ", desiredDirection: " + desiredDirection + ")")
+                #print("AGENT: ROTATING TO FACE DIRECTION (curDirection: " + self.attributes["faceDirection"] + ", desiredDirection: " + desiredDirection + ")")
                 rotateSuccess = self.rotateToFaceDirection(desiredDirection)
                 print(rotateSuccess)
                 return True
@@ -1578,11 +1578,11 @@ class NPC(Agent):
             if (len(allObjsNotPassable) == 0):
                 # Move agent one step in the forward direction
                 #moveSuccess = self.actionMoveAgent(deltaX, deltaY)
-                print("AGENT: MOVING FORWARD")
+                #print("AGENT: MOVING FORWARD")
                 moveSuccess = self.actionMoveAgentForwardBackward(direction=+1)
                 self.attributes["movesSinceDoorOpen"] += 1
             else:
-                print("AGENT: TRYING TO OPEN IMPASSABLE OBJECT")
+                #print("AGENT: TRYING TO OPEN IMPASSABLE OBJECT")
                 # There's one or more impassable objects -- try to open them.
                 for obj in allObjsNotPassable:
                     # Check to see if the object is openable
@@ -1624,7 +1624,7 @@ class NPCChef(NPC):
             return
 
         # Debug
-        print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        ##print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -1680,20 +1680,20 @@ class NPCChef(NPC):
             # Get all objects at that world location
             objectsInFrontOfAgent = self.world.getObjectsAt(facingX, facingY)
             # Print names of objects in front of agent
-            print("Objects in front of agent: " + str([x.name for x in objectsInFrontOfAgent]))
+            ##print("Objects in front of agent: " + str([x.name for x in objectsInFrontOfAgent]))
 
             # Loop through all objects at that location, looking for the pot
             potObjects = [x for x in objectsInFrontOfAgent if x.type == 'pot']
             # Print names of edible objects in front of agent
-            print("Pot objects in front of agent: " + str([x.name for x in potObjects]))
+            ##print("Pot objects in front of agent: " + str([x.name for x in potObjects]))
 
             if (len(potObjects) > 0):
-                print("I want to take the " + potObjects[0].name)
+                ##print("I want to take the " + potObjects[0].name)
                 # Take the first edible object
                 potObject = potObjects[0]
                 # Take the object
                 successTake = self.actionPickUp(potObject)
-                print("TAKE: " + str(successTake))
+                ##print("TAKE: " + str(successTake))
 
                 # Remove "takeFoodFromCafeteria" from external signals
                 self.removeState("takePotFromCafeteria")
@@ -1729,7 +1729,8 @@ class NPCChef(NPC):
                     self.removeState("putFoodAtSpot1")
                     self.addState("moveToSpot2")
                 else:
-                    print("NO FOOD IN CONTAINER!")
+                    ##print("NO FOOD IN CONTAINER!")
+                    pass
             elif ("putFoodAtSpot2" in self.attributes['states']):
                 # Take the food out of the container
                 containerObjects = self.attributes["foodContainer"].contents
@@ -1741,7 +1742,8 @@ class NPCChef(NPC):
                     self.removeState("putFoodAtSpot2")
                     self.addState("moveToSpot3")
                 else:
-                    print("NO FOOD IN CONTAINER!")
+                    ##print("NO FOOD IN CONTAINER!")
+                    pass
             elif ("putFoodAtSpot3" in self.attributes['states']):
                 # Take the food out of the container
                 containerObjects = self.attributes["foodContainer"].contents
@@ -1753,7 +1755,8 @@ class NPCChef(NPC):
                     self.removeState("putFoodAtSpot3")
                     self.addState("moveToSpot4")
                 else:
-                    print("NO FOOD IN CONTAINER!")
+                    ##print("NO FOOD IN CONTAINER!")
+                    pass
             elif ("putFoodAtSpot4" in self.attributes['states']):
                 # Take the food out of the container
                 containerObjects = self.attributes["foodContainer"].contents
@@ -1765,7 +1768,8 @@ class NPCChef(NPC):
                     self.removeState("putFoodAtSpot4")
                     self.addState("moveToSpot5")
                 else:
-                    print("NO FOOD IN CONTAINER!")
+                    #print("NO FOOD IN CONTAINER!")
+                    pass
             elif ("putFoodAtSpot5" in self.attributes['states']):
                 # Take the food out of the container
                 containerObjects = self.attributes["foodContainer"].contents
@@ -1777,7 +1781,8 @@ class NPCChef(NPC):
                     self.removeState("putFoodAtSpot5")
                     self.addState("moveToPutPotPack")
                 else:
-                    print("NO FOOD IN CONTAINER!")
+                    #print("NO FOOD IN CONTAINER!")
+                    pass
 
 
 
@@ -1789,7 +1794,7 @@ class NPCChef(NPC):
         #     # Eat the food in the inventory
         #     if ("objectToEat" not in self.attributes):
         #         # Error -- no object to eat is listed, shouldn't be here
-        #         print("Error: No object to eat is listed, shouldn't be here")
+        #         #print("Error: No object to eat is listed, shouldn't be here")
         #     else:
         #         objectToEat = self.attributes["objectToEat"]
         #         # Eat the object
@@ -1875,7 +1880,7 @@ class NPCChef(NPC):
                 self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
 
         # DEBUG: End of tick -- display the agent's current state
-        print("NPC States (name: " + self.name + "): " + str(self.attributes))
+        ##print("NPC States (name: " + self.name + "): " + str(self.attributes))
 
 
 
@@ -1925,7 +1930,7 @@ class NPCColonist(NPC):
             return
 
         # Debug
-        print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        ##print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -1963,15 +1968,15 @@ class NPCColonist(NPC):
             # Get all objects at that world location
             objectsInFrontOfAgent = self.world.getObjectsAt(facingX, facingY)
             # Print names of objects in front of agent
-            print("Objects in front of agent: " + str([x.name for x in objectsInFrontOfAgent]))
+            #print("Objects in front of agent: " + str([x.name for x in objectsInFrontOfAgent]))
 
             # Loop through all objects at that location, looking for edible objects
             edibleObjects = [x for x in objectsInFrontOfAgent if x.attributes['isEdible']]
             # Print names of edible objects in front of agent
-            print("Edible objects in front of agent: " + str([x.name for x in edibleObjects]))
+            #print("Edible objects in front of agent: " + str([x.name for x in edibleObjects]))
 
             if (len(edibleObjects) > 0):
-                print("I want to take the " + edibleObjects[0].name)
+                #print("I want to take the " + edibleObjects[0].name)
                 # Take the first edible object
                 edibleObject = edibleObjects[0]
                 # Take the object
@@ -1990,7 +1995,8 @@ class NPCColonist(NPC):
             # Eat the food in the inventory
             if ("objectToEat" not in self.attributes):
                 # Error -- no object to eat is listed, shouldn't be here
-                print("Error: No object to eat is listed, shouldn't be here")
+                #print("Error: No object to eat is listed, shouldn't be here")
+                pass
             else:
                 objectToEat = self.attributes["objectToEat"]
                 # Eat the object
@@ -2034,7 +2040,7 @@ class NPCColonist(NPC):
                 self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
 
         # DEBUG: End of tick -- display the agent's current state
-        print("NPC States (name: " + self.name + "): " + str(self.attributes))
+        ##print("NPC States (name: " + self.name + "): " + str(self.attributes))
 
 
 
@@ -2088,7 +2094,7 @@ class NPCColonist1(NPC):
             return
 
         # Debug
-        print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        ##print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -2125,22 +2131,22 @@ class NPCColonist1(NPC):
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
-            print("(Agent: " + self.name + "): Calling action interpreter with action: " + str(curAutopilotAction))
+            #print("(Agent: " + self.name + "): Calling action interpreter with action: " + str(curAutopilotAction))
             result = self.pathfinder.actionInterpreter(curAutopilotAction, agent=self, world=self.world)
-            print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
+            #print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
 
             # If the result is "COMPLETED", then remove the action from the queue
             if (result == ActionResult.COMPLETED):
                 self.autopilotActionQueue.remove(curAutopilotAction)
-                print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
+                #print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
             # If the result is "FAILURE", then remove the action from the queue
             elif (result == ActionResult.FAILURE):
                 self.autopilotActionQueue.remove(curAutopilotAction)
-                print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
+                #print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
             # If the result is "INVALID", then remove the action from the queue
             elif (result == ActionResult.INVALID):
                 self.autopilotActionQueue.remove(curAutopilotAction)
-                print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
+                #print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
 
             # If the result is "success", then do nothing -- the action is still in progress.
 
@@ -2183,7 +2189,7 @@ class NPCChef1(NPC):
             return
 
         # Debug
-        print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        ##print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -2286,27 +2292,27 @@ class NPCChef1(NPC):
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
-            print("(Agent: " + self.name + "): Calling action interpreter with action: " + str(curAutopilotAction))
+            #print("(Agent: " + self.name + "): Calling action interpreter with action: " + str(curAutopilotAction))
             result = self.pathfinder.actionInterpreter(curAutopilotAction, agent=self, world=self.world)
-            print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
+            #print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
 
             # If the result is "COMPLETED", then remove the action from the queue
             if (result == ActionResult.COMPLETED):
                 self.autopilotActionQueue.remove(curAutopilotAction)
-                print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
+                #print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
             # If the result is "FAILURE", then remove the action from the queue
             elif (result == ActionResult.FAILURE):
                 self.autopilotActionQueue.remove(curAutopilotAction)
-                print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
+                #print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
             # If the result is "INVALID", then remove the action from the queue
             elif (result == ActionResult.INVALID):
                 self.autopilotActionQueue.remove(curAutopilotAction)
-                print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
+                #print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
 
             # If the result is "success", then do nothing -- the action is still in progress.
         # DEBUG: End of tick -- display the agent's current state
-        print("NPC States (name: " + self.name + "): " + str(self.attributes))
-        print("--------------------\n")
+        ##print("NPC States (name: " + self.name + "): " + str(self.attributes))
+        #print("--------------------\n")
 
 
 
@@ -2346,7 +2352,7 @@ class NPCColonistAuto2(NPC):
             return
 
         # Debug
-        print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        ##print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -2416,29 +2422,29 @@ class NPCColonistAuto2(NPC):
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
-            print("(Agent: " + self.name + "): Calling action interpreter with action: " + str(curAutopilotAction))
+            #print("(Agent: " + self.name + "): Calling action interpreter with action: " + str(curAutopilotAction))
             result = self.pathfinder.actionInterpreter(curAutopilotAction, agent=self, world=self.world)
-            print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
+            #print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
 
             # If the result is "COMPLETED", then remove the action from the queue
             if (result == ActionResult.COMPLETED):
                 self.autopilotActionQueue.remove(curAutopilotAction)
-                print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
+                #print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
             # If the result is "FAILURE", then remove the action from the queue
             elif (result == ActionResult.FAILURE):
                 self.autopilotActionQueue.remove(curAutopilotAction)
-                print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
+                #print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
             # If the result is "INVALID", then remove the action from the queue
             elif (result == ActionResult.INVALID):
                 self.autopilotActionQueue.remove(curAutopilotAction)
-                print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
+                #print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
 
             # If the result is "success", then do nothing -- the action is still in progress.
 
         # DEBUG: End of tick -- display the agent's current state
-        print("NPC States (name: " + self.name + "): " + str(self.attributes))
+        ##print("NPC States (name: " + self.name + "): " + str(self.attributes))
 
-        print("--------------------\n")
+        #print("--------------------\n")
 
 
 
@@ -2479,7 +2485,7 @@ class NPCFarmer1(NPC):
             return
 
         # Debug
-        print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        ##print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -2595,27 +2601,27 @@ class NPCFarmer1(NPC):
             # Get the current autopilot action
             curAutopilotAction = self.autopilotActionQueue[0]
             # Call the action interpreter to run it
-            print("(Agent: " + self.name + "): Calling action interpreter with action: " + str(curAutopilotAction))
+            #print("(Agent: " + self.name + "): Calling action interpreter with action: " + str(curAutopilotAction))
             result = self.pathfinder.actionInterpreter(curAutopilotAction, agent=self, world=self.world)
-            print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
+            #print("(Agent: " + self.name + "): Result of calling action interpreter: " + str(result))
 
             # If the result is "COMPLETED", then remove the action from the queue
             if (result == ActionResult.COMPLETED):
                 self.autopilotActionQueue.remove(curAutopilotAction)
-                print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
+                #print("(Agent: " + self.name + "): Action completed.  Removed from queue.")
             # If the result is "FAILURE", then remove the action from the queue
             elif (result == ActionResult.FAILURE):
                 self.autopilotActionQueue.remove(curAutopilotAction)
-                print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
+                #print("(Agent: " + self.name + "): Action failed.  Removed from queue.")
             # If the result is "INVALID", then remove the action from the queue
             elif (result == ActionResult.INVALID):
                 self.autopilotActionQueue.remove(curAutopilotAction)
-                print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
+                #print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
 
             # If the result is "success", then do nothing -- the action is still in progress.
         # DEBUG: End of tick -- display the agent's current state
-        print("NPC States (name: " + self.name + "): " + str(self.attributes))
-        print("--------------------\n")
+        ##print("NPC States (name: " + self.name + "): " + str(self.attributes))
+        #print("--------------------\n")
 
 
 #
@@ -2696,7 +2702,7 @@ class SoilController(NPCDevice):
                     signal = nutrient + level + "Signal_field" + str(self.attributes['fieldNum'])
                     # Check to see if this signal is set
                     if (signal in self.attributes['states']):
-                        print("## SIGNAL SET: " + signal)
+                        #print("## SIGNAL SET: " + signal)
                         for soilTileUUID in self.attributes['fieldTileUUIDs']:
                             # Set the nutrient level
                             soilObj = self.world.getObjectByUUID(soilTileUUID)
@@ -2735,7 +2741,7 @@ class SoilController(NPCDevice):
 
         # Hack to keep the sprite constant (since otherwise it will update based on perceived facing direction)
         #self.inferSpriteName()
-        print("DEFAULT SPRITE NAME: " + self.defaultSpriteName)
+        #print("DEFAULT SPRITE NAME: " + self.defaultSpriteName)
 
     # Sprite
     # Updates the current sprite name based on the current state of the object

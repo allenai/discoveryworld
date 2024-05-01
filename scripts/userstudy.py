@@ -697,9 +697,9 @@ def main(args):
                 lastSize = curSize
 
             # Show all discovery feed posts
-            print("Discovery feed:")
-            for post in world.discoveryFeed.updatePosts:
-                print(post)
+            #print("Discovery feed:")
+            #for post in world.discoveryFeed.updatePosts:
+            #    print(post)
 
             ## Debug: Export the logfile every 10 steps
             #if (frames % 10 == 0):
@@ -739,13 +739,13 @@ def main(args):
             # Convert to a dictionary
             dictIn = json.loads(jsonStr)
             # Create a Measurement
-            measurement = Measurement(dictIn, step=world.step-1)
-            print(measurement.errors)
-            print(measurement)
+            #measurement = Measurement(dictIn, step=world.step-1)
+            #print(measurement.errors)
+            #print(measurement)
             # Score the measurement
-            score = knowledgeScorer.evaluateMeasurement(measurement)
-            print("Score: " + str(score))
-            print("Score justification: " + str(measurement.scoreJustification))
+            #score = knowledgeScorer.evaluateMeasurement(measurement)
+            #print("Score: " + str(score))
+            #print("Score justification: " + str(measurement.scoreJustification))
 
             print("############################################################################################\n")
             #time.sleep(0.25)

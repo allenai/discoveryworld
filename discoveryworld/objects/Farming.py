@@ -539,7 +539,7 @@ class SeedRequiringNutrients(Object):
                 if (soilNutrients[nutrient] != self.attributes["needsNutrientLevels"][nutrient]):
                     hasRequiredNutrients = False
                     break
-            print("Checking soil tile (" + str(self.parentContainer.uuid) + ") for meeting the nutrient needs of seed (" + str(self.uuid) + "): " + str(hasRequiredNutrients))
+            #print("Checking soil tile (" + str(self.parentContainer.uuid) + ") for meeting the nutrient needs of seed (" + str(self.uuid) + "): " + str(hasRequiredNutrients))
 
         # Check for anti-requirements
         for antiReq in self.attributes["antirequirementsNutrientLevels"]:
@@ -551,7 +551,7 @@ class SeedRequiringNutrients(Object):
                             hasRequiredNutrients = False
                             break
                 if (hasAllAntiReqs):
-                    print("Soil tile (" + str(self.parentContainer.uuid) + ") has antirequisites for seed (" + str(self.uuid) + "): " + str(antiReq))
+                    #print("Soil tile (" + str(self.parentContainer.uuid) + ") has antirequisites for seed (" + str(self.uuid) + "): " + str(antiReq))
                     hasRequiredNutrients = False
                     break
 
@@ -634,7 +634,7 @@ class SoilNutrientMeter(Object):
             useDescriptionStr += "The results are inconclusive.\n"
             return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
 
-        print("## Soil Nutrient Meter: " + str(patientObj.attributes["soilNutrients"]))
+        #print("## Soil Nutrient Meter: " + str(patientObj.attributes["soilNutrients"]))
         # Check that the dictionary contains more than one key
         if (len(patientObj.attributes["soilNutrients"]) == 0):
             useDescriptionStr += "The results are inconclusive.\n"

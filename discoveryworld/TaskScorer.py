@@ -238,7 +238,7 @@ class EatMushroomTask(Task):
             agent = self.world.getAgentByName(agentName)
             if (agent.attributes['isPoisoned'] == True):
                 # Reset score to 0
-                print("Agent " + agentName + " is sick!  Score reset to 0.")
+                #print("Agent " + agentName + " is sick!  Score reset to 0.")
                 self.score = 0
             else:
                 # Check if the agent has been well for 100 steps
@@ -252,7 +252,7 @@ class EatMushroomTask(Task):
         if (self.score >= self.maxScore):
             self.completed = True
             self.completedSuccessfully = True
-            print("Task completed successfully: " + self.taskName)
+            #print("Task completed successfully: " + self.taskName)
         elif (self.score < self.maxScore):
             self.completed = False
             self.completedSuccessfully = False
@@ -439,7 +439,7 @@ class RustedKeyTask(Task):
         if (self.scorecardKeyNotRusted.completed and self.scorecardAgentOutside.completed):
             self.completed = True
             self.completedSuccessfully = True
-            print("Task completed successfully: " + self.taskName)
+            #print("Task completed successfully: " + self.taskName)
         else:
             self.completed = False
             self.completedSuccessfully = False
@@ -626,7 +626,7 @@ class RustedKeyTaskChallenge(Task):
         if (self.scorecardKeyNotRusted.completed and self.scorecardAgentOutside.completed):
             self.completed = True
             self.completedSuccessfully = True
-            print("Task completed successfully: " + self.taskName)
+            #print("Task completed successfully: " + self.taskName)
         else:
             self.completed = False
             self.completedSuccessfully = False
@@ -1288,7 +1288,7 @@ class ReactorTask(Task):
         # Check that the resonance frequency of the unknown (last 2) reactors has been set to the correct value
         numReactorsSet = 0
         unknownCrystals = self.scoringInfo["quantumCrystals"][2:]
-        print("unknown crystals: " + str(unknownCrystals))
+        #print("unknown crystals: " + str(unknownCrystals))
         for idx, reactor in enumerate(self.scoringInfo["reactorsToChange"]):
             crystalFreq = unknownCrystals[idx].attributes["resonanceFreq"]
             #if (reactor.attributes["resonanceFreq"] == crystalFreq):
@@ -1497,7 +1497,7 @@ class RosettaStoneTask(Task):
         if self.scorecardGiveObjects.completed:# and self.scorecardObjectsReturnedToElder.completed):  # TODO: check for the second condition
             self.completed = True
             self.completedSuccessfully = True
-            print("Task completed successfully: " + self.taskName)
+            #print("Task completed successfully: " + self.taskName)
 
 
 class TutorialTask(Task):
@@ -1582,4 +1582,4 @@ class TutorialTask(Task):
         if self.scorecardExit.completed:# and self.scorecardObjectsReturnedToElder.completed):  # TODO: check for the second condition
             self.completed = True
             self.completedSuccessfully = True
-            print("Task completed successfully: " + self.taskName)
+            #print("Task completed successfully: " + self.taskName)

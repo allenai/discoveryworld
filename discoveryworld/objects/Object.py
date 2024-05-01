@@ -499,11 +499,11 @@ class Object:
     # Invalidate the sprite name for this object, and all objects it contains/that contain it.
     # This will force them to update their sprites on the next tick.
     def invalidateSpritesThisWorldTile(self):
-        print("##### INVALIDATING SPRITES FOR " + self.name + " #####")
-        print("#### LOCATION: " + str(self.attributes["gridX"]) + ", " + str(self.attributes["gridY"]) + " ####")
+        #print("##### INVALIDATING SPRITES FOR " + self.name + " #####")
+        #print("#### LOCATION: " + str(self.attributes["gridX"]) + ", " + str(self.attributes["gridY"]) + " ####")
         # Step 1: Get the names of all objects (and any objects they contain) at this world tile
         allObjs = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"], respectContainerStatus=False)
-        print("#### OBJECTS: " + str(allObjs) + " ####")
+        #print("#### OBJECTS: " + str(allObjs) + " ####")
         # Step 2: Invalidate the sprite names for all objects at this world tile
         for obj in allObjs:
             obj.needsSpriteNameUpdate = True
