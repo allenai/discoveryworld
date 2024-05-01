@@ -268,12 +268,23 @@ class Object:
     def getAllContainedObjectsRecursive(self, respectContainerStatus=False):
         # Get all contained objects, recursively
         out = []
-        #print("getAllContainedObjectsRecursive: " + self.name + " (" + str(self.attributes['isOpenContainer']) + ") ." )
+        ##print("getAllContainedObjectsRecursive: " + self.name + " (" + str(self.attributes['isOpenContainer']) + ") ." )
+        ##print("\tList of all objects in this container: " + str([obj.name for obj in self.contents]))
         # If this is a container, and it's open, then add the contents
         if (not respectContainerStatus) or (respectContainerStatus and self.attributes['isOpenContainer']):
             for obj in self.contents:
+
+                ## DEBUG
+                # if (obj.parentContainer != None):
+                #     print("\tFound " + obj.name + " (" + str(obj.uuid) + "), which is contained in: " + obj.parentContainer.name + " (" + str(obj.parentContainer.uuid) + ")")
+                #     if (len(obj.contents) > 0):
+                #         print("\t\t it has the following immediate contents: ")
+                #         for obj2 in obj.contents:
+                #             print("\t\t\t" + obj2.name + " (" + str(obj2.uuid) + ")")
+
                 # Add self
                 out.append(obj)
+
                 # Add children
                 out.extend(obj.getAllContainedObjectsRecursive(respectContainerStatus))
 
@@ -322,6 +333,7 @@ class Object:
             for obj in self.contents:
                 # Add self
                 out.append(obj)
+
                 # Add children
                 out.extend(obj.getAllContainedObjectsAndParts(includeContents, includeParts))
 

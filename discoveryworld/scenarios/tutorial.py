@@ -48,12 +48,37 @@ class NPCElder(NPC):
         super().tick()
 
         # Interpret any external states
-        if self.pot in self.contents:
+        # Get the contents of the agent, including recursive contents
+        allContents = self.getAllContainedObjectsAndParts(includeContents=True, includeParts=True)
+        # Check if there are any mushrooms in the elder's inventory
+        mushrooms = [obj for obj in allContents if obj.type == "mushroom1"]
+        pots = [obj for obj in allContents if obj.type == "pot"]
+
+        print("### All contents: " + str([obj.type for obj in allContents]))
+        print("### Mushrooms: " + str(len(mushrooms)))
+        print("### Pots: " + str(len(pots)))
+
+        if (len(pots) > 0) and (len(mushrooms) > 0):
+        #if self.pot in self.contents:
             self.addState("hasPot")
 
-            # Check if at least one of the contents of the pot are marked as ()"isCooked" == True), AND the temperature is at least 50 C
+            # Check if at least one of the contents of the pot are marked as ("isCooked" == True), AND the temperature is at least 50 C
             cooked = False
-            for obj in self.pot.contents:
+            for obj in allContents:
+                if (obj.attributes["isCooked"] == True) and (obj.attributes["temperatureC"] >= 50):
+                    cooked = True
+                    break
+            if (cooked == True):
+                self.addState("potIsWarm")
+            else:
+                self.addState("potIsCold")
+
+        elif (len(mushrooms) > 0):
+            self.addState("hasPot")     # Added so it will potentially trigger the "giveBack" state
+
+            # Check if at least one of the contents of the pot are marked as ("isCooked" == True), AND the temperature is at least 50 C
+            cooked = False
+            for obj in allContents:
                 if (obj.attributes["isCooked"] == True) and (obj.attributes["temperatureC"] >= 50):
                     cooked = True
                     break
@@ -63,13 +88,18 @@ class NPCElder(NPC):
                 self.addState("potIsCold")
 
 
-        if "giveBack" in self.attributes['states']:
+
+        if ("giveBack" in self.attributes['states']):
             self.removeState("giveBack")
             self.removeState("hasPot")
             self.removeState("potIsCold")
-            self.actionDrop(self.pot)
 
-        if "giveKey" in self.attributes['states']:
+            # Drop everything the agent has that isn't a key
+            for obj in allContents:
+                if (obj.type != "key"):
+                    self.actionDrop(obj)
+
+        if ("giveKey" in self.attributes['states']):
             self.removeState("giveKey")
             self.actionDrop(self.key)
             self.addState("keyGiven")

@@ -585,7 +585,7 @@ class DialogMaker():
         tree.addNode(rootNode)
         tree.setRoot(rootNode.name)
 
-        trustNode = DialogNode("trustNode", "There's some meal in the fridge. You can heat it up in the stove.", statesToAdd=["taskAccepted"])
+        trustNode = DialogNode("trustNode", "There's a meal in the fridge. You can heat it up in the stove.", statesToAdd=["taskAccepted"])
         trustNode.addDialogOption("I will be right back.", "endNodeOK")
         tree.addNode(trustNode)
 
@@ -601,7 +601,7 @@ class DialogMaker():
         checkMealNode.addDialogOption("Will do.", "endNodeOK")
         tree.addNode(checkMealNode)
 
-        mealIsColdNode = DialogNode("mealIsColdNode", "Ew! That's still cold. You didn't heat it up enough.", statesToAdd=["giveBack"])
+        mealIsColdNode = DialogNode("mealIsColdNode", "I'm not sure what this is, but it's not a pot of cooked mushrooms.", statesToAdd=["giveBack"])
         mealIsColdNode.addDialogOption("Alright, alright! I'll be right back.", "endNodeOK")
         tree.addNode(mealIsColdNode)
 
