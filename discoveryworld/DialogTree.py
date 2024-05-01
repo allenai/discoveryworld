@@ -548,15 +548,24 @@ class DialogMaker():
         tree = DialogTree(agent)
 
         rootNode = DialogNode("rootNode", f"Elder: {message}.")
-
-        # Exit
-        rootNode.addDialogOption("You can't quite understand what the elder is saying, but that seems important.", "endNode")
-        tree.addNode(rootNode)
         tree.setRoot(rootNode.name)
 
+        # Exit
+        rootNode.addDialogOption("You can't quite understand what the elder is saying, but that seems important.", "endNode", antiStates=["interestingItems"])
+        rootNode.addDialogOption("The elder seems interested by some items in your inventory.", "askToTakeItemsNode", requiresStates=["interestingItems"])
+        tree.addNode(rootNode)
+
         ## OK node
-        endNodeOK = DialogNode("endNode", "Goodbye", statesToAdd=["taskGiven"], statesToRemove = [])
+        endNodeOK = DialogNode("endNode", "Goodbye", statesToAdd=["taskGiven"])
         tree.addNode(endNodeOK)
+
+        askToTakeItemsNode = DialogNode("askToTakeItemsNode", "Do you want to give the items to the elder?")
+        askToTakeItemsNode.addDialogOption("Yes. You let the elder take whatever they want from your inventory.", "endNodeOKTookItem")
+        askToTakeItemsNode.addDialogOption("No way. That's my stuff!", "endNode")
+        tree.addNode(askToTakeItemsNode)
+
+        endNodeOKTookItem = DialogNode("endNodeOKTookItem", "The elder seems happier.", statesToAdd=["takeItems"])
+        tree.addNode(endNodeOKTookItem)
 
         # Store dialog tree in agent
         agent.setDialogTree(tree)

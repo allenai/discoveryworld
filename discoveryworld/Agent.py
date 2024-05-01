@@ -1345,6 +1345,9 @@ class Agent(Object):
     def getAgentInDialogWith(self):
         return self.attributes['inDialogWith']
 
+    def enteringDialogWith(self, agentTalkingTo):
+        pass
+
     # Exit whatever dialog we're in
     def exitDialog(self):
         # If we're in dialog, then exit it
@@ -1408,6 +1411,7 @@ class Agent(Object):
                     return ActionSuccess(True, "Finished talking to " + str(agentToTalkTo.name) + ".")
 
                 # The agent is not busy, initiate conversation
+                agentToTalkTo.enteringDialogWith(self)
                 agentToTalkTo.dialogTree.initiateDialog(self)
 
                 # Get the NPC's response, and our possible next dialog options

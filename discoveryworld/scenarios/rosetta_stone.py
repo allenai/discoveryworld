@@ -290,7 +290,7 @@ class NPCDogTrainer(NPC):
 
 
 class NPCElder(NPC):
-    def __init__(self, world, name):
+    def __init__(self, world, name, scoringInfo):
         # Default sprite name
         super().__init__(world, name, defaultSpriteName="character9_agent_facing_south")
 
@@ -308,11 +308,40 @@ class NPCElder(NPC):
         # Dialog attributes
         self.attributes['isDialogable'] = True                    # Can it be dialoged with?
 
-        # NPC States
-        self.attributes['dialogAgentsSpokenWith'] = []             # List of dialog agents that this NPC has spoken with
-
         self.pathfinder = Pathfinder()
+        self.scoringInfo = scoringInfo
+        self.interestingItems = set()
 
+    def enteringDialogWith(self, agentTalkingTo):
+        # Check if the agentTalkingTo has the relevant items.
+        for obj in agentTalkingTo.getInventory():
+            if self.scoringInfo["item"] in obj.name:
+                if self.scoringInfo["learningColor"] and self.scoringInfo["color"] not in obj.name.split(" "):
+                    continue  # Color doesn't match
+
+                # Take the object from the agentTalkingTo
+                self.addState("interestingItems")
+                self.interestingItems.add(obj)
+
+
+    def tick(self):
+        if (self.tickCompleted):
+            return
+
+        # Debug
+        print(f"NPCElder (id: {self.name}): {self.attributes['states']}")
+        super().tick()
+
+        # Interpret any external states
+        if "takeItems" in self.attributes['states']:
+            # Check if the elder has the relevant items.
+            for obj in self.interestingItems:
+                # Take the object from the agentTalkingTo
+                obj.parentContainer.actionPut(obj, self, bypassClosedContainerCheck=True)
+
+            self.removeState("takeItems")
+            self.removeState("interestingItems")
+            self.interestingItems.clear()
 
 def translate(text, rosetta):
     for key in rosetta:
@@ -546,7 +575,7 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
 
     dialogMaker.mkDialogDogTrainer(dogTrainer, message=translate("[Bring me] [the stick]!", rosetta))
 
-    elder = NPCElder(world, "Elder")
+    elder = NPCElder(world, "Elder", scoringInfo)
     world.addObject(18, 18, Layer.AGENT, elder)
     world.addAgent(elder)
     dialogMaker.mkDialogElder(elder, message=translate(taskInstruction, rosetta))

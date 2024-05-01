@@ -539,8 +539,9 @@ class Object:
                     yield x, y
 
             positions = list(_circle())
-            # Sort position by y.
-            positions.sort(key=lambda x: x[1])
+
+        # Sort position by y.
+        positions.sort(key=lambda x: x[1])
 
         yield from zip(positions, contents)
 
