@@ -120,6 +120,20 @@ class Fridge(Object):
         self.attributes['coolSourceMinTemp'] = -4                    # If it is a cool source, then this is the minimum temperature that it can reach
 
 
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's open
+        if (self.attributes['isOpenContainer'] == True):
+            addedProperties.append("open")
+        else:
+            addedProperties.append("closed")
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
         if (False):
@@ -175,6 +189,20 @@ class Sink(Object):
         self.attributes['isActivated'] = False                      # Is this device currently activated?
 
 
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's on
+        if (self.attributes['isActivated'] == True):
+            addedProperties.append("activated")
+        else:
+            addedProperties.append("inactive")
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
 
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
@@ -228,6 +256,27 @@ class Stove(Object):
 
         # Heating
         self.attributes['heatSourceMaxTemp'] = 350                   # If it is a heat source, then this is the maximum temperature that it can reach
+
+
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's open
+        if (self.attributes['isOpenContainer'] == True):
+            addedProperties.append("open")
+        else:
+            addedProperties.append("closed")
+
+        # Add whether it's on
+        if (self.attributes['isActivated'] == True):
+            addedProperties.append("activated")
+        else:
+            addedProperties.append("inactive")
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
 
 
     def tick(self):

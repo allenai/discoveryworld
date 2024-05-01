@@ -65,6 +65,21 @@ class Jar(Object):
         self.lastAddedCount = 0
 
 
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's open
+        postModifier = ""
+        if (len(self.contents) == 0):
+            addedProperties.append("empty")
+        else:
+            postModifier = " containing items"
+
+        outStr = " ".join(addedProperties) + " " + self.name + postModifier + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
 
     def tick(self):
         # Call superclass

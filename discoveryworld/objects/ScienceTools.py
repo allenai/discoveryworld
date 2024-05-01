@@ -135,6 +135,23 @@ class PetriDish(Object):
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")
         self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
 
+
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's open
+        postModifier = ""
+        if (len(self.contents) == 0):
+            addedProperties.append("empty")
+        else:
+            postModifier = " containing items"
+
+        outStr = " ".join(addedProperties) + " " + self.name + postModifier + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
+
     def tick(self):
         # Call superclass
         Object.tick(self)

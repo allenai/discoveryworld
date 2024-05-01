@@ -155,6 +155,19 @@ class Mold(Object):
         self.attributes['isLiving'] = True                         # Is it alive?
         # Most properties populated from the external spreadsheet
 
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's cooked
+        if (self.attributes['isCooked'] == True):
+            addedProperties.append("burned")
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
+
     def tick(self):
         # Call superclass
         Object.tick(self)
@@ -254,9 +267,35 @@ class PlantGeneric(Object):
         # Default sprite name
         Object.__init__(self, world, "plant (generic)", "plant (generic)", defaultSpriteName = "forest1_plant1")
 
+
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's cooked
+        if (self.attributes['isCooked'] == True):
+            addedProperties.append("cooked")
+
+        if (self.attributes["temperatureC"] < 10):
+            addedProperties.append("cold")
+        elif (self.attributes["temperatureC"] > 100):
+            addedProperties.append("hot")
+        elif (self.attributes["temperatureC"] > 50):
+            addedProperties.append("warm")
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
+
     def tick(self):
         # Call superclass
         Object.tick(self)
+
+        # Note if it's been heated
+        if (self.attributes['temperatureC'] >= 100):
+            self.attributes['isCooked'] = True
+
 
 # Small plant with a random sprite
 class PlantRandomSmall(Object):
@@ -269,9 +308,33 @@ class PlantRandomSmall(Object):
         self.curSpriteName = self.defaultSpriteName
 
 
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's cooked
+        if (self.attributes['isCooked'] == True):
+            addedProperties.append("cooked")
+
+        if (self.attributes["temperatureC"] < 10):
+            addedProperties.append("cold")
+        elif (self.attributes["temperatureC"] > 100):
+            addedProperties.append("hot")
+        elif (self.attributes["temperatureC"] > 50):
+            addedProperties.append("warm")
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
+
     def tick(self):
         # Call superclass
         Object.tick(self)
+
+        # Note if it's been heated
+        if (self.attributes['temperatureC'] >= 100):
+            self.attributes['isCooked'] = True
 
 
 class PlantTreeBig(Object):
@@ -299,9 +362,34 @@ class Seed(Object):
 
         self.attributes["sproutTime"] = -1                        # How many ticks until the seed sprouts?
 
+
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's cooked
+        if (self.attributes['isCooked'] == True):
+            addedProperties.append("cooked")
+
+        if (self.attributes["temperatureC"] < 10):
+            addedProperties.append("cold")
+        elif (self.attributes["temperatureC"] > 100):
+            addedProperties.append("hot")
+        elif (self.attributes["temperatureC"] > 50):
+            addedProperties.append("warm")
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
+
     def tick(self):
         # Call superclass
         Object.tick(self)
+
+        # Note if it's been heated
+        if (self.attributes['temperatureC'] >= 100):
+            self.attributes['isCooked'] = True
 
         # Check if the conditions for the seed to grow have been met
         # Condition 1: Check that the seed is contained in a 'SoilTile' object
@@ -321,7 +409,7 @@ class Seed(Object):
         #print("*** Seed: inSoilTile = " + str(inSoilTile) + ", hasHole = " + str(hasHole) + ", sproutTime: " + str(self.attributes["sproutTime"]))
 
         # If the conditions have been met, continue the growth process
-        if (inSoilTile and not hasHole):
+        if (inSoilTile and not hasHole) and (not self.attributes["isCooked"]):
             # Perform action based on sprout time
             if (self.attributes["sproutTime"] == 0):
                 #print("Turn into plant")
@@ -389,9 +477,34 @@ class SeedRequiringNutrients(Object):
         #self.attributes["needsNutrientLevels"] = {"potassium": 1, "thorium": 2}                    # Soil nutrients.  If empty, then it's not applicable/inconclusive.
         self.attributes["needsNutrientLevels"] = needsNutrientLevels              # For seeds/plants: What nutrient levels do they need to grow?
 
+
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's cooked
+        if (self.attributes['isCooked'] == True):
+            addedProperties.append("cooked")
+
+        if (self.attributes["temperatureC"] < 10):
+            addedProperties.append("cold")
+        elif (self.attributes["temperatureC"] > 100):
+            addedProperties.append("hot")
+        elif (self.attributes["temperatureC"] > 50):
+            addedProperties.append("warm")
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
+
     def tick(self):
         # Call superclass
         Object.tick(self)
+
+        # Note if it's been heated
+        if (self.attributes['temperatureC'] >= 100):
+            self.attributes['isCooked'] = True
 
         # self.attributes["soilNutrients"] = {}                    # Soil nutrients.  If empty, then it's not applicable/inconclusive.
         # self.attributes["needsNutrientLevels"] = {}              # For seeds/plants: What nutrient levels do they need to grow?
@@ -442,9 +555,8 @@ class SeedRequiringNutrients(Object):
                     hasRequiredNutrients = False
                     break
 
-
         # If the conditions have been met, continue the growth process
-        if (inSoilTile) and (not hasHole) and (hasRequiredNutrients):
+        if (inSoilTile) and (not hasHole) and (hasRequiredNutrients) and (not self.attributes["isCooked"]):
             # Perform action based on sprout time
             if (self.attributes["sproutTime"] == 0):
                 #print("Turn into plant")

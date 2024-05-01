@@ -54,11 +54,6 @@ def mkFarm(x, y, world, rng=None):
 
                 world.addObject(x+i, y+j + houseSizeX + 1, Layer.WORLD, soilTile)
 
-    # Add a hole in one soil plot at the top left
-    #world.addObject(x+1, y+houseSizeY+1, Layer.OBJECTS, world.createObject("Hole"))
-    # Add dirt beside the hole
-    #world.addObject(x, y+houseSizeY+1, Layer.OBJECTS, world.createObject("Dirt"))
-
     # Randomly add a number of Mushrooms to the soil
     numMushroomsToAdd = 5
     numMushroomsAdded = 0
