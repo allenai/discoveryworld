@@ -635,9 +635,11 @@ def main(args):
                     helpStr += "Z:     Teleport to a random important location\n"
                     helpStr += "W:     Wait a step (do nothing)\n"
                     helpStr += "V:     View recent posts on Discovery Feed\n"
-                    helpStr += "[num]: Select a specific inventory item (Arg 1), hold shift for (Arg2)\n"
+                    helpStr += "0-9:   Select a specific inventory item (Arg 1), hold shift for (Arg2)\n"
                     helpStr += "[ / ]: Cycle through inventory items (Arg 1)\n"
                     helpStr += "; / \": Cycle through inventory items (Arg 2)\n"
+                    helpStr += "         (Note: Arguments with a grey background are in the inventory,\n"
+                    helpStr += "         arguments with a green background are in the world)\n"
 
                     helpStr += "?/F1:  Display this help message\n"
                     helpStr += "ESC:   Quit the game\n"
