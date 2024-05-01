@@ -71,6 +71,13 @@ class World:
         # Add start time
         self.startTime = time.time()
 
+        # Add a flag for whether this has a live user playing (where text is somewhat simplified, or an agent)
+        self.liveUserPlaying = False
+
+
+    # Set if a live user is playing (e.g. for a user study)
+    def setLiveUserPlaying(self):
+        self.liveUserPlaying = True
 
     #
     #   Initialization (agents, tasks)

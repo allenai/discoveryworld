@@ -446,7 +446,10 @@ class Object:
     def _getContainerTextDescription(self):
         outStr = ""
         if (self.parentContainer != None):
-            containerName = self.parentContainer.name + ( " [uuid: " + str(self.parentContainer.uuid) + "]")
+            if (self.world.liveUserPlaying):
+                containerName = self.parentContainer.name
+            else:
+                containerName = self.parentContainer.name + ( " [uuid: " + str(self.parentContainer.uuid) + "]")
             containerPrefix = self.parentContainer.attributes.get("containerPrefix", "in")
             outStr += " (" + containerPrefix + " " + containerName + ")"
 

@@ -385,6 +385,10 @@ def main(args):
 
     # Intialize world
     world = World(assetPath=None, filenameSpriteIndex="spriteIndex.json", dataPath=None, filenameObjectData="objects.tsv", filenameMaterialData="materials.tsv", filenameDiscoveryFeed="discoveryFeed.json")
+
+    # Set that this is a live user playing (not an agent)
+    world.setLiveUserPlaying()
+
     print ("All sprite names: ")
     print (world.spriteLibrary.getSpriteNames())
 

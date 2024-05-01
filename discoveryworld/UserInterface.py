@@ -531,7 +531,10 @@ class UserInterface:
         # Render the selected object's name
         selectedObjectName = ""
         if (curSelectedObjIdx < len(objectList)):
-            selectedObjectName = objectList[curSelectedObjIdx].name + "[uuid: " + str(objectList[curSelectedObjIdx].uuid) + "] : " + objectList[curSelectedObjIdx].getTextDescription()
+            # Below adds the UUID
+            ##selectedObjectName = objectList[curSelectedObjIdx].name + "[uuid: " + str(objectList[curSelectedObjIdx].uuid) + "] : " + objectList[curSelectedObjIdx].getTextDescription()
+            # Below removes the UUID
+            selectedObjectName = objectList[curSelectedObjIdx].getTextDescription()
 
         # Render the name above the box
         x = 0 * (32 * scale) + offsetX
@@ -649,7 +652,6 @@ class UserInterface:
         y = self.window.get_height() - 24
         # Render the background
         width, height = self.fontBold.size(lineToWrite)
-        fontSize = 15
         pygame.draw.rect(self.window, (128, 128, 128), (x, y, width, height), 0)
         # Render the text
         label = self.fontBold.render(lineToWrite, 1, (255, 255, 255))
