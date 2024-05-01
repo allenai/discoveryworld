@@ -425,10 +425,10 @@ def mkSchool(x, y, world):
     OBJECTS = {
         "c": ("Chair", {}),
         #"T": ("Table", {}),
-        "p": ("Pupitre", {"facing": "south"}),
-        "t": ("Pupitre", {"facing": "north"}),
-        "<": ("Pupitre", {"facing": "west"}),
-        ">": ("Pupitre", {"facing": "east"}),
+        "p": ("Desk", {"facing": "south"}),
+        "t": ("Desk", {"facing": "north"}),
+        "<": ("Desk", {"facing": "west"}),
+        ">": ("Desk", {"facing": "east"}),
         "P": ("FlagPole", {"height": 6, "current_height": 4}),
         "B": ("Bookcase", {}),
     }
@@ -466,7 +466,7 @@ def mkSchool(x, y, world):
                 desk.addObject(measuringTape)
             elif str.isdigit(o):
                 digit = int(o)
-                desk = world.createObject("Pupitre", facing="north")
+                desk = world.createObject("Desk", facing="north")
                 world.addObject(x+j, y+i, Layer.FURNITURE, desk)
                 disk = world.createObject("FloppyDisk", program=PROGRAMS[digit], value=digit)
                 desk.addObject(disk)
