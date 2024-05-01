@@ -22,6 +22,7 @@ ROSETTA_FRENCH = {
     "[Reset]": "Remise à zéro",
 
     "[the stick]": "le bâton",
+    "[stick]": "bâton",
     "[key]": "clé",
     "[flower]": "fleur",
     "[mushroom]": "champignon",
@@ -61,9 +62,10 @@ ROSETTA_GIBBERISH = {
     "[Reset]": "Flibberwomp",
 
     "[the stick]": "blonk",
+    "[stick]": "blonk",
     "[key]": "squibble",
     "[flower]": "florpt",
-    "[mushroom]": "mushblort",
+    "[mushroom]": "nushblort",
 
     "[red]": "blarg",
     "[green]": "flib",
@@ -377,6 +379,8 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
     if difficulty == "easy":
         scoringInfo["item"] = "stick"
         taskInstruction = "[Bring me] [the stick]!"
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[Bring me]' means 'bring me'", rosetta))
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[stick]' means 'stick'", rosetta))
     elif difficulty == "medium":
         if world.randomSeed % 2 == 0:
             scoringInfo["learningColor"] = True  # Half the seeds will be about learning colors.
@@ -401,19 +405,22 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
 
     if scoringInfo["learningCount"] and scoringInfo["learningColor"]:
         taskInstruction = f"[Bring me] [{scoringInfo['countWord']}] [{scoringInfo['color']}] [{scoringInfo['item']}]!"
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[Bring me]' means 'bring me'", rosetta))
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['countWord']}]' means '{scoringInfo['countWord']}'", rosetta))
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['color']}]' means '{scoringInfo['color']}'", rosetta))
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['item']}]' means '{scoringInfo['item']}'", rosetta))
+
     elif scoringInfo["learningCount"]:
         taskInstruction = f"[Bring me] [{scoringInfo['countWord']}] [{scoringInfo['item']}]!"
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[Bring me]' means 'bring me'", rosetta))
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['countWord']}]' means '{scoringInfo['countWord']}'", rosetta))
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['item']}]' means '{scoringInfo['item']}'", rosetta))
+
     elif scoringInfo["learningColor"]:
         taskInstruction = f"[Bring me] [{scoringInfo['color']}] [{scoringInfo['item']}]!"
-
-    print(colored("************************", "cyan"))
-    print(colored(f"Scoring Info: {scoringInfo}", "cyan"))
-    print(colored(f"Difficulty: {difficulty}", "cyan"))
-    print(colored(f"Rosetta Stone: {rosetta}", "cyan"))
-    print(colored(f"Color: {scoringInfo['color']}", "cyan"))
-    print(colored(f"Count: {scoringInfo['count']}", "cyan"))
-    print(colored(f"Item: {scoringInfo['item']}", "cyan"))
-    print(colored("************************", "cyan"))
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[Bring me]' means 'bring me'", rosetta))
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['color']}]' means '{scoringInfo['color']}'", rosetta))
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['item']}]' means '{scoringInfo['item']}'", rosetta))
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 1
@@ -579,9 +586,9 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
     world.addObject(18, 18, Layer.AGENT, elder)
     world.addAgent(elder)
     dialogMaker.mkDialogElder(elder, message=translate(taskInstruction, rosetta))
+    scoringInfo["criticalHypotheses"].append(f"The elder says '{translate(taskInstruction, rosetta)}' which translates to '{taskInstruction.replace('[', '').replace(']', '')}")
 
     scoringInfo["elder"] = elder
-
 
     # Apply the Rosetta Stone translation to all signs in the world.
     for obj in world.getAllWorldObjects():
