@@ -49,12 +49,15 @@ python scripts/userstudy.py
 ## Step 2: Playing
 ### 2.1 Tutorial
 
-Please complete the first scenario, "Tutorial", first, and give the completion code at the end to the experimenter. 
+In order to familiarize yourself with DiscoverWorld, you should complete the first scenario called "Tutorial". In that scenario, you will learn how to move your character around, open containers, manipulate items, interact with devices, and dialog with another character.
+
+*Completing the tutorial is mandatory. While playing it, watch out for a completion code that you need to give to the experimenter.*
 
 ### 2.2 Selecting a scenario
 
 DiscoveryWorld contains a number of scenarios, which are shown on a menu when you run the user study.  Currently the following are officially supported:
 ```
+Tutorial
 Combinatorial Chemistry
 Archaeology Dig
 Plant Nutrients
@@ -118,11 +121,12 @@ The `userstudy.py` user interface saves extensive logs after each run, including
 
 The following controls are supported.  Note that these are also accessible in-game by pressing the `?` key:
 * **Arrow keys for movement:** `left/right` keys rotate the agent, `up/down` move forward/backward
-* **Arguments:** The objects the agent interacts with are specified by the argument boxes, at the bottom. `[` and `]` control selection for the top argument box, and `;` and `'` control the bottom argument box.
+* **Arguments:** The objects the agent interacts with are specified by the argument boxes, at the bottom. Use number keys to select specific inventory item of the top argument box, hold shift + number keys for the bottom argument box. Alternatively, `[` and `]` cycle the selection through the top argument box, and `;` and `'` for the bottom argument box.
 * **TAB:** View the current task information.
 * **Pick up object:** `Space` will attempt to pick up the object in `arg1`
 * **Drop object:** `d` will drop the object in `arg1`
 * **Put object in container:** `p` will attempt to put the object in `arg1` in the container in `arg2`
+* **Give object to another character:** `p` will attempt to give the object in `arg1` to the character in `arg2`
 * **Open/Close:** `o` and `c` will attempt to open/close `arg1`
 * **Activate/Deactivate:** `a` and *`s`* will attempt to activate/deactivate `arg1`
 * **Use:** `u` will attempt to use `arg1` on `arg2` (e.g. use shovel on soil)
@@ -131,6 +135,7 @@ The following controls are supported.  Note that these are also accessible in-ga
 * **Eat:** `e` will eat `arg1`
 * **Wait:** `w` will do nothing.
 * **DiscoveryFeed:** `v` will view the most recent posts on the Discovery Feed.
+* **Help:** `?` or `F1` to display help message.
 * **Quit:** `ESC` will exit.
 
 

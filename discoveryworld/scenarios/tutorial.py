@@ -40,7 +40,6 @@ class NPCElder(NPC):
         self.key = key
 
     def tick(self):
-        # Stop if the object has already had tick() called this update -- this might have happened if the object moved locations in this current update cycle.
         if (self.tickCompleted):
             return
 
@@ -113,11 +112,6 @@ def mkTutorialHouse(x, y, world):
     pot = world.createObject("Pot")
     pot.addObject(world.createObject("Mushroom"))
     pot.addObject(world.createObject("Mushroom"))
-
-    # # Set temperature of pot and its contents to 4C.
-    # pot.attributes['temperatureC'] = 4
-    # for obj in pot.contents:
-    #     obj.attributes['temperatureC'] = 4
 
     # Add pot to fridge
     fridge.addObject(pot)
@@ -216,17 +210,11 @@ def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
     userAgent = Agent(world)
     # Add the agent to a specfic location
     world.addObject(25, 22, Layer.AGENT, userAgent)      # In the bedroom
-    # world.addObject(20, 24, Layer.AGENT, userAgent)      # Next to the elder.
 
     # Register the agent with the World so we can keep track of it
     world.addAgent(userAgent)
 
     # Add teleport locations to world
-    #world.addTeleportLocation("key shop", 12, 24)
-    #world.addTeleportLocation("paint shop", 22, 24)
-    #world.addTeleportLocation("town square", 16, 18)
-    #world.addTeleportLocation("general store", 11, 10)
-    #world.addTeleportLocation("school", 23, 10)
     world.addTeleportLocation("Starting Location", 25, 22)
     world.addTeleportLocation("Near Elder", 20, 24)
     world.addTeleportLocation("Kitchen", 20, 22)

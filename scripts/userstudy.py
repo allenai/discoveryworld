@@ -355,10 +355,10 @@ def main(args):
 
     scale = 1.0
     lastScreenExportFilename = None
-    # if os.environ.get("MARC", False):
-    #     scale = 2.0
-    #     viewportSizeX //= 2
-    #     viewportSizeY //= 2
+    if os.environ.get("MARC", False):
+        scale = 2.0
+        viewportSizeX //= 2
+        viewportSizeY //= 2
 
 
     # Open window
@@ -422,7 +422,7 @@ def main(args):
         welcomeStr += taskDescription + "\n\n"
         welcomeStr += "You are welcome to use external tools (notebooks, spreadsheets, statistics, etc.) to help you solve the task. "
         welcomeStr += "Once the task is completed, the game will automatically end. "
-        welcomeStr += "While playing, press ? for help, and TAB to display this task information again.\n\n"
+        welcomeStr += "While playing, press ? or F1 for help, and TAB to display this task information again.\n\n"
         welcomeStr += "Press SPACE to close this message."
 
         # Add the task information to the text message queue
@@ -584,13 +584,7 @@ def main(args):
                     ui.addTextMessageToQueue("Are you sure you want to quit the game?\nY - Quit\nN - Continue")
                     confirmingQuit = True
 
-                if (keys[pygame.K_g]):
-                    displayGrid = not displayGrid
-                    doNextTurn = True
-                    success = True
-
-                # Manual "wait"
-                elif (keys[pygame.K_w]):
+                if (keys[pygame.K_w]):
                     # Wait a turn
                     print("Waiting (taking no action this turn)...")
                     doNextTurn = True
@@ -624,7 +618,7 @@ def main(args):
                         ui.addTextMessageToQueue(taskStr)
 
                 # Help Screen (question mark/slash key)
-                elif (keys[pygame.K_SLASH]) or (keys[pygame.K_QUESTION]) or keys[233]:
+                elif keys[pygame.K_SLASH] or keys[pygame.K_QUESTION] or keys[233] or keys[pygame.K_F1]:
                     # Display the help screen
                     helpStr = "DiscoveryWorld Help\n\n"
                     helpStr += "Arrow keys: Move the agent\n"
@@ -632,6 +626,7 @@ def main(args):
                     helpStr += "SPACE: Pick up object (in Arg 1 slot)\n"
                     helpStr += "D:     Drop inventory item (in Arg 1 slot)\n"
                     helpStr += "P:     Put an item (Arg 1) in a specific container (Arg 2)\n"
+                    helpStr += "P:     Give an item (Arg 1) to another character (Arg 2)\n"
                     helpStr += "O/C:   Open/close a container (in Arg 1 slot)\n"
                     helpStr += "A/S:   Activate/deactive a device (in Arg 1 slot)\n"
                     helpStr += "T:     Talk to another character (in Arg 1 slot)\n"
@@ -640,11 +635,11 @@ def main(args):
                     helpStr += "Z:     Teleport to a random important location\n"
                     helpStr += "W:     Wait a step (do nothing)\n"
                     helpStr += "V:     View recent posts on Discovery Feed\n"
+                    helpStr += "[num]: Select a specific inventory item (Arg 1), hold shift for (Arg2)\n"
                     helpStr += "[ / ]: Cycle through inventory items (Arg 1)\n"
                     helpStr += "; / \": Cycle through inventory items (Arg 2)\n"
 
-
-                    helpStr += "?:     Display this help message\n"
+                    helpStr += "?/F1:  Display this help message\n"
                     helpStr += "ESC:   Quit the game\n"
                     helpStr += "\n"
                     helpStr += "Example: To 'use the shovel on the soil':\n"
