@@ -127,10 +127,6 @@ def mkTutorialHouse(x, y, world):
 
 def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
 
-    # TODO:
-    # [ ] Add signs with random numbers on them outside the house.
-    # [ ] Make the elder say which sign is the correct one.
-
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
 
@@ -188,6 +184,15 @@ def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
     mkSignVillage(16, 2, world)
     mkSignVillage(16, 29, world)
 
+    # Add a sign
+    sign = world.createObject("Sign", variant=1)
+    sign.setText("Bedroom")
+    world.addObject(24, 23, Layer.OBJECTS, sign)
+
+    sign = world.createObject("Sign", variant=1)
+    sign.setText("Kitchen")
+    world.addObject(21, 23, Layer.OBJECTS, sign)
+
     # Add some plants
     world.addObject(15, 1, Layer.OBJECTS, world.createObject("PlantGeneric"))
 
@@ -237,7 +242,6 @@ def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
     completionCode = "3941"
     dialogMaker.mkDialogElderTutorial(elder, completionCode=completionCode)
     elder.addObject(key)
-    #userAgent.addObject(key)
     scoringInfo["criticalHypotheses"].append("The completion code is " + str(completionCode) + ".")
 
     scoringInfo["elder"] = elder
