@@ -193,9 +193,6 @@ class Mushroom(Object):
         #    self.attributes['isPoisonous'] = True
 
 
-    #
-    #   Text Observations
-    #
     def getTextDescription(self):
         # Get a text description of this object
         addedProperties = []

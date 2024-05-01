@@ -233,6 +233,25 @@ class Door(Object):
     def setKeyID(self, keyID:int):
         self.attributes['requiresKey'] = keyID
 
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's open or closed
+        if (self.attributes['isOpenPassage'] == True):
+            addedProperties.append("open")
+        else:
+            if (self.attributes['requiresKey'] > 0):
+                addedProperties.append("closed locked")
+            else:
+                addedProperties.append("closed")
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
+
+
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
         if (False):
