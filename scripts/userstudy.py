@@ -424,7 +424,7 @@ def main(args):
 
         welcomeStr = "-= Welcome to DiscoveryWorld! =-\n\n"
         welcomeStr += taskDescription + "\n\n"
-        welcomeStr += "You are welcome to use external tools (notebooks, spreadsheets, statistics, etc.) to help you solve the task. "
+        welcomeStr += "You are strongly encouraged to use external tools (notebooks, spreadsheets, statistics, etc.) to help you solve the task, as making these discoveries will require methodologically exploring different hypotheses. "
         welcomeStr += "Once the task is completed, the game will automatically end. "
         welcomeStr += "While playing, press ? or F1 for help, and TAB to display this task information again.\n\n"
         welcomeStr += "Press SPACE to close this message."

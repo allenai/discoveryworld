@@ -81,7 +81,7 @@ Upon starting a game, it will present the instructions for your task to you.  Th
 
 ### 2.5 External Tools
 
-You are welcome, and strongly encouraged, to use any external tools that you'd like -- for example, a spreadsheet, and your favorite statistics program.
+Making these discoveries will require methodologically exploring different hypotheses and keeping track of data and your experimental results, just as in real science. You are strongly encouraged to use external tools -- for example, a spreadsheet, and your favorite statistics program.
 
 ### 2.6 User Notebook
 
