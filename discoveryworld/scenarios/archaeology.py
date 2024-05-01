@@ -228,9 +228,9 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
     mediumArtifactAge = world.rng.choice([5000, 4000, 3000, 2000])
     youngArtifactAge = world.rng.choice([1700, 1500, 1200])
 
-    print("oldArtifactAge: " + str(oldArtifactAge))
-    print("mediumArtifactAge: " + str(mediumArtifactAge))
-    print("youngArtifactAge: " + str(youngArtifactAge))
+    #print("oldArtifactAge: " + str(oldArtifactAge))
+    #print("mediumArtifactAge: " + str(mediumArtifactAge))
+    #print("youngArtifactAge: " + str(youngArtifactAge))
 
     # Make up 4 faux radioisotope values.  For the real one, it should strongly correlate with the age of the artifact.  For the others, the correlation should be very weak.
     # The real one should be the first one.
@@ -313,7 +313,7 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
     # The real channel is the starting channel (0), plus the shift, plus 1 (since channels are numbered 1, 2, 3, 4 in the radioisotope meter instead of 0, 1, 2, 3)
     realChannel = channelShift + 1
 
-    print("Real channel: " + str(realChannel))
+    #print("Real channel: " + str(realChannel))
     # TODO: Critical hypotheses
     scoringInfo["criticalHypotheses"] = ["The lower a value an artifact has on Radioisotope Channel " + str(realChannel) + ", the older it is."]
 

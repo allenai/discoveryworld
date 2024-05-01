@@ -131,7 +131,7 @@ class NPCDog(NPC):
             return
 
         # Debug
-        print(f"NPCDog (id: {self.name}): {self.attributes['states']}")
+        #print(f"NPCDog (id: {self.name}): {self.attributes['states']}")
         super().tick()
 
         # Interpret any external states
@@ -154,20 +154,20 @@ class NPCDog(NPC):
         elif "takeStick" in self.attributes['states']:
             objectsAtLocation = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"])
             # Print names of objects in front of agent
-            print("Objects in front of agent: " + str([x.name for x in objectsAtLocation]))
+            #print("Objects in front of agent: " + str([x.name for x in objectsAtLocation]))
 
             # Loop through all objects at that location, looking for the stick
             stickObjects = [x for x in objectsAtLocation if "stick" in x.name]
             # Print names of edible objects in front of agent
-            print("Stick objects in front of agent: " + str([x.name for x in stickObjects]))
+            #print("Stick objects in front of agent: " + str([x.name for x in stickObjects]))
 
             if (len(stickObjects) > 0):
-                print("I want to take the " + stickObjects[0].name)
+                #print("I want to take the " + stickObjects[0].name)
                 # Take the first edible object
                 stickObject = stickObjects[0]
                 # Take the object
                 successTake = self.actionPickUp(stickObject)
-                print(successTake)
+                #print(successTake)
                 self.stick = stickObject
 
                 self.removeState("takeStick")
@@ -212,7 +212,7 @@ class NPCDog(NPC):
                 #self.attributes["goalLocation"] = (random.randint(0, self.world.sizeX - 1), random.randint(0, self.world.sizeY - 1))
                 pass
 
-        print(f"NPCDog (id: {self.name}): {self.attributes}")
+        #print(f"NPCDog (id: {self.name}): {self.attributes}")
 
 
 class NPCDogTrainer(NPC):
@@ -250,13 +250,13 @@ class NPCDogTrainer(NPC):
             return
 
         # Debug
-        print(f"NPCDogTrainer (id: {self.name}): {self.attributes['states']}")
+        #print(f"NPCDogTrainer (id: {self.name}): {self.attributes['states']}")
         super().tick()
 
         # Interpret any external states
         hasTheStick = self.stick in self.contents
-        print(colored(f"Trainer has the stick: {hasTheStick}", "cyan"))
-        print(colored(f"Trainer is ready: {self.trainerIsReady}", "cyan"))
+        #print(colored(f"Trainer has the stick: {hasTheStick}", "cyan"))
+        #print(colored(f"Trainer is ready: {self.trainerIsReady}", "cyan"))
         if self.trainerIsReady and hasTheStick:
             self.trainerIsReady = False
             self.addState("throwSignal")
@@ -288,7 +288,7 @@ class NPCDogTrainer(NPC):
                 self.trainerIsReady = True
                 #self.addState("waitingForDogToBark")
 
-        print(f"NPCDogTrainer (id: {self.name}): {self.attributes}")
+        #print(f"NPCDogTrainer (id: {self.name}): {self.attributes}")
 
 
 class NPCElder(NPC):
@@ -331,7 +331,7 @@ class NPCElder(NPC):
             return
 
         # Debug
-        print(f"NPCElder (id: {self.name}): {self.attributes['states']}")
+        #print(f"NPCElder (id: {self.name}): {self.attributes['states']}")
         super().tick()
 
         # Interpret any external states
@@ -351,7 +351,8 @@ def translate(text, rosetta):
 
     # If there are any brackets left, print warning
     if "[" in text or "]" in text:
-        print(colored(f"Untranslated text: {text}", "red"))
+        #print(colored(f"Untranslated text: {text}", "red"))
+        pass
 
     return text
 

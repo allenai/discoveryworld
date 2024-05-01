@@ -81,7 +81,7 @@ def makeScenarioStorageShed(world, numUserAgents=1):
     else:
         chemicalSolutionDict = mkRandomChemicalCombination(world.rng, numChemicals=3, minChemicals=2, minAmount=3, maxAmount=4)
     scoringInfo["chemicalSolutionDict"] = chemicalSolutionDict
-    print("Chemical solution: " + str(chemicalSolutionDict))
+    #print("Chemical solution: " + str(chemicalSolutionDict))
 
     # Buildings
     mkStorageShed(15, 10, world, DOOR_KEY_ID, chemicalSolutionDict, scoringInfo)
@@ -196,7 +196,7 @@ def makeScenarioStorageShedChallenge(world, numUserAgents=1):
     else:
         chemicalSolutionDict = mkRandomChemicalCombination(world.rng, numChemicals=4, minChemicals=2, minAmount=3, maxAmount=4)
     scoringInfo["chemicalSolutionDict"] = chemicalSolutionDict
-    print("Chemical solution: " + str(chemicalSolutionDict))
+    #print("Chemical solution: " + str(chemicalSolutionDict))
 
     # Buildings
     mkStorageShedChallenge(15, 10, world, DOOR_KEY_ID, chemicalSolutionDict, scoringInfo)
