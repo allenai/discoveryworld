@@ -64,7 +64,9 @@ Plant Nutrients
 Reactor Lab
 ```
 
-Scenarios not on this list may not be ready yet.
+Scenarios not on this list are not yet complete, and should not be played.
+
+Scenarios can be played in any order -- you don't need to start with "Combinatorial Chemistry" first.
 
 ### 2.3 Selecting a difficulty and variation
 
@@ -113,11 +115,15 @@ When a game scenario is completed, it will automatically notify you, and then be
 
 If you reach a time limit or decide to quit early, the game will also save log files before you exit.
 
-### 2.8 Log files
+### 2.8 Trying again
+
+If, for whatever reason, you feel you need to try a scenario again (say, from making an error in your first attempt), you're welcome to.  We ask you to send the log files from each attempt, so we can record that it took multiple attempts to solve successfully. 
+
+### 2.9 Log files
 
 The `userstudy.py` user interface saves extensive logs after each run, including the full game state at each step, the user actions, and frame captures of the game at each step (to assemble a video).  These are stored in the `logs` subdirectory.  A new subdirecty is made each time you play a scenario.  After the log files are saved, the entire log file directory will be automatically archived (zipped up).
 
-### 2.9 Controls
+### 2.10 Controls
 
 The following controls are supported.  Note that these are also accessible in-game by pressing the `?` key:
 * **Arrow keys for movement:** `left/right` keys rotate the agent, `up/down` move forward/backward
