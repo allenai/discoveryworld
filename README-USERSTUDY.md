@@ -19,7 +19,7 @@ The procedure for the user study is:
 
 ### 1.1 Installation
 
-Download DiscoveryWorld (link: **TODO**), and unzip it somewhere you're comfortable with.
+Download DiscoveryWorld (using the link provided to you), and unzip it somewhere you're comfortable with.
 
 Enter the directory:
 ```
@@ -58,19 +58,21 @@ In order to familiarize yourself with DiscoverWorld, you should complete the fir
 DiscoveryWorld contains a number of scenarios, which are shown on a menu when you run the user study.  Currently the following are officially supported:
 ```
 Tutorial
-Combinatorial Chemistry
 Archaeology Dig
+Combinatorial Chemistry
 Plant Nutrients
 Reactor Lab
 ```
 
 Scenarios not on this list are not yet complete, and should not be played.
 
-Scenarios can be played in any order -- you don't need to start with "Combinatorial Chemistry" first.
+Scenarios can be played in any order -- you don't need to start with "Archaeology Dig" first.
 
 ### 2.3 Selecting a difficulty and variation
 
 Using the menus, you should select a difficulty of `normal` and a variation of `1` (the first option).
+
+**NOTE:** For Archaeology Dig, if you complete the `normal` difficulty quickly, you're welcome to attempt the `challenge` difficulty on variation `1`.
 
 ### 2.4 Task Instructions
 
