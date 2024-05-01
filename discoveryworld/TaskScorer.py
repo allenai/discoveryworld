@@ -1339,7 +1339,7 @@ class ReactorTask(Task):
 class RosettaStoneTask(Task):
 
     def __init__(self, world, scoringInfo):
-        taskDescription = "You found yourselve venturing into a small village of Planet X where everyone speaks a dialect unknown to you. Some elder is trying to tell you something that seems very important. "
+        taskDescription = "You find yourself venturing into a small village of Planet X where everyone speaks a dialect unknown to you. An elder (at the center of the village) is trying to tell you something that seems very important. "
         taskDescription += "You need to figure out what the older is saying. \n"
         taskDescription += "Some helpful notes: \n"
         taskDescription += "1. Even though you don't understand them, you can still interact with the inhabitants. \n"
