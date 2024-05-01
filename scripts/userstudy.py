@@ -642,8 +642,8 @@ def main(args):
                     helpStr += "0-9:   Select a specific inventory item (Arg 1), hold shift for (Arg2)\n"
                     helpStr += "[ / ]: Cycle through inventory items (Arg 1)\n"
                     helpStr += "; / \": Cycle through inventory items (Arg 2)\n"
-                    helpStr += "         (Note: Arguments with a grey background are in the inventory,\n"
-                    helpStr += "         arguments with a green background are in the world)\n"
+                    helpStr += "         (Note: Arguments with a purple border are in the inventory,\n"
+                    helpStr += "         arguments with a green border are in the world)\n"
 
                     helpStr += "?/F1:  Display this help message\n"
                     helpStr += "ESC:   Quit the game\n"
