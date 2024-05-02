@@ -1560,13 +1560,13 @@ class NPC(Agent):
             deltaX = nextX - self.attributes["gridX"]
             deltaY = nextY - self.attributes["gridY"]
 
-            # First, check to see if we're facing the correct direction.  If not, start rotating in that direction.
+            # First, check to see if we're facing the correct direction.  If not, rotate to face that direction.
             desiredDirection = self.convertXYDeltasToDirection(deltaX, deltaY)
             if (desiredDirection != self.attributes["faceDirection"]):
                 # We're not facing the correct direction -- rotate
                 #print("AGENT: ROTATING TO FACE DIRECTION (curDirection: " + self.attributes["faceDirection"] + ", desiredDirection: " + desiredDirection + ")")
-                rotateSuccess = self.rotateToFaceDirection(desiredDirection)
-                print(rotateSuccess)
+                # rotateSuccess = self.rotateToFaceDirection(desiredDirection)
+                rotateSuccess = self.actionRotateAgentFacingDirectionAbsolute(desiredDirection)
                 return True
 
             # First, check to see if the next step has a barrier (like a door) that needs to be opened

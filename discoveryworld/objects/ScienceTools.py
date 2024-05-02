@@ -357,20 +357,11 @@ class Sample(Object):
 
 
 class Sampler(Object):
-    # Constructor
+
     def __init__(self, world):
         Object.__init__(self, world, "sampler", "sampler", defaultSpriteName = "instruments_sampler")
+        self.attributes['isUsable'] = True
 
-        # Default attributes
-
-        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
-
-        pass
-
-
-    #
-    #   Actions (use with)
-    #
     def actionUseWith(self, patientObj):
         # Use this object on the patient object
         useDescriptionStr = "You use the sampler to take a sample of the " + patientObj.name + ".\n The sample has been placed in your inventory.\n"
