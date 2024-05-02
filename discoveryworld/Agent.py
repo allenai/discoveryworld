@@ -2273,6 +2273,9 @@ class NPCChef1(NPC):
             fieldHeight = 5
             objectTypes = ["mushroom"]
             container = self.pot
+            # First, head towards the farm
+            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=fieldX+fieldWidth, y=fieldY+fieldHeight, priority=5) )
+            # Then pick up the mushrooms (if any are there)
             self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(fieldX, fieldY, fieldWidth, fieldHeight, objectTypes, container, priority=5) )
 
             # Send a note to the discovery feed signifying the task is completed
