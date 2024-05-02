@@ -704,6 +704,22 @@ class Agent(Object):
             self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
             return result
 
+        # Next, check to make sure we're not trying to put the object in itself
+        if (objToPut.uuid == newContainer.uuid):
+            # Trying to put the object in itself
+            result = ActionSuccess(False, "I can't put the " + objToPut.name + " into itself.")
+            self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
+            return result
+
+        # Next, check to make sure we're not trying to put the object into something it itself contains
+        allContainedObjects = objToPut.getAllContainedObjectsAndParts(includeContents=True, includeParts=True)
+        for cObj in allContainedObjects:
+            if (cObj.uuid == newContainer.uuid):
+                # Trying to put the object into something it itself contains
+                result = ActionSuccess(False, "I can't put the " + objToPut.name + " into something inside itself.")
+                self.actionHistory.add(actionType=ActionType.PUT, arg1=objToPut, arg2=newContainer, result=result)
+                return result
+
 
         # If we reach here, the object is in the agent's inventory, the container is within reach, and the container is open.
         # Put the object into the container.
