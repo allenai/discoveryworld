@@ -1114,6 +1114,8 @@ class Agent(Object):
         #outStr += "Last " + str(len(postStrings)) + " posts found:\n\n"
         outStr += notificationStr + "\n\n"
         outStr += postDelimiter.join(postStrings)
+        outStr += "\n"
+        outStr += "Press SPACE to close."
 
         # Generate result
         result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)

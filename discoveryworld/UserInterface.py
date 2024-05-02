@@ -53,6 +53,9 @@ class UserInterface:
 
         self.argObjectsList = []        # The (most recently updated) list of all objects that can be selected as arguments
 
+        # The number of posts on DiscoveryFeed the last time we checked it
+        self.lastDiscoveryFeedPostCount = 0
+
 
     # Set the agent
     def setAgent(self, agent):
@@ -232,6 +235,19 @@ class UserInterface:
         if (self.currentAgent != None):
             textSurface = self.fontBold.render("     Turn " + str(self.currentAgent.world.getStepCounter()), True, (128, 128, 128))
             self.window.blit(textSurface, (helpX, helpY-20))
+
+        # New discovery feed posts
+        if (self.currentAgent != None):
+            numPosts = len(self.currentAgent.world.discoveryFeed.getPosts())
+            newPosts = numPosts - self.lastDiscoveryFeedPostCount
+            if (newPosts > 0):
+                textSurface = self.fontBold.render("       " + str(newPosts) + " New", True, (200, 200, 200))
+                self.window.blit(textSurface, (helpX-10, helpY-132))
+                textSurface = self.fontBold.render("    DiscoveryFeed", True, (200, 200, 200))
+                self.window.blit(textSurface, (helpX-10, helpY-112))
+                textSurface = self.fontBold.render("       Post(s)", True, (200, 200, 200))
+                self.window.blit(textSurface, (helpX-10, helpY-92))
+
 
         # If the task has been completed, then display a message
         if (self.currentAgent != None):
@@ -805,6 +821,7 @@ class UserInterface:
     # DiscoveryFeed actions
     def getDiscoveryFeedUpdates(self, startFromID=0):
         # Show the last 10 updates
+        self.lastDiscoveryFeedPostCount = len(self.currentAgent.world.discoveryFeed.getPosts())
         success = self.currentAgent.actionDiscoveryFeedGetPosts(startFromID)
         return success
 
