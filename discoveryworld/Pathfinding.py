@@ -122,6 +122,8 @@ class Pathfinder():
             result = self.runMoveRelative(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.ROTATE_TO_FACE_DIRECTION):
             result = self.runRotateToFaceDirection(autopilotAction.args, agent, world)
+        elif (actionType == AutopilotActionType.CHECK_CONDITION):
+            result = self.runCheckCondition(autopilotAction.args, agent, world)
         else:
             print("ERROR: Invalid autopilot action type: " + str(actionType))
             return ActionResult.INVALID
@@ -141,6 +143,27 @@ class Pathfinder():
             autopilotAction.args["callback"](callbackArgs)
 
         return result
+
+    # Check a condition through a callback to the agent
+    def runCheckCondition(self, args:dict, agent, world):
+        #self.args['conditionCallback'] = conditionCallback
+        #self.args['addActionIfTrue'] = addActionIfTrue
+        #self.args['addActionIfFalse'] = addActionIfFalse
+
+        # First, call the callback (which takes no arguments).  It should return a boolean
+        conditionCallback = args['conditionCallback']
+        conditionResult = conditionCallback()
+
+        # If the condition is true, add the 'addActionIfTrue' action to the queue
+        if (conditionResult):
+            actionIfTrue = args['addActionIfTrue']
+            agent.addAutopilotActionToQueue(actionIfTrue)
+            return ActionResult.COMPLETED
+        else:
+            # If the condition is false, add the 'addActionIfFalse' action to the queue
+            actionIfFalse = args['addActionIfFalse']
+            agent.addAutopilotActionToQueue(actionIfFalse)
+            return ActionResult.COMPLETED
 
 
     # Do a relative move (north, east, south, west)
@@ -981,7 +1004,7 @@ class AutopilotAction_DropObjAtLocation(AutopilotAction):
 
 class AutopilotAction_PickupObjectsInArea(AutopilotAction):
     # Constructor
-    def __init__(self, x, y, width, height, objectTypes:list, container, excludeObjectsOnAgent=True, maxToTake=-1, priority=4):
+    def __init__(self, x, y, width, height, objectTypes:list, container, excludeObjectsOnAgent=True, maxToTake=-1, callback=None, priority=4):
         self.actionType = AutopilotActionType.FIND_OBJS_AREA_PLACE
         self.args = {}
         self.args['x'] = x
@@ -1087,6 +1110,17 @@ class AutopilotAction_RotateToFaceDirection(AutopilotAction):
         self.args['direction'] = direction      # Direction should be "N", "E", "S", or "W"
         self.args['priority'] = priority
 
+class AutopilotAction_CheckCondition(AutopilotAction):
+    # Constructor
+    def __init__(self, conditionCallback, addActionIfTrue=None, addActionIfFalse=None, priority=0):
+        self.actionType = AutopilotActionType.CHECK_CONDITION
+        self.args = {}
+        self.args['conditionCallback'] = conditionCallback
+        self.args['addActionIfTrue'] = addActionIfTrue
+        self.args['addActionIfFalse'] = addActionIfFalse
+        self.args['priority'] = priority
+
+
 # Enumeration for types of autopilot actions
 class AutopilotActionType(Enum):
     GOTO_XY                 = 0
@@ -1103,3 +1137,4 @@ class AutopilotActionType(Enum):
     POST_DISCOVERY_FEED_UPDATE = 11
     MOVE_RELATIVE           = 12
     ROTATE_TO_FACE_DIRECTION = 13
+    CHECK_CONDITION         = 14

@@ -2434,18 +2434,41 @@ class NPCColonistAuto2(NPC):
             # Then, pick up one mushroom
             fieldX = 21
             fieldY = 23
-            fieldWidth = 5
+            fieldWidth = 6
             fieldHeight = 1
             objectTypes = ["mushroom"]
             container = self
             self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(fieldX, fieldY, fieldWidth, fieldHeight, objectTypes, container, maxToTake=1, priority=5) )
 
+            #def __init__(self, conditionCallback, addActionIfTrue=None, addActionIfFalse=None, priority=0):
+            # Then, check a condition -- is there a mushroom in the agent's inventory?
+            self.mushroomRetriesLeft = 3
+            def checkForMushroom():
+                self.mushroomRetriesLeft -= 1
+                if (self.mushroomRetriesLeft <= 0):
+                    # Just pretend we got the mushroom, so it exists
+                    return True
+                # Check to see if we have the mushroom
+                for obj in self.contents:
+                    if ("mushroom" in obj.type):
+                        return True
+                return False
+            conditionCallback = checkForMushroom
+            # If true, eat the mushroom
+            # If false, try again
+            actionTrue = AutopilotAction_EatObjectInInventory(objectNamesOrTypesToEat=["mushroom"], priority=5)
+            actionFalse = AutopilotAction_PickupObjectsInArea(fieldX, fieldY, fieldWidth, fieldHeight, objectTypes, container, maxToTake=1, priority=5)
+            #self.addAutopilotActionToQueue( AutopilotAction_CheckCondition(conditionCallback=conditionCallback, addActionIfTrue=None, addActionIfFalse=None, priority=5) )
+            self.addAutopilotActionToQueue( AutopilotAction_CheckCondition(conditionCallback=conditionCallback, addActionIfTrue=actionTrue, addActionIfFalse=actionFalse, priority=5) )
+
+
             # Then, eat the object
             # Find the object in the agent's inventory
-            self.addAutopilotActionToQueue( AutopilotAction_EatObjectInInventory(objectNamesOrTypesToEat=["mushroom"], priority=5) )
+            #self.addAutopilotActionToQueue( AutopilotAction_EatObjectInInventory(objectNamesOrTypesToEat=["mushroom"], priority=5) )
+
 
             # Then, travel back to your starting location
-            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=agentStartingLocation[0], y=agentStartingLocation[1], priority=5) )
+            #self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=agentStartingLocation[0], y=agentStartingLocation[1], priority=5) )
 
 
 
