@@ -2590,7 +2590,7 @@ class NPCFarmer1(NPC):
             self.removeState("plantSignal")
 
             numSeedsToPlant = 5
-            self.actionDiscoveryFeedMakeUpdatePost("I'm going to try to plant some seeds.", signals=[])
+            self.actionDiscoveryFeedMakeUpdatePost("I'm going to try to plant some seeds. First I need a shovel, then some seeds.", signals=[])
 
             # First, pick up a shovel
             farmX = 10
@@ -2604,7 +2604,17 @@ class NPCFarmer1(NPC):
 
             # Then, pick up some seeds
             objectTypes = ["seed"]
-            self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, maxToTake=numSeedsToPlant, priority=5) )
+            # Check how many seeds the agent already has
+            numSeedsInInventory = 0
+            for obj in self.contents:
+                if ("seed" in obj.type):
+                    numSeedsInInventory += 1
+            numSeedsToTake = numSeedsToPlant - numSeedsInInventory
+            #print("numSeedsToPlant: " + str(numSeedsToPlant))
+            #print("numSeedsInInventory: " + str(numSeedsInInventory))
+            #print("numToTake: " + str(numSeedsToTake))
+            self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, maxToTake=numSeedsToTake, priority=5) )
+            #self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(farmX, farmY, farmWidth, farmHeight, objectTypes, container, maxToTake=numSeedsToTake, priority=5) )
 
             # Then, pick 5 unoccupied spots in the field
             # Then, go to each spot, dig the hole, plant the seed, and put dirt back in the hole
