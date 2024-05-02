@@ -4,6 +4,7 @@ import math
 import random
 
 import pygame
+from termcolor import colored
 
 from discoveryworld.Layer import Layer
 from discoveryworld.Agent import Agent
@@ -17,6 +18,7 @@ class UserInterface:
     # Constructor
     def __init__(self, window, spriteLibrary, showScoreToUser=False):
         # Fonts
+        self.fontCaption = pygame.font.SysFont("monospace", 10)
         self.font = pygame.font.SysFont("monospace", 15)
         self.fontBold = pygame.font.SysFont("monospace", 15, bold=True)
 
@@ -471,11 +473,8 @@ class UserInterface:
 
         # Start rendering the grid (centered on the lower half of the viewport)
         scale = 2.0
-        #scale1 = 1.5
         scale1 = 1.5
         tileSize = 32
-        #offsetX = 32
-        #offsetY = -32 * 10
 
         xAdj = ((tileSize*scale) - (tileSize*scale1))/2
         yAdj = ((tileSize*scale) - (tileSize*scale1))/2 + 16
@@ -502,13 +501,7 @@ class UserInterface:
 
             # Display the background sprite
             if (objIdx == curSelectedObjIdx):
-                # Inventory object
-                if (objIdx >= len(objsInv)):
-                    # Environmental inventory spot (slightly different background)
-                    self.spriteLibrary.renderSprite(self.window, "ui_inventory_env_selected", x, y, scale)
-                else:
-                    # Inventory spot
-                    self.spriteLibrary.renderSprite(self.window, "ui_inventory_selected", x, y, scale)
+                self.spriteLibrary.renderSprite(self.window, "ui_inventory_selected", x, y, scale)
             else:
                 if (objIdx >= len(objectList)):
                     # Empty inventory spot
@@ -520,11 +513,36 @@ class UserInterface:
                     # Inventory spot
                     self.spriteLibrary.renderSprite(self.window, "ui_inventory_background", x, y, scale)
 
-            # Display the object's sprite
+            # Increment the object index
+            objIdx += 1
+
+        nbObjsInvDisplayed = max(len(objsInv) - startIdx, 0)
+        nbObjsEnvDisplayed = min(len(objsEnv), 10 - nbObjsInvDisplayed)
+        # Draw a rectangle around inventory items.
+        x = 0 * (32 * scale) + offsetX
+        y = self.window.get_height() + offsetY + (tileSize * scale)
+        width = nbObjsInvDisplayed * (32 * scale)
+        height = (tileSize * scale)
+        pygame.draw.rect(self.window, (255, 128, 0), (x, y, width, height), 2)
+
+        # Draw a rectangle around environment items.
+        x = nbObjsInvDisplayed * (32 * scale) + offsetX
+        y = self.window.get_height() + offsetY + (tileSize * scale)
+        width = nbObjsEnvDisplayed * (32 * scale)
+        height = (tileSize * scale)
+        pygame.draw.rect(self.window, (128, 255, 128), (x, y, width, height), 2)
+
+
+        # Draw items sprites.
+        objIdx = startIdx
+        # For each column
+        for col in range(numCols):
+            # Get the X and Y coordinates of the inventory box (starting from the bottom left corner)
+            x = col * (32 * scale) + offsetX
+            y = self.window.get_height() + offsetY + (tileSize * scale)
+
             if (objIdx < endIdx):
                 obj = objectList[objIdx]
-                #print("Object " + str(objIdx) + " name: " + obj.name + "  Sprite name: " + obj.getSpriteName())
-                #self._renderObjectSprite(obj, x+xAdj, y+yAdj, scale=scale1)
                 self._renderObjectSprite(obj, x+xAdj, y + tileSize - yAdj, scale=scale1)
 
             # Display the number
@@ -544,8 +562,6 @@ class UserInterface:
         y = self.window.get_height() + offsetY + (tileSize * scale)
         label = self.fontBold.render(labelPrefixStr + selectedObjectName, 1, (255, 255, 255))
         self.window.blit(label, (x+4, y + (tileSize * scale) - 48 - 12 - yAdj))
-
-        pass
 
     # As above, but renders in JSON format
     def renderObjectSelectionBoxJSON(self, objsInv, objsEnv):
