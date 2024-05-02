@@ -183,6 +183,7 @@ def makeScenarioTown(world, numUserAgents=1):
         (13, 5),    # Near north entrance
         (8, 19)    # Near west entrance
     ]
+    scoringInfo["colonists"] = []
     for i in range(0, 5):
         colonist = NPCColonistAuto2(world, "Colonist " + str(i), preferredX=colonistPreferredWanderLocations[i][0], preferredY=colonistPreferredWanderLocations[i][1])
         dialogMaker.mkDialogColonist(colonist)
@@ -190,5 +191,6 @@ def makeScenarioTown(world, numUserAgents=1):
         world.addAgent(colonist)
 
         npcColonists.append(colonist)
+        scoringInfo["colonists"].append(colonist)
 
     return scoringInfo

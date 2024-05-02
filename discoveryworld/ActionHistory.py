@@ -164,7 +164,7 @@ class ActionHistory:
         return out
 
     # Very specific function, used to see if instruments have been used on specific Arg2s
-    def queryActionObjectsByArgType(self, actionType:ActionType, arg1=None, arg2TypeContains="", stopAtFirst:bool = False):
+    def queryActionObjectsByArg2Type(self, actionType:ActionType, arg1=None, arg2TypeContains="", stopAtFirst:bool = False):
         out = []
 
         # Find the UUIDs of the objects
@@ -187,6 +187,26 @@ class ActionHistory:
 
         # Return the list of matching actions
         return out
+
+    # Very specific function, used to see if actions have been taken on specific Arg1s
+    def queryActionObjectsByArg1Type(self, actionType:ActionType, arg1TypeContains="", stopAtFirst:bool = False):
+        out = []
+
+        # Search for the query action
+        #print("Query: " + str(actionType) + " " + str(arg1Query) + " " + str(arg2Query))
+        for action in self.history:
+            #print("Action: " + str(action['actionType']) + " " + str(action['arg1UUID']) + " " + str(action['arg2UUID']))
+            if (action['actionType'] == actionType
+                and (arg1TypeContains in action['arg1'].type)
+            ):
+                out.append(action)
+                #print("FOUND!!!!")
+                if stopAtFirst:
+                    break
+
+        # Return the list of matching actions
+        return out
+
 
     # Export the action history to a list that can be converted to JSON
     def exportToJSONAbleList(self):

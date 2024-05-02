@@ -225,13 +225,16 @@ class EatMushroomTask(Task):
         self.scorecardInstruments2 = ScorecardElement("Use instruments on mushrooms", "Use each of the scientific instruments on a mushroom", maxScore=7)
         self.scoreCard.append(self.scorecardInstruments2)
 
-        # Have at least 5 mushrooms eaten by colonists
-        self.scorecardMushroomsEaten = ScorecardElement("Eat mushrooms", "Have at least 5 mushrooms eaten by colonists", maxScore=5)
+        # Have at least 10 mushrooms eaten by colonists
+        self.scorecardMushroomsEaten = ScorecardElement("Eat mushrooms", "Have at least 10 mushrooms eaten by colonists", maxScore=10)
         self.scoreCard.append(self.scorecardMushroomsEaten)
 
         # Have 10 mushrooms eaten by colonists without them having got sick
         self.scorecardMushroomsEatenNoSickness = ScorecardElement("Eat mushrooms without sickness", "Have 10 mushrooms eaten by colonists without them getting sick", maxScore=10)
         self.scoreCard.append(self.scorecardMushroomsEatenNoSickness)
+
+        # Store the colonists
+        self.colonists = scoringInfo['colonists']
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
@@ -246,38 +249,69 @@ class EatMushroomTask(Task):
     def updateTick(self):
         # Score Element 1: Collect different mushrooms
         # Check what mushrooms the agent has in their inventory
-        for agent in self.world.agents:
-            for obj in agent.getAllContainedObjectsAndParts():
-                if ("mushroom" in obj.type):
-                    mushroomColor = obj.attributes['color']
-                    if (mushroomColor not in self.collectedMushroomColors):
-                        self.collectedMushroomColors.add(obj.attributes['color'])
-                        self.collectedMushroomUUIDs.add(obj.uuid)
-        self.scorecardMushrooms.updateScore(len(self.collectedMushroomColors), True, associatedUUIDs=list(self.collectedMushroomUUIDs), associatedNotes="The following mushroom colors have been collected: " + str(self.collectedMushroomColors))
+        if (not self.scorecardMushrooms.completed):
+            for agent in self.world.getUserAgents():
+                for obj in agent.getAllContainedObjectsAndParts():
+                    if ("mushroom" in obj.type):
+                        mushroomColor = obj.attributes['color']
+                        if (mushroomColor not in self.collectedMushroomColors):
+                            self.collectedMushroomColors.add(obj.attributes['color'])
+                            self.collectedMushroomUUIDs.add(obj.uuid)
+            completedColors = False
+            if (len(self.collectedMushroomColors) >= 4):
+                completedColors = True
+            self.scorecardMushrooms.updateScore(len(self.collectedMushroomColors), completedColors, associatedUUIDs=list(self.collectedMushroomUUIDs), associatedNotes="The following mushroom colors have been collected: " + str(self.collectedMushroomColors))
 
         # Score Element 2: Use different scientific instruments on a mushroom
         # Check if the agent has used each of the scientific instruments on a mushroom
-        usedInstrumentsUUIDs = set()
-        usedInstrumentNames = set()
-        usedInstrumentsUUIDs2 = set()
-        usedInstrumentNames2 = set()
-        for agent in self.world.agents:
-            for instrument in self.scoringInfo['instruments'].values():
-                # Check if the agent has used the instrument on anything
-                foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=instrument, arg2="*", stopAtFirst=False)
-                if (len(foundActions) > 0):
-                    usedInstrumentsUUIDs.add(instrument.uuid)
-                    usedInstrumentNames.add(instrument.name)
+        if (not self.scorecardInstruments.completed) or (not self.scorecardInstruments2.completed):
+            usedInstrumentsUUIDs = set()
+            usedInstrumentNames = set()
+            usedInstrumentsUUIDs2 = set()
+            usedInstrumentNames2 = set()
+            for agent in self.world.getUserAgents():
+                for instrument in self.scoringInfo['instruments'].values():
+                    # Check if the agent has used the instrument on anything
+                    foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=instrument, arg2="*", stopAtFirst=False)
+                    if (len(foundActions) > 0):
+                        usedInstrumentsUUIDs.add(instrument.uuid)
+                        usedInstrumentNames.add(instrument.name)
 
-                # Check if the agent has used the instrument on a mushroom
-                #def queryActionObjectsByArgType(self, actionType:ActionType, arg1=None, arg2TypeContains="", stopAtFirst:bool = False):
-                foundActionsMushroom = agent.actionHistory.queryActionObjectsByArgType(ActionType.USE, arg1=instrument, arg2TypeContains="mushroom", stopAtFirst=True)
-                if (len(foundActionsMushroom) > 0):
-                    usedInstrumentsUUIDs2.add(instrument.uuid)
-                    usedInstrumentNames2.add(instrument.name)
+                    # Check if the agent has used the instrument on a mushroom
+                    #def queryActionObjectsByArgType(self, actionType:ActionType, arg1=None, arg2TypeContains="", stopAtFirst:bool = False):
+                    foundActionsMushroom = agent.actionHistory.queryActionObjectsByArg2Type(ActionType.USE, arg1=instrument, arg2TypeContains="mushroom", stopAtFirst=True)
+                    if (len(foundActionsMushroom) > 0):
+                        usedInstrumentsUUIDs2.add(instrument.uuid)
+                        usedInstrumentNames2.add(instrument.name)
 
-        self.scorecardInstruments.updateScore(len(usedInstrumentNames), True, associatedUUIDs=list(usedInstrumentsUUIDs), associatedNotes="The following instruments have been used: " + str(usedInstrumentNames))
-        self.scorecardInstruments2.updateScore(len(usedInstrumentNames2), True, associatedUUIDs=list(usedInstrumentsUUIDs2), associatedNotes="The following instruments have been used on a mushroom: " + str(usedInstrumentNames))
+            completed1 = False
+            if (len(usedInstrumentNames) == 7):
+                completed1 = True
+            self.scorecardInstruments.updateScore(len(usedInstrumentNames), completed1, associatedUUIDs=list(usedInstrumentsUUIDs), associatedNotes="The following instruments have been used: " + str(usedInstrumentNames))
+            completed2 = False
+            if (len(usedInstrumentNames2) == 7):
+                completed2 = True
+            self.scorecardInstruments2.updateScore(len(usedInstrumentNames2), completed2, associatedUUIDs=list(usedInstrumentsUUIDs2), associatedNotes="The following instruments have been used on a mushroom: " + str(usedInstrumentNames))
+
+
+        # Score Element 3: Have at least 10 mushrooms eaten by colonists
+        if (not self.scorecardMushroomsEaten.completed):
+            associatedUUIDs = set()
+            for colonist in self.colonists:
+                foundActions = colonist.actionHistory.queryActionObjectsByArg1Type(ActionType.EAT, arg1TypeContains="mushroom", stopAtFirst=False)
+                for action in foundActions:
+                    associatedUUIDs.add(action['arg1'].uuid)
+
+            numEaten = len(associatedUUIDs)
+
+            completedEaten = False
+            if (numEaten >= 10):
+                completedEaten = True
+            if (completedEaten == True):
+                self.scorecardMushroomsEaten.updateScore(numEaten, completedEaten, associatedUUIDs=list(associatedUUIDs), associatedNotes="At least 10 mushrooms have been eaten by colonists")
+            else:
+                self.scorecardMushroomsEaten.updateScore(numEaten, completedEaten, associatedUUIDs=list(associatedUUIDs), associatedNotes= str(numEaten) + " mushrooms have been eaten by colonists")
+
 
 
 
