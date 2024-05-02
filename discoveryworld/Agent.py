@@ -2303,7 +2303,16 @@ class NPCChef1(NPC):
             self.actionDiscoveryFeedMakeUpdatePost("I'm going to serve food in the cafeteria.", signals=[])
 
             # First, pick up the pot
-            potContainer = self.pot.parentContainer
+            #potContainer = self.pot.parentContainer     # This is for returning the pot to the same spot -- but has bugs (e.g. if it's not in a container, on the ground)
+            potNormalLocationX = 22
+            potNormalLocationY = 21
+            # Get a reference to the table at this location
+            objsAtLocation = self.world.getObjectsAt(potNormalLocationX, potNormalLocationY)
+            potContainer = None
+            for obj in objsAtLocation:
+                if (obj.type == "table"):
+                    potContainer = obj
+                    break
             self.addAutopilotActionToQueue( AutopilotAction_PickupObj(self.pot, priority=5) )
 
             # Then, for each edible item in the pot (up to 5), place it on a table
