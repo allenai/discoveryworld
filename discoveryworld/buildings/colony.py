@@ -182,8 +182,8 @@ def mkScienceLab(x, y, world):
 
 
     # Add a red mushroom and a pink mushroom
-    world.addObject(x+3, y+3, Layer.OBJECTS, world.createObject("mushroom1"))
-    world.addObject(x+4, y+3, Layer.OBJECTS, world.createObject("mushroom2"))
+    #world.addObject(x+3, y+3, Layer.OBJECTS, world.createObject("mushroom1"))
+    #world.addObject(x+4, y+3, Layer.OBJECTS, world.createObject("mushroom2"))
 
     # Add a radioactive check source
     world.addObject(x+6, y+1, Layer.OBJECTS, world.createObject("radioactivechecksource"))
