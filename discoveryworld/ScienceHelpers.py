@@ -23,7 +23,7 @@ def getRadiationLevelAroundLocation(world, gridX, gridY, excludeObject=None, win
                 radiationLevel = getRadiationLevelAtLocation(world, x, y, excludeObject=excludeObject)
                 #print("\t Radiation level at (" + str(x) + ", " + str(y) + ") is " + str(radiationLevel) + " uSv/h")
                 # Get the distance between (gridX, gridY) and (x, y)
-                distance = (((gridX-x)**2 + (gridY-y)**2)**0.5) + 2     # Plus 2 so things at the same tile will be considered distance 2. 
+                distance = (((gridX-x)**2 + (gridY-y)**2)**0.5) + 2     # Plus 2 so things at the same tile will be considered distance 2.
                 #print("\t Distance: " + str(distance))
                 # Inverse square law -- divide radiation level by the square of the distance
                 radiationLevel /= distance**2
@@ -43,7 +43,7 @@ def getRadiationLevelAtLocation(world, gridX, gridY, excludeObject=None):
 
     totalRadiationLevel = 0
     for obj in allObjectsAndParts:
-        if (excludeObject == None) or (obj.uuid != excludeObject.uuid):     # Make sure we're not including an object marked for exclusion. 
+        if (excludeObject == None) or (obj.uuid != excludeObject.uuid):     # Make sure we're not including an object marked for exclusion.
             for material in obj.attributes["materials"]:
                 if ("radiationusvh" in material):
                     totalRadiationLevel += material["radiationusvh"]
@@ -85,7 +85,40 @@ def getNPKContent(obj):
 
         # Pack
         npkContent = {"nitrogen": totalNitrogen, "phosphorus": totalPhosphorus, "potassium": totalPotassium}
-        return npkContent        
+        return npkContent
+
+
+#
+#   PH of objects
+#
+def getAveragePH(obj):
+    # Just get average PH
+    phs = []
+
+    # Get the patient object, and all its parts
+    # def getAllContainedObjectsAndParts(self, includeContents=True, includeParts=True):
+    patientObjAndParts = obj.getAllContainedObjectsAndParts(includeContents=True, includeParts=True)
+    # Collect the materials of the object and its parts
+    patientMaterials = []
+    for patientObjOrPart in patientObjAndParts:
+        if ("materials" in patientObjOrPart.attributes):
+            patientMaterials.extend(patientObjOrPart.attributes["materials"])
+
+    # Get the PH of the materials
+    for patientMaterial in patientMaterials:
+        if ("ph" in patientMaterial):
+            phs.append(patientMaterial["ph"])
+
+    if (len(phs) == 0):
+        return None
+
+    # Get the average PH
+    totalPH = sum(phs)
+    averagePH = totalPH / len(phs)
+
+    return averagePH
+
+
 
 
 
@@ -100,7 +133,7 @@ def heatObjects(objList:list, finalTemperature:float, maxTemperatureChange:float
         currentTemperature = obj.attributes["temperatureC"]
         # Get the temperature difference between the current temperature and the final temperature
         temperatureDifference = finalTemperature - currentTemperature
-        
+
         # If there's a positive difference, start heating
         if (temperatureDifference > 0):
             # If the temperature difference is greater than the maximum temperature change, only change the temperature by the maximum temperature change
@@ -116,7 +149,7 @@ def coolObjects(objList:list, finalTemperature:float, maxTemperatureChange:float
         currentTemperature = obj.attributes["temperatureC"]
         # Get the temperature difference between the current temperature and the final temperature
         temperatureDifference = currentTemperature - finalTemperature
-        
+
         # If there's a positive difference, start heating
         if (temperatureDifference > 0):
             # If the temperature difference is greater than the maximum temperature change, only change the temperature by the maximum temperature change
@@ -130,8 +163,8 @@ def coolObjects(objList:list, finalTemperature:float, maxTemperatureChange:float
 #   Living Things -- set dead if outside of temperature range
 #
 def livingTemperatureRangeCheck(obj):
-    # Check to see if the temperature goes out of range of the living things tolerance.  If so, set the living thing to dead.     
-    # Can only perform this check if the living thing has a material specified. 
+    # Check to see if the temperature goes out of range of the living things tolerance.  If so, set the living thing to dead.
+    # Can only perform this check if the living thing has a material specified.
     if (len(obj.attributes["materials"]) > 0) and (obj.attributes['isLiving'] == True):
         curTemperature = obj.attributes['temperatureC']
         # Should only be one material
@@ -141,4 +174,3 @@ def livingTemperatureRangeCheck(obj):
                 # Outside of living range
                 obj.attributes['isLiving'] = False
                 print("### " + obj.name + " is dead, due to being out of temperature range.  Temperature is " + str(curTemperature) + " C.  Living range is " + str(material['livingMinTemp']) + " C to " + str(material['livingMaxTemp']) + " C.  ###")
-                    
