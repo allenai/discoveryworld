@@ -196,13 +196,45 @@ class ScorecardElement():
 class EatMushroomTask(Task):
     # Constructor
     def __init__(self, world, scoringInfo):
-        taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist sometimes have upset stomachs.  Your task is to figure out why people are feeling ill, and to prevent it.  You must demonstrate this by having 10 colonists successfully eat mushrooms without eventually feeling sick. "
+        taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist sometimes have upset stomachs.  Your task is to figure out why people are feeling ill, and to prevent it.  You must demonstrate this by having colonists successfully eat 10 mushrooms in a row without eventually feeling sick. "
         taskDescription += "Since the food causes only mild illness, and getting the colony established is important, the colonists have volunteered to be test subjects.  The Chef in the Cafeteria can help you collect mushrooms, serve mushrooms from the cafeteria pot to the tables, and let the colonists know a meal is ready to eat, when you're ready. "
         taskDescription += "The colonists may post their status (like if they're feeling unwell) on the Discovery Feed (use 'v' to display it)."
         Task.__init__(self, "EatMushroomTask", taskDescription, world, scoringInfo)
         self.score = 0
-        self.maxScore = 10                       # Maximum score
+        self.maxScore = 10                       # TODO: Maximum score
         self.agentsToMonitorForSickness = {}        # Key: agent name, value: step they were added
+
+        # TODO: Add subtasks?
+    # instruments['microscope'] = world.createObject("Microscope")
+    # instruments['spectrometer'] = world.createObject("Spectrometer")
+    # instruments['phmeter'] = world.createObject("PHMeter")
+    # instruments['radiationmeter'] = world.createObject("RadiationMeter")
+    # instruments['sampler'] = world.createObject("Sampler")
+    # instruments['thermometer'] = world.createObject("Thermometer")
+    # instruments['npkmeter'] = world.createObject("NPKMeter")
+
+        # Have collected at least one of each of the 4 different colors of mushrooms
+        self.collectedMushroomColors = set()
+        self.collectedMushroomUUIDs = set()
+        self.scorecardMushrooms = ScorecardElement("Collect different mushrooms", "Collect at least one of each of the 4 different colors of mushrooms", maxScore=4)
+        self.scoreCard.append(self.scorecardMushrooms)
+
+        # Use all the different scientific instruments on something
+        self.scorecardInstruments = ScorecardElement("Use instruments", "Use each of the scientific instruments on an object", maxScore=7)
+        self.scoreCard.append(self.scorecardInstruments)
+        self.scorecardInstruments2 = ScorecardElement("Use instruments on mushrooms", "Use each of the scientific instruments on a mushroom", maxScore=7)
+        self.scoreCard.append(self.scorecardInstruments2)
+
+        # Have at least 5 mushrooms eaten by colonists
+        self.scorecardMushroomsEaten = ScorecardElement("Eat mushrooms", "Have at least 5 mushrooms eaten by colonists", maxScore=5)
+        self.scoreCard.append(self.scorecardMushroomsEaten)
+
+        # Have 10 mushrooms eaten by colonists without them having got sick
+        self.scorecardMushroomsEatenNoSickness = ScorecardElement("Eat mushrooms without sickness", "Have 10 mushrooms eaten by colonists without them getting sick", maxScore=10)
+        self.scoreCard.append(self.scorecardMushroomsEatenNoSickness)
+
+        # Add hypotheses from scoringInfo
+        self.criticalHypotheses = scoringInfo["criticalHypotheses"]
 
 
     # Task setup: Add any necessary objects to the world to perform the task.
@@ -212,6 +244,44 @@ class EatMushroomTask(Task):
 
     # Update the task progress
     def updateTick(self):
+        # Score Element 1: Collect different mushrooms
+        # Check what mushrooms the agent has in their inventory
+        for agent in self.world.agents:
+            for obj in agent.getAllContainedObjectsAndParts():
+                if ("mushroom" in obj.type):
+                    mushroomColor = obj.attributes['color']
+                    if (mushroomColor not in self.collectedMushroomColors):
+                        self.collectedMushroomColors.add(obj.attributes['color'])
+                        self.collectedMushroomUUIDs.add(obj.uuid)
+        self.scorecardMushrooms.updateScore(len(self.collectedMushroomColors), True, associatedUUIDs=list(self.collectedMushroomUUIDs), associatedNotes="The following mushroom colors have been collected: " + str(self.collectedMushroomColors))
+
+        # Score Element 2: Use different scientific instruments on a mushroom
+        # Check if the agent has used each of the scientific instruments on a mushroom
+        usedInstrumentsUUIDs = set()
+        usedInstrumentNames = set()
+        usedInstrumentsUUIDs2 = set()
+        usedInstrumentNames2 = set()
+        for agent in self.world.agents:
+            for instrument in self.scoringInfo['instruments'].values():
+                # Check if the agent has used the instrument on anything
+                foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=instrument, arg2="*", stopAtFirst=False)
+                if (len(foundActions) > 0):
+                    usedInstrumentsUUIDs.add(instrument.uuid)
+                    usedInstrumentNames.add(instrument.name)
+
+                # Check if the agent has used the instrument on a mushroom
+                #def queryActionObjectsByArgType(self, actionType:ActionType, arg1=None, arg2TypeContains="", stopAtFirst:bool = False):
+                foundActionsMushroom = agent.actionHistory.queryActionObjectsByArgType(ActionType.USE, arg1=instrument, arg2TypeContains="mushroom", stopAtFirst=True)
+                if (len(foundActionsMushroom) > 0):
+                    usedInstrumentsUUIDs2.add(instrument.uuid)
+                    usedInstrumentNames2.add(instrument.name)
+
+        self.scorecardInstruments.updateScore(len(usedInstrumentNames), True, associatedUUIDs=list(usedInstrumentsUUIDs), associatedNotes="The following instruments have been used: " + str(usedInstrumentNames))
+        self.scorecardInstruments2.updateScore(len(usedInstrumentNames2), True, associatedUUIDs=list(usedInstrumentsUUIDs2), associatedNotes="The following instruments have been used on a mushroom: " + str(usedInstrumentNames))
+
+
+
+
         # Monitoring task 1: Check if any agents have just eaten a mushroom
         # List of names of agents to check for whether they've just eaten a mushroom
         agentsToCheck = []

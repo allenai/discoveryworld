@@ -49,6 +49,30 @@ def mkInfirmary(x, y, world):
     world.addObject(x+6, y+1, Layer.FURNITURE, world.createObject("Fridge"))
 
 
+# Makes a mushroom that (may) have mold on it, based on the world seed
+def mkMushroomScenarioAppropriate(world, seed, rng=None):
+    rng = rng or random.Random()
+    plant = None
+    # Randomly choose one of 4 plants to turn into
+    plantNames = ["mushroom1", "mushroom2", "mushroom3", "mushroom4"]
+    whichPlantName = rng.choice(plantNames)
+    # Then, based on the world seed, add either "", "b", "c", or "d" to the end of the plant name
+    worldSeed = seed
+    if (worldSeed % 5 == 0):
+        whichPlantName += ""
+    elif (worldSeed % 5 == 1):
+        whichPlantName += "b"
+    elif (worldSeed % 5 == 2):
+        whichPlantName += "c"
+    elif (worldSeed % 5 == 3):
+        whichPlantName += "d"
+    elif (worldSeed % 5 == 4):
+        whichPlantName += "e"
+
+    # Create the plant
+    plant = world.createObject(whichPlantName)
+    return plant
+
 def mkCafeteria(x, y, world, rng=None):
     rng = rng or random.Random()
     # Create an L-shaped building (cafeteria)
@@ -71,10 +95,12 @@ def mkCafeteria(x, y, world, rng=None):
         #tableToAdd.addObject(world.createObject("mushroom3"))
         #tableToAdd.addObject(world.createObject("mushroom1"))
         # Randomly choose between mushroom1 and mushroom2
-        if (rng.random() < 0.5):
-            tableToAdd.addObject(world.createObject("mushroom1"))
-        else:
-            tableToAdd.addObject(world.createObject("mushroom2"))
+        mushroom = mkMushroomScenarioAppropriate(world, world.randomSeed, rng)
+        tableToAdd.addObject(mushroom)
+        # if (rng.random() < 0.5):
+        #     tableToAdd.addObject(world.createObject("mushroom1"))
+        # else:
+        #     tableToAdd.addObject(world.createObject("mushroom2"))
 
         world.addObject(x+i+2, y+3, Layer.FURNITURE, tableToAdd)
         tables.append(tableToAdd)
@@ -108,28 +134,41 @@ def mkScienceLab(x, y, world):
     # Create a building (science lab)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
     mkBuildingDivided(world, x=x, y=y, width=8, height=6, dividerX=5, apertureX=3, dividerY=0, apertureY=0, doorX=3, signText="Science Lab")
+    instruments = {}
+    instruments['microscope'] = world.createObject("Microscope")
+    instruments['spectrometer'] = world.createObject("Spectrometer")
+    instruments['phmeter'] = world.createObject("PHMeter")
+    instruments['radiationmeter'] = world.createObject("RadiationMeter")
+    instruments['sampler'] = world.createObject("Sampler")
+    instruments['thermometer'] = world.createObject("Thermometer")
+    instruments['npkmeter'] = world.createObject("NPKMeter")
 
     bench1 = world.createObject("Table")
     world.addObject(x+1, y+1, Layer.FURNITURE, bench1)
-    bench1.addObject( world.createObject("Microscope") )
+    #bench1.addObject( world.createObject("Microscope") )
+    bench1.addObject( instruments['microscope'] )
 
     bench2 = world.createObject("Table")
     world.addObject(x+2, y+1, Layer.FURNITURE, bench2)
-    bench2.addObject( world.createObject("Spectrometer") )
+    #bench2.addObject( world.createObject("Spectrometer") )
+    bench2.addObject( instruments['spectrometer'] )
 
     bench3 = world.createObject("Table")
     world.addObject(x+3, y+1, Layer.FURNITURE, bench3)
-    bench3.addObject( world.createObject("PHMeter") )
+    #bench3.addObject( world.createObject("PHMeter") )
+    bench3.addObject( instruments['phmeter'] )
 
     bench4 = world.createObject("Table")
     world.addObject(x+4, y+1, Layer.FURNITURE, bench4)
-    bench4.addObject( world.createObject("RadiationMeter") )
+    #bench4.addObject( world.createObject("RadiationMeter") )
+    bench4.addObject( instruments['radiationmeter'] )
 
 
     # Add sampler and sample containers (Petri dishes)
     bench5 = world.createObject("Table")
     world.addObject(x+1, y+4, Layer.FURNITURE, bench5)
-    bench5.addObject( world.createObject("Sampler") )
+    #bench5.addObject( world.createObject("Sampler") )
+    bench5.addObject( instruments['sampler'] )
 
     bench6 = world.createObject("Table")
     world.addObject(x+1, y+3, Layer.FURNITURE, bench6)
@@ -138,7 +177,8 @@ def mkScienceLab(x, y, world):
 
     bench7 = world.createObject("Table")
     world.addObject(x+4, y+4, Layer.FURNITURE, bench7)
-    bench7.addObject( world.createObject("Thermometer") )
+    #bench7.addObject( world.createObject("Thermometer") )
+    bench7.addObject( instruments['thermometer'] )
 
 
     # Add a red mushroom and a pink mushroom
@@ -149,7 +189,10 @@ def mkScienceLab(x, y, world):
     world.addObject(x+6, y+1, Layer.OBJECTS, world.createObject("radioactivechecksource"))
 
     # Add NPK meter
-    world.addObject(x+6, y+4, Layer.OBJECTS, world.createObject("NPKMeter"))
+    #world.addObject(x+6, y+4, Layer.OBJECTS, world.createObject("NPKMeter"))
+    world.addObject(x+6, y+4, Layer.FURNITURE, instruments['npkmeter'])
+
+    return instruments
 
 
 def mkStorageShed(x, y, world, DOOR_KEY_ID, chemicalSolutionDict, scoringInfo):

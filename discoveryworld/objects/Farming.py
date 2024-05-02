@@ -4,6 +4,7 @@ from discoveryworld.ActionSuccess import ActionSuccess, MessageImportance, UseWi
 from discoveryworld.Layer import Layer
 from discoveryworld.ScienceHelpers import getNPKContent, livingTemperatureRangeCheck
 from discoveryworld.objects.Object import Object
+from discoveryworld.buildings.colony import mkMushroomScenarioAppropriate
 
 
 class Dirt(Object):
@@ -414,17 +415,9 @@ class Seed(Object):
             if (self.attributes["sproutTime"] == 0):
                 #print("Turn into plant")
                 # Turn into plant
-                plant = None
-                # Randomly choose one of 4 plants to turn into
-                rand = self.rng.randint(0, 3)
-                if (rand == 0):
-                    plant = self.world.createObject("mushroom1")
-                elif (rand == 1):
-                    plant = self.world.createObject("mushroom2")
-                elif (rand == 2):
-                    plant = self.world.createObject("mushroom3")
-                elif (rand == 3):
-                    plant = self.world.createObject("mushroom4")
+
+                #def mkMushroomScenarioAppropriate(world, seed, rng=None):
+                plant = mkMushroomScenarioAppropriate(self.world, self.world.randomSeed, rng=self.rng)
 
                 # Replace self with the plant
                 #self.replaceSelfWithObject(plant)

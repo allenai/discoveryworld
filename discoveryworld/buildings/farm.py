@@ -2,6 +2,7 @@ import random
 
 from discoveryworld.Layer import Layer
 from discoveryworld.buildings.house import mkBuildingOneRoom
+from discoveryworld.buildings.colony import mkMushroomScenarioAppropriate
 
 
 def mkFarm(x, y, world, rng=None):
@@ -67,10 +68,12 @@ def mkFarm(x, y, world, rng=None):
         # If there isn't already a mushroom there, add one
         if (not world.hasObj(randX, randY, "mushroom")):
             # Add a mushroom
-            mushroomTypes = ["mushroom1", "mushroom2", "mushroom3", "mushroom4"]
+            mushroom = mkMushroomScenarioAppropriate(world, world.randomSeed, rng=rng)
+
+            #mushroomTypes = ["mushroom1", "mushroom2", "mushroom3", "mushroom4"]
             # Randomly pick a mushroom type
-            mushroomType = mushroomTypes[rng.randint(0, len(mushroomTypes)-1)]
-            mushroom = world.createObject(mushroomType)
+            #mushroomType = mushroomTypes[rng.randint(0, len(mushroomTypes)-1)]
+            #mushroom = world.createObject(mushroomType)
             #mushroom = world.createObject("Mushroom")
 
             world.addObject(randX, randY, Layer.OBJECTS, mushroom)

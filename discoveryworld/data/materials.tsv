@@ -1,9 +1,9 @@
 ReferenceName	MaterialName	MaterialType	BaseClass	microscopeDesc_str	color_str	spectrum_listfloat	ph_float	radiationusvh_float	isPoisonous_bool	isEdible_bool	cosCanBeLiquid_bool	cosCanBeSolid_bool	cosCanBeGas_bool	cosMeltingPointC_float	cosBoilingPointC_float	cosCombustionPointC_float	isLiving_bool	livingMinTemp_float	livingMaxTemp_float	nitrogen_float	phosphorus_float	potassium_float
-PlantMatterGreen	plant matter			The fibers and cells associated with plant matter	green	0.1, 0.2, 0.3, 0.4, 0.5	6	0.1	FALSE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	-20	35	0	0	0
+PlantMatterGreen	plant matter			The fibers and cells associated with plant matter	green	0.3, 0.2, 0.3, 0.4, 0.5	6	0.1	FALSE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	-20	35	0	0	0
 PlantMatterWhite	plant matter			The fibers and cells associated with plant matter	white	0.1, 0.2, 0.3, 0.4, 0.5	6	0	FALSE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	-20	35	0	0	0
 PlantMatterWood	plant matter			The fibers and cells associated with plant matter	brown	0.1, 0.2, 0.3, 0.4, 0.5	6	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	300	TRUE	-20	35	0	0	0
-MoldRed	mold			Fuzzy filaments indicative of mold	red	0.2, 0.2, 0.2, 0.2, 0.5	4	0	TRUE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	-20	60	0	0	0
-MoldGreen	mold			Fuzzy filaments indicative of mold	green	0.2, 0.2, 0.2, 0.2, 0.5	4	0	TRUE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	-20	60	0	0	0
+MoldRed	mold			Fuzzy filaments indicative of mold	red	0.1, 0.1, 0.1, 0.1, 0.5	4	0	TRUE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	-20	60	0	0	0
+MoldGreen	mold			Fuzzy filaments indicative of mold	green	0.1, 0.1, 0.1, 0.1, 0.5	4	0	TRUE	TRUE	FALSE	TRUE	FALSE	0	10000	300	TRUE	-20	60	0	0	0
 heavyradioactive	radioactive			A shiny metalic material, with small glowing dots that appear to flicker in and out of existence. 		0.8, 0.0, 0.8, 0.0, 0.0	7	100	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0
 rock	rock			A rough grey surface irregualrly showing small grey holes between 1 and 3 millimeters deep in the surface.	grey	0.1, 0.3, 0.5, 0.1, 0.1	8	0	FALSE	FALSE	TRUE	TRUE	FALSE	2000	10000	10000	FALSE	0	0	0	0	0
 soil_good	soil			Small particles of soil and organic matter, interspersed with a large number of microscopic fungus and bacteria.	brown	0.3, 0.0, 0.1, 0.2, 0.1	8.2	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	3	4	2

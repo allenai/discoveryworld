@@ -74,6 +74,10 @@ class World:
         # Add a flag for whether this has a live user playing (where text is somewhat simplified, or an agent)
         self.liveUserPlaying = False
 
+        # These are set in the ScenarioMaker
+        self.randomSeed = None
+        self.rng = None
+
 
     # Set if a live user is playing (e.g. for a user study)
     def setLiveUserPlaying(self):

@@ -10,6 +10,19 @@ from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mk
 
 
 def makeScenarioTown(world, numUserAgents=1):
+    scoringInfo = {}
+    scoringInfo["criticalHypotheses"] = []
+
+    scoringInfo["criticalHypotheses"].append("The mushrooms that make people ill have mold on them. The mold is directly observable with the microscope, or indirectly observable by elevated spectrometer readings, particularly with a value of 1.0 on Channel 5 of the spectrometer.")
+    criticalMushroom = {
+        0: "red",
+        1: "green",
+        2: "yellow",
+        4: "pink",
+        5: "red and pink",
+    }
+    crticialMushroomColor = criticalMushroom[(world.randomSeed % 5)]
+    scoringInfo["criticalHypotheses"].append("The mushrooms that make people ill have the following color(s): " + crticialMushroomColor + ".")
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 5
@@ -29,7 +42,9 @@ def makeScenarioTown(world, numUserAgents=1):
     # Buildings
     #mkHouse(4, 4, world)
 
-    mkScienceLab(8, 21, world)
+    instruments = mkScienceLab(8, 21, world)
+    scoringInfo["instruments"] = instruments
+
     mkInfirmary(19, 4, world)
     mkBarracks(19, 11, world)
 
@@ -175,3 +190,5 @@ def makeScenarioTown(world, numUserAgents=1):
         world.addAgent(colonist)
 
         npcColonists.append(colonist)
+
+    return scoringInfo
