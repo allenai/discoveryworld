@@ -228,6 +228,11 @@ class UserInterface:
         helpY = self.window.get_height() - 20
         self.window.blit(textSurface, (helpX, helpY))
 
+        # Turn counter
+        if (self.currentAgent != None):
+            textSurface = self.fontBold.render("     Turn " + str(self.currentAgent.world.getStepCounter()), True, (128, 128, 128))
+            self.window.blit(textSurface, (helpX, helpY-20))
+
         # If the task has been completed, then display a message
         if (self.currentAgent != None):
             task = None
