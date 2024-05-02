@@ -516,7 +516,7 @@ class UserInterface:
             # Increment the object index
             objIdx += 1
 
-        nbObjsInvDisplayed = max(len(objsInv) - startIdx, 0)
+        nbObjsInvDisplayed = min(max(len(objsInv) - startIdx, 0), 10)
         nbObjsEnvDisplayed = min(len(objsEnv), 10 - nbObjsInvDisplayed)
         # Draw a rectangle around inventory items.
         x = 0 * (32 * scale) + offsetX
