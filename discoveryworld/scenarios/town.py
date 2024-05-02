@@ -161,8 +161,15 @@ def makeScenarioTown(world, numUserAgents=1):
 
     # Add another NPC colonist
     npcColonists = []
+    colonistPreferredWanderLocations = [
+        (18, 25),   # Near farm
+        (16, 18),   # Town square
+        (18, 11),   # Barracks
+        (13, 5),    # Near north entrance
+        (8, 19)    # Near west entrance
+    ]
     for i in range(0, 5):
-        colonist = NPCColonistAuto2(world, "Colonist " + str(i))
+        colonist = NPCColonistAuto2(world, "Colonist " + str(i), preferredX=colonistPreferredWanderLocations[i][0], preferredY=colonistPreferredWanderLocations[i][1])
         dialogMaker.mkDialogColonist(colonist)
         world.addObject(13+i, 19, Layer.AGENT, colonist)
         world.addAgent(colonist)

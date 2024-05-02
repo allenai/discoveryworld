@@ -2291,6 +2291,9 @@ class NPCChef1(NPC):
             # Then, travel back to your starting location
             self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=20, y=21, priority=5) )
 
+            # Then, make sure you're facing south
+            self.addAutopilotActionToQueue( AutopilotAction_RotateToFaceDirection("south", priority=5) )
+
 
         elif ("serveSignal" in self.attributes['states']):
             # Serve the food
@@ -2352,7 +2355,7 @@ class NPCChef1(NPC):
 
 class NPCColonistAuto2(NPC):
     # Constructor
-    def __init__(self, world, name):
+    def __init__(self, world, name, preferredX=15, preferredY=15):
         # Default sprite name
         Agent.__init__(self, world, "agent", name, defaultSpriteName = "character17_agent_facing_south")
 
@@ -2369,7 +2372,7 @@ class NPCColonistAuto2(NPC):
         #     # Since the rest is dependent upon the pot's contents at pick-up time, the rest of the actions are added in tick()
 
         # Add default action (wandering), which has a low priority
-        self.addAutopilotActionToQueue( AutopilotAction_Wander() )
+        self.addAutopilotActionToQueue( AutopilotAction_Wander(preferredX=preferredX, preferredY=preferredY) )
 
 
     # Tick
@@ -2602,6 +2605,9 @@ class NPCFarmer1(NPC):
 
             # Then, travel back to your starting location
             self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=11, y=12, finalDirection="south", priority=5) )
+
+            # Then, make sure you're facing south
+            self.addAutopilotActionToQueue( AutopilotAction_RotateToFaceDirection("south", priority=5) )
 
 
         elif ("serveSignal" in self.attributes['states']):

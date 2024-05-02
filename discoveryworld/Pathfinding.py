@@ -1,6 +1,8 @@
 # Pathfinding.py
 
 import random
+import math
+
 from enum import Enum
 
 from pathfinding.core.diagonal_movement import DiagonalMovement
@@ -116,6 +118,10 @@ class Pathfinder():
             result = self.runBuryInFrontOfAgent(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.POST_DISCOVERY_FEED_UPDATE):
             result = self.runPostDiscoveryFeedUpdate(autopilotAction.args, agent, world)
+        elif (actionType == AutopilotActionType.MOVE_RELATIVE):
+            result = self.runMoveRelative(autopilotAction.args, agent, world)
+        elif (actionType == AutopilotActionType.ROTATE_TO_FACE_DIRECTION):
+            result = self.runRotateToFaceDirection(autopilotAction.args, agent, world)
         else:
             print("ERROR: Invalid autopilot action type: " + str(actionType))
             return ActionResult.INVALID
@@ -136,6 +142,31 @@ class Pathfinder():
 
         return result
 
+
+    # Do a relative move (north, east, south, west)
+    def runMoveRelative(self, args:dict, agent, world):
+        direction = args['direction'].lower()
+
+        # Direction should be one of "north", "east", "south", "west"
+        if (direction not in ["north", "east", "south", "west"]):
+            print("ERROR: Invalid direction specified: " + str(direction))
+            return ActionResult.FAILURE
+
+        result = agent.actionMoveAgentNorthEastSouthWest(direction=direction)
+
+        return ActionResult.COMPLETED
+
+    # Rotate to face a specific direction
+    def runRotateToFaceDirection(self, args:dict, agent, world):
+        direction = args['direction'].lower()
+
+        # Direction should be one of "north", "east", "south", "west"
+        if (direction not in ["north", "east", "south", "west"]):
+            print("ERROR: Invalid direction specified: " + str(direction))
+            return ActionResult.FAILURE
+
+        success = agent.actionRotateAgentFacingDirectionAbsolute(direction)
+        return ActionResult.COMPLETED
 
 
     def runGotoXY(self, args:dict, agent, world):
@@ -690,16 +721,38 @@ class Pathfinder():
 
 
     def runWander(self, args:dict, agent, world):
+        ## OLD WANDER
         # Randomly pick a location to move to on the map
-        newX = random.randint(0, world.sizeX-1)
-        newY = random.randint(0, world.sizeX-1)
+        #newX = random.randint(0, world.sizeX-1)
+        #newY = random.randint(0, world.sizeX-1)
 
         # Generate a GOTO action to move to that location
-        print("runWander:  Generating new x/y location to wander to (" + str(newX) + ", " + str(newY) + ")" )
-        action = AutopilotAction_GotoXY(newX, newY, priority=args['priority']+1)
+        #print("runWander:  Generating new x/y location to wander to (" + str(newX) + ", " + str(newY) + ")" )
+        #action = AutopilotAction_GotoXY(newX, newY, priority=args['priority']+1)
 
-        # Add the action to the agent's queue
-        agent.addAutopilotActionToQueue(action)
+        # NEW WANDER
+        # Check if the agent is at args['preferredX'], args['preferredY']
+        agentLocation = agent.getWorldLocation()
+        # Get the euclidian distance to the preferred location
+        distToPreferred = math.sqrt( (agentLocation[0] - args['preferredX'])**2 + (agentLocation[1] - args['preferredY'])**2 )
+
+        if (distToPreferred < 4):
+            # We're close to the preferred location, so do a low-computation move
+            # Only move 50% of the time -- keeps the agent's speed slow when it's wandering, so a user can catch up.
+            if (random.random() < 0.5):
+                # Randomly pick a direction to move in
+                directions = ["north", "east", "south", "west"]
+                direction = random.choice(directions)
+                action = AutopilotAction_MoveRelative(direction, priority=args['priority']+1)
+                agent.addAutopilotActionToQueue(action)
+
+        else:
+            # We're getting far from the preferred location -- move back to it.
+            # Generate a GOTO action to get there
+            print("runWander:  Generating preferred x/y location to wander to (" + str(args['preferredX']) + ", " + str(args['preferredY']) + ")" )
+            action = AutopilotAction_GotoXY(args['preferredX'], args['preferredY'], priority=args['priority']+1)
+            # Add the action to the agent's queue
+            agent.addAutopilotActionToQueue(action)
 
         return ActionResult.SUCCESS
 
@@ -995,9 +1048,11 @@ class AutoPilotAction_BuryInFrontOfAgent(AutopilotAction):
 
 class AutopilotAction_Wander(AutopilotAction):
     # Constructor
-    def __init__(self, priority=0):
+    def __init__(self, preferredX, preferredY, priority=0):
         self.actionType = AutopilotActionType.WANDER
         self.args = {}
+        self.args['preferredX'] = preferredX
+        self.args['preferredY'] = preferredY
         self.args['priority'] = priority
 
 class AutopilotAction_Wait(AutopilotAction):
@@ -1016,7 +1071,21 @@ class AutopilotAction_PostDiscoveryFeedUpdate(AutopilotAction):
         self.args['signals'] = signals
         self.args['priority'] = priority
 
+class AutopilotAction_MoveRelative(AutopilotAction):
+    # Constructor
+    def __init__(self, direction, priority=0):
+        self.actionType = AutopilotActionType.MOVE_RELATIVE
+        self.args = {}
+        self.args['direction'] = direction      # Direction should be "N", "E", "S", or "W"
+        self.args['priority'] = priority
 
+class AutopilotAction_RotateToFaceDirection(AutopilotAction):
+    # Constructor
+    def __init__(self, direction, priority=0):
+        self.actionType = AutopilotActionType.ROTATE_TO_FACE_DIRECTION
+        self.args = {}
+        self.args['direction'] = direction      # Direction should be "N", "E", "S", or "W"
+        self.args['priority'] = priority
 
 # Enumeration for types of autopilot actions
 class AutopilotActionType(Enum):
@@ -1032,3 +1101,5 @@ class AutopilotActionType(Enum):
     BURY_IN_FRONT_OF_AGENT  = 9
     DROP_OBJ_AT_LOCATION    = 10
     POST_DISCOVERY_FEED_UPDATE = 11
+    MOVE_RELATIVE           = 12
+    ROTATE_TO_FACE_DIRECTION = 13
