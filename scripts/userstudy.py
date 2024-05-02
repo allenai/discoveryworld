@@ -697,9 +697,9 @@ def main(args):
                 lastSize = curSize
 
             # Show all discovery feed posts
-            #print("Discovery feed:")
-            #for post in world.discoveryFeed.updatePosts:
-            #    print(post)
+            print("Discovery feed:")
+            for post in world.discoveryFeed.updatePosts:
+                print(post)
 
             ## Debug: Export the logfile every 10 steps
             #if (frames % 10 == 0):

@@ -2205,7 +2205,7 @@ class NPCChef1(NPC):
             return
 
         # Debug
-        ##print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        print("*** NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -2226,7 +2226,8 @@ class NPCChef1(NPC):
 
 
         elif ("eatSignal" in self.attributes['states']):
-            # TODO: Add the action sequence to go to the cafeteria and eat
+            # The chef doesn't eat -- remove this signal
+            self.removeState("eatSignal")
             pass
 
         elif ("callColonistsSignal" in self.attributes['states']):
@@ -2252,7 +2253,17 @@ class NPCChef1(NPC):
             self.actionDiscoveryFeedMakeUpdatePost("I'm going to the farm to collect mushrooms.", signals=[])
 
             # First, pick up the pot
-            potContainer = self.pot.parentContainer
+            #potContainer = self.pot.parentContainer     # This is for returning the pot to the same spot -- but has bugs (e.g. if it's not in a container, on the ground)
+            potNormalLocationX = 22
+            potNormalLocationY = 21
+            # Get a reference to the table at this location
+            objsAtLocation = self.world.getObjectsAt(potNormalLocationX, potNormalLocationY)
+            potContainer = None
+            for obj in objsAtLocation:
+                if (obj.type == "table"):
+                    potContainer = obj
+                    break
+
             self.addAutopilotActionToQueue( AutopilotAction_PickupObj(self.pot, priority=5) )
 
             # Then, pick up the mushrooms
@@ -2264,11 +2275,15 @@ class NPCChef1(NPC):
             container = self.pot
             self.addAutopilotActionToQueue( AutopilotAction_PickupObjectsInArea(fieldX, fieldY, fieldWidth, fieldHeight, objectTypes, container, priority=5) )
 
-            # Then, put the pot back down
-            self.addAutopilotActionToQueue( AutopilotAction_PlaceObjInContainer(self.pot, potContainer, priority=5) )
-
             # Send a note to the discovery feed signifying the task is completed
             self.addAutopilotActionToQueue( AutopilotAction_PostDiscoveryFeedUpdate(contentStr="I'm going back to the cafeteria from the farm.", signals=[], priority=5) )
+
+            # Then, put the pot back down in it's original location
+            if (potContainer is not None):
+                self.addAutopilotActionToQueue( AutopilotAction_PlaceObjInContainer(self.pot, potContainer, priority=5) )
+            else:
+                ## TODO: Make it drop the pot
+                self.addAutopilotActionToQueue( AutopilotAction_DropObjAtLocation(dropX=21, dropY=21, objectNamesOrTypes=["pot"], priority=5) )
 
             # Then, travel back to your starting location
             self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=20, y=21, priority=5) )
@@ -2368,7 +2383,7 @@ class NPCColonistAuto2(NPC):
             return
 
         # Debug
-        ##print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        print("*** NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -2501,7 +2516,7 @@ class NPCFarmer1(NPC):
             return
 
         # Debug
-        ##print("NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        print("*** NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -2522,7 +2537,8 @@ class NPCFarmer1(NPC):
 
 
         elif ("eatSignal" in self.attributes['states']):
-            # TODO: Add the action sequence to go to the cafeteria and eat
+            # The farmer doesn't eat -- remove this signal
+            self.removeState("eatSignal")
             pass
 
 
