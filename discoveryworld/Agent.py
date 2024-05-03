@@ -2427,8 +2427,8 @@ class NPCColonistAuto2(NPC):
 
             if (not hasEatAction):
                 # Add autopilot actions
-                self.addAutopilotActionToQueue( AutopilotAction_PostDiscoveryFeedUpdate(contentStr="I'm going to eat a mushroom.", signals=[], priority=10) )
-                self.addAutopilotActionToQueue( AutopilotAction_EatObjectInInventory(objectNamesOrTypesToEat=["mushroom"], priority=10) )
+                self.addAutopilotActionToQueue( AutopilotAction_PostDiscoveryFeedUpdate(contentStr="I'm going to eat a mushroom.", signals=[], priority=3) )
+                self.addAutopilotActionToQueue( AutopilotAction_EatObjectInInventory(objectNamesOrTypesToEat=["mushroom"], priority=3) )
 
         # Sprite modifier updates
         if ("poisoned" in self.attributes['states']):
@@ -2482,14 +2482,18 @@ class NPCColonistAuto2(NPC):
             # Then, check a condition -- is there a mushroom in the agent's inventory?
             self.mushroomRetriesLeft = 3
             def checkForMushroom():
+                print("### IN CALLBACK")
                 self.mushroomRetriesLeft -= 1
                 if (self.mushroomRetriesLeft <= 0):
                     # Just pretend we got the mushroom, so it exists
+                    print("### NO RETRIES LEFT")
                     return True
                 # Check to see if we have the mushroom
                 for obj in self.contents:
                     if ("mushroom" in obj.type):
+                        print("### Has mushroom")
                         return True
+                print("### Doesn't have mushroom")
                 return False
             conditionCallback = checkForMushroom
             # If true, eat the mushroom
