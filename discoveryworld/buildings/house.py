@@ -55,9 +55,9 @@ def mkBuildingOneRoom(world, x, y, width, height, signText="Default Sign Text", 
             world.addObject(x + i, y + j, Layer.BUILDING, world.createObject("Floor"))
     # Sign infront of the door
     if (len(signText) > 0):
-        sign = world.createObject("Sign")
+        sign = world.createObject("Sign", variant=1)
         sign.setText(signText)
-        world.addObject(x + int(width / 2)-1, y + height, Layer.FURNITURE, sign)
+        world.addObject(x + int(width / 2)-1, y + height -1, Layer.FURNITURE, sign)
 
     roomBounds = (x+1, y+1, x + width - 2, y + height - 2)
     return roomBounds
@@ -129,9 +129,9 @@ def mkBuildingDivided(world, x, y, width, height, dividerX, apertureX, dividerY,
 
     # Sign infront of the door
     if (len(signText) > 0):
-        sign = world.createObject("Sign")
+        sign = world.createObject("Sign", variant=1)
         sign.setText(signText)
-        world.addObject(x + doorX-1, y + height, Layer.FURNITURE, sign)
+        world.addObject(x + doorX-1, y + height -1, Layer.FURNITURE, sign)
 
 
 def mkBuildingLDivided(world, x, y, width, height, dividerX, signText="Default Sign Text"):
