@@ -548,6 +548,42 @@ def main(args):
                     # Flush the key buffer
                     pygame.event.clear()
 
+            elif (ui.inDiscoveryFeedModal):
+                print("#### IN DISCOVERY FEED MODAL")
+                # Discovery Feed modal: Pressing SPACE or RETURN will close the modal
+                if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN] or keys[pygame.K_ESCAPE]):
+                    ui.closeModal()
+                    ui.inDiscoveryFeedModal = False
+                    doNextTurn = True
+                elif (keys[pygame.K_PAGEUP]):
+                    ui.closeModal()                                         # Close the current discoveryfeed view
+                    (doTick, success) = ui.discoveryFeedViewDecrement()     # And add on a new one
+                    time.sleep(0.2)
+                    # Update the UI with the message (for the bottom of the screen)
+                    ui.updateLastActionMessage(success.message)
+                    # If the message was rated as high importance, also add it to the explicit modal dialog queue
+                    if (success.importance == MessageImportance.HIGH):
+                        ui.addTextMessageToQueue(success.message)
+
+                elif (keys[pygame.K_PAGEDOWN]):
+                    ui.closeModal()                                         # Close the current discoveryfeed view
+                    (doTick, success) = ui.discoveryFeedViewIncrement()     # And add on a new one
+                    time.sleep(0.2)
+                    # Update the UI with the message (for the bottom of the screen)
+                    ui.updateLastActionMessage(success.message)
+                    # If the message was rated as high importance, also add it to the explicit modal dialog queue
+                    if (success.importance == MessageImportance.HIGH):
+                        ui.addTextMessageToQueue(success.message)
+
+                # elif keys[pygame.K_PAGEUP]:
+                #     ui.addTextMessageToQueue(ui.getDiscoveryFeedUpdates(ui.currentDiscoveryFeedPostIdx-1).message)
+                #     ui.closeModal()
+                #     time.sleep(0.2)
+                # elif keys[pygame.K_PAGEDOWN]:
+                #     ui.addTextMessageToQueue(ui.getDiscoveryFeedUpdates(ui.currentDiscoveryFeedPostIdx+1).message)
+                #     ui.closeModal()
+                #     time.sleep(0.2)
+
             else:
                 # General modal: Pressing SPACE or RETURN will close the modal
                 if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN] or keys[pygame.K_ESCAPE]):

@@ -1113,9 +1113,14 @@ class Agent(Object):
         outStr += "DiscoveryFeed contains " + str(len(allPosts)) + " update posts.\n"
         #outStr += "Last " + str(len(postStrings)) + " posts found:\n\n"
         outStr += notificationStr + "\n\n"
+        if (startFromID == 0):
+            outStr += "(FIRST POST)\n"
         outStr += postDelimiter.join(postStrings)
         outStr += "\n"
-        outStr += "Press SPACE to close."
+        if (postEnd == len(allPosts)):
+            outStr += "(ABOVE WAS MOST RECENT POST)\n"
+
+        outStr += "Press PAGEUP/PAGEDOWN to scroll, and SPACE to close."
 
         # Generate result
         result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)
@@ -2421,7 +2426,7 @@ class NPCColonistAuto2(NPC):
 
             if (not hasEatAction):
                 # Add autopilot actions
-                self.addAutopilotActionToQueue( AutopilotAction_PostDiscoveryFeedUpdate(contentStr="I'm going to eat a mushroom I was given.", signals=[], priority=10) )
+                self.addAutopilotActionToQueue( AutopilotAction_PostDiscoveryFeedUpdate(contentStr="I'm going to eat a mushroom.", signals=[], priority=10) )
                 self.addAutopilotActionToQueue( AutopilotAction_EatObjectInInventory(objectNamesOrTypesToEat=["mushroom"], priority=10) )
 
         # Sprite modifier updates

@@ -44,6 +44,7 @@ class UserInterface:
 
         # Status
         self.inModal = False
+        self.inDiscoveryFeedModal = False
 
         # What spot in the argument boxes is currently selected
         self.curSelectedArgument1Idx = 0
@@ -69,13 +70,17 @@ class UserInterface:
         self.messageQueueText.append(message)
 
     def popMessageFromQueue(self):
+        print("Messages in queue: " + str(len(self.messageQueueText)))
         if (len(self.messageQueueText) > 0):
             self.messageQueueText.pop(0)
-
+            print("\tAfter removing one: Messages in queue: " + str(len(self.messageQueueText)))
+        if (len(self.messageQueueText) == 0):
+            self.inDiscoveryFeedModal = False
 
     # Close whatever modal is currently active
     def closeModal(self):
         self.popMessageFromQueue()
+
 
 
     # Update last action message
@@ -830,7 +835,7 @@ class UserInterface:
             startFromID = min(startFromID, self.lastDiscoveryFeedPostCount-1)
             self.currentDiscoveryFeedPostIdx = startFromID
 
-        success = self.currentAgent.actionDiscoveryFeedGetPosts(startFromID)
+        success = self.currentAgent.actionDiscoveryFeedGetPosts(startFromID=startFromID)
         return success
 
     def getDiscoveryFeedArticles(self, startFromID=0):
@@ -1211,7 +1216,10 @@ class UserInterface:
         # DiscoveryFeed Actions
         # Reading articles
         if (keys[pygame.K_v]):
-            return (False, self.getDiscoveryFeedUpdates(startFromID=0))
+            self.inDiscoveryFeedModal = True
+            numPosts = len(self.currentAgent.world.discoveryFeed.getPosts())
+            self.discoveryFeedStartIdx = numPosts - 7       # By default, start at the end (show the last 7 posts)
+            return (False, self.getDiscoveryFeedUpdates(startFromID=self.discoveryFeedStartIdx))
         # These are disabled for now since they're not used
         #elif (keys[pygame.K_b]):
         #    return (False, self.getDiscoveryFeedArticles(startFromID=0))
@@ -1229,6 +1237,18 @@ class UserInterface:
         # If we reach here, then no known key was pressed
         return (False, None)
 
+    def discoveryFeedViewIncrement(self):
+        self.inDiscoveryFeedModal = True
+        numPosts = len(self.currentAgent.world.discoveryFeed.getPosts())
+        self.discoveryFeedStartIdx += 7       # By default, start at the end (show the last 7 posts)
+        self.discoveryFeedStartIdx = min(self.discoveryFeedStartIdx, numPosts-7)
+        return (False, self.getDiscoveryFeedUpdates(startFromID=self.discoveryFeedStartIdx))
+
+    def discoveryFeedViewDecrement(self):
+        self.inDiscoveryFeedModal = True
+        self.discoveryFeedStartIdx -= 7       # By default, start at the end (show the last 7 posts)
+        self.discoveryFeedStartIdx = max(self.discoveryFeedStartIdx, 0)
+        return (False, self.getDiscoveryFeedUpdates(startFromID=self.discoveryFeedStartIdx))
 
     # Check the arguments for the current action, to make sure they're valid.
     # Returns None if valid, and a failure ActionSuccess object if not valid
