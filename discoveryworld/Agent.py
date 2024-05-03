@@ -1070,13 +1070,13 @@ class Agent(Object):
     #
 
     # Get the most recent updates from the discovery feed
-    def actionDiscoveryFeedGetPosts(self, startFromID=0):
+    def actionDiscoveryFeedGetPosts(self, startFromID=None):
         numPostsToRetrieve = 7 # Number of posts to retrieve
         postDelimiter = "---\n"
         allPosts = self.world.discoveryFeed.getPosts()
         lastPosts = []
         notificationStr = ""
-        if (startFromID <= 0):
+        if startFromID is None:
             # Just get the last N posts
             lastPosts = allPosts[-numPostsToRetrieve:]
             notificationStr = "Showing the most recent " + str(len(lastPosts)) + " posts."

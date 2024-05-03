@@ -535,10 +535,6 @@ def main(args):
         # Signify whether the agent has done their move this turn
         doNextTurn = False
         if (ui.inModal):
-            # # Pressing any key will close the modal
-            # if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN]):
-            #     ui.closeModal()
-            #     doNextTurn = True
 
             # If a 'quit confirm' modal is open, then pressing 'Y' will quit the game
             if (confirmingQuit == True):
@@ -557,6 +553,14 @@ def main(args):
                 if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN] or keys[pygame.K_ESCAPE]):
                     ui.closeModal()
                     doNextTurn = True
+                # elif keys[pygame.K_PAGEUP]:
+                #     ui.addTextMessageToQueue(ui.getDiscoveryFeedUpdates(ui.currentDiscoveryFeedPostIdx-1).message)
+                #     ui.closeModal()
+                #     time.sleep(0.2)
+                # elif keys[pygame.K_PAGEDOWN]:
+                #     ui.addTextMessageToQueue(ui.getDiscoveryFeedUpdates(ui.currentDiscoveryFeedPostIdx+1).message)
+                #     ui.closeModal()
+                #     time.sleep(0.2)
 
         else:
             # Parse any action keys

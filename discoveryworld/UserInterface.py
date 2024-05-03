@@ -184,10 +184,6 @@ class UserInterface:
         self.changeArgumentBox(delta=0, whichBox=2)     # Bound checking/Make sure the references to the selected objects are up to date
         self.renderObjectSelectionBox(objsInv, objsEnv, self.curSelectedArgument2Idx, offsetX=32, offsetY=-(32*6)+20, labelPrefixStr="Arg 2: ")
 
-
-
-        # TODO: Add the rest of the UI elements
-
         # Step 2: Render any pop-ups (e.g. dialog, or modals from the message queue)
         if (self.dialogToDisplay != None):
             # Pack the string
@@ -208,9 +204,6 @@ class UserInterface:
             self.renderTextBox(nextMessage)
             # Set the modal flag
             self.inModal = True
-
-
-
 
         # Render the last action message
         self.renderLastActionMessage()
@@ -241,11 +234,20 @@ class UserInterface:
             numPosts = len(self.currentAgent.world.discoveryFeed.getPosts())
             newPosts = numPosts - self.lastDiscoveryFeedPostCount
             if (newPosts > 0):
+                # Add a little notification dot
+                # Make it pulse according to pygame's clock
+                pygame.draw.circle(self.window, (255, 0, 0), (helpX+110, helpY-125), 5)
+                if (pygame.time.get_ticks() % 1000 < 500):
+                    pygame.draw.circle(self.window, (0, 0, 0), (helpX+110, helpY-125), 5, 1)
+
                 textSurface = self.fontBold.render("       " + str(newPosts) + " New", True, (200, 200, 200))
                 self.window.blit(textSurface, (helpX-10, helpY-132))
                 textSurface = self.fontBold.render("    DiscoveryFeed", True, (200, 200, 200))
                 self.window.blit(textSurface, (helpX-10, helpY-112))
-                textSurface = self.fontBold.render("       Post(s)", True, (200, 200, 200))
+                if numPosts > 1:
+                    textSurface = self.fontBold.render("       Post(s)", True, (200, 200, 200))
+                else:
+                    textSurface = self.fontBold.render("        Post", True, (200, 200, 200))
                 self.window.blit(textSurface, (helpX-10, helpY-92))
 
 
@@ -819,9 +821,15 @@ class UserInterface:
         return success
 
     # DiscoveryFeed actions
-    def getDiscoveryFeedUpdates(self, startFromID=0):
+    def getDiscoveryFeedUpdates(self, startFromID=None):
         # Show the last 10 updates
         self.lastDiscoveryFeedPostCount = len(self.currentAgent.world.discoveryFeed.getPosts())
+        self.currentDiscoveryFeedPostIdx = self.lastDiscoveryFeedPostCount - 1
+        if startFromID is not None:
+            startFromID = max(startFromID, 0)
+            startFromID = min(startFromID, self.lastDiscoveryFeedPostCount-1)
+            self.currentDiscoveryFeedPostIdx = startFromID
+
         success = self.currentAgent.actionDiscoveryFeedGetPosts(startFromID)
         return success
 
