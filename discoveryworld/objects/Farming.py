@@ -705,6 +705,9 @@ class SoilTile(Object):
         else:
             # Dirt found -- remove it from the soil tile, and add it to the list of generated objects
             dirt = dirtList[0]
+            # If this soil has a `attributes["soilNutrients"]` attribute, then transfer it to the dirt object
+            if ("soilNutrients" in self.attributes):
+                dirt.attributes["soilNutrients"] = copy.deepcopy(self.attributes["soilNutrients"])
             self.removeObject(dirt)
             generatedObjects.append(dirt)
 

@@ -676,6 +676,7 @@ def main(args):
                     helpStr += "T:     Talk to another character (in Arg 1 slot)\n"
                     helpStr += "E:     Eat an item (in Arg 1 slot)\n"
                     helpStr += "U:     Use an item (Arg 1), optionally on another item (Arg 2)\n"
+                    helpStr += "R:     Read an item (in Arg 1 slot)\n"
                     helpStr += "Z:     Teleport to a random important location\n"
                     helpStr += "W:     Wait a step (do nothing)\n"
                     helpStr += "V:     View recent posts on Discovery Feed\n"
