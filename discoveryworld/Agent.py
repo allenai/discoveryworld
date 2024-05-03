@@ -2405,6 +2405,25 @@ class NPCColonistAuto2(NPC):
         # Call superclass
         NPC.tick(self)
 
+        # Check to see if the agent has a mushroom in their (top-level) inventory.  If so, eat it.
+        hasMushroomInInventory = False
+        for obj in self.contents:
+            if ("mushroom" in obj.type):
+                hasMushroomInInventory = True
+
+        if (hasMushroomInInventory):
+            # Check whether there's a EatObjectInInventory action already in the queue
+            hasEatAction = False
+            for action in self.autopilotActionQueue:
+                if (isinstance(action, AutopilotAction_EatObjectInInventory)):
+                    hasEatAction = True
+                    break
+
+            if (not hasEatAction):
+                # Add autopilot actions
+                self.addAutopilotActionToQueue( AutopilotAction_PostDiscoveryFeedUpdate(contentStr="I'm going to eat a mushroom I was given.", signals=[], priority=10) )
+                self.addAutopilotActionToQueue( AutopilotAction_EatObjectInInventory(objectNamesOrTypesToEat=["mushroom"], priority=10) )
+
         # Sprite modifier updates
         if ("poisoned" in self.attributes['states']):
             self.curSpriteModifiers.add("placeholder_sick")
@@ -2416,6 +2435,8 @@ class NPCColonistAuto2(NPC):
 
             # Add GOTO action to the autopilot queue
             self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=23, y=7, priority=100) )
+
+
 
 
         #elif ("eatSignal" in self.attributes['states']):
