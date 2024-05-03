@@ -199,7 +199,7 @@ class EatMushroomTask(Task):
         taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist sometimes have upset stomachs.  Your task is to figure out why people are feeling ill, and to prevent it.  You must demonstrate this by having colonists successfully eat 10 mushrooms in a row without eventually feeling sick."
         taskDescription += "Since the food causes only mild illness, and getting the colony established is important, the colonists have volunteered to be test subjects.  The Chef in the Cafeteria can help you collect mushrooms, serve mushrooms from the cafeteria pot to the tables, and let the colonists know a meal is ready to eat, when you're ready. "
         taskDescription += "The colonists may post their status (like if they're feeling unwell) on the Discovery Feed (use 'v' to display it)."
-        taskDescription += "After a colonist eats a mushroom, it will be automatically monitored by DiscoveryWorld for 100 turns to see if it gets sick.  (Note: If it successfully eats another mushroom within that 100 turns, assuming both are good, it will still only count as a single good case.)"
+        taskDescription += "After a colonist eats a mushroom, it will be automatically monitored by DiscoveryWorld for 50 turns to see if it gets sick.  (Note: If it successfully eats another mushroom within that 100 turns, assuming both are good, it will still only count as a single good case.)"
         Task.__init__(self, "EatMushroomTask", taskDescription, world, scoringInfo)
         self.score = 0
         self.maxScore = 10                       # TODO: Maximum score
@@ -240,6 +240,9 @@ class EatMushroomTask(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+
+        # Update max score based on the scorecard elements.
+        self.maxScore = sum(element.maxScore for element in self.scoreCard)
 
 
     # Task setup: Add any necessary objects to the world to perform the task.
@@ -348,9 +351,9 @@ class EatMushroomTask(Task):
                 #print("Agent " + agentName + " is sick!  Score reset to 0.")
                 self.numAgentsSuccessfullyEatenMushrooms = 0
             else:
-                # Check if the agent has been well for 100 steps
-                if (self.world.getStepCounter() - self.agentsToMonitorForSickness[agentName] >= 100):
-                    # If they've been well for 100 steps, increment the score, and remove the monitor
+                # Check if the agent has been well for 50 steps
+                if (self.world.getStepCounter() - self.agentsToMonitorForSickness[agentName] >= 50):
+                    # If they've been well for 50 steps, increment the score, and remove the monitor
                     self.numAgentsSuccessfullyEatenMushrooms += 1
                     del self.agentsToMonitorForSickness[agentName]
 
@@ -359,6 +362,14 @@ class EatMushroomTask(Task):
             completedEaten = True
         self.scorecardMushroomsEatenNoSickness.updateScore(self.numAgentsSuccessfullyEatenMushrooms, completedEaten, associatedUUIDs=[], associatedNotes= str(self.numAgentsSuccessfullyEatenMushrooms) + " mushrooms have been eaten by colonists without them getting sick")
 
+        # Update score
+        score = 0
+        maxScore = 0
+        for element in self.scoreCard:
+            score += element.score
+            maxScore += element.maxScore
+        self.score = score
+        self.maxScore = maxScore
 
         # Monitoring task 3: Check if the task is complete
         if (completedEaten):
@@ -432,6 +443,9 @@ class RustedKeyTask(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+
+        # Update max score based on the scorecard elements.
+        self.maxScore = sum(element.maxScore for element in self.scoreCard)
 
 
     # Task setup: Add any necessary objects to the world to perform the task.
@@ -620,6 +634,9 @@ class RustedKeyTaskChallenge(Task):
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
 
+        # Update max score based on the scorecard elements.
+        self.maxScore = sum(element.maxScore for element in self.scoreCard)
+
 
     # Task setup: Add any necessary objects to the world to perform the task.
     def taskSetup(self):
@@ -776,6 +793,9 @@ class ArcheologyDigEasy(Task):
 
         # Critical Hypotheses
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+
+        # Update max score based on the scorecard elements.
+        self.maxScore = sum(element.maxScore for element in self.scoreCard)
 
     # scoringInfo["unknownArtifacts"] = []
     # scoringInfo["signs"] = []
@@ -1312,6 +1332,9 @@ class ReactorTask(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+
+        # Update max score based on the scorecard elements.
+        self.maxScore = sum(element.maxScore for element in self.scoreCard)
 
         # Scoring Info passed from the scenario
         # scoringInfo['instruments'] = instruments

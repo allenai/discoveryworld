@@ -265,7 +265,7 @@ class Agent(Object):
 
         # Check if the agent is poisoned
         POISON_DURATION = 100
-        POISON_INCUBATION_PERIOD = 50
+        POISON_INCUBATION_PERIOD = 45
         if (self.attributes['poisonedCounter'] != -1):
             # Decrement the poisoned counter
             self.attributes['poisonedCounter'] -= 1
