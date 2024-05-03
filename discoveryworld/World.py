@@ -186,7 +186,7 @@ class World:
             raise ValueError("Error: Invalid layer: " + str(layer))
 
     # Get all objects at a given position
-    def getObjectsAt(self, x, y, respectContainerStatus=False, includeParts=False, excludeObjectsOnAgents=False, respectObscuringLowerLayers=False):
+    def getObjectsAt(self, x, y, respectContainerStatus=False, includeParts=False, excludeObjectsOnAgents=False, respectObscuringLowerLayers=False, includeContents=True):
         # Bound checking: Make sure the object is within the world bounds
         if x < 0 or x >= self.sizeX or y < 0 or y >= self.sizeY:
             print("Error: Object out of bounds: " + str(x) + ", " + str(y))
@@ -217,9 +217,11 @@ class World:
                         continue
 
                     # Add contents/parts
-                    if (includeParts == False):
+                    if (includeParts == False) and (includeContents == True):
                         contents = obj.getAllContainedObjectsRecursive(respectContainerStatus=respectContainerStatus)
-                    else:
+                    elif (includeParts == True) and (includeContents == False):
+                        contents = obj.getAllContainedObjectsAndParts(includeContents=False, includeParts=True)
+                    elif (includeParts == True) and (includeContents == True):
                         contents = obj.getAllContainedObjectsAndParts(includeContents=True, includeParts=True)
                     if (len(contents) > 0):
                         #print("Contents of " + obj.name + ": " + str(contents))

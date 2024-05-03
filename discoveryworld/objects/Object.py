@@ -193,7 +193,12 @@ class Object:
         # TODO: Depricated? use self.world.removeObject(obj) instead?
 
         # Remove this object from its world location
-        self.world.removeObjectFromTile(self)
+        #self.world.removeObjectFromTile(self)
+        #self.world.removeObject(self)
+        # Remove it from the world (if the world location is positive, signifying it hasn't already been removed)
+        if (self.attributes["gridX"] >= 0) and (self.attributes["gridY"] >= 0):
+            self.world.removeObject(self)
+
 
     #
     #   Material Property Initialization
@@ -211,11 +216,14 @@ class Object:
     def addObject(self, obj, force=False):
         # Remove the object from its previous container
         obj.removeSelfFromContainer()
-
+        # Remove from the old world location
+        self.world.removeObject(obj)
         # Add an object to this container
         self.contents.append(obj)
         # Set the parent container
         obj.parentContainer = self
+        # Set the world location to the same as the parent container
+        obj.setWorldLocation(self.attributes["gridX"], self.attributes["gridY"])
 
 
     # Add an object (obj) as a part of this object
@@ -230,6 +238,7 @@ class Object:
     # Remove an object from this container
     # TODO: Should also remove it from specific world coordinates?
     def removeObject(self, obj):
+        #self.removeFromWorldLocation()
         # Remove an object from this container
         if (obj in self.contents):
             self.contents.remove(obj)
@@ -244,9 +253,12 @@ class Object:
 
     # Remove the current object from whatever container it's currently in
     def removeSelfFromContainer(self):
+        # Remove it from the world, too
+        #self.removeFromWorldLocation()
         # Remove this object from its container
         if (self.parentContainer != None):
             return self.parentContainer.removeObject(self)
+
 
     # Replace self with another object (obj) in the container that it's currently in
     # Largely intended for objects that change into completely different objects.

@@ -731,6 +731,18 @@ class SoilTile(Object):
         else:
             self.attributes["hasHole"] = True
 
+        # If it 'hasHole', then make any objects on this tile fall into it.
+        if (self.attributes["hasHole"]):
+            # First, get a list of objects on this tile
+            objectsOnTile = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"], includeContents=False)
+            # For each object, check that it's not the soil tile itself, or an agent
+            for obj in objectsOnTile:
+                print("FOUND OBJECT ON SOIL TILE: " + str(obj.uuid) + " (" + str(obj.type) + ")")
+                if (obj.uuid != self.uuid) and (obj.attributes["isAgent"] == False) and (obj.type != "grass"):
+                    # Make the object fall into the hole
+                    print("\t ADDED!")
+                    self.addObject(obj, force=True)
+
 
         # Check to see if the object has a hole (and if so, change the name, and add the sprite modifier)
         if (self.attributes["hasHole"]):
