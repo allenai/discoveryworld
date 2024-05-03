@@ -1094,7 +1094,7 @@ class Agent(Object):
 
                 lastPosts = allPosts[postLocation:postEnd]
 
-                notificationStr = "Showing the most recent " + str(len(lastPosts)) + " posts starting from post ID " + str(startFromID) + "."
+                notificationStr = "Showing the most recent " + str(len(lastPosts)) + " posts starting from post ID " + str(startFromID+1) + "."
             else:
                 # Just get the last N posts
                 lastPosts = allPosts[-numPostsToRetrieve:]
@@ -1116,9 +1116,10 @@ class Agent(Object):
         if (startFromID == 0):
             outStr += "(FIRST POST)\n"
         outStr += postDelimiter.join(postStrings)
-        outStr += "\n"
         if (postEnd == len(allPosts)):
             outStr += "(ABOVE WAS MOST RECENT POST)\n"
+
+        outStr += "\n"
 
         outStr += "Press PAGEUP/PAGEDOWN to scroll, and SPACE to close."
 

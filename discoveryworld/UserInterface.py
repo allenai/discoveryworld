@@ -1218,7 +1218,7 @@ class UserInterface:
         if (keys[pygame.K_v]):
             self.inDiscoveryFeedModal = True
             numPosts = len(self.currentAgent.world.discoveryFeed.getPosts())
-            self.discoveryFeedStartIdx = numPosts - 7       # By default, start at the end (show the last 7 posts)
+            self.discoveryFeedStartIdx = numPosts - 6       # By default, start at the end (show the last 7 posts)
             return (False, self.getDiscoveryFeedUpdates(startFromID=self.discoveryFeedStartIdx))
         # These are disabled for now since they're not used
         #elif (keys[pygame.K_b]):
@@ -1241,7 +1241,7 @@ class UserInterface:
         self.inDiscoveryFeedModal = True
         numPosts = len(self.currentAgent.world.discoveryFeed.getPosts())
         self.discoveryFeedStartIdx += 7       # By default, start at the end (show the last 7 posts)
-        self.discoveryFeedStartIdx = min(self.discoveryFeedStartIdx, numPosts-7)
+        self.discoveryFeedStartIdx = min(self.discoveryFeedStartIdx, numPosts-6)
         return (False, self.getDiscoveryFeedUpdates(startFromID=self.discoveryFeedStartIdx))
 
     def discoveryFeedViewDecrement(self):
