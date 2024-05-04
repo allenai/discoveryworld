@@ -1141,9 +1141,9 @@ class SoilNutrientTask(Task):
         self.scoreCard.append(self.scorecardJarPresent)
         self.scorecardUseSoilNutrientMeter = ScorecardElement("Use Soil Nutrient Meter", "The soil nutrient meter has been used on at least 2 squares of soil from the pilot field", maxScore=2)
         self.scoreCard.append(self.scorecardUseSoilNutrientMeter)
-        self.scorecardAtLeastTwoSeedsPlanted = ScorecardElement("At Least 2 Seeds Planted", "At least 2 seeds have been planted in the ground", maxScore=2)
+        self.scorecardAtLeastTwoSeedsPlanted = ScorecardElement("At Least 2 Seeds Planted", "At least 2 seeds have been planted in the test fields", maxScore=2)
         self.scoreCard.append(self.scorecardAtLeastTwoSeedsPlanted)
-        self.scorecardAtLeastTwoNewPlants = ScorecardElement("At Least Two New Plants", "At least two new plants (mushrooms) have been grown to maturity", maxScore=2)
+        self.scorecardAtLeastTwoNewPlants = ScorecardElement("At Least Two New Plants", "At least two new plants (mushrooms) have been grown to maturity in the test fields", maxScore=2)
         self.scoreCard.append(self.scorecardAtLeastTwoNewPlants)
 
         # TODO: Add subtask that requires the agent to set the nutrients of at least one field
@@ -1151,7 +1151,7 @@ class SoilNutrientTask(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
-
+        self.testSoilTiles = scoringInfo["testSoilTiles"]
         # Scoring Info passed from the scenario
         # scoringInfo["startingPlants"] = []
         # scoringInfo["startingSeeds"].append(seed)
@@ -1223,6 +1223,11 @@ class SoilNutrientTask(Task):
         allObjects = self.world.getAllWorldObjects()
 
         if (not self.scorecardAtLeastTwoSeedsPlanted.completed):
+            # Get locations of test soil tiles
+            testSoilTileLocations = []
+            for testSoilTile in self.scoringInfo["testSoilTiles"]:
+                testSoilTileLocations.append(testSoilTile.getWorldLocation())
+
             for obj in allObjects:
                 if (obj.type == "seed"):
                     # Make sure this seed isn't in the list of starting seeds
@@ -1233,21 +1238,44 @@ class SoilNutrientTask(Task):
                             if (parentContainer.type == "soil"):
                                 # Make sure there's no hole in the soil (i.e. the hole is filled in/the seed is planted)
                                 if (parentContainer.attributes['hasHole'] == False):
-                                    self.newSeedsPlanted.add(obj.uuid)
+                                    # Check to see if the location of this object is one of the test soil tiles
+                                    isOnTestSoilTile = False
+                                    for testSoilTileLocation in testSoilTileLocations:
+                                        print("Checking if " + str(obj.getWorldLocation()) + " is on " + str(testSoilTileLocation))
+                                        if (obj.getWorldLocation() == testSoilTileLocation):
+                                            isOnTestSoilTile = True
+                                            print("\tMATCH")
+                                            break
+                                    if (isOnTestSoilTile):
+                                        self.newSeedsPlanted.add(obj.uuid)
+
             numNewSeedsPlanted = len(self.newSeedsPlanted)
             isCompleted = False
             if (numNewSeedsPlanted >= 2):
                 isCompleted = True
+                numNewSeedsPlanted = 2
             self.scorecardAtLeastTwoSeedsPlanted.updateScore(score=numNewSeedsPlanted, completed=isCompleted, associatedUUIDs=list(self.newSeedsPlanted), associatedNotes="At least two new seeds have been planted in the ground")
 
 
         # Check for at least 2 new plants (Mushrooms) to exist
         if (not self.scorecardAtLeastTwoNewPlants.completed):
+            # Get locations of test soil tiles
+            testSoilTileLocations = []
+            for testSoilTile in self.scoringInfo["testSoilTiles"]:
+                testSoilTileLocations.append(testSoilTile.getWorldLocation())
+
             # Check for new plants, that weren't in the simulation when it was initialized
             for obj in allObjects:
                 if (isinstance(obj, Mushroom)):
                     if (obj not in self.scoringInfo["startingPlants"]):
-                        self.newPlantsGrown.add(obj)
+                        if ("locationGrown" in obj.attributes):
+                            grownOnTestLocation = False
+                            for testSoilTileLocation in testSoilTileLocations:
+                                if (obj.attributes["locationGrown"] == testSoilTileLocation):
+                                    grownOnTestLocation = True
+                                    break
+                            if (grownOnTestLocation):
+                                self.newPlantsGrown.add(obj)
 
             # Count the number of new plants
             numMaturePlants = len(self.newPlantsGrown)
@@ -1262,6 +1290,62 @@ class SoilNutrientTask(Task):
             if (completedTwoNewPlants == True):
                 self.completed = True
                 self.completedSuccessfully = True
+
+
+        # if (not self.scorecardAtLeastTwoSeedsPlanted.completed):
+        #     for obj in allObjects:
+        #         if (obj.type == "seed"):
+        #             # Make sure this seed isn't in the list of starting seeds
+        #             if (obj not in self.scoringInfo["startingSeeds"]):
+        #                 # Check if the seed is in the ground
+        #                 parentContainer = obj.parentContainer
+        #                 if (parentContainer != None):
+        #                     # Make sure the parent container is one of the test soil tiles
+        #                     isOnTestSoilTile = False
+        #                     for testSoilTile in self.scoringInfo["pilotFieldSoilTiles"]:
+        #                         if (parentContainer.uuid == testSoilTile.uuid):
+        #                             isOnTestSoilTile = True
+        #                             break
+        #                     if (isOnTestSoilTile):
+        #                         # Make sure there's no hole in the soil (i.e. the hole is filled in/the seed is planted)
+        #                         if (parentContainer.attributes['hasHole'] == False):
+        #                             self.newSeedsPlanted.add(obj.uuid)
+        #     numNewSeedsPlanted = len(self.newSeedsPlanted)
+        #     isCompleted = False
+        #     if (numNewSeedsPlanted >= 2):
+        #         isCompleted = True
+        #     self.scorecardAtLeastTwoSeedsPlanted.updateScore(score=numNewSeedsPlanted, completed=isCompleted, associatedUUIDs=list(self.newSeedsPlanted), associatedNotes="At least two new seeds have been planted in the ground")
+
+
+        # # Check for at least 2 new plants (Mushrooms) to exist
+        # if (not self.scorecardAtLeastTwoNewPlants.completed):
+        #     # Check for new plants, that weren't in the simulation when it was initialized
+        #     for obj in allObjects:
+        #         if (isinstance(obj, Mushroom)):
+        #             if (obj not in self.scoringInfo["startingPlants"]):
+        #                 # Make sure the parent container is one of the test soil tiles
+        #                 parentContainer = obj.parentContainer
+        #                 isOnTestSoilTile = False
+        #                 for testSoilTile in self.scoringInfo["pilotFieldSoilTiles"]:
+        #                     if (parentContainer != None) and(parentContainer.uuid == testSoilTile.uuid):
+        #                         isOnTestSoilTile = True
+        #                         break
+        #                 if (isOnTestSoilTile):
+        #                     self.newPlantsGrown.add(obj)
+
+        #     # Count the number of new plants
+        #     numMaturePlants = len(self.newPlantsGrown)
+        #     completedTwoNewPlants = False
+        #     if (numMaturePlants >= 2):
+        #         numMaturePlants = 2
+        #         completedTwoNewPlants = True
+
+        #     self.scorecardAtLeastTwoNewPlants.updateScore(score=numMaturePlants, completed=completedTwoNewPlants, associatedUUIDs=[plant.uuid for plant in self.newPlantsGrown], associatedNotes="At least two new plants have been grown to maturity")
+
+        #     # Ultimately, it's having successfully grown 2 new plants that determines whether the task is complete
+        #     if (completedTwoNewPlants == True):
+        #         self.completed = True
+        #         self.completedSuccessfully = True
 
         #self.scoreCard.append(self.scorecardAtLeastTwoNewPlants)
 

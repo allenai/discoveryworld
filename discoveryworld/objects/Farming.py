@@ -574,6 +574,8 @@ class SeedRequiringNutrients(Object):
                 #def addObject(self, x, y, layer, object:Object):
                 seedLocation = self.getWorldLocation()
                 self.world.addObject(seedLocation[0], seedLocation[1], Layer.OBJECTS, plant)
+                # Also note this spawn location
+                plant.attributes["locationGrown"] = seedLocation
 
                 # Remove self
                 self.world.removeObject(self)

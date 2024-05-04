@@ -14,6 +14,7 @@ def mkSoilFieldControlled(x, y, world, fieldNumber, width=2, height=2):
             # Set a baseline soil nutrient level
             nutrientLevels = packSoilNutrients(potassium=0, titanium=0, lithium=0, thorium=0, barium=0)
             soilTile.attributes["soilNutrients"] = nutrientLevels
+            soilTile.attributes["testField"] = True
             fieldTiles.append(soilTile)     # Keep track of the soil tiles, so we can let the soil nutrient manager know which tiles it controls
 
             world.addObject(x+i, y+j, Layer.BUILDING, soilTile)
@@ -34,6 +35,7 @@ def mkSoilFieldControlled(x, y, world, fieldNumber, width=2, height=2):
     soilControllerTable.addObject(soilController)
     world.addObject(x+1, y+2, Layer.FURNITURE, soilControllerTable)
 
+    return fieldTiles
 
 
 def mkSoilResearchBuilding(x, y, world, whichSeedName):

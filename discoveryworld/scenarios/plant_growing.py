@@ -66,6 +66,7 @@ def makeScenarioPlantGrowing(world, numUserAgents=1):
             soilTile = world.createObject("SoilTile")
             # Randomize nutrient levels in this soil tile
             soilTile.attributes["soilNutrients"] = mkRandomSoilNutrientsWithSetValues(setValuesDict={}, rng=world.rng)
+            soilTile.attributes["testField"] = False
             world.addObject(pilotFieldStartX+i, pilotFieldStartY+j, Layer.BUILDING, soilTile)
             # TODO: Add plants, etc.
             pilotSoilTiles.append(soilTile)
@@ -113,12 +114,14 @@ def makeScenarioPlantGrowing(world, numUserAgents=1):
     testFieldStartX = 12
     testFieldStartY = 15
 
+    testSoilTiles = []
     for i in range(0, numPlantSites):
         x = testFieldStartX + i*5
         y = testFieldStartY
-        mkSoilFieldControlled(x, y, world, i+1)
+        testSoilTiles.extend(mkSoilFieldControlled(x, y, world, i+1))
         world.addTeleportLocation("Experimental Field #" + str(i+1), x, y+1)
 
+    scoringInfo["testSoilTiles"] = testSoilTiles
 
     # Make path along fields
     mkPathX(6, 18, 18, world)
