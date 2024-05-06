@@ -73,9 +73,9 @@ Scenarios can be **played in any order** -- you don't need to start with "Archae
 
 ### 2.3 Selecting a difficulty and variation
 
-Using the menus, you should select a difficulty of `normal` and a variation of `1` (the first option).
+For scenarios with both `Normal` and `Challenge` versions, we would ask that you work through both.
 
-**NOTE:** For Archaeology Dig, if you complete the `normal` difficulty quickly, you're welcome to attempt the `challenge` difficulty on variation `1`.
+For all scenarios, we ask that you select a task variation of `1` (the first option).
 
 ### 2.4 Task Instructions
 
@@ -87,7 +87,7 @@ Making these discoveries will require methodologically exploring different hypot
 
 ### 2.6 User Notebook
 
-Please keep a notebook (in a text editor of your choice, as long as it's saved in something we can open -- e.g. `.txt`, `.pdf`, `.doc`) where you write down your notes/work in solving each scenario.
+Please keep a notebook (in a text editor of your choice, as long as it's saved in something we can easily open -- e.g. `.txt`, `.pdf`, `.doc`) where you write down your notes/work in solving each scenario.
 
 At the start of your notes for a given scenario, please write down the scenario name, difficulty, and variation.  For example:
 ```
