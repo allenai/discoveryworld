@@ -6,7 +6,7 @@ import random
 import subprocess
 
 import pygame
-from discoveryworld.ScenarioMaker import ScenarioMaker, SCENARIOS
+from discoveryworld.ScenarioMaker import ScenarioMaker, SCENARIOS, SCENARIO_NAMES, SCENARIO_INFOS, SCENARIO_DIFFICULTY_OPTIONS, getInternalScenarioName
 from discoveryworld.ActionHistory import getActionDescriptions
 from discoveryworld.ActionSuccess import MessageImportance
 from discoveryworld.World import World
@@ -58,23 +58,26 @@ class DiscoveryWorldAPI:
     def getNameAndVersion(self):
         return self.NAME + " v" + self.VERSION
 
+    def getValidScenarios(self):
+        return SCENARIO_INFOS
 
-    def loadScenario(self, scenarioName, numUserAgents = 1, randomSeed=0):
+    def loadScenario(self, scenarioName:str, difficultyStr:str, randomSeed:int=0, numUserAgents = 1):
         # Set the number of agents
         self.numUserAgents = numUserAgents
 
-        # First, create the World -- a blank slate
-        # OLD
-        #self.world = World(assetPath = "assets", filenameSpriteIndex = "spriteIndex.json", dataPath = "data/", filenameObjectData = "objects.tsv", filenameMaterialData="materials.tsv", filenameDiscoveryFeed="discoveryFeed.json")
-        # NEW?
+        # Initialize a world (blank slate)
         self.world = World(assetPath=None, filenameSpriteIndex="spriteIndex.json", dataPath=None, filenameObjectData="objects.tsv", filenameMaterialData="materials.tsv", filenameDiscoveryFeed="discoveryFeed.json")
 
+        # Get the internal name for the scenario
+        internalScenarioName = getInternalScenarioName(scenarioName, difficultyStr)
+        if (internalScenarioName == None):
+            print("ERROR: Scenario not found: " + scenarioName)
+            print(SCENARIO_INFOS)
+            return
 
-        #### TODO: Refactor to use the new ScenarioMaker (which should take all this stuff into account)
-
-        # Create the town scenario
+        # Create a scenario
         scenarioMaker = ScenarioMaker(world=self.world, seed=randomSeed)
-        success, errorStr = scenarioMaker.setupScenario(scenarioName, self.numUserAgents)
+        success, errorStr = scenarioMaker.setupScenario(internalScenarioName, self.numUserAgents)
 
         if (not success):
             print("ERROR: " + errorStr)
@@ -89,7 +92,6 @@ class DiscoveryWorldAPI:
             ui.setAgent(userAgent)                                  # Attach this UI to this agent
             self.ui.append(ui)                                      # Store it
         self.numUserAgents = len(userAgents)                        # If the number of user agents happens to be less for some reason (e.g. if the scenario has a maximum number it supports), then update the number of user agents
-
 
         # Initial world tick
         self.world.tick()
