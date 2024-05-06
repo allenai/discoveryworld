@@ -706,7 +706,7 @@ def main(args):
                     helpStr += "U:     Use an item (Arg 1), optionally on another item (Arg 2)\n"
                     helpStr += "R:     Read an item (in Arg 1 slot)\n"
                     helpStr += "Z:     Teleport to a random important location\n"
-                    helpStr += "W:     Wait a step (do nothing)\n"
+                    helpStr += "W:     Wait a turn (do nothing)\n"
                     helpStr += "V:     View recent posts on Discovery Feed\n"
                     helpStr += "0-9:   Select a specific inventory item (Arg 1), hold shift for (Arg2)\n"
                     helpStr += "[ / ]: Cycle through inventory items (Arg 1)\n"

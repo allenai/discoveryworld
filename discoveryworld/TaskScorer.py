@@ -196,7 +196,7 @@ class ScorecardElement():
 class EatMushroomTask(Task):
     # Constructor
     def __init__(self, world, scoringInfo):
-        taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist sometimes have upset stomachs.  Your task is to figure out why people are feeling ill, and to prevent it.  You must demonstrate this by having colonists successfully eat 10 mushrooms in a row without eventually feeling sick."
+        taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist sometimes have upset stomachs.  Your task is to figure out why people are feeling ill, and to prevent it.  You must demonstrate this by having colonists successfully eat 10 mushrooms in a row without eventually feeling sick. "
         taskDescription += "Since the food causes only mild illness, and getting the colony established is important, the colonists have volunteered to be test subjects.  The Chef in the Cafeteria can help you collect mushrooms, serve mushrooms from the cafeteria pot to the tables, and let the colonists know a meal is ready to eat, when you're ready. "
         taskDescription += "The colonists may post their status (like if they're feeling unwell) on the Discovery Feed (use 'v' to display it)."
         taskDescription += "After a colonist eats a mushroom, it will be automatically monitored by DiscoveryWorld for 50 turns to see if it gets sick.  (Note: If it successfully eats another mushroom within that 100 turns, assuming both are good, it will still only count as a single good case.)"
