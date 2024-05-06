@@ -378,10 +378,10 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
     scoringInfo["learningCount"] = False
     taskInstruction = None
     if difficulty == "easy":
-        scoringInfo["item"] = "stick"
-        taskInstruction = "[Bring me] [the stick]!"
-        scoringInfo["criticalHypotheses"].append(translate(f"The word '[Bring me]' means 'bring me'", rosetta))
-        scoringInfo["criticalHypotheses"].append(translate(f"The word '[stick]' means 'stick'", rosetta))
+        ITEMS = ["stick"] + ITEMS
+        #scoringInfo["item"] = "stick"
+        #taskInstruction = "[Bring me] [stick]!"
+        #scoringInfo["criticalHypotheses"].append(translate(f"The word '[stick]' means 'stick'", rosetta))
     elif difficulty == "medium":
         if world.randomSeed % 2 == 0:
             scoringInfo["learningColor"] = True  # Half the seeds will be about learning colors.
@@ -394,34 +394,31 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
     scoringInfo["color"] = None
     if scoringInfo["learningColor"]:
         scoringInfo["color"] = rng.choice(COLORS)
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['color']}]' means '{scoringInfo['color']}'", rosetta))
 
     scoringInfo["count"] = 1
     if scoringInfo["learningCount"]:
         scoringInfo["count"] = rng.choice(COUNTS)
+        scoringInfo["countWord"] = COUNT_WORDS[scoringInfo["count"]]
+        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['countWord']}]' means '{scoringInfo['countWord']}'", rosetta))
 
-    if "item" not in scoringInfo:
-        scoringInfo["item"] = rng.choice(ITEMS)
-
-    scoringInfo["countWord"] = COUNT_WORDS[scoringInfo["count"]]
+    #if "item" not in scoringInfo:
+    # scoringInfo["item"] = rng.choice(ITEMS)
+    scoringInfo["item"] = ITEMS[world.randomSeed % len(ITEMS)]
+    scoringInfo["criticalHypotheses"].append(translate(f"The word '[Bring me]' means 'bring me'", rosetta))
+    scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['item']}]' means '{scoringInfo['item']}'", rosetta))
 
     if scoringInfo["learningCount"] and scoringInfo["learningColor"]:
         taskInstruction = f"[Bring me] [{scoringInfo['countWord']}] [{scoringInfo['color']}] [{scoringInfo['item']}]!"
-        scoringInfo["criticalHypotheses"].append(translate(f"The word '[Bring me]' means 'bring me'", rosetta))
-        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['countWord']}]' means '{scoringInfo['countWord']}'", rosetta))
-        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['color']}]' means '{scoringInfo['color']}'", rosetta))
-        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['item']}]' means '{scoringInfo['item']}'", rosetta))
 
     elif scoringInfo["learningCount"]:
         taskInstruction = f"[Bring me] [{scoringInfo['countWord']}] [{scoringInfo['item']}]!"
-        scoringInfo["criticalHypotheses"].append(translate(f"The word '[Bring me]' means 'bring me'", rosetta))
-        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['countWord']}]' means '{scoringInfo['countWord']}'", rosetta))
-        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['item']}]' means '{scoringInfo['item']}'", rosetta))
 
     elif scoringInfo["learningColor"]:
         taskInstruction = f"[Bring me] [{scoringInfo['color']}] [{scoringInfo['item']}]!"
-        scoringInfo["criticalHypotheses"].append(translate(f"The word '[Bring me]' means 'bring me'", rosetta))
-        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['color']}]' means '{scoringInfo['color']}'", rosetta))
-        scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['item']}]' means '{scoringInfo['item']}'", rosetta))
+
+    else:
+        taskInstruction = f"[Bring me] [{scoringInfo['item']}]!"
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 1
