@@ -56,18 +56,20 @@ In order to familiarize yourself with DiscoverWorld, you should complete the fir
 
 ### 2.2 Selecting a scenario
 
-DiscoveryWorld contains a number of scenarios, which are shown on a menu when you run the user study.  Currently the following are officially supported:
+DiscoveryWorld contains a number of scenarios, which are shown on a menu when you run the user study.  Currently the scenarios provided below are complete, and the ones we'd like you to work through:
 ```
 Tutorial
-Archaeology Dig
-Combinatorial Chemistry
-Plant Nutrients
-Reactor Lab
+Archaeology Dig -- Normal and Challenge
+Combinatorial Chemistry -- Normal and Challenge (note that Challenge may take a while)
+Plant Nutrients -- Normal
+Reactor Lab -- Normal
+Lost in Translation -- Normal and Challenge
+Space Sick -- Normal
 ```
 
 Scenarios not on this list are not yet complete, and should not be played.
 
-Scenarios can be played in any order -- you don't need to start with "Archaeology Dig" first.
+Scenarios can be **played in any order** -- you don't need to start with "Archaeology Dig" first.
 
 ### 2.3 Selecting a difficulty and variation
 
