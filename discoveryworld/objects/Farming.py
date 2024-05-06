@@ -58,6 +58,9 @@ class FertilizerBag(Object):
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")
         self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Paper"]
+
     def tick(self):
         # Call superclass
         Object.tick(self)
@@ -277,6 +280,9 @@ class PlantGeneric(Object):
         # Default sprite name
         Object.__init__(self, world, "plant (generic)", "plant (generic)", defaultSpriteName = "forest1_plant1")
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["PlantMatterGeneric"]
+
 
     def getTextDescription(self):
         # Get a text description of this object
@@ -495,11 +501,15 @@ class SeedRequiringNutrients(Object):
         self.attributes["isMovable"] = True                       # Can it be moved?
         self.attributes["isPassable"] = True                      # Agen't can't walk over this
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Seed"]
+
         self.attributes["sproutTime"] = -1                        # How many ticks until the seed sprouts?
 
         # Nutrient requirements
         #self.attributes["needsNutrientLevels"] = {"potassium": 1, "thorium": 2}                    # Soil nutrients.  If empty, then it's not applicable/inconclusive.
         self.attributes["needsNutrientLevels"] = needsNutrientLevels              # For seeds/plants: What nutrient levels do they need to grow?
+
 
 
     def getTextDescription(self):
@@ -644,6 +654,9 @@ class SoilNutrientMeter(Object):
 
         # Default attributes
         self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
         pass
 

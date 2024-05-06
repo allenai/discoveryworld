@@ -24,6 +24,9 @@ class BottleCleaningDevice(Object):
         # Can be used (as a dispenser, into a container)
         self.attributes["isUsable"] = True                        # Can it be used?
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
     #
     #   Actions (use with)
     def actionUseWith(self, patientObj):
@@ -98,6 +101,9 @@ class ChemicalDispenser(Object):
 
         # Can be used (as a dispenser, into a container)
         self.attributes["isUsable"] = True                        # Can it be used?
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
         # Auto fill
         self.autoFillCheckForObjectName = None
@@ -239,6 +245,10 @@ class Substance(Object):
         self.attributes['isSubstance'] = True                     # Is it a substance?
         self.attributes['isAutoReacting'] = True                  # Does it react automatically with other substances?
         self.attributes['mixtureDict'] = {}                       # Dictionary of substances and their proportions in the mixture
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["substance a"]  # Currently all the same, since these properties aren't really used in any existing scenario
+
 
     def tick(self):
         # Stop if tick has already been completed
@@ -449,6 +459,9 @@ class Key(Object):
         # Container
         self.attributes['isContainer'] = False                    # Is it a container?
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
         # Rusted
         self.attributes['isRusted'] = isRusted                    # Is the key rusted?
         self.attributes['rustLevel'] = 3 if isRusted else 0       # Description of the rust (0=none, 1=light, 2=medium, 3=heavy)
@@ -575,6 +588,9 @@ class KeyRustyParametric(Object):
 
         # Container
         self.attributes['isContainer'] = False                    # Is it a container?
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
         # Rusted
         self.attributes['isRusted'] = isRusted                    # Is the key rusted?

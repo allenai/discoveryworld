@@ -41,6 +41,9 @@ class GeneratorSideLeft(Object):
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
     def tick(self):
         # Call superclass
         Object.tick(self)
@@ -55,6 +58,9 @@ class GeneratorSideRight(Object):
         # Default attributes
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
     def tick(self):
         # Call superclass
@@ -74,6 +80,9 @@ class GeneratorCenter(Object):
         # Device (is activable)
         self.attributes['isActivatable'] = False                   # Is this a device? (more specifically, can it be activated/deactivated?)
         self.attributes['isActivated'] = True                      # Is this device currently activated?
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
         # Object-specific properties
         self.attributes['linkedObjectsActivationState'] = []       # List of objects that are linked to this object

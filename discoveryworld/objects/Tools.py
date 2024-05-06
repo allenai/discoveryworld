@@ -9,6 +9,9 @@ class Flag(Object):
         # Default sprite name
         Object.__init__(self, world, "flag", "flag", defaultSpriteName = "instruments_flag")
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Paper"]
+
     def tick(self):
         # Call superclass
         Object.tick(self)
@@ -49,6 +52,8 @@ class Jar(Object):
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")
         self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
+
+        self.attributes["manualMaterialNames"] = ["Glass"]
 
         # Auto fill
         self.autoFillCheckForObjectName = None
@@ -162,6 +167,9 @@ class Pot(Object):
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")
         self.attributes['contentsVisible2D'] = False               # If it is a container, do we render the contents in the 2D representation, or is that already handled (e.g. for pots/jars, that render generic contents if they contain any objects)
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
     # attributes['temperatureC']
     def getTextDescription(self):
         # Get a text description of this object
@@ -213,6 +221,9 @@ class Shovel(Object):
 
         self.attributes["isUsable"] = True                        # Can it be used?
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
     #
     #   Actions (use with)
     #
@@ -246,6 +257,8 @@ class Coin(Object):
         self.attributes["isMovable"] = True                       # Can it be moved?
         self.attributes["isPassable"] = True                      # Agen't can't walk over this
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
 class FlagPole(Object):
     # Constructor
@@ -258,6 +271,10 @@ class FlagPole(Object):
 
         self.attributes["isMovable"] = False
         self.attributes["isPassable"] = False
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
 
     def getSpriteNamesWithContents(self, yOffset:int=0, xOffset:int=0):
         spriteList = super().getSpriteNamesWithContents(yOffset, xOffset)
@@ -282,6 +299,9 @@ class MeasuringTape(Object):
     def __init__(self, world):
         super().__init__(world, "tape", "measuring tape", defaultSpriteName="instruments2_measuring_tape")
         self.attributes['isUsable'] = True  # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
     def actionUseWith(self, otherObject=None):
         if isinstance(otherObject, FlagPole):

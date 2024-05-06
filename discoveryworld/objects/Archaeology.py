@@ -22,6 +22,9 @@ class ArtifactBrassChisel(Object):
         # Default sprite name
         Object.__init__(self, world, "ancient brass chisel", "ancient brass chisel", defaultSpriteName = "instruments_brass_chisel")
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
     def tick(self):
         # Call superclass
         Object.tick(self)
@@ -33,6 +36,9 @@ class ArtifactIronTongs(Object):
         # Default sprite name
         Object.__init__(self, world, "ancient iron tongs", "ancient iron tongs", defaultSpriteName = "instruments_iron_tongs")
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
     def tick(self):
         # Call superclass
         Object.tick(self)
@@ -43,6 +49,9 @@ class ArtifactStoneHammer(Object):
     def __init__(self, world):
         # Default sprite name
         Object.__init__(self, world, "ancient stone hammer", "ancient stone hammer", defaultSpriteName = "instruments_stone_hammer")
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Rock"]
 
     def tick(self):
         # Call superclass
@@ -58,6 +67,8 @@ class RadioCarbonMeter(Object):
 
         self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
     #
     #   Actions (use with)
@@ -114,6 +125,9 @@ class RadioisotopeMeter(Object):
         # Default attributes
 
         self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
         pass
 

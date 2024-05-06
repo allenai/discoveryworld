@@ -10,6 +10,8 @@ class CaveFloor(Object):
 
         self.attributes["obscuresObjectsBelow"] = True             # Does it obscure/hide objects on layers below it?
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Rock"]
 
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
@@ -47,6 +49,9 @@ class CaveWall(Object):
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
         self.attributes["obscuresObjectsBelow"] = True             # Does it obscure/hide objects on layers below it?
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Rock"]
 
         # Rendering attribute (wall direction, "tl", "tr", "bl", "br", "l", "r", "t", "b")
         self.wallShape = ""
@@ -231,6 +236,10 @@ class Door(Object):
         self.attributes['isOpenPassage'] = False                  # If it's a passage, then is it open?
         self.attributes['requiresKey'] = 0                        # If it requires a key to open, then this is a special ID for the key.  If the value is <=0, then it doesn't require a key.
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Wood"]
+
+
     def setKeyID(self, keyID:int):
         self.attributes['requiresKey'] = keyID
 
@@ -299,6 +308,8 @@ class Fence(Object):
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Wood"]
 
     def tick(self):
         # Call superclass
@@ -375,6 +386,8 @@ class Floor(Object):
 
         self.attributes["obscuresObjectsBelow"] = True             # Does it obscure/hide objects on layers below it?
 
+        self.attributes["manualMaterialNames"] = ["FloorWood"]
+
         # Material type?
 
     def tick(self):
@@ -409,6 +422,8 @@ class Grass(Object):
 
         self.attributes["isMovable"] = False                       # Can it be moved?
 
+        self.attributes["manualMaterialNames"] = ["PlantMatterGeneric"]
+
     def tick(self):
         # Call superclass
         Object.tick(self)
@@ -424,6 +439,8 @@ class Path(Object):
 
         self.attributes["obscuresObjectsBelow"] = True             # Does it obscure/hide objects on layers below it?
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Rock"]
 
     def tick(self):
         # Call superclass
@@ -504,6 +521,9 @@ class Sign(Object):
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this object
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Wood"]
+
         self.attributes['isReadable'] = True                       # Can it be read?
         self.attributes["document"] = "This is a sign."
 
@@ -578,6 +598,9 @@ class SignVillage(Object):
         self.attributes["isPassable"] = isPassable                 # Agen't can't walk over this
         self.attributes["document"] = "This is a sign."
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Wood"]
+
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
         if (False):
@@ -616,6 +639,9 @@ class Statue(Object):
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Rock"]
+
     # Add readable text (e.g. for a plaque on the statue)
     def addReadableText(self, text):
         self.attributes["isReadable"] = True
@@ -636,6 +662,9 @@ class Wall(Object):
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
 
         self.attributes["obscuresObjectsBelow"] = True             # Does it obscure/hide objects on layers below it?
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Wood"]
 
         # Rendering attribute (wall direction, "tl", "tr", "bl", "br", "l", "r", "t", "b")
         self.wallShape = ""

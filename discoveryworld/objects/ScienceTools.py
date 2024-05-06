@@ -16,6 +16,9 @@ class Microscope(Object):
 
         self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
     #
     #   Actions (use with)
     #
@@ -61,6 +64,9 @@ class NPKMeter(Object):
         # Default attributes
 
         self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
         pass
 
@@ -183,6 +189,9 @@ class PHMeter(Object):
 
         self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
         pass
 
 
@@ -260,6 +269,9 @@ class RadiationMeter(Object):
 
         # Default attributes
         self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
     #
     #   Actions (use with)
@@ -367,6 +379,10 @@ class Sampler(Object):
         Object.__init__(self, world, "sampler", "sampler", defaultSpriteName = "instruments_sampler")
         self.attributes['isUsable'] = True
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
+
     def actionUseWith(self, patientObj):
         # Use this object on the patient object
 
@@ -429,6 +445,9 @@ class Spectrometer(Object):
         # Default attributes
 
         self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
         pass
 
@@ -515,6 +534,8 @@ class Thermometer(Object):
 
         self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
 
+        self.attributes["manualMaterialNames"] = ["Glass"]
+
         pass
 
 
@@ -572,6 +593,9 @@ class Densitometer(Object):
         # Default attributes
 
         self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
         pass
 
@@ -635,6 +659,9 @@ class CountingComputer(Object):
         # Default attributes
         self.attributes['isUsable'] = True  # Can this device be used with another object? (e.g. specifically through the 'use' action)
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
     def actionUseWith(self, otherObject=None):
         # Use this object on the patient object
 
@@ -663,3 +690,6 @@ class FloppyDisk(Object):
         self.attributes['isMovable'] = True
         self.program = program
         self.value = value
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]

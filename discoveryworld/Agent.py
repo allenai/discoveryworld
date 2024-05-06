@@ -2762,6 +2762,9 @@ class SoilController(NPCDevice):
         self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
         self.attributes['isMovable'] = False                       # Can it be moved?
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
         # Default set field number
         self.setFieldNum(-1, fieldTiles=[])
 
@@ -2896,6 +2899,9 @@ class CrystalReactor(NPCDevice):
         # Device (is activable)
         self.attributes['isActivatable'] = False                      # Is this a device? (more specifically, can it be activated/deactivated?)
         self.attributes['isActivated'] = False                      # Is this device currently activated?
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
         # Resonance Frequency of the crystal reactor (a controllable property)
         self.attributes['resonanceFreq'] = 5000                    # The resonance frequency of the crystal reactor

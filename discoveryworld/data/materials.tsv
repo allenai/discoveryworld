@@ -9,3 +9,15 @@ rock	rock			A rough grey surface irregualrly showing small grey holes between 1 
 soil_good	soil			Small particles of soil and organic matter, interspersed with a large number of microscopic fungus and bacteria	brown	0.3, 0.0, 0.1, 0.2, 0.1	8.2	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	3	4	2
 soil_medium	soil			Small particles of soil and organic matter, interspersed with a moderate number of microscopic fungus and bacteria	brown	0.3, 0.0, 0.1, 0.2, 0.1	8.1	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	2	3	1
 soil_poor	soil			Small particles of soil and organic matter, interspersed with a small number of microscopic fungus and bacteria	brown	0.3, 0.0, 0.1, 0.2, 0.1	7.9	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	1	2	1
+FloorWood	wood floor			The long fibers associated with dried and treated wood that's been processed into flooring	brown	0.1, 0.2, 0.3, 0.4, 0.5	4	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	1	2	1
+Wood	wood			The long fibers associated with dired and treated wood	brown	0.1, 0.2, 0.3, 0.4, 0.5	4.5	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	1	2	1
+Glass	glass			Little is visible of this material, as it is transparent	clear	0.1, 0.1, 0.1, 0.1, 0.1	7	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0
+Metal	metal			The shimmer of a metalic surface that has been polished through an industrial process	metalic	0.5, 0.0, 0.0, 0.0, 0.1	10.3	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0
+Paper	paper			A processed fiber that appears paper-like	white	0.1, 0.2, 0.3, 0.4, 0.5	6	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	1	0
+PlantMatterGeneric	plant matter			The fibers and cells associated with plant matter	green	0.3, 0.2, 0.3, 0.4, 0.5	6	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	1	1
+Rock	rock			The irregular patterns of closely compacted materials associated with rock	grey	0.1, 0.3, 0.3, 0.1, 0.1	8	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0
+Seed	seed			A smooth organic surface associated with the outside of plant seeds	brown	0.3, 0.2, 0.4, 0.4, 0.5	4.5	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	2	1
+SubstanceA	substance a			A substance with no remarkable visual properties	clear	0.1, 0.2, 0.3, 0.3, 0.3	3	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0
+SubstanceB	substance b			A substance with no remarkable visual properties	clear	0.2, 0.2, 0.3, 0.3, 0.3	4	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0
+SubstanceC	substance c			A substance with no remarkable visual properties	clear	0.3, 0.2, 0.3, 0.3, 0.3	5	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0
+SubstanceD	substance d			A substance with no remarkable visual properties	clear	0.4, 0.2, 0.3, 0.3, 0.3	6	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0

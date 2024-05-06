@@ -17,6 +17,9 @@ class Bed(Object):
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Wood"]
+
 
     def tick(self):
         # Call superclass
@@ -46,6 +49,9 @@ class Chair(Object):
         self.attributes['isOpenable'] = False                      # Always open
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Wood"]
 
         # Rendering attributes
         self.curDirection = curDirection
@@ -119,6 +125,8 @@ class Fridge(Object):
         # Heating
         self.attributes['coolSourceMinTemp'] = -4                    # If it is a cool source, then this is the minimum temperature that it can reach
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
     def getTextDescription(self):
         # Get a text description of this object
@@ -188,6 +196,8 @@ class Sink(Object):
         self.attributes['isActivatable'] = True                     # Is this a device? (more specifically, can it be activated/deactivated?)
         self.attributes['isActivated'] = False                      # Is this device currently activated?
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
     def getTextDescription(self):
         # Get a text description of this object
@@ -257,6 +267,8 @@ class Stove(Object):
         # Heating
         self.attributes['heatSourceMaxTemp'] = 350                   # If it is a heat source, then this is the maximum temperature that it can reach
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
 
     def getTextDescription(self):
         # Get a text description of this object
@@ -334,6 +346,9 @@ class Table(Object):
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Wood"]
+
         # Rendering attributes
         self.attributes["screenYOffset"] = -7                      # Small Y offset. This is to make it look like the objects are on the table.
 
@@ -358,6 +373,9 @@ class TableBedside(Object):
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Wood"]
+
     def tick(self):
         # Call superclass
         Object.tick(self)
@@ -381,6 +399,9 @@ class TableWithSign(Object):
         self.attributes['isOpenable'] = False                      # Can not be opened (things are stored on the table surface)
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "on"                  # Container prefix (e.g. "in" or "on")
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Wood"]
 
         # Rendering attributes
         self.attributes["screenYOffset"] = -7                      # Small Y offset. This is to make it look like the objects are on the table.

@@ -64,6 +64,7 @@ class Object:
 
         # Materials
         self.attributes["materials"] = []                           # List of materials that this object is made of
+        self.attributes["manualMaterialNames"] = []                 # A list of material types to add during initialization (in code, rather than from the spreadsheet)
 
         # Contents (for containers)
         self.parentContainer = None                                 # Back-reference for the container that this object is in
@@ -206,7 +207,18 @@ class Object:
     def initializeMaterialProperties(self, materialIndexDict):
         # If the object has special material requirements (like randomly choosing from a number of different materials), then this function should be overridden.
         # Otherwise, it can be left blank.
-        pass
+
+        # Check whether this object has an attribute called 'manualMaterialNames'
+        if ("manualMaterialNames" in self.attributes):
+            for materialName in self.attributes["manualMaterialNames"]:
+                # Add the material to the object
+                import copy
+                if (materialName not in materialIndexDict):
+                    print("ERROR: initializeMaterialProperties: materialName not found in materialIndexDict: " + materialName)
+                else:
+                    material = copy.deepcopy(materialIndexDict[materialName])
+                    self.attributes['materials'].append(material)
+
 
     #
     #   Container Semantics
