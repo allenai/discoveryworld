@@ -102,7 +102,7 @@ Spreadsheet: Excel
 Statistics: R
 ```
 
-At the end of the notes for a given scenario, it would be helpful if you clearly included the following:
+At the end of the notes for a given scenario, it would be helpful if you clearly included your hypothesis for the solution to the task, as well as supporting evidence that lead you to believe the hypothesis can be confirmed:
 ```
 HYPOTHESIS: <Your hypothesis for what the solution to the task is>
 SUPPORTING EVIDENCE:
@@ -117,6 +117,9 @@ SUPPORTING EVIDENCE:
 When a game scenario is completed, it will automatically notify you, and then begin saving log files.
 
 If you reach a time limit or decide to quit early, the game will also save log files before you exit.
+
+If you successfully complete a game scenario, it will offer you the opportunity to **play for a bit longer** by pressing **F5**, in case you need to gather a bit more evidence for your notes. 
+
 
 ### 2.8 Trying again
 
