@@ -456,8 +456,8 @@ class RustedKeyTask(Task):
     # Update the task progress
     def updateTick(self):
         # Do not update the score if the task is already marked as completed
-        if (self.completed == True):
-            return
+        #if (self.completed == True):
+        #    return
 
         # Check whether key has been in agents inventory
         if (not self.scorecardKey.completed):
@@ -646,8 +646,8 @@ class RustedKeyTaskChallenge(Task):
     # Update the task progress
     def updateTick(self):
         # Do not update the score if the task is already marked as completed
-        if (self.completed == True):
-            return
+        #if (self.completed == True):
+        #    return
 
         # Check whether key has been in agents inventory
         if (not self.scorecardKey.completed):
@@ -1172,8 +1172,8 @@ class SoilNutrientTask(Task):
     # Update the task progress
     def updateTick(self):
         # Do not update the score if the task is already marked as completed
-        if (self.completed == True):
-            return
+        #if (self.completed == True):
+        #    return
 
         # Clear the previous score and scorecard
         #self.scoreCard = []
