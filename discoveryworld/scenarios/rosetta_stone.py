@@ -379,9 +379,6 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
     taskInstruction = None
     if difficulty == "easy":
         ITEMS = ["stick"] + ITEMS + ["shovel"]
-        #scoringInfo["item"] = "stick"
-        #taskInstruction = "[Bring me] [stick]!"
-        #scoringInfo["criticalHypotheses"].append(translate(f"The word '[stick]' means 'stick'", rosetta))
     elif difficulty == "medium":
         if world.randomSeed % 2 == 0:
             scoringInfo["learningColor"] = True  # Half the seeds will be about learning colors.
@@ -402,8 +399,6 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
         scoringInfo["countWord"] = COUNT_WORDS[scoringInfo["count"]]
         scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['countWord']}]' means '{scoringInfo['countWord']}'", rosetta))
 
-    #if "item" not in scoringInfo:
-    # scoringInfo["item"] = rng.choice(ITEMS)
     scoringInfo["item"] = ITEMS[world.randomSeed % len(ITEMS)]
     scoringInfo["criticalHypotheses"].append(translate(f"The word '[Bring me]' means 'bring me'", rosetta))
     scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['item']}]' means '{scoringInfo['item']}'", rosetta))
