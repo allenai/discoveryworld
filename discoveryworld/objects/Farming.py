@@ -98,6 +98,15 @@ class FertilizerPellet(Object):
 
         self.attributes["absorbTime"] = 8                         # How many ticks until it absorbs into the soil?
 
+        # Microscope description
+        fauxMaterial = {}
+        fauxMaterial['radiationusvh'] = 0.0                           # The radiation
+        fauxMaterial['spectrum'] = [1.0, 3.0, 1.0, 5.0, 1.0]           # The spectrum
+        fauxMaterial['ph'] = 9.0                                       # The pH
+        fauxMaterial['microscopeDesc'] = """Small bundles of particles.  Approximately 50% are blue, 30% are orange, and the remaining are a vareity of colors."""  # The description of the crystal under a microscope
+        self.attributes['materials'].append(fauxMaterial)
+
+
     def tick(self):
         # Call superclass
         Object.tick(self)
@@ -308,6 +317,13 @@ class PlantRandomSmall(Object):
         self.defaultSpriteName = self.rng.choice(randomSprites)
         self.curSpriteName = self.defaultSpriteName
 
+        # Microscope description
+        fauxMaterial = {}
+        fauxMaterial['radiationusvh'] = 0.0                           # The radiation of the crystal (in mSv)
+        fauxMaterial['spectrum'] = [3.0, 2.0, 2.0, 3.0, 1.0]           # The spectrum of the seed
+        fauxMaterial['microscopeDesc'] = "Fibers associated with plant matter"  # The description of the crystal under a microscope
+        self.attributes['materials'].append(fauxMaterial)
+
 
     def getTextDescription(self):
         # Get a text description of this object
@@ -347,6 +363,14 @@ class PlantTreeBig(Object):
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes["isPassable"] = (part == "leaves")         # Agen't can't walk over this
 
+        # Microscope description
+        fauxMaterial = {}
+        fauxMaterial['radiationusvh'] = 0.0                           # The radiation of the crystal (in mSv)
+        fauxMaterial['spectrum'] = [3.0, 3.0, 2.0, 2.0, 1.0]           # The spectrum of the seed
+        fauxMaterial['microscopeDesc'] = "Large fibers associated with plant matter."  # The description of the crystal under a microscope
+        self.attributes['materials'].append(fauxMaterial)
+
+
     def tick(self):
         # Call superclass
         Object.tick(self)
@@ -362,6 +386,13 @@ class Seed(Object):
         self.attributes["isPassable"] = True                      # Agen't can't walk over this
 
         self.attributes["sproutTime"] = -1                        # How many ticks until the seed sprouts?
+
+        # Microscope description
+        fauxMaterial = {}
+        fauxMaterial['radiationusvh'] = 0.0                           # The radiation of the crystal (in mSv)
+        fauxMaterial['spectrum'] = [2.0, 3.0, 2.0, 1.0, 1.0]           # The spectrum of the seed
+        fauxMaterial['microscopeDesc'] = "The smooth shell of an ungerminated seed."  # The description of the crystal under a microscope
+        self.attributes['materials'].append(fauxMaterial)
 
 
     def getTextDescription(self):

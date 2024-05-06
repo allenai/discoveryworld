@@ -1,7 +1,9 @@
 import copy
 
+
 from discoveryworld.ActionSuccess import ActionSuccess, MessageImportance
 from discoveryworld.objects.Object import Object
+from discoveryworld.Layer import Layer
 from discoveryworld.ScienceHelpers import getNPKContent, getAveragePH, getRadiationLevelAroundLocation
 
 
@@ -367,15 +369,29 @@ class Sampler(Object):
 
     def actionUseWith(self, patientObj):
         # Use this object on the patient object
-        useDescriptionStr = "You use the sampler to take a sample of the " + patientObj.name + ".\n The sample has been placed in your inventory.\n"
 
         # Create a sample of the patient
         sample = Sample(self.world, patientObj)
         petriDish = PetriDish(self.world)
         petriDish.addObject(sample)
 
-        # Place the sample in the same parent container as the sampler.
-        self.parentContainer.addObject(petriDish)
+        # Check where the place the sample when done
+        useDescriptionStr = ""
+        if (self.parentContainer == None):
+            # Case 1: This is the case when the sampler is open to the world, and not in a container.  In this case, place the sample on the same location as the sampler.
+            # First, get sampler location
+            useDescriptionStr = "You use the sampler to take a sample of the " + patientObj.name + ".\n The sample has been placed on the ground.\n"
+            self.world.addObject(self.attributes["gridX"], self.attributes["gridY"], Layer.OBJECTS, petriDish)
+
+        # Case 2: The sampler is on an agent
+        elif (self.parentContainer.attributes["isAgent"] == True):
+            useDescriptionStr = "You use the sampler to take a sample of the " + patientObj.name + ".\n The sample has been placed in your inventory.\n"
+            self.parentContainer.addObject(petriDish)
+
+        # Case 3: The sampler is in/on a container
+        else:
+            useDescriptionStr = "You use the sampler to take a sample of the " + patientObj.name + ".\n The sample has been placed in/on the " + self.parentContainer.name + ".\n"
+            self.parentContainer.addObject(petriDish)
 
         return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
 

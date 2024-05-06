@@ -273,8 +273,14 @@ class UserInterface:
                     # Then, render the text
                     textSurface = self.fontBold.render("Task Completed", True, (200, 200, 200))
                     self.window.blit(textSurface, (taskCompletedX+25, taskCompletedY))
-                    textSurface = self.fontBold.render("Press ESC to quit, or F5 to keep playing this scenario.", True, (200, 200, 200))
-                    self.window.blit(textSurface, (taskCompletedX-170, taskCompletedY+20))
+                    # Check if the task was completed successfully
+                    if (task.isCompletedSuccessfully() == True):
+                        textSurface = self.fontBold.render("Press ESC to quit, or F5 to keep playing this scenario.", True, (200, 200, 200))
+                        self.window.blit(textSurface, (taskCompletedX-170, taskCompletedY+20))
+                    else:
+                        textSurface = self.fontBold.render("Press ESC to quit", True, (200, 200, 200))
+                        self.window.blit(textSurface, (taskCompletedX+15, taskCompletedY+20))
+
 
 
 
