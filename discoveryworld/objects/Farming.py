@@ -785,10 +785,10 @@ class SoilTile(Object):
             objectsOnTile = self.world.getObjectsAt(self.attributes["gridX"], self.attributes["gridY"], includeContents=False)
             # For each object, check that it's not the soil tile itself, or an agent
             for obj in objectsOnTile:
-                print("FOUND OBJECT ON SOIL TILE: " + str(obj.uuid) + " (" + str(obj.type) + ")")
+                #print("FOUND OBJECT ON SOIL TILE: " + str(obj.uuid) + " (" + str(obj.type) + ")")
                 if (obj.uuid != self.uuid) and (obj.attributes["isAgent"] == False) and (obj.type != "grass"):
                     # Make the object fall into the hole
-                    print("\t ADDED!")
+                    #print("\t ADDED!")
                     self.addObject(obj, force=True)
 
 

@@ -317,6 +317,10 @@ class UserInterface:
 
         # Show nearby objects
         nearbyObjectsMaxDistance = 2
+        print("###")
+        print("self.currentAgent: " + str(self.currentAgent))
+
+
         nearbyObjectsFull, nearbyObjects, nearbyObjectsByDirection = self.currentAgent.getNearbyVisibleObjects(maxDistance=nearbyObjectsMaxDistance)
         # Note: nearbyObjectsByDirection is smaller
         out["nearbyObjects"] = {
