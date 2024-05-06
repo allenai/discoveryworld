@@ -71,8 +71,10 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
     # Map between the choice and the scenario name
     scenarioName = None
     # Scenario 0: Tutorial
-    if scenarioNameIn == "Tutorial":
+    if (scenarioNameIn == "Tutorial") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
         scenarioName = "tutorial"
+    elif (scenarioNameIn == "Tutorial") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
+        scenarioName = None
     # Scenario 1: Combinatorial Chemistry
     elif (scenarioNameIn == "Combinatorial Chemistry") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
         scenarioName = "combinatorial_chemistry"
