@@ -10,6 +10,7 @@ class CaveFloor(Object):
 
         self.attributes["obscuresObjectsBelow"] = True             # Does it obscure/hide objects on layers below it?
 
+
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
         if (False):
@@ -420,6 +421,8 @@ class Path(Object):
         Object.__init__(self, world, "path", "path", defaultSpriteName = "forest1_path_c")
 
         self.attributes["isMovable"] = False                       # Can it be moved?
+
+        self.attributes["obscuresObjectsBelow"] = True             # Does it obscure/hide objects on layers below it?
 
 
     def tick(self):

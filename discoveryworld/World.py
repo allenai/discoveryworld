@@ -713,6 +713,31 @@ class World:
 
 
     #
+    #   Filtering
+    #
+
+    # Filter out objects that can never be visible -- e.g. initial Grass tiles that are always covered by buildings
+    def initialFilter(self):
+        for x in range(self.sizeX):
+            for y in range(self.sizeY):
+                # Get all the objects at this location
+                objects = self.getObjectsAt(x, y)
+
+                grassObjs = [x for x in objects if (x.type == "grass")]
+                obscuringObjects = []
+                obscuringTypes = ["path", "floor", "cave floor", "soil", "cave wall"]
+                foundObscuringObject = False
+                for obj in objects:
+                    if (obj.type in obscuringTypes):
+                        foundObscuringObject = True
+                        break
+                if (foundObscuringObject):
+                    for obj in grassObjs:
+                        self.removeObject(obj)
+                        print("Removing grass object at (" + str(x) + ", " + str(y) + ")")
+
+
+    #
     #   Pathfinding
     #
 

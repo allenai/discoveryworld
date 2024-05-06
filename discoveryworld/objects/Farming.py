@@ -682,6 +682,8 @@ class SoilTile(Object):
         self.attributes["isMovable"] = False                       # Can it be moved?
         self.attributes['isShovelable'] = True                     # Can it be shoveled?
 
+        self.attributes["obscuresObjectsBelow"] = True             # Does it obscure/hide objects on layers below it?
+
         # By default, it contains Dirt, which can be removed by shovelling
         dirt = self.world.createObject("Dirt")
         self.addObject(dirt, force=True)
