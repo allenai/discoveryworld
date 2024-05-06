@@ -816,8 +816,8 @@ class ArcheologyDigEasy(Task):
     # Update the task progress
     def updateTick(self):
         # Do not update the score if the task is already marked as completed
-        if (self.completed == True):
-            return
+        #if (self.completed == True):
+        #    return
 
         # Check if they have the radioisotope meter in an agent's inventory
         if (not self.scorecardRadiocarbonMeter.completed):
@@ -987,8 +987,8 @@ class ArcheologyDigGenericRadioisotopes(Task):
     # Update the task progress
     def updateTick(self):
         # Do not update the score if the task is already marked as completed
-        if (self.completed == True):
-            return
+        #if (self.completed == True):
+        #    return
 
         # Check if they have the radioisotope meter in an agent's inventory
         if (not self.scorecardRadioisotopeMeter.completed):

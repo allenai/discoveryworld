@@ -636,13 +636,30 @@ def main(args):
                 # F5 to continue playing
                 elif (keys[pygame.K_F5]) and (taskCompletedMessageShown == True):
                     print("Extended play enabled.")
-                    ui.extendedPlayEnabled = True
 
-                    extendedPlayMessage = "Extended play mode enabled.  You can now play as normal.\n\n"
-                    extendedPlayMessage += "When you're done, press ESC to quit the game.\n"
-                    extendedPlayMessage += "(The game will automatically save the log file when you quit.)\n\n"
-                    extendedPlayMessage += "Press SPACE to close this message."
-                    ui.addTextMessageToQueue(extendedPlayMessage)
+                    # Check to make sure the task was completed successfully
+                    if (not task.isCompletedSuccessfully() == True):
+                        extendedPlayMessage = "Unfortunately, extended play mode is only available when the task is completed successfully, "
+                        extendedPlayMessage += "in case you need more time to build an explanation for the solution.\n\n"
+                        extendedPlayMessage += "Press SPACE to close this message."
+                        ui.addTextMessageToQueue(extendedPlayMessage)
+
+                    # Check to make sure the scenario isn't `tutorial`
+                    elif (args.scenario == "tutorial"):
+                        # Extended play not supported for the tutorial
+                        extendedPlayMessage = "Unfortunately, extended play mode is not available for the tutorial scenario.\n\n"
+                        extendedPlayMessage += "Press SPACE to close this message."
+                        ui.addTextMessageToQueue(extendedPlayMessage)
+
+                    else:
+                        ui.extendedPlayEnabled = True
+
+                        extendedPlayMessage = "Extended play mode enabled.  You can now play as normal.\n\n"
+                        extendedPlayMessage += "When you're done, press ESC to quit the game.\n"
+                        extendedPlayMessage += "(The game will automatically save the log file when you quit.)\n\n"
+                        extendedPlayMessage += "Press SPACE to close this message."
+                        ui.addTextMessageToQueue(extendedPlayMessage)
+
 
                 # Test the text message queue
                 elif (keys[pygame.K_TAB]):
