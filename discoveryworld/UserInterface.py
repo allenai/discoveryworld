@@ -57,6 +57,9 @@ class UserInterface:
         # The number of posts on DiscoveryFeed the last time we checked it
         self.lastDiscoveryFeedPostCount = 0
 
+        # Mark whether the user is playing past the game finishing (i.e. `extended play`)
+        self.extendedPlayEnabled = False
+
 
     # Set the agent
     def setAgent(self, agent):
@@ -263,15 +266,16 @@ class UserInterface:
                 task = self.currentAgent.world.taskScorer.tasks[0]
             if (task != None and task.isCompleted()):
                 # If we're not in a modal or dialog, then display the task completed message
-                if (self.inModal == False) and (self.dialogToDisplay == None):
+                if (self.inModal == False) and (self.dialogToDisplay == None) and (self.extendedPlayEnabled == False):
                     taskCompletedX = self.window.get_width()/2 - 75
                     taskCompletedY = self.window.get_height()/2 + 100
-                    pygame.draw.rect(self.window, (100, 100, 100), (taskCompletedX-6, taskCompletedY-5, 175, 50))
+                    pygame.draw.rect(self.window, (100, 100, 100), (taskCompletedX-175, taskCompletedY-5, 500, 50))
                     # Then, render the text
                     textSurface = self.fontBold.render("Task Completed", True, (200, 200, 200))
-                    self.window.blit(textSurface, (taskCompletedX, taskCompletedY))
-                    textSurface = self.fontBold.render("Press ESC to quit.", True, (200, 200, 200))
-                    self.window.blit(textSurface, (taskCompletedX, taskCompletedY+20))
+                    self.window.blit(textSurface, (taskCompletedX+25, taskCompletedY))
+                    textSurface = self.fontBold.render("Press ESC to quit, or F5 to keep playing this scenario.", True, (200, 200, 200))
+                    self.window.blit(textSurface, (taskCompletedX-170, taskCompletedY+20))
+
 
 
     # A JSON version of the user interface

@@ -521,7 +521,7 @@ def main(args):
                     # taskScore = int(task.getScoreNormalized() * 100)
                     # taskCompletedMessage += "Task Score: " + str(taskScore) + "%\n"
                     # taskCompletedMessage += "\n"
-                    taskCompletedMessage += "Press SPACE to close this message, then press ESC to quit the game."
+                    taskCompletedMessage += "Press SPACE to close this message, then press ESC to quit the game (or F5 to keep playing)."
 
                     ui.addTextMessageToQueue(taskCompletedMessage)
 
@@ -602,7 +602,7 @@ def main(args):
             # Parse any action keys
             doTick = True
             success = None
-            if (taskCompletedMessageShown == False):
+            if (taskCompletedMessageShown == False) or (ui.extendedPlayEnabled == True):
                 # Only parse action keys if the task has not been completed
                 (doTick, success) = ui.parseKeys(keys)
 
@@ -632,6 +632,17 @@ def main(args):
                     # Wait a turn
                     print("Waiting (taking no action this turn)...")
                     doNextTurn = True
+
+                # F5 to continue playing
+                elif (keys[pygame.K_F5]) and (taskCompletedMessageShown == True):
+                    print("Extended play enabled.")
+                    ui.extendedPlayEnabled = True
+
+                    extendedPlayMessage = "Extended play mode enabled.  You can now play as normal.\n\n"
+                    extendedPlayMessage += "When you're done, press ESC to quit the game.\n"
+                    extendedPlayMessage += "(The game will automatically save the log file when you quit.)\n\n"
+                    extendedPlayMessage += "Press SPACE to close this message."
+                    ui.addTextMessageToQueue(extendedPlayMessage)
 
                 # Test the text message queue
                 elif (keys[pygame.K_TAB]):
@@ -712,7 +723,7 @@ def main(args):
 
             # If the task is completed, then the world will not tick
             doUpdate = True
-            if ((task is not None) and (ui.inModal == False) and (ui.dialogToDisplay == None) and (task.isCompleted() == True)):
+            if ((task is not None) and (ui.inModal == False) and (ui.dialogToDisplay == None) and ((task.isCompleted() == True) and (ui.extendedPlayEnabled == False))):
                 doUpdate = False
             #if (task is None) or (task.isCompleted() == False):
             if (doUpdate):
@@ -850,7 +861,7 @@ def main(args):
     # Call FFMPEG (forces overwrite)
     #subprocess.call(["ffmpeg", "-y", "-framerate", "10", "-i", FRAME_DIR + "/frame_%d.png", "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", "output.mp4"])
 
-    if (saveSuccessful == False):
+    if (saveSuccessful == False) or (ui.extendedPlayEnabled == True):
         # Save the data, because the game is exiting but the data hasn't been saved yet (i.e. from having completed the task, which triggers a save)
         saveLog(world, logInfo, verboseLogFilename, pygameWindow=window, pygame=pygame, lastScreenExportFilename=lastScreenExportFilename)
 
