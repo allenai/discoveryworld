@@ -84,7 +84,7 @@ ROSETTA_GIBBERISH = {
     "[Paint Shop]": "Blorpt Vloxurn",
     "[General Store]": "Flibble Vloxurn",
     "[Key Shop]": "Squibble Vloxurn",
-    "[School]": "Womple Academy",
+    "[School]": "Plonken",
 
     "[seed]": "snarf",
     "[shovel]": "blurf",
