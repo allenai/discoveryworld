@@ -54,6 +54,9 @@ class DiscoveryWorldAPI:
         # Most recent task progress (updated from most recent observation)
         self.taskProgress = []
 
+        # Most recent step count
+        self.steps = 0
+
 
     def getNameAndVersion(self):
         return self.NAME + " v" + self.VERSION
@@ -73,7 +76,7 @@ class DiscoveryWorldAPI:
         if (internalScenarioName == None):
             print("ERROR: Scenario not found: " + scenarioName)
             print(SCENARIO_INFOS)
-            return
+            return False
 
         # Create a scenario
         scenarioMaker = ScenarioMaker(world=self.world, seed=randomSeed)
@@ -82,7 +85,7 @@ class DiscoveryWorldAPI:
         if (not success):
             print("ERROR: " + errorStr)
             exit(1)
-            return
+            return False
 
 
         # Initialize and attach user interfaces to the agents
@@ -95,6 +98,12 @@ class DiscoveryWorldAPI:
 
         # Initial world tick
         self.world.tick()
+
+        # Reset task progress, since we're starting a new scenario
+        self.taskProgress = []
+        self.steps = 0
+
+        return True
 
 
 
@@ -176,6 +185,8 @@ class DiscoveryWorldAPI:
 
         # Store most recent task progress
         self.taskProgress = uiJSON["taskProgress"]
+        # Store most recent number of steps
+        self.steps = uiJSON["world_steps"]
 
         # Return response
         return response
@@ -194,6 +205,19 @@ class DiscoveryWorldAPI:
         # If we reach here, all tasks were marked as complete
         return True
 
+    # Returns a detailed task scorecard (that contains oracle knowledge, and should never be shown to an agent)
+    def getTaskScorecard(self):
+        # If no agents, then no task progress -- return None
+        if (len(self.ui) <= 0):
+            return None
+
+        # Get a reference to any agent's UI
+        ui = self.ui[0]
+        return ui.getFullTaskProgressJSON()
+
+    # Get the current step counter
+    def getStepCounter(self):
+        return self.steps
 
     # Lists all known actions (as they are parsed by the JSON action interpreter), by directly enumerating the ActionType enum
     def listKnownActions(self, limited:bool=False):

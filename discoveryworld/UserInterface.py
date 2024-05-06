@@ -317,10 +317,6 @@ class UserInterface:
 
         # Show nearby objects
         nearbyObjectsMaxDistance = 2
-        print("###")
-        print("self.currentAgent: " + str(self.currentAgent))
-
-
         nearbyObjectsFull, nearbyObjects, nearbyObjectsByDirection = self.currentAgent.getNearbyVisibleObjects(maxDistance=nearbyObjectsMaxDistance)
         # Note: nearbyObjectsByDirection is smaller
         out["nearbyObjects"] = {
@@ -368,7 +364,7 @@ class UserInterface:
         if (self.currentAgent != None):
             taskList = self.currentAgent.world.taskScorer.tasks
             for idx, task in enumerate(taskList):
-                taskProgressList.append(self.renderTaskProgressJSON(task))
+                taskProgressList.append(self.renderMinimalTaskProgressJSON(task))
         out["taskProgress"] = taskProgressList
 
         # Return the JSON
@@ -443,14 +439,24 @@ class UserInterface:
         self.window.blit(textSurface, (x, y+20))
 
 
-    def renderTaskProgressJSON(self, task):
+    # This is intended to show the agent
+    def renderMinimalTaskProgressJSON(self, task):
         out = {
             "taskName": task.taskName,
             "description": task.taskDescription,
-            "score": task.getScoreNormalized(),
+            #"score": task.getScoreNormalized(),
             "completed": task.completed,
             "completedSuccessfully": task.completedSuccessfully
         }
+        return out
+
+    # This is intended to provide a detailed progress report that includes oracle knowledge, and should never be shown to an agent
+    def getFullTaskProgressJSON(self):
+        taskList = self.currentAgent.world.taskScorer.tasks
+        out = []
+        for task in taskList:
+            out.append(task.taskProgressDict())
+
         return out
 
 

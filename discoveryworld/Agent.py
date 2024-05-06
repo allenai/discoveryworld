@@ -201,7 +201,6 @@ class Agent(Object):
     # Get a list of all objects within a certain number of grid locations of the agent.
     # This should respect the container status.
     def getNearbyVisibleObjects(self, maxDistance=2):
-        print("getNearbyVisibleObjects(): started...")
         visibleObjectsFull = [] # The actual objects rather than dicts representing them, for downstream processing
         visibleObjects = []
         visibleObjectsByDirection = {
@@ -218,7 +217,7 @@ class Agent(Object):
 
         for x in range(self.attributes["gridX"] - maxDistance, self.attributes["gridX"] + maxDistance + 1):
             for y in range(self.attributes["gridY"] - maxDistance, self.attributes["gridY"] + maxDistance + 1):
-                print("getNearbyVisibleObjects(): x=" + str(x) + ", y=" + str(y) + "...")
+                #print("getNearbyVisibleObjects(): x=" + str(x) + ", y=" + str(y) + "...")
                 objsAtLocation = []
                 if (self.world.isWithinBounds(x, y)):
                     # Get objects at location

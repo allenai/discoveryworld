@@ -18,11 +18,11 @@ def makeScenarioTown(world, numUserAgents=1):
         0: "red",
         1: "green",
         2: "yellow",
-        4: "pink",
-        5: "red and pink",
+        3: "pink",
+        4: "red and pink",
     }
-    crticialMushroomColor = criticalMushroom[(world.randomSeed % 5)]
-    scoringInfo["criticalHypotheses"].append("The mushrooms that make people ill have the following color(s): " + crticialMushroomColor + ".")
+    criticialMushroomColor = criticalMushroom[(world.randomSeed % 5)]
+    scoringInfo["criticalHypotheses"].append("The mushrooms that make people ill have the following color(s): " + criticialMushroomColor + ".")
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 5
