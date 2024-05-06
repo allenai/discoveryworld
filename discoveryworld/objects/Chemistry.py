@@ -247,7 +247,7 @@ class Substance(Object):
         self.attributes['mixtureDict'] = {}                       # Dictionary of substances and their proportions in the mixture
 
         # Material
-        self.attributes["manualMaterialNames"] = ["substance a"]  # Currently all the same, since these properties aren't really used in any existing scenario
+        self.attributes["manualMaterialNames"] = ["SubstanceA"]  # Currently all the same, since these properties aren't really used in any existing scenario
 
 
     def tick(self):

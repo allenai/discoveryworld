@@ -734,7 +734,7 @@ class World:
                 if (foundObscuringObject):
                     for obj in grassObjs:
                         self.removeObject(obj)
-                        print("Removing grass object at (" + str(x) + ", " + str(y) + ")")
+                        #print("Removing grass object at (" + str(x) + ", " + str(y) + ")")
 
 
     #
