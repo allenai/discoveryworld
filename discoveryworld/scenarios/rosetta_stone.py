@@ -378,7 +378,7 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
     scoringInfo["learningCount"] = False
     taskInstruction = None
     if difficulty == "easy":
-        ITEMS = ["stick"] + ITEMS
+        ITEMS = ["stick"] + ITEMS + ["shovel"]
         #scoringInfo["item"] = "stick"
         #taskInstruction = "[Bring me] [stick]!"
         #scoringInfo["criticalHypotheses"].append(translate(f"The word '[stick]' means 'stick'", rosetta))
