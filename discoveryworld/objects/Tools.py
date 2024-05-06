@@ -32,6 +32,9 @@ class FlowerPot(Object):
         self.attributes['isOpenContainer'] = True                  # If it's a container, then is it open?
         self.attributes['containerPrefix'] = "in"                  # Container prefix (e.g. "in" or "on")
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["PlantMatterGeneric"]
+
     def tick(self):
         # Call superclass
         Object.tick(self)

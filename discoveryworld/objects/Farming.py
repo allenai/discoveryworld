@@ -868,6 +868,8 @@ class Stick(Object):
 
         self.attributes["isMovable"] = True                       # Can it be moved?
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Wood"]
 
 class ColoredMushroom(Object):
 

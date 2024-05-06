@@ -35,6 +35,8 @@ class Bookcase(Object):
         self.attributes["isPassable"] = False                      # Agen't can't walk over this
         self.attributes['isContainer'] = False                     # Is it a container?
 
+        # Material
+        self.attributes["manualMaterialNames"] = ["Wood"]
 
 class Chair(Object):
     # Constructor
