@@ -112,11 +112,11 @@ def makeScenarioDialogTest(world, numUserAgents=1):
 class NPCDialogTest(NPC):
     def __init__(self, world, name):
         # Default sprite name
-        super().__init__(world, name, defaultSpriteName="character9_agent_facing_east")
+        super().__init__(world, name, defaultSpriteName="character32_agent_facing_east")
 
         # Rendering
         self.attributes["faceDirection"] = "east"
-        self.spriteCharacterPrefix = "character9_"
+        self.spriteCharacterPrefix = "character32_"
 
         # Default attributes
         self.attributes["isMovable"] = False                       # Elder cannot be picked.
