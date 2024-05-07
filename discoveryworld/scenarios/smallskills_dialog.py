@@ -43,7 +43,7 @@ def makeScenarioDialogTest(world, numUserAgents=1):
     compoundTable1.addObject(key)
 
     # Add the other agent
-    npc = NPCDialogTest(world, "Oyvind")
+    npc = NPCDialogTest(world, "Sally")
     world.addObject(17, 11, Layer.AGENT, npc)
     world.addAgent(npc)
     mkDialogDialogTestNPC(npc)

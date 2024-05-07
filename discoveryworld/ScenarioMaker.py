@@ -18,13 +18,15 @@ SCENARIOS = [
     "lost_in_translation_hard",
     "reactor_lab"
     "smallskills_dialog_test",
-    "smallskills_pickandplace_test"]
+    "smallskills_pickandplace_test",
+    "smallskills_pickandgive_test"]
 
 # Canonical (outside) names
 SCENARIO_NAMES = [
     "Tutorial", "Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick",
     "Small Skills: Dialog Test",
     "Small Skills: Pick and Place Test",
+    "Small Skills: Pick and Give Test"
 #    "TODO 1", "TODO 2"
 ]
 
@@ -62,6 +64,10 @@ SCENARIO_INFOS = {
         "variations": ["1"],
     },
     "Small Skills: Pick and Place Test": {
+        "difficulty": ["Normal"],
+        "variations": ["1"],
+    },
+    "Small Skills: Pick and Give Test": {
         "difficulty": ["Normal"],
         "variations": ["1"],
     },
@@ -133,6 +139,9 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
 
     elif (scenarioNameIn == "Small Skills: Pick and Place Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
         scenarioName = "smallskills_pickandplace_test"
+
+    elif (scenarioNameIn == "Small Skills: Pick and Give Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+        scenarioName = "smallskills_pickandgive_test"
 
     # Return the internal scenario name to use
     return scenarioName
@@ -210,6 +219,12 @@ class ScenarioMaker():
         elif (scenarioName == "smallskills_pickandplace_test"):
             scoringInfo = makeScenarioPickAndPlaceTest(self.world, numUserAgents)
             self.world.addTaskByName("SmallSkillsPickAndPlaceTask", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+
+        elif (scenarioName == "smallskills_pickandgive_test"):
+            scoringInfo = makeScenarioPickAndGiveTest(self.world, numUserAgents)
+            self.world.addTaskByName("SmallSkillsPickAndGiveTask", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 

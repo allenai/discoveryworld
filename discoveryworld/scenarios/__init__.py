@@ -9,6 +9,7 @@ from discoveryworld.scenarios.reactor_lab import makeScenarioReactorLab
 from discoveryworld.scenarios.tutorial import makeScenarioTutorial
 from discoveryworld.scenarios.smallskills_dialog import *
 from discoveryworld.scenarios.smallskills_pickandplace import *
+from discoveryworld.scenarios.smallskills_pickandgive import *
 
 SCENARIOS = {
     "Town": makeScenarioTown,
