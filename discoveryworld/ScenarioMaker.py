@@ -16,11 +16,13 @@ SCENARIOS = [
     "lost_in_translation_easy",
     "lost_in_translation_medium",
     "lost_in_translation_hard",
-    "reactor_lab"]
+    "reactor_lab"
+    "smallskills_dialog_test"]
 
 # Canonical (outside) names
 SCENARIO_NAMES = [
     "Tutorial", "Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick",
+    "Small Skills: Dialog Test"
 #    "TODO 1", "TODO 2"
 ]
 
@@ -52,6 +54,10 @@ SCENARIO_INFOS = {
     "Space Sick": {
         "difficulty": ["Normal"],
         "variations": ["1", "2", "3", "4", "5"],
+    },
+    "Small Skills: Dialog Test": {
+        "difficulty": ["Normal"],
+        "variations": ["1"],
     },
     # "TODO 1": {
     #     "difficulty": ["Easy", "Challenge"],
@@ -115,6 +121,9 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
         scenarioName = None
     elif (scenarioNameIn == "TODO 2") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
         scenarioName = None
+
+    elif (scenarioNameIn == "Small Skills: Dialog Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+        scenarioName = "smallskills_dialog_test"
 
     # Return the internal scenario name to use
     return scenarioName
@@ -180,6 +189,12 @@ class ScenarioMaker():
         elif (scenarioName.startswith("tutorial")):
             scoringInfo = makeScenarioTutorial(self.world, numUserAgents)
             self.world.addTaskByName("TutorialTask", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+
+        elif (scenarioName == "smallskills_dialog_test"):
+            scoringInfo = makeScenarioDialogTest(self.world, numUserAgents)
+            self.world.addTaskByName("SmallSkillsDialogTest", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 

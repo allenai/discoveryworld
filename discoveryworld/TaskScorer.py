@@ -65,7 +65,13 @@ class TaskMaker():
             return TutorialTask(self.world, scoringInfo)
         elif (taskName == "ReactorTask"):
             return ReactorTask(self.world, scoringInfo)
-            pass
+
+        # Small Skills
+
+        elif (taskName == "SmallSkillsDialogTest"):
+            from discoveryworld.scenarios import SmallSkillsDialogTest
+            return SmallSkillsDialogTest(self.world, scoringInfo)
+
         else:
             print("ERROR: UNKNOWN TASK NAME: " + taskName)
             exit(1)
