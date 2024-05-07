@@ -68,9 +68,12 @@ class TaskMaker():
 
         # Small Skills
 
-        elif (taskName == "SmallSkillsDialogTest"):
-            from discoveryworld.scenarios import SmallSkillsDialogTest
-            return SmallSkillsDialogTest(self.world, scoringInfo)
+        elif (taskName == "SmallSkillsDialogTask"):
+            from discoveryworld.scenarios import SmallSkillsDialogTask
+            return SmallSkillsDialogTask(self.world, scoringInfo)
+        elif (taskName == "SmallSkillsPickAndPlaceTask"):
+            from discoveryworld.scenarios import SmallSkillsPickAndPlaceTask
+            return SmallSkillsPickAndPlaceTask(self.world, scoringInfo)
 
         else:
             print("ERROR: UNKNOWN TASK NAME: " + taskName)

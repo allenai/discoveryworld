@@ -8,7 +8,7 @@ from discoveryworld.buildings.colony import mkStorageShed, mkStorageShedChalleng
 from discoveryworld.buildings.terrain import mkGrassFill, mkPathX, mkTallTree
 from discoveryworld.buildings.house import mkBuildingDivided, mkBuildingOneRoom, mkTableAndChairs
 from discoveryworld.DialogTree import DialogTree, DialogNode
-
+from discoveryworld.TaskScorer import Task, ScorecardElement
 
 # Test whether an agent can successfully complete a scenario that just involves traversing a dialog tree
 def makeScenarioDialogTest(world, numUserAgents=1):
@@ -210,8 +210,7 @@ def mkDialogDialogTestNPC(agent):
 #
 #   Task Scoring
 #
-from discoveryworld.TaskScorer import Task, ScorecardElement
-class SmallSkillsDialogTest(Task):
+class SmallSkillsDialogTask(Task):
 
     def __init__(self, world, scoringInfo):
         taskDescription = "Your task is to follow the instructions of the other person in the room.\n"
