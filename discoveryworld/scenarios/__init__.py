@@ -12,6 +12,7 @@ from discoveryworld.scenarios.smallskills_pickandplace import *
 from discoveryworld.scenarios.smallskills_pickandgive import *
 from discoveryworld.scenarios.smallskills_measurement import *
 from discoveryworld.scenarios.smallskills_doors import *
+from discoveryworld.scenarios.smallskills_doors_keys import *
 
 SCENARIOS = {
     "Town": makeScenarioTown,
