@@ -157,7 +157,8 @@ def mkBuildingLDivided(world, x, y, width, height, dividerX, signText="Default S
 
 def mkTableAndChairs(world, x, y, chairsPresent = ["n", "s", "e", "w"]):
     # Table
-    world.addObject(x, y, Layer.FURNITURE, world.createObject("Table"))
+    table = world.createObject("Table")
+    world.addObject(x, y, Layer.FURNITURE, table)
     # Chairs
     if "n" in chairsPresent:
         world.addObject(x, y - 1, Layer.FURNITURE, world.createObject("Chair"))
@@ -167,3 +168,5 @@ def mkTableAndChairs(world, x, y, chairsPresent = ["n", "s", "e", "w"]):
         world.addObject(x - 1, y, Layer.FURNITURE, world.createObject("Chair"))
     if "e" in chairsPresent:
         world.addObject(x + 1, y, Layer.FURNITURE, world.createObject("Chair"))
+
+    return table
