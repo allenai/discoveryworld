@@ -19,14 +19,16 @@ SCENARIOS = [
     "reactor_lab"
     "smallskills_dialog_test",
     "smallskills_pickandplace_test",
-    "smallskills_pickandgive_test"]
+    "smallskills_pickandgive_test",
+    "smallskills_measurement_test"]
 
 # Canonical (outside) names
 SCENARIO_NAMES = [
     "Tutorial", "Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick",
     "Small Skills: Dialog Test",
     "Small Skills: Pick and Place Test",
-    "Small Skills: Pick and Give Test"
+    "Small Skills: Pick and Give Test",
+    "Small Skills: Instrument Measurement Test"
 #    "TODO 1", "TODO 2"
 ]
 
@@ -68,6 +70,10 @@ SCENARIO_INFOS = {
         "variations": ["1"],
     },
     "Small Skills: Pick and Give Test": {
+        "difficulty": ["Normal"],
+        "variations": ["1"],
+    },
+    "Small Skills: Instrument Measurement Test": {
         "difficulty": ["Normal"],
         "variations": ["1"],
     },
@@ -142,6 +148,9 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
 
     elif (scenarioNameIn == "Small Skills: Pick and Give Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
         scenarioName = "smallskills_pickandgive_test"
+
+    elif (scenarioNameIn == "Small Skills: Instrument Measurement Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+        scenarioName = "smallskills_measurement_test"
 
     # Return the internal scenario name to use
     return scenarioName
@@ -228,6 +237,11 @@ class ScenarioMaker():
             self.world.initialFilter()
             return (True, "")
 
+        elif (scenarioName == "smallskills_measurement_test"):
+            scoringInfo = makeScenarioInstrumentMeasurementTest(self.world, numUserAgents)
+            self.world.addTaskByName("SmallSkillsInstrumentMeasurementTask", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
 
         # If we reach here, the scenario was not recognized
         print("ERROR: setupScenario: scenarioName not recognized: " + scenarioName)

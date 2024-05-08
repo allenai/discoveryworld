@@ -190,8 +190,8 @@ class SmallSkillsPickAndPlaceTask(Task):
         # Check for a failure condition: If there's anything inside the pot other than the object to move, the task is failed.
         destinationContainerContents = self.destinationContainer.contents
         if (self.scorecardPlace.completed == False) and (len(destinationContainerContents) > 0):
-            self.failed = True
             self.completed = True
+            self.completedSuccessfully = False
         else:
             # Otherwise, blank these out
             self.completed = False
