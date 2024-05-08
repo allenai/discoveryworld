@@ -139,13 +139,26 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
         window.blit(textMessage, textRect)
 
         # Display the options
+        startOptionIdx = 0
+        maxOptionsToShow = 9
+        if (len(options) > maxOptionsToShow):
+            startOptionIdx = currentOption - (maxOptionsToShow // 2)
+            if (startOptionIdx < 0):
+                startOptionIdx = 0
+            if (startOptionIdx > len(options) - maxOptionsToShow):
+                startOptionIdx = len(options) - maxOptionsToShow
+
+        optionsShown = 0
         for i, optionStr in enumerate(options):
             # Background -- grey if not current option, blue if current option
             # All options should be centered
 
+            if (i < startOptionIdx) or (i >= startOptionIdx + maxOptionsToShow):
+                continue
+
             textOption = fontBold.render(optionStr, True, (200, 200, 200))
             textRect = textOption.get_rect()
-            textRect.center = (window.get_width() // 2, 300 + (i * 40))
+            textRect.center = (window.get_width() // 2, 300 + (optionsShown * 40))
 
             # Draw the background rectangle
             # This should be a new rectangle, that's at least 300 pixels wide, and centered on the same center
@@ -162,6 +175,8 @@ def dialogPickOption(window, options:list, displayMessage:str=None):
 
             # Draw the background text, centered
             window.blit(textOption, textRect)
+
+            optionsShown += 1
 
 
         # Update the display

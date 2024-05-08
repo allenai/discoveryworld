@@ -80,6 +80,9 @@ class TaskMaker():
         elif (taskName == "SmallSkillsInstrumentMeasurementTask"):
             from discoveryworld.scenarios import SmallSkillsInstrumentMeasurementTask
             return SmallSkillsInstrumentMeasurementTask(self.world, scoringInfo)
+        elif (taskName == "SmallSkillsDoorsTask"):
+            from discoveryworld.scenarios import SmallSkillsDoorsTask
+            return SmallSkillsDoorsTask(self.world, scoringInfo)
 
         else:
             print("ERROR: UNKNOWN TASK NAME: " + taskName)
