@@ -60,6 +60,7 @@ def makeScenarioDoorsKeysTest(world, numUserAgents=1):
 
     # Add doors
     scoringInfo["doors"] = []
+    scoringInfo["keys"] = []
     doorKeyID = 1
     for doorLocation in doorLocations:
         # Remove any existing walls at the door location
@@ -78,7 +79,7 @@ def makeScenarioDoorsKeysTest(world, numUserAgents=1):
         key.setKeyID(doorKeyID)
         randX = startX + random.randint(1, width-2)
         world.addObject(randX, doorLocation[1]+1, Layer.OBJECTS, key)
-
+        scoringInfo["keys"].append(key)
         doorKeyID += 1
 
 
@@ -147,8 +148,10 @@ class SmallSkillsDoorsKeysTask(Task):
     def __init__(self, world, scoringInfo):
         self.objectToPickUp = scoringInfo["objectToPickUp"]
         self.doors = scoringInfo["doors"]
+        self.keys = scoringInfo["keys"]
 
         self.doorsOpened = set()
+        self.keysCollected = set()
 
         #taskDescription = "Your task is to follow the instructions of the other person in the room.\n"
         #taskDescription = "Your task is to pick up the `" + self.objectToMove.name + "` and place it in the `" + self.destinationContainer.name + "`.\n"
@@ -163,6 +166,10 @@ class SmallSkillsDoorsKeysTask(Task):
         # Open Doors
         self.scorecardOpenDoors = ScorecardElement("Open all doors", "Open all doors in the building.", maxScore=len(self.doors))
         self.scoreCard.append(self.scorecardOpenDoors)
+
+        # Collect Keys
+        self.scorecardCollectKeys = ScorecardElement("Collect all keys", "Collect all keys in the building.", maxScore=len(self.doors))
+        self.scoreCard.append(self.scorecardCollectKeys)
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
@@ -200,6 +207,20 @@ class SmallSkillsDoorsKeysTask(Task):
             totalDoors = len(self.doors)
             self.scorecardOpenDoors.updateScore(len(self.doorsOpened), success, associatedUUIDs=list(self.doorsOpened), associatedNotes=f"Agent has opened {len(self.doorsOpened)} out of {totalDoors} doors.")
 
+        # Check to see if all keys have been collected
+        if (not self.scorecardCollectKeys.completed):
+            # Look for keys that have been collected
+            for key in self.keys:
+                parentContainer = key.parentContainer
+                if (parentContainer != None):
+                    if (parentContainer.attributes["isAgent"] == True):
+                        self.keysCollected.add(key.uuid)
+
+            success = False
+            if (len(self.keysCollected) == len(self.keys)):
+                success = True
+            totalKeys = len(self.keys)
+            self.scorecardCollectKeys.updateScore(len(self.keysCollected), success, associatedUUIDs=list(self.keysCollected), associatedNotes=f"Agent has collected {len(self.keysCollected)} out of {totalKeys} keys.")
 
         # Update score
         self.score = sum(element.score for element in self.scoreCard)
