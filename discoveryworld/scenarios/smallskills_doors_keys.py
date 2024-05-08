@@ -33,7 +33,7 @@ def makeScenarioDoorsKeysTest(world, numUserAgents=1):
     startY = 9
     width = random.randint(5, 7)
     height = 14
-    mkBuildingOneRoom(world, x=startX, y=startY, width=width, height=height, signText="Door Dilemma", includeDoor=True, doorKeyID = 0)
+    mkBuildingOneRoom(world, x=startX, y=startY, width=width, height=height, signText="Key Puzzle", includeDoor=True, doorKeyID = 0)
 
     doorLocations = []
 
