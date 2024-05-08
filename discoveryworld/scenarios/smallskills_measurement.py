@@ -31,7 +31,7 @@ def makeScenarioInstrumentMeasurementTest(world, numUserAgents=1):
         randX = world.rng.randint(0, world.sizeX - 1)
 
     # Buildings
-    mkBuildingOneRoom(world, x=14, y=9, width=9, height=6, signText="Pick and Place Villa", includeDoor=True, doorKeyID = DOOR_KEY_ID)
+    mkBuildingOneRoom(world, x=14, y=9, width=9, height=6, signText="Ministry of Measurement", includeDoor=True, doorKeyID = DOOR_KEY_ID)
 
 
     # Along the top wall, make a row of tables with 5 measuring devices on them
