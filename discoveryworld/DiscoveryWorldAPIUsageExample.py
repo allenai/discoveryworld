@@ -435,6 +435,7 @@ def GPT4VBaselineAgent(api, numSteps:int = 10):
                 "action": lastAction,
                 "promptStr": promptStr,
                 "responseStr": responseStr,
+                "oracle_scorecard": api.getTaskScorecard()
             }
             observationHistory.append(packed)
 

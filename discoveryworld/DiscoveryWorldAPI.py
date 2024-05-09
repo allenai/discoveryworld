@@ -122,7 +122,7 @@ class DiscoveryWorldAPI:
     # Gets the current observation of the world from a given agent's perspective
     def getAgentObservation(self, agentIdx):
         # Start populating response
-        response = {"errors": [], "ui": {}, "vision": {}, "oracle_scorecard": {}}
+        response = {"errors": [], "ui": {}, "vision": {}}
 
         # Check to make sure the agent index is valid
         if (agentIdx < 0) or (agentIdx >= self.numUserAgents):
@@ -198,9 +198,6 @@ class DiscoveryWorldAPI:
         self.taskProgress = uiJSON["taskProgress"]
         # Store most recent number of steps
         self.steps = uiJSON["world_steps"]
-
-        # Store the oracle scorecard
-        response["oracle_scorecard"] = self.getTaskScorecard()
 
         # Return response
         return response
