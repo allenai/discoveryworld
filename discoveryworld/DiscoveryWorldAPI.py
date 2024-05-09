@@ -95,6 +95,9 @@ class DiscoveryWorldAPI:
                 if filename.endswith(".png"):
                     os.remove(os.path.join(self.FRAME_DIR, filename))
 
+        # If the directory doesn't exist, create it
+        if (not os.path.exists(self.FRAME_DIR)):
+            os.makedirs(self.FRAME_DIR)
 
         # Initialize and attach user interfaces to the agents
         userAgents = self.world.getUserAgents()

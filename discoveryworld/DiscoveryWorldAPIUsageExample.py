@@ -2,6 +2,7 @@
 
 
 from discoveryworld.DiscoveryWorldAPI import DiscoveryWorldAPI
+from discoveryworld.ScenarioMaker import ScenarioMaker, SCENARIOS, SCENARIO_NAMES, SCENARIO_INFOS, SCENARIO_DIFFICULTY_OPTIONS, getInternalScenarioName
 
 from openai import OpenAI
 
@@ -801,7 +802,7 @@ def mkInitialHypotheses():
 
 
 # For testing the API
-def GPT4VHypothesizerAgent(api, numSteps:int = 10):
+def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = ""):
     # Get the OpenAI key (stored in a file called "openai_key.txt")
     key = ""
     with open("openai_key.txt", "r") as file:
@@ -884,9 +885,9 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10):
 
 
             # Save to JSON
-            with open("output_observationHistory.json", "w") as file:
+            with open("output_observationHistory" + logFileSuffix + ".json", "w") as file:
                 json.dump(observationHistory, file, indent=4, sort_keys=True)
-            with open("output_allhistory.json", "w") as file:
+            with open("output_allhistory" + logFileSuffix + ".json", "w") as file:
                 json.dump(allHistory, file, indent=4, sort_keys=True)
 
             # Check if the task has been completed
@@ -966,41 +967,208 @@ def testAgent(api):
 
 
 
+# Run the random agent on a given scenario
+def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSteps:int=10, exportVideo:bool=False, debug:bool=False):
+    # Load the scenario
+    api = DiscoveryWorldAPI()
+    success = api.loadScenario(scenarioName = scenarioName, difficultyStr = difficultyStr, randomSeed = seed, numUserAgents = 1)
+    if (success == False):
+        print("Error: Could not load scenario '" + scenarioName + "' with difficulty '" + difficultyStr + "'.")
+        return None
+
+    startTime = time.time()
+    # Hypothesizer
+    logFileSuffix = "." + scenarioName + "-" + difficultyStr + "-s" + str(seed)
+    GPT4VHypothesizerAgent(api, numSteps=numSteps, logFileSuffix=logFileSuffix)
+    deltaTime = time.time() - startTime
+    print("Elapsed time: " + str(deltaTime) + " seconds for " + str(numSteps) + " steps.")
+    stepsPerSecond = numSteps / deltaTime
+
+    # Get the final score
+    finalScorecard = api.getTaskScorecard()
+    print("Final scorecard: ")
+    print(json.dumps(finalScorecard, indent=4, sort_keys=True))
+
+    # Final normalized score
+    taskName = finalScorecard[0]["taskName"]
+    finalNormalizedScore = finalScorecard[0]["scoreNormalized"]
+    print("Final normalized score for task '" + taskName + "': " + str(finalNormalizedScore))
+    print("Number of steps: " + str(api.getStepCounter()))
+    print("Steps per second: " + str(stepsPerSecond))
+
+    # Create a video from the random agent
+    if (exportVideo == True):
+        filenameOut = "output_random_agent." + scenarioName + ".mp4"
+        api.createAgentVideo(agentIdx=0, filenameOut=filenameOut)
+
+    out = {
+        "agentName": "GPT4VHypothesizerAgent",
+        "finalNormalizedScore": finalNormalizedScore,
+        "stepsPerSecond": stepsPerSecond
+    }
+    return out
+
+
+#
+#   Main
+#
+#if __name__ == "__main__":
+    # print("Initializing DiscoveryWorld API... ")
+
+
+    # # Parse command line arguments
+    # import argparse
+    # parser = argparse.ArgumentParser(description="Play DiscoveryWorld using Random Baseline Agent.")
+    # parser.add_argument('--scenario', choices=SCENARIO_NAMES, default=None)
+    # parser.add_argument('--difficulty', choices=SCENARIO_DIFFICULTY_OPTIONS, default=None)
+    # parser.add_argument('--seed', type=int, default=0)
+    # parser.add_argument('--numSteps', type=int, default=100)
+    # parser.add_argument('--runall', action='store_true', help='Run all scenarios with random agent')
+    # parser.add_argument('--video', action='store_true', help='Export video of agent actions')
+
+    # args = parser.parse_args()
+
+    # # Create the API
+    # api = DiscoveryWorldAPI()
+    # print(api.getNameAndVersion())
+
+
+    # # Load the scenario
+    # #scenarioName = "food_illness"
+    # #scenarioName = "combinatorial_chemistry"
+    # #scenarioName = "archaeology_dating_simple"
+    # #scenarioName = "archaeology_dating_challenge"
+    # #scenarioName = "plant_nutrients"
+    # #scenarioName = "lost_in_translation"
+    # #scenarioName = "reactor_lab"
+    # #api.loadScenario(scenarioName = "combinatorial_chemistry", numUserAgents = 1, randomSeed = 0)
+
+    # # Run a single scenario.
+    # # Check the scenario and difficulty
+    # if (args.scenario == None):
+    #     print("Error: Must specify a scenario (or use --runall to run all scenarios).")
+    #     print("Available scenarios: " + str(SCENARIO_NAMES))
+    #     exit()
+    # if (args.difficulty == None):
+    #     print("Error: Must specify a difficulty.")
+    #     print("Available difficulties: " + str(SCENARIO_DIFFICULTY_OPTIONS))
+    #     exit()
+
+    # # Get the internal scenario name
+    # exportVideo = args.video
+    # #finalScore = runRandomAgent(scenarioName=args.scenario, difficultyStr=args.difficulty, seed=args.seed, numSteps=args.numSteps, exportVideo=exportVideo, debug=False)
+    # #api.loadScenario(scenarioName = scenarioName, numUserAgents = 1, randomSeed = 0)
+    # difficultyStr = args.difficulty
+    # seed = args.seed
+    # success = api.loadScenario(scenarioName = args.scenario, difficultyStr = difficultyStr, randomSeed = seed, numUserAgents = 1)
+    # if (success == False):
+    #     print("Error: Could not load scenario '" + args.scenario + "' with difficulty '" + difficultyStr + "'.")
+    #     exit(1)
+
+
+    # # Test the API
+    # #testAgent(api)
+
+    # # GPT4-V Baseline Agent
+    # #GPT4VBaselineAgent(api, numSteps=250)
+    # #api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v.mp4")
+
+    # # GPT4-V Hypothesizer Agent
+    # GPT4VHypothesizerAgent(api, numSteps=50)
+    # filenameOut = "output_gpt4v_hypothesizer." + internalScenarioName + ".mp4"
+    # api.createAgentVideo(agentIdx=0, filenameOut=filenameOut)
+
+    # # Random agent
+    # #randomAgent(api, numSteps=10)
+    # # Create a video from the random agent
+
+    # #api.createAgentVideo(agentIdx=0, filenameOut="output_randomAgent.mp4")
+
 #
 #   Main
 #
 if __name__ == "__main__":
-    print("Initializing DiscoveryWorld API... ")
+    print("Initializing Hypothesizer Agent... ")
 
-    # Create the API
-    api = DiscoveryWorldAPI()
-    print(api.getNameAndVersion())
+    # Parse command line arguments
+    import argparse
+    parser = argparse.ArgumentParser(description="Play DiscoveryWorld using Hypothesizer Agent.")
+    parser.add_argument('--scenario', choices=SCENARIO_NAMES, default=None)
+    parser.add_argument('--difficulty', choices=SCENARIO_DIFFICULTY_OPTIONS, default=None)
+    parser.add_argument('--seed', type=int, default=0)
+    parser.add_argument('--numSteps', type=int, default=100)
+    ##parser.add_argument('--runall', action='store_true', help='Run all scenarios with random agent')      ## Disabled -- would be extremely expensive and time consuming to do this
+    parser.add_argument('--video', action='store_true', help='Export video of agent actions')
 
-    # Load the scenario
-    #scenarioName = "food_illness"
-    #scenarioName = "combinatorial_chemistry"
-    scenarioName = "archaeology_dating_simple"
-    #scenarioName = "archaeology_dating_challenge"
-    #scenarioName = "plant_nutrients"
-    #scenarioName = "lost_in_translation"
-    #scenarioName = "reactor_lab"
-    #api.loadScenario(scenarioName = "combinatorial_chemistry", numUserAgents = 1, randomSeed = 0)
-    api.loadScenario(scenarioName = scenarioName, numUserAgents = 1, randomSeed = 0)
+    args = parser.parse_args()
+    args.runall = False
 
-    # Test the API
-    #testAgent(api)
+    # Check for mode
+    stepsPerSecond = []
+    if (args.runall == True):
+        # Run all scenarios
+        scores = {}
+        for scenarioName in SCENARIO_NAMES:
+            # Get the valid difficulty settings and random seeds for this scenario
+            validDifficulties = SCENARIO_INFOS[scenarioName]["difficulty"]
+            validSeeds = SCENARIO_INFOS[scenarioName]["variations"]
+            validSeeds = [int(x) for x in validSeeds]
 
-    # GPT4-V Baseline Agent
-    #GPT4VBaselineAgent(api, numSteps=250)
-    #api.createAgentVideo(agentIdx=0, filenameOut="output_gpt4v.mp4")
+            for difficulty in validDifficulties:
+                for seed in validSeeds:
+                    print("Running scenario: " + scenarioName + " with difficulty " + difficulty)
+                    result = runHypothesizerAgent(scenarioName=scenarioName, difficultyStr=difficulty, seed=seed, numSteps=args.numSteps, exportVideo=False, debug=False)
+                    finalScore = result["finalNormalizedScore"]
+                    stepsPerSecond.append(result["stepsPerSecond"])
 
-    # GPT4-V Hypothesizer Agent
-    GPT4VHypothesizerAgent(api, numSteps=500)
-    filenameOut = "output_gpt4v_hypothesizer." + scenarioName + ".mp4"
-    api.createAgentVideo(agentIdx=0, filenameOut=filenameOut)
 
-    # Random agent
-    #randomAgent(api, numSteps=10)
-    # Create a video from the random agent
+                    scoreKey = scenarioName + "-" + difficulty
+                    if (scoreKey not in scores):
+                        scores[scoreKey] = []
+                    scores[scoreKey].append(finalScore)
 
-    #api.createAgentVideo(agentIdx=0, filenameOut="output_randomAgent.mp4")
+
+            # Calculate average scores
+            scoresAvg = {}
+            for key in scores:
+                scoreList = scores[key]
+                # Remove any Nones from the list
+                scoreList = [x for x in scoreList if x != None]
+                averageScore = None
+                if (len(scoreList) > 0):
+                    averageScore = sum(scoreList) / len(scoreList)
+                scoresAvg[key + "-avg"] = averageScore
+                scoresAvg[key + "-raw"] = scoreList
+
+            print("Final scores: ")
+            packed = {
+                "scores_raw": scores,
+                "scores_avg": scoresAvg,
+                "numSteps": args.numSteps,
+            }
+            print(json.dumps(packed, indent=4, sort_keys=True))
+
+
+
+    else:
+        # Run a single scenario.
+        # Check the scenario and difficulty
+        if (args.scenario == None):
+            print("Error: Must specify a scenario (or use --runall to run all scenarios).")
+            print("Available scenarios: " + str(SCENARIO_NAMES))
+            exit()
+        if (args.difficulty == None):
+            print("Error: Must specify a difficulty.")
+            print("Available difficulties: " + str(SCENARIO_DIFFICULTY_OPTIONS))
+            exit()
+
+        # Get the internal scenario name
+        internalScenarioName = getInternalScenarioName(args.scenario, args.difficulty)
+        if (internalScenarioName == None):
+            print("Error: Could not find internal scenario name for scenario '" + args.scenario + "' and difficulty '" + args.difficulty + "'.")
+            print("Available scenarios: " + str(SCENARIO_NAMES))
+            print("Available difficulties: " + str(SCENARIO_DIFFICULTY_OPTIONS))
+            exit()
+
+        exportVideo = args.video
+        finalScore = runHypothesizerAgent(scenarioName=args.scenario, difficultyStr=args.difficulty, seed=args.seed, numSteps=args.numSteps, exportVideo=exportVideo, debug=False)
