@@ -1608,9 +1608,9 @@ class UserInterface:
         # TODO: These need to be updated to take their arguments from the JSON
         # Reading articles
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_GET_UPDATES.name):
-            return (False, jsonParseErrors, self.getDiscoveryFeedUpdates(startFromID=0))
+            return (False, jsonParseErrors, self.getDiscoveryFeedUpdates(startFromID=None))
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_GET_ARTICLES.name):
-            return (False, jsonParseErrors, self.getDiscoveryFeedArticles(startFromID=0))
+            return (False, jsonParseErrors, self.getDiscoveryFeedArticles(startFromID=None))
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name):
             # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
             randPostID = math.floor(random.random() * 10) + 1
