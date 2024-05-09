@@ -43,7 +43,7 @@ def getActionDescriptions(limited:bool = False):
         #ActionType.ROTATE_CW.name:      {"args": [], "desc": "move clockwise 90 degrees"},
         ActionType.PICKUP.name:         {"args": ["arg1"], "desc": "pick up an object (arg1)"},
         ActionType.DROP.name:           {"args": ["arg1"], "desc": "drop an object (arg1)"},
-        ActionType.PUT.name:            {"args": ["arg1", "arg2"], "desc": "put an object (arg1) in/on another object (arg2)"},
+        ActionType.PUT.name:            {"args": ["arg1", "arg2"], "desc": "put an object (arg1) in/on another object (arg2), or give an object (arg1) to another agent (arg2)"},
         ActionType.OPEN.name:           {"args": ["arg1"], "desc": "open an object (arg1)"},
         ActionType.CLOSE.name:          {"args": ["arg1"], "desc": "close an object (arg1)"},
         ActionType.ACTIVATE.name:       {"args": ["arg1"], "desc": "activate an object (arg1)"},
@@ -59,10 +59,10 @@ def getActionDescriptions(limited:bool = False):
         ActionType.TELEPORT_TO_OBJECT.name:     {"args": ["arg1"], "desc": "teleport beside a specific object (arg1). 'arg1' should be the UUID of the object to teleport to."},
 
         ActionType.DISCOVERY_FEED_GET_UPDATES.name:     {"args": [], "desc": "read the latest status updates on discovery feed"},
-        ActionType.DISCOVERY_FEED_GET_ARTICLES.name:    {"args": [], "desc": "read the latest scientific articles on discovery feed"},
+        #ActionType.DISCOVERY_FEED_GET_ARTICLES.name:    {"args": [], "desc": "read the latest scientific articles on discovery feed"},
         ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name:  {"args": ["arg1"], "desc": "read a specific post on discovery feed (arg1)"},
-        ActionType.DISCOVERY_FEED_CREATE_UPDATE.name:   {"args": ["arg1"], "desc": "create a status update on discovery feed (arg1)"},
-        ActionType.DISCOVERY_FEED_CREATE_ARTICLE.name:  {"args": ["arg1"], "desc": "create a scientific article on discovery feed (arg1)"}
+        #ActionType.DISCOVERY_FEED_CREATE_UPDATE.name:   {"args": ["arg1"], "desc": "create a status update on discovery feed (arg1)"},
+        #ActionType.DISCOVERY_FEED_CREATE_ARTICLE.name:  {"args": ["arg1"], "desc": "create a scientific article on discovery feed (arg1)"}
     }
 
     # Limited mode allows removing some actions that may be challenging for some agent models
