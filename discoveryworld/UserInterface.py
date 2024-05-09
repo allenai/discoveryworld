@@ -1317,9 +1317,24 @@ class UserInterface:
                 if (obj.uuid == jsonIn['arg1']):
                     arg1Obj = obj
                     break
+            # If we reach here and the object is still none, check there isn't a type error
+            if (arg1Obj == None):
+                try:
+                    arg1Int = int(jsonIn['arg1'])
+                    for obj in accessibleObjs:
+                        if (obj.uuid == arg1Int):
+                            arg1Obj = obj
+                            break
+                except:
+                    # Could not convert to INT -- so that wasn't the issue.
+                    pass
+
             # If we reach here and the object is still None, then the object was not found
             if (arg1Obj == None):
-                errors.append("arg1: Could not find object with UUID '" + str(jsonIn['arg1']) + "'. Are you sure it's accessible (i.e in your inventory, or directly in front of you?)")
+                typeErrorStr = ""
+                if (type(jsonIn['arg1']) != int):
+                    typeErrorStr = "Note: expected type of arg1 is 'int', but found `" + str(type(jsonIn['arg1'])) + "`. "
+                errors.append("arg1: Could not find object with UUID '" + str(jsonIn['arg1']) + "'. Are you sure it's accessible (i.e in your inventory, or directly in front of you?). " + typeErrorStr)
         # So things don't break, if arg1 is not specified (or not found), set it to the first object.
         # if (arg1Obj == None):
         #     if (len(accessibleObjs) > 0):
@@ -1333,9 +1348,24 @@ class UserInterface:
                 if (obj.uuid == jsonIn['arg2']):
                     arg2Obj = obj
                     break
+            # If we reach here and the object is still none, check there isn't a type error
+            if (arg2Obj == None):
+                try:
+                    arg2Int = int(jsonIn['arg2'])
+                    for obj in accessibleObjs:
+                        if (obj.uuid == arg2Int):
+                            arg2Obj = obj
+                            break
+                except:
+                    # Could not convert to INT -- so that wasn't the issue.
+                    pass
+
             # If we reach here and the object is still None, then the object was not found
             if (arg2Obj == None):
-                errors.append("arg2: Could not find object with UUID '" + str(jsonIn['arg2']) + "' Are you sure it's accessible (i.e in your inventory, or directly in front of you?)")
+                typeErrorStr = ""
+                if (type(jsonIn['arg2']) != int):
+                    typeErrorStr = "Note: expected type of arg2 is 'int', but found `" + str(type(jsonIn['arg2'])) + "`. "
+                errors.append("arg2: Could not find object with UUID '" + str(jsonIn['arg2']) + "' Are you sure it's accessible (i.e in your inventory, or directly in front of you?). " + typeErrorStr)
         # So things don't break, if arg2 is not specified (or not found), set it to the first object.
         # if (arg2Obj == None):
         #     if (len(accessibleObjs) > 0):
