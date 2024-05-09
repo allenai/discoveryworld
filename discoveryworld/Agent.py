@@ -1090,6 +1090,7 @@ class Agent(Object):
         allPosts = self.world.discoveryFeed.getPosts()
         lastPosts = []
         notificationStr = ""
+        postEnd = len(allPosts)
         if startFromID is None:
             # Just get the last N posts
             lastPosts = allPosts[-numPostsToRetrieve:]
