@@ -1612,9 +1612,19 @@ class UserInterface:
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_GET_ARTICLES.name):
             return (False, jsonParseErrors, self.getDiscoveryFeedArticles(startFromID=None))
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name):
-            # TODO: Randomly generate a post ID between 1 and 10 for now. But this needs to be changed to allow the user to specify a specific post they'd like.
-            randPostID = math.floor(random.random() * 10) + 1
-            return (False, jsonParseErrors, self.getSpecificDiscoveryFeedPost(postID=randPostID))
+            # NOTE: This one is largely untested
+
+            # Use arg1 for post ID
+            postID = 0
+            if ('arg1' in jsonIn):
+                try:
+                    postID = int(jsonIn['arg1'])
+                except:
+                    return (False, jsonParseErrors, ActionSuccess(success=False, message="Invalid post ID specified in JSON, or post ID could not be converted to an integer."))
+            else:
+                return (False, jsonParseErrors, ActionSuccess(success=False, message="Missing 'arg1' key (containing the post ID, as an integer) in JSON."))
+
+            return (False, jsonParseErrors, self.getSpecificDiscoveryFeedPost(postID=postID))
         # Creating articles
         elif (jsonIn["action"] == ActionType.DISCOVERY_FEED_CREATE_UPDATE.name):
             return (False, jsonParseErrors, self.createDiscoveryFeedUpdate(contentStr="This is a test update."))

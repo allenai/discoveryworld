@@ -60,7 +60,7 @@ def getActionDescriptions(limited:bool = False):
 
         ActionType.DISCOVERY_FEED_GET_UPDATES.name:     {"args": [], "desc": "read the latest status updates on discovery feed"},
         #ActionType.DISCOVERY_FEED_GET_ARTICLES.name:    {"args": [], "desc": "read the latest scientific articles on discovery feed"},
-        ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name:  {"args": ["arg1"], "desc": "read a specific post on discovery feed (arg1)"},
+        ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name:  {"args": ["arg1"], "desc": "read a specific post on discovery feed (arg1). 'arg1' should be the integer ID of the post."},
         #ActionType.DISCOVERY_FEED_CREATE_UPDATE.name:   {"args": ["arg1"], "desc": "create a status update on discovery feed (arg1)"},
         #ActionType.DISCOVERY_FEED_CREATE_ARTICLE.name:  {"args": ["arg1"], "desc": "create a scientific article on discovery feed (arg1)"}
     }
