@@ -102,7 +102,7 @@ def makeScenarioDialogTest(world, numUserAgents=1):
 
 
     # Add teleport locations to world
-    world.addTeleportLocation("house", 16, 12)
+    world.addTeleportLocation("initial location", 16, 12)
 
 
     return scoringInfo

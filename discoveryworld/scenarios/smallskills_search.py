@@ -287,7 +287,7 @@ def makeScenarioSearchTest(world, numUserAgents=1):
                 plantCount += 1
 
     # Add teleport locations to world
-    world.addTeleportLocation("house", startX+(width//2), startY+height)
+    world.addTeleportLocation("initial location", startX+(width//2), startY+height)
 
 
     return scoringInfo

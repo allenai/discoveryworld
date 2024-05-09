@@ -142,7 +142,9 @@ def makeScenarioPickAndGiveTest(world, numUserAgents=1):
 
 
     # Add teleport locations to world
-    world.addTeleportLocation("house", 16, 12)
+    #world.addTeleportLocation("initial location", 16, 12)
+    world.addTeleportLocation("initial location", agentLocations[3][0], agentLocations[3][1])
+
 
 
     return scoringInfo

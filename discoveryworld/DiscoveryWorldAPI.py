@@ -17,11 +17,11 @@ from discoveryworld.UserInterface import UserInterface
 #   DiscoveryWorld API
 #
 class DiscoveryWorldAPI:
-    def __init__(self):
+    def __init__(self, threadID:int=1):
         self.NAME = "DiscoveryWorld API"
         self.VERSION = "0.1"
-
-        self.FRAME_DIR = "video/frames"
+        self.THREAD_ID = threadID
+        self.FRAME_DIR = "video/frames-thread" + str(threadID) + "/"
 
         #self.viewportSizeX = 15
         #self.viewportSizeY = 15

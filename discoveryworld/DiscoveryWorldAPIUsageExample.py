@@ -968,9 +968,9 @@ def testAgent(api):
 
 
 # Run the random agent on a given scenario
-def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSteps:int=10, exportVideo:bool=False, debug:bool=False):
+def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSteps:int=10, exportVideo:bool=False, threadId:int=1, debug:bool=False):
     # Load the scenario
-    api = DiscoveryWorldAPI()
+    api = DiscoveryWorldAPI(threadID=threadId)
     success = api.loadScenario(scenarioName = scenarioName, difficultyStr = difficultyStr, randomSeed = seed, numUserAgents = 1)
     if (success == False):
         print("Error: Could not load scenario '" + scenarioName + "' with difficulty '" + difficultyStr + "'.")
@@ -978,7 +978,7 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
 
     startTime = time.time()
     # Hypothesizer
-    logFileSuffix = "." + scenarioName + "-" + difficultyStr + "-s" + str(seed)
+    logFileSuffix = "." + scenarioName + "-" + difficultyStr + "-s" + str(seed) + "-thread" + str(api.THREAD_ID)
     GPT4VHypothesizerAgent(api, numSteps=numSteps, logFileSuffix=logFileSuffix)
     deltaTime = time.time() - startTime
     print("Elapsed time: " + str(deltaTime) + " seconds for " + str(numSteps) + " steps.")
@@ -1090,6 +1090,12 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
 if __name__ == "__main__":
     print("Initializing Hypothesizer Agent... ")
 
+    # Randomly generate a thread ID, in case one isn't specified
+    # Random seed based on the current time
+    rThread = random.Random()
+    rThread.seed(int(time.time()))
+    randomThreadId = rThread.randint(1, 10000000)
+
     # Parse command line arguments
     import argparse
     parser = argparse.ArgumentParser(description="Play DiscoveryWorld using Hypothesizer Agent.")
@@ -1099,8 +1105,15 @@ if __name__ == "__main__":
     parser.add_argument('--numSteps', type=int, default=100)
     ##parser.add_argument('--runall', action='store_true', help='Run all scenarios with random agent')      ## Disabled -- would be extremely expensive and time consuming to do this
     parser.add_argument('--video', action='store_true', help='Export video of agent actions')
+    parser.add_argument('--threadId', type=int, default=randomThreadId)
 
     args = parser.parse_args()
+
+    # Report thread ID to user
+    print("Using Thread ID: " + str(args.threadId))
+    print("This can be specified with the '--threadId' argument.")
+    time.sleep(1)
+
     args.runall = False
 
     # Check for mode
@@ -1117,7 +1130,7 @@ if __name__ == "__main__":
             for difficulty in validDifficulties:
                 for seed in validSeeds:
                     print("Running scenario: " + scenarioName + " with difficulty " + difficulty)
-                    result = runHypothesizerAgent(scenarioName=scenarioName, difficultyStr=difficulty, seed=seed, numSteps=args.numSteps, exportVideo=False, debug=False)
+                    result = runHypothesizerAgent(scenarioName=scenarioName, difficultyStr=difficulty, seed=seed, numSteps=args.numSteps, exportVideo=False, threadId=args.threadId, debug=False)
                     finalScore = result["finalNormalizedScore"]
                     stepsPerSecond.append(result["stepsPerSecond"])
 
@@ -1171,4 +1184,4 @@ if __name__ == "__main__":
             exit()
 
         exportVideo = args.video
-        finalScore = runHypothesizerAgent(scenarioName=args.scenario, difficultyStr=args.difficulty, seed=args.seed, numSteps=args.numSteps, exportVideo=exportVideo, debug=False)
+        finalScore = runHypothesizerAgent(scenarioName=args.scenario, difficultyStr=args.difficulty, seed=args.seed, numSteps=args.numSteps, exportVideo=exportVideo, threadId=args.threadId, debug=False)
