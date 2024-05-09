@@ -16,6 +16,9 @@ import copy
 #LIMITED_ACTIONS = True     # Disables a few actions
 LIMITED_ACTIONS = False
 
+#OPENAI_MODEL_TO_USE = "gpt-4-vision-preview"
+OPENAI_MODEL_TO_USE = "gpt-4-turbo-2024-04-09"
+
 #
 #   Helper functions
 #
@@ -128,7 +131,7 @@ def randomAgent(api, numSteps:int = 10):
 
 # promptImages should be a list of base64-encoded images
 # NOTE: JSON response not available for GPT-4 Vision Preview
-def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model="gpt-4-vision-preview", prevImage=None, temperature=0.0, maxTokens=800, jsonResponse:bool=False):
+def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model=OPENAI_MODEL_TO_USE, prevImage=None, temperature=0.0, maxTokens=800, jsonResponse:bool=False):
     content = []
 
     # If previous image was popualted, include it
@@ -326,7 +329,7 @@ def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation):
     if (lastObservation != None):
         lastImage = lastObservation["vision"]["base64_with_grid"]
 
-    response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model="gpt-4-vision-preview", prevImage=lastImage, temperature=0.1, maxTokens=800)
+    response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model=OPENAI_MODEL_TO_USE, prevImage=lastImage, temperature=0.1, maxTokens=800)
     print(response)
 
     # Extract the JSON from the response
@@ -585,7 +588,7 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
     if (lastObservation != None):
         lastImage = lastObservation["vision"]["base64_with_grid"]
 
-    response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model="gpt-4-vision-preview", prevImage=lastImage, temperature=0.1, maxTokens=800)
+    response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model=OPENAI_MODEL_TO_USE, prevImage=lastImage, temperature=0.1, maxTokens=800)
     print(response)
 
     # Extract the JSON from the response
@@ -676,8 +679,8 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
     knowledgePromptStr += "It is also critically important that your output is valid JSON.  Please be careful in generating valid JSON.  You should generate a dictionary with a single top-level key (`scientific_knowledge`), which is an array of new measurements and/or hypotheses to add.\n"
     knowledgePromptStr += "You can write prose before writing the JSON.  Only the last codeblock (```) in your response will be parsed for the JSON.\n"
 
-    #response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model="gpt-4-vision-preview", prevImage=lastImage, temperature=0.1, maxTokens=800)
-    response = OpenAIGetCompletion(client, promptStr=knowledgePromptStr, promptImages=[], model="gpt-4-vision-preview", prevImage=None, temperature=0.1, maxTokens=3000)
+    #response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model=OPENAI_MODEL_TO_USE, prevImage=lastImage, temperature=0.1, maxTokens=800)
+    response = OpenAIGetCompletion(client, promptStr=knowledgePromptStr, promptImages=[], model=OPENAI_MODEL_TO_USE, prevImage=None, temperature=0.1, maxTokens=3000)
     print(response)
 
     # Extract the JSON from the response
@@ -747,7 +750,7 @@ def consolodateKnowledgeStep(client, scientificKnowledge):
     promptStr += "Please write down your new, consolodated knowledge base below.  Please write it in the JSON form expected above. You can write a short amount of prose before if that's helpful for your thought process, and only the last item in code blocks (```) will be parsed as JSON.\n"
 
 
-    response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=[], model="gpt-4-vision-preview", prevImage=None, temperature=0.1, maxTokens=3000)
+    response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=[], model=OPENAI_MODEL_TO_USE, prevImage=None, temperature=0.1, maxTokens=3000)
     print(response)
 
     # Extract the JSON from the response
@@ -998,7 +1001,7 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
 
     # Create a video from the random agent
     if (exportVideo == True):
-        filenameOut = "output_random_agent." + scenarioName + ".mp4"
+        filenameOut = "output_random_agent." + logFileSuffix + ".mp4"
         api.createAgentVideo(agentIdx=0, filenameOut=filenameOut)
 
     out = {
