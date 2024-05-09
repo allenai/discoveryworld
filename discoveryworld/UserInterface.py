@@ -967,7 +967,12 @@ class UserInterface:
         chosenDialogOption = jsonIn["chosen_dialog_option_int"]
         # Check that it's an integer
         if (isinstance(chosenDialogOption, int) == False):
-            return (False, ActionSuccess(success=False, message="`chosen_dialog_option_int` is not an integer."))
+            # First, see if we can just convert it into an integer
+            try:
+                chosenDialogOption = int(chosenDialogOption)
+            except:
+                return (False, ActionSuccess(success=False, message="`chosen_dialog_option_int` is not an integer."))
+
         # Check that it's in range
         if (chosenDialogOption < 1):
             return (False, ActionSuccess(success=False, message="`chosen_dialog_option_int` is less than 1."))

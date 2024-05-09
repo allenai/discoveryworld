@@ -522,7 +522,7 @@ class Agent(Object):
         knownTeleportLocations = self.world.getTeleportLocations()
         # Check for name key in known teleport locations
         if (not locationName in knownTeleportLocations):
-            result = ActionSuccess(False, "That's not a known teleport location ('" + locationName + "'). I know about the following locations: " + str(sorted(list(knownTeleportLocations.keys()))))
+            result = ActionSuccess(False, "That's not a known teleport location ('" + str(locationName) + "'). I know about the following locations: " + str(sorted(list(knownTeleportLocations.keys()))))
             self.actionHistory.add(actionType=ActionType.TELEPORT_TO_LOCATION, arg1=locationName, arg2=None, result=result)
             return result
 

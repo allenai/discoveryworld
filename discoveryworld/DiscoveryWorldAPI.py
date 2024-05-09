@@ -87,6 +87,14 @@ class DiscoveryWorldAPI:
             exit(1)
             return False
 
+        # Clear the frame out directory
+        # NOTE: If multiple agents are being run at the same time, we can't do this -- either need to keep a run-specific directory, or ask the user to provide a unique ID to use for the thread that we append to filenames to prevent collisions?
+        if (os.path.exists(self.FRAME_DIR)):
+            print("Removing existing frames from directory: " + self.FRAME_DIR)
+            for filename in os.listdir(self.FRAME_DIR):
+                if filename.endswith(".png"):
+                    os.remove(os.path.join(self.FRAME_DIR, filename))
+
 
         # Initialize and attach user interfaces to the agents
         userAgents = self.world.getUserAgents()
