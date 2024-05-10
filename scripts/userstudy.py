@@ -1,5 +1,6 @@
 
 import argparse
+import shutil
 import pygame
 import os
 import json
@@ -321,7 +322,7 @@ def saveLog(world, logInfo, verboseLogFilename, pygameWindow, pygame, lastScreen
     world.exportWorldHistoryJSON(logInfo, verboseLogFilename, pygameWindow, pygame, lastScreenExportFilename)
     print("Log file saved to: " + verboseLogFilename)
     # Archive the entire log directory
-    archiveFilename = "logs/" + logInfo["verboseLogFilenameNoPathNoExt"] + ".zip"
+    archiveFilename = pjoin("logs", logInfo["verboseLogFilenameNoPathNoExt"] + ".zip")
     print("Archiving log directory to: " + archiveFilename)
     import zipfile
     with zipfile.ZipFile(archiveFilename, 'w') as zipf:
@@ -448,31 +449,21 @@ def main(args):
         ui.addTextMessageToQueue(welcomeStr)
 
 
-    # Create a directory "/video" for storing video frames
-    VIDEO_DIR = "video"
-    FRAME_DIR = "video/frames"
-    if (not os.path.exists(VIDEO_DIR)):
-        os.mkdir(VIDEO_DIR)
-    if (not os.path.exists(FRAME_DIR)):
-        os.mkdir(FRAME_DIR)
-    # Empty the frames directory
-    for filename in os.listdir(FRAME_DIR):
-        os.remove(FRAME_DIR + "/" + filename)
-
     # Check that there's a "logs" subdirectory on the current folder
-    if (not os.path.exists("logs")):
-        print("Creating 'logs' directory...")
-        os.mkdir("logs")
-    verboseFolder = "logs/discoveryworld-playlog-" + args.scenario.replace(" ", "_") + ".seed" + str(args.seed) + "." + time.strftime("%Y%m%d_%H%M%S") + "/"
-    if (not os.path.exists(verboseFolder)):
-        os.mkdir(verboseFolder)
+    LOGS_DIR = "logs"
+    os.makedirs(LOGS_DIR, exist_ok=True)
+
+    verboseFolderName = "discoveryworld-playlog-" + args.scenario.replace(" ", "_") + ".seed" + str(args.seed) + "." + time.strftime("%Y%m%d_%H%M%S")
+    verboseFolder = pjoin(LOGS_DIR, verboseFolderName)
+    os.makedirs(verboseFolder, exist_ok=True)
+
     # Also make a 'frames' directory
-    verboseFramesFolder = verboseFolder + "frames"
-    if (not os.path.exists(verboseFramesFolder)):
-        os.mkdir(verboseFramesFolder)
+    verboseFramesFolder = pjoin(verboseFolder, "frames")
+    os.makedirs(verboseFramesFolder, exist_ok=True)
 
     # Create a structure that records the log file parameters
-    verboseLogFilename = verboseFolder + "/discoveryworld-playlog-" + args.scenario.replace(" ", "_") + ".seed" + str(args.seed) + "." + time.strftime("%Y%m%d_%H%M%S") + ".log.json"
+    verboseLogFilenameNoPathNoExt = "discoveryworld-playlog-" + args.scenario.replace(" ", "_") + ".seed" + str(args.seed) + "." + time.strftime("%Y%m%d_%H%M%S") + ".log"
+    verboseLogFilename = pjoin(verboseFolder, verboseLogFilenameNoPathNoExt + ".json")
     logInfo = {
         "scenario": args.scenario,
         "seed": args.seed,
@@ -483,7 +474,7 @@ def main(args):
         # Make a verbose filename for the log
         "verboseFolder": verboseFolder,
         "verboseLogFilename": verboseLogFilename,
-        "verboseLogFilenameNoPathNoExt": verboseLogFilename.split("/")[-1].replace(".json", "")
+        "verboseLogFilenameNoPathNoExt": verboseLogFilenameNoPathNoExt,
     }
 
     # Main rendering loop
@@ -872,8 +863,7 @@ def main(args):
 
         # Save the screen frame to a file
         if (exportFrame):
-            FRAME_DIR = verboseFolder + "frames/"
-            frameFilename = FRAME_DIR + "/frame_" + str(frames) + ".png"
+            frameFilename = pjoin(verboseFramesFolder, "frame_" + str(frames) + ".png")
             pygame.image.save(window, frameFilename)
             time.sleep(0.1)
             lastScreenExportFilename = frameFilename
