@@ -316,12 +316,14 @@ class UserInterface:
 
 
         # Show nearby objects
-        nearbyObjectsMaxDistance = 2
-        nearbyObjectsFull, nearbyObjects, nearbyObjectsByDirection = self.currentAgent.getNearbyVisibleObjects(maxDistance=nearbyObjectsMaxDistance)
+        #nearbyObjectsMaxDistance = 2
+        nearbyObjectsMaxDistance = 3
+        nearbyObjectsFull, nearbyObjects, nearbyObjectsByDirection = self.currentAgent.getNearbyVisibleObjects(maxDistance=nearbyObjectsMaxDistance, includeUUID=True)
         # Note: nearbyObjectsByDirection is smaller
         out["nearbyObjects"] = {
             "note": "The objects below are within " + str(nearbyObjectsMaxDistance) + " tiles of the agent, but may not neccesarily be usable if they're not in the agent inventory, or directly in front of the agent.  This list should help in navigating to objects you'd like to interact with or use.  Objects to interact with or use should be in the 'accessibleEnvironmentObjects' or 'inventoryObjects' lists.",
             #"objects": nearbyObjects
+            "distance": nearbyObjectsMaxDistance,
             "objects": nearbyObjectsByDirection
         }
 
