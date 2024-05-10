@@ -722,6 +722,7 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
         "knowledgePromptStr": knowledgePromptStr,
         "responseStrKnowledge": responseStrKnowledge,
         "currentScientificKnowledge": copy.deepcopy(currentScientificKnowledge),
+        "oracle_scorecard": api.getTaskScorecard()
     }
     # Return the action that it chose (to pass into the next step)
     #return nextAction, observation, promptStr, responseStr, currentScientificKnowledge
@@ -876,6 +877,7 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = ""):
                 "action": lastAction,
                 "promptStr": promptStr,
                 "responseStr": responseStr,
+                "oracle_scorecard": api.getTaskScorecard()
             }
             observationHistory.append(packed)
 
