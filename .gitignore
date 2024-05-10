@@ -129,4 +129,4 @@ dmypy.json
 
 # Don't commit anything with `donotcommit` in its name
 *donotcommit*
-
+openai_key.txt

@@ -702,8 +702,15 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
             "memory": lastMemory,
             "running_hypotheses": lastRunningHypothesis,
         }
+
+        # Add a step count to the action
+        nextAction["step"] = len(lastActionHistory)
+
     else:
         nextAction.update(responseJSON)
+
+        # Add a step count to the action
+        nextAction["step"] = len(lastActionHistory)
 
         # Check to make sure the "memory" and "running_hypotheses" keys are present
         memoryPresent = False
