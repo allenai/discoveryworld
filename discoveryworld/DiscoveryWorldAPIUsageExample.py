@@ -17,7 +17,34 @@ import copy
 LIMITED_ACTIONS = False
 
 #OPENAI_MODEL_TO_USE = "gpt-4-vision-preview"
-OPENAI_MODEL_TO_USE = "gpt-4-turbo-2024-04-09"
+#OPENAI_MODEL_TO_USE = "gpt-4-turbo-2024-04-09"
+OPENAI_MODEL_TO_USE = "gpt-3.5-turbo-0125"
+
+# Keep track of tokens sent/received
+TOTAL_TOKENS_SENT = 0
+TOTAL_TOKENS_RECEIVED = 0
+
+# Estimates
+TOTAL_COST_SENT = 0
+TOTAL_COST_RECEIVED = 0
+
+COST_PER_TOKEN_SENT = 10.0 / 1000000.0     # $10 per 1 million tokens
+COST_PER_TOKEN_RECEIVED = 30.0 / 1000000.0     # $10 per 1 million tokens
+
+modelCostsPerToken = {
+    "gpt-4-vision-preview": {
+        "send": 10.0 / 1000000.0,
+        "receive": 30.0 / 1000000.0
+    },
+    "gpt-4-turbo-2024-04-09": {
+        "send": 10.0 / 1000000.0,
+        "receive": 30.0 / 1000000.0
+    },
+    "gpt-3.5-turbo-0125": {
+        "send": 0.5 / 1000000.0,
+        "receive": 1.5 / 1000000.0
+    }
+}
 
 #
 #   Helper functions
@@ -206,6 +233,40 @@ def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model=OPENAI_M
     print("RESPONSE CONTENT:")
     print(response.choices[0].message.content)
     print("PASS1")
+
+    # Try to keep track of tokens sent/received
+    try:
+        global TOTAL_TOKENS_SENT
+        global TOTAL_TOKENS_RECEIVED
+        TOTAL_TOKENS_SENT += response.usage.prompt_tokens
+        TOTAL_TOKENS_RECEIVED += response.usage.completion_tokens
+    except:
+        print("ERROR: Could not extract tokens from response.")
+
+    print("TOTAL TOKENS SENT: " + str(TOTAL_TOKENS_SENT))
+    print("TOTAL TOKENS RECEIVED: " + str(TOTAL_TOKENS_RECEIVED))
+    # Calculate approximate costs
+    try:
+        # First, lookup the cost per token for the model
+        if (model in modelCostsPerToken):
+            COST_PER_TOKEN_SENT = modelCostsPerToken[model]["send"]
+            COST_PER_TOKEN_RECEIVED = modelCostsPerToken[model]["receive"]
+        else:
+            print("ERROR: Could not find cost per token for model: " + model)
+
+
+        totalCostSent = round(TOTAL_TOKENS_SENT * COST_PER_TOKEN_SENT, 2)
+        totalCostReceived = round(TOTAL_TOKENS_RECEIVED * COST_PER_TOKEN_RECEIVED, 2)
+        global TOTAL_COST_SENT
+        global TOTAL_COST_RECEIVED
+        TOTAL_COST_SENT = totalCostSent
+        TOTAL_COST_RECEIVED = totalCostReceived
+        print("ESTIMATED COSTS:")
+        print("Total cost for tokens sent: $" + str(totalCostSent) + "")
+        print("Total cost for tokens received: $" + str(totalCostReceived) + "")
+    except:
+        print("ERROR: Could not calculate estimated costs.")
+
     return response
 
 # Extract the JSON from the GPT-4 response
@@ -233,8 +294,11 @@ def extractJSONfromGPT4Response(strIn):
                 endLine = idx
                 break
 
+    # Default, take the whole thing
+    jsonStr = strIn
     # Extract the JSON
-    jsonStr = "\n".join(lines[startLine:endLine])
+    if (endLine > 0):
+        jsonStr = "\n".join(lines[startLine:endLine])
 
     # Try to parse the JSON
     try:
@@ -248,7 +312,7 @@ def extractJSONfromGPT4Response(strIn):
 #
 #   GPT-4 Baseline Agent
 #
-def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation):
+def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation, includeImages=True):
     # Perform the first step
     observation = api.getAgentObservation(agentIdx=0)
 
@@ -329,6 +393,10 @@ def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation):
     if (lastObservation != None):
         lastImage = lastObservation["vision"]["base64_with_grid"]
 
+    if (includeImages == False):
+        promptImages = None
+        lastImage = None
+
     response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model=OPENAI_MODEL_TO_USE, prevImage=lastImage, temperature=0.1, maxTokens=800)
     print(response)
 
@@ -383,7 +451,7 @@ def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation):
 
 
 # For testing the API
-def GPT4VBaselineAgent(api, numSteps:int = 10):
+def GPT4VBaselineAgent(api, numSteps:int = 10, includeImages=True):
     # Get the OpenAI key (stored in a file called "openai_key.txt")
     key = ""
     with open("openai_key.txt", "r") as file:
@@ -421,7 +489,7 @@ def GPT4VBaselineAgent(api, numSteps:int = 10):
             print("Step " + str(i) + " of " + str(numSteps))
             print("-----------------------------------------------------------")
             print("")
-            lastAction, lastObservation, promptStr, responseStr = GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation)
+            lastAction, lastObservation, promptStr, responseStr = GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation, includeImages)
             print("LAST ACTION: ")
 
             print(lastAction)
@@ -480,7 +548,7 @@ def GPT4VBaselineAgent(api, numSteps:int = 10):
 #   GPT-4 Vision "Hypothesizer" agent
 #
 
-def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, currentScientificKnowledge):
+def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, currentScientificKnowledge, includeImages=True):
     agentIdx = 0
     # Perform the first step
     observation = api.getAgentObservation(agentIdx=agentIdx)
@@ -505,6 +573,7 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
     promptStr0 += "Because this is a game, the actions that you can complete are limited to a set of actions that are defined by the game. Those are also described below.\n"
     promptStr0 += "This game is played step-by-step.  At each step, you get the input that I am providing, and output a single action to take as the next step.\n"
     promptStr0 += "\n"
+    promptStr0 += "Note that this game has a spatial component, given that it's played on a 2D map.  The objects shown in `nearbyObjects` are objects that are near you.  If you can't see an object you're looking for, you'll have to move to find it (or, it may be located in a closed container).\n"
     promptStr0 += "Environment Observation (as JSON):\n"
     promptStr0 += "```json\n"
     promptStr0 += json.dumps(observationNoVision, indent=4, sort_keys=True)
@@ -588,6 +657,10 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
     lastImage = None
     if (lastObservation != None):
         lastImage = lastObservation["vision"]["base64_with_grid"]
+
+    if (includeImages == False):
+        promptImages = None
+        lastImage = None
 
     response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=promptImages, model=OPENAI_MODEL_TO_USE, prevImage=lastImage, temperature=0.1, maxTokens=800)
     print(response)
@@ -855,7 +928,7 @@ def mkInitialHypotheses():
 
 
 # For testing the API
-def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = ""):
+def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", includeImages=True):
     # Get the OpenAI key (stored in a file called "openai_key.txt")
     key = ""
     with open("openai_key.txt", "r") as file:
@@ -897,7 +970,7 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = ""):
             print("-----------------------------------------------------------")
             print("")
             #lastAction, lastObservation, promptStr, responseStr
-            outHypothesizer = GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, currentScientificKnowledge)
+            outHypothesizer = GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, currentScientificKnowledge, includeImages=includeImages)
             # Unpack
             lastAction = outHypothesizer["nextAction"]
             lastObservation = outHypothesizer["observation"]
@@ -938,11 +1011,48 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = ""):
                 allHistory.append({"consolodated_scientific_knowledge": currentScientificKnowledge})
 
 
+            # Print estimated tokens/costs
+            print("*" * 80)
+            print(" COST ANALYSIS ")
+            print("*" * 80)
+            print("Estimated tokens sent: " + str(TOTAL_TOKENS_SENT))
+            print("Estimated tokens received: " + str(TOTAL_TOKENS_RECEIVED))
+            costPerMillionTokensSent = COST_PER_TOKEN_SENT * 1000000
+            print("Cost per million tokens sent: $" + str(round(costPerMillionTokensSent, 2)))
+            costPerMillionTokensReceived = COST_PER_TOKEN_RECEIVED * 1000000
+            print("Cost per million tokens received: $" + str(round(costPerMillionTokensReceived, 2)))
+            print("Estimated cost (sent): $" + str(TOTAL_COST_SENT))
+            print("Estimated cost (received): $" + str(TOTAL_COST_RECEIVED))
+            totalCost = TOTAL_COST_SENT + TOTAL_COST_RECEIVED
+            print("Total estimated cost: $" + str(round(totalCost, 2)))
+            costPerStep = totalCost / (i+1)
+            print("Number of steps: " + str(i+1))
+            print("Average cost per step: $" + str(round(costPerStep, 2)))
+
+            print("*" * 80)
+
+            costAnalysis = {
+                "model": OPENAI_MODEL_TO_USE,
+                "total_tokens_sent": TOTAL_TOKENS_SENT,
+                "total_tokens_received": TOTAL_TOKENS_RECEIVED,
+                "cost_per_million_tokens_sent": costPerMillionTokensSent,
+                "cost_per_million_tokens_received": costPerMillionTokensReceived,
+                "total_cost_sent": TOTAL_COST_SENT,
+                "total_cost_received": TOTAL_COST_RECEIVED,
+                "total_cost": totalCost,
+                "total_steps": i+1,
+                "cost_per_step": costPerStep
+            }
+
+
             # Save to JSON
             with open("output_observationHistory" + logFileSuffix + ".json", "w") as file:
                 json.dump(observationHistory, file, indent=4, sort_keys=True)
             with open("output_allhistory" + logFileSuffix + ".json", "w") as file:
                 json.dump(allHistory, file, indent=4, sort_keys=True)
+            with open("output_costAnalysis" + logFileSuffix + ".json", "w") as file:
+                json.dump(costAnalysis, file, indent=4, sort_keys=True)
+
 
             # Check if the task has been completed
             #if (api.isTaskComplete()):
@@ -987,6 +1097,7 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = ""):
 
 
 
+
 #
 #   API test agent
 #
@@ -1022,7 +1133,7 @@ def testAgent(api):
 
 
 # Run the random agent on a given scenario
-def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSteps:int=10, exportVideo:bool=False, threadId:int=1, debug:bool=False):
+def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSteps:int=10, includeImages=True, exportVideo:bool=False, threadId:int=1, debug:bool=False):
     # Load the scenario
     api = DiscoveryWorldAPI(threadID=threadId)
     success = api.loadScenario(scenarioName = scenarioName, difficultyStr = difficultyStr, randomSeed = seed, numUserAgents = 1)
@@ -1032,8 +1143,8 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
 
     startTime = time.time()
     # Hypothesizer
-    logFileSuffix = "." + scenarioName + "-" + difficultyStr + "-s" + str(seed) + "-thread" + str(api.THREAD_ID)
-    GPT4VHypothesizerAgent(api, numSteps=numSteps, logFileSuffix=logFileSuffix)
+    logFileSuffix = "." + scenarioName + "-" + difficultyStr + "-s" + str(seed) + "-images" + str(includeImages) + "-model" + OPENAI_MODEL_TO_USE + "-thread" + str(api.THREAD_ID)
+    GPT4VHypothesizerAgent(api, numSteps=numSteps, logFileSuffix=logFileSuffix, includeImages=includeImages)
     deltaTime = time.time() - startTime
     print("Elapsed time: " + str(deltaTime) + " seconds for " + str(numSteps) + " steps.")
     stepsPerSecond = numSteps / deltaTime
@@ -1161,7 +1272,16 @@ if __name__ == "__main__":
     parser.add_argument('--video', action='store_true', help='Export video of agent actions')
     parser.add_argument('--threadId', type=int, default=randomThreadId)
 
+    # Disable images
+    parser.add_argument('--noimages', action='store_true', help='Do not include images in the prompt')
+
     args = parser.parse_args()
+
+    # Whether or not to include images in the prompt
+    includeImages = True
+    if (args.noimages == True):
+        includeImages = False
+
 
     # Report thread ID to user
     print("Using Thread ID: " + str(args.threadId))
@@ -1184,7 +1304,7 @@ if __name__ == "__main__":
             for difficulty in validDifficulties:
                 for seed in validSeeds:
                     print("Running scenario: " + scenarioName + " with difficulty " + difficulty)
-                    result = runHypothesizerAgent(scenarioName=scenarioName, difficultyStr=difficulty, seed=seed, numSteps=args.numSteps, exportVideo=False, threadId=args.threadId, debug=False)
+                    result = runHypothesizerAgent(scenarioName=scenarioName, difficultyStr=difficulty, seed=seed, numSteps=args.numSteps, includeImages=includeImages, exportVideo=False, threadId=args.threadId, debug=False)
                     finalScore = result["finalNormalizedScore"]
                     stepsPerSecond.append(result["stepsPerSecond"])
 
@@ -1238,4 +1358,4 @@ if __name__ == "__main__":
             exit()
 
         exportVideo = args.video
-        finalScore = runHypothesizerAgent(scenarioName=args.scenario, difficultyStr=args.difficulty, seed=args.seed, numSteps=args.numSteps, exportVideo=exportVideo, threadId=args.threadId, debug=False)
+        finalScore = runHypothesizerAgent(scenarioName=args.scenario, difficultyStr=args.difficulty, seed=args.seed, numSteps=args.numSteps, includeImages=includeImages, exportVideo=exportVideo, threadId=args.threadId, debug=False)
