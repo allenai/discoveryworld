@@ -1144,6 +1144,9 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
     startTime = time.time()
     # Hypothesizer
     logFileSuffix = "." + scenarioName + "-" + difficultyStr + "-s" + str(seed) + "-images" + str(includeImages) + "-model" + OPENAI_MODEL_TO_USE + "-thread" + str(api.THREAD_ID)
+    # Add date and time stamp
+    import datetime
+    logFileSuffix += "." + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     GPT4VHypothesizerAgent(api, numSteps=numSteps, logFileSuffix=logFileSuffix, includeImages=includeImages)
     deltaTime = time.time() - startTime
     print("Elapsed time: " + str(deltaTime) + " seconds for " + str(numSteps) + " steps.")
@@ -1272,6 +1275,11 @@ if __name__ == "__main__":
     parser.add_argument('--video', action='store_true', help='Export video of agent actions')
     parser.add_argument('--threadId', type=int, default=randomThreadId)
 
+    OPENAI_MODEL_TO_USE = "gpt-4-turbo-2024-04-09"
+    #OPENAI_MODEL_TO_USE = "gpt-3.5-turbo-0125"
+    parser.add_argument("--model", default=OPENAI_MODEL_TO_USE, help="OpenAI model to use (default: " + OPENAI_MODEL_TO_USE + ")")
+
+
     # Disable images
     parser.add_argument('--noimages', action='store_true', help='Do not include images in the prompt')
 
@@ -1282,11 +1290,14 @@ if __name__ == "__main__":
     if (args.noimages == True):
         includeImages = False
 
+    # Model to use
+    OPENAI_MODEL_TO_USE = args.model
+    print("Using model: " + OPENAI_MODEL_TO_USE)
 
     # Report thread ID to user
     print("Using Thread ID: " + str(args.threadId))
     print("This can be specified with the '--threadId' argument.")
-    time.sleep(1)
+    time.sleep(2)
 
     args.runall = False
 
