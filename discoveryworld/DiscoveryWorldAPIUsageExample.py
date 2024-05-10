@@ -564,7 +564,7 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
         dialog = observationNoVision["ui"]["dialog_box"]
         promptDialogStr += json.dumps(dialog, indent=4, sort_keys=True)
         promptDialogStr += "```\n"
-        promptDialogStr = "The expected response format is JSON, in between code brackets (```), as a dictionary with a single key: `chosen_dialog_option_int`.  The value should be an integer, corresponding to the dialog option you would like to select. You can write prose before the JSON code block, if that helps you think.\n"
+        promptDialogStr = "The expected response format is JSON, in between code brackets (```), as a dictionary with a single key: `chosen_dialog_option_int` (as well as `memory` and `running_hypothesis`).  The value should be an integer, corresponding to the dialog option you would like to select. You can write prose before the JSON code block, if that helps you think.\n"
 
 
     promptStrDebug = "REMEMBER, IF YOU'RE GOING TO AN OBJECT, INSTEAD OF MOVING NORTH/EAST/SOUTH/WEST, or ROTATING, YOU SHOULD TRY TELEPORTING DIRECTLY TO OBJECTS.  IT'S MUCH FASTER AND LESS ERROR-PRONE. YOU CAN TELEPORT TO AN OBJECT NO MATTER WHERE IT IS, EVEN IF ITS NOT LISTED IN THE ACCESSIBLE OBJECTS LIST. JUST REMEBER ITS UUID.\n"
@@ -603,14 +603,62 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
     nextAction = {}
     actionSuccess = {}
     if (responseJSON == None):
+        # Invalid response -- store this invalid response and try to recover.
+        lastStep = lastActionHistory[-1]
+        lastMemory = None
+        if ("memory" in lastStep):
+            lastMemory = lastStep["memory"]
+        lastRunningHypothesis = None
+        if ("running_hypotheses" in lastStep):
+            lastRunningHypothesis = lastStep["running_hypotheses"]
+
+        # Go backwards from the current action until we find one that's populated
+        for idx in range(len(lastActionHistory)-1, -1, -1):
+            lastStep = lastActionHistory[idx]
+            if (lastMemory is None) and ("memory" in lastStep):
+                lastMemory = "(No last memory was found, this most recent one was taken from Step " + str(idx) + "): " + lastStep["memory"]
+            if (lastRunningHypothesis is None) and ("running_hypotheses" in lastStep):
+                #lastRunningHypothesis = lastStep["running_hypotheses"]
+                lastRunningHypothesis = "(No last running hypothesis was found, this most recent one was taken from Step " + str(idx) + "): " + str(lastStep["running_hypotheses"])
+            if (lastMemory != None) and (lastRunningHypothesis != None):
+                break
+
         nextAction = {
             "action": "ERROR: Could not parse the last action that was generated.  Please be careful in generating valid JSON.",
             "explanation": "",
-            "memory": lastActionHistory[-1]["memory"],
-            "running_hypotheses": lastActionHistory[-1]["running_hypotheses"]
+            "memory": lastMemory,
+            "running_hypotheses": lastRunningHypothesis,
         }
     else:
         nextAction.update(responseJSON)
+
+        # Check to make sure the "memory" and "running_hypotheses" keys are present
+        memoryPresent = False
+        runningHypothesesPresent = False
+        if ("memory" in nextAction):
+            memoryPresent = True
+        if ("running_hypotheses" in nextAction):
+            runningHypothesesPresent = True
+
+        # If they're not present, iterate backwards trying to find one
+        if (memoryPresent == False):
+            lastMemory = None
+            for idx in range(len(lastActionHistory)-1, -1, -1):
+                lastStep = lastActionHistory[idx]
+                if ("memory" in lastStep):
+                    lastMemory = "(No last memory was found, this most recent one was taken from Step " + str(idx) + "): " + lastStep["memory"]
+                    break
+            nextAction["memory"] = lastMemory
+
+        if (runningHypothesesPresent == False):
+            lastRunningHypothesis = None
+            for idx in range(len(lastActionHistory)-1, -1, -1):
+                lastStep = lastActionHistory[idx]
+                if ("running_hypotheses" in lastStep):
+                    lastRunningHypothesis = "(No last running hypothesis was found, this most recent one was taken from Step " + str(idx) + "): " + str(lastStep["running_hypotheses"])
+                    break
+            nextAction["running_hypotheses"] = lastRunningHypothesis
+
 
         # nextAction has 'arg1' and 'arg2', expressed as UUIDs.  Look up the object names, and add these as "arg1_desc", and "arg2_desc"
         if ("arg1" in nextAction) and (nextAction["arg1"] != None):
