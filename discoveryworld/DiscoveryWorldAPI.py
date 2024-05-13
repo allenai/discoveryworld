@@ -30,9 +30,15 @@ class DiscoveryWorldAPI:
         #self.viewportSizeY = 9
         #self.renderScale = 1.5
 
-        self.viewportSizeX = 7
-        self.viewportSizeY = 7
+        #self.viewportSizeX = 7
+        #self.viewportSizeY = 7
+        #self.renderScale = 2.0
+        
+        # Step 2: Define the viewport size (in tiles)
+        self.viewportSizeX = 24
+        self.viewportSizeY = 16
         self.renderScale = 2.0
+
 
         # Create a random number generator
         self.r = random.Random()
@@ -159,10 +165,17 @@ class DiscoveryWorldAPI:
         filenameOutPNG = self.FRAME_DIR + "/ui_agent_" + str(agentIdx) + "_frame_" + str(curStep) + ".png"
         pygame.image.save(self.window, filenameOutPNG)
 
+        #self.viewportSizeX = 24
+        #self.viewportSizeY = 16
+        #self.renderScale = 1.0
+
+        agentVisionWidth = self.viewportSizeX * 32 * self.renderScale
+        agentVisionHeight = self.viewportSizeY * 32 * self.renderScale
+
         # Also capture just the first 512x512 pixels of the window, and encode it as a base64 string
         # This is for the agent's "vision"
-        visionSurface = pygame.Surface((512, 512))
-        visionSurface.blit(self.window, (0, 0), (0, 0, 512, 512))
+        visionSurface = pygame.Surface((agentVisionWidth, agentVisionHeight))
+        visionSurface.blit(self.window, (0, 0), (0, 0, agentVisionWidth, agentVisionHeight))
         image_io = io.BytesIO()
         pygame.image.save(visionSurface, image_io, 'PNG')                       # Convert to PNG
         image_io.seek(0)                                                        # Go to the beginning of the BytesIO object
@@ -178,8 +191,8 @@ class DiscoveryWorldAPI:
 
         # Capture the first 512x512 pixels of the window, and encode it as a base64 string
         # This is for the agent's "vision"
-        visionSurface = pygame.Surface((512, 512))
-        visionSurface.blit(self.window, (0, 0), (0, 0, 512, 512))
+        visionSurface = pygame.Surface((agentVisionWidth, agentVisionHeight))
+        visionSurface.blit(self.window, (0, 0), (0, 0, agentVisionWidth, agentVisionHeight))
         image_io = io.BytesIO()
         pygame.image.save(visionSurface, image_io, 'PNG')                       # Convert to PNG
         image_io.seek(0)                                                        # Go to the beginning of the BytesIO object
@@ -361,8 +374,11 @@ class DiscoveryWorldAPI:
 
         # Game parameters
         gameParams = {
-            "height": 800,
-            "width": 800,
+            #"height": 800,
+            #"height": 750,
+            #"width": 800,
+            "height": 1024 + 300, 
+            "width": 24*32*2,
             "fps": 60,
             "name": "DiscoveryWorld"
         }
@@ -386,5 +402,6 @@ class DiscoveryWorldAPI:
         # Call FFMPEG (forces overwrite)
         filenameInPrefix = self.FRAME_DIR + "/ui_agent_" + str(agentIdx) + "_frame_%d.png"
         #filenameOut = "output_agent" + str(agentIdx) + ".mp4"
-
-        subprocess.call(["ffmpeg", "-y", "-framerate", "10", "-i", filenameInPrefix, "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", filenameOut])
+        # ./ffmpeg -y -framerate 2 -i video/frames-thread1/ui_agent_0_frame_%d.png -c:v libx264 -profile:v high -crf 20 -pix_fmt yuv420p temp.mp4
+        # ./ffmpeg -y -framerate 2 -i video/frames-thread7210287/ui_agent_0_frame_%d.png -c:v libx264 -profile:v high -crf 20 -pix_fmt yuv420p temp.mp4
+        subprocess.call(["./ffmpeg", "-y", "-framerate", "2", "-i", filenameInPrefix, "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", filenameOut])

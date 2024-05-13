@@ -18,7 +18,8 @@ LIMITED_ACTIONS = False
 
 #OPENAI_MODEL_TO_USE = "gpt-4-vision-preview"
 #OPENAI_MODEL_TO_USE = "gpt-4-turbo-2024-04-09"
-OPENAI_MODEL_TO_USE = "gpt-3.5-turbo-0125"
+#OPENAI_MODEL_TO_USE = "gpt-3.5-turbo-0125"
+OPENAI_MODEL_TO_USE = "gpt-4o-2024-05-13"
 
 # Keep track of tokens sent/received
 TOTAL_TOKENS_SENT = 0
@@ -43,6 +44,10 @@ modelCostsPerToken = {
     "gpt-3.5-turbo-0125": {
         "send": 0.5 / 1000000.0,
         "receive": 1.5 / 1000000.0
+    },
+    "gpt-4o-2024-05-13": {
+        "send": 5.0 / 1000000.0,
+        "receive": 15.0 / 1000000.0
     }
 }
 
@@ -158,7 +163,36 @@ def randomAgent(api, numSteps:int = 10):
 
 # promptImages should be a list of base64-encoded images
 # NOTE: JSON response not available for GPT-4 Vision Preview
+OPENAI_REQUESTS_ERRORS = 0
+OPENAI_REQUESTS_NOERRORS = 0
 def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model=OPENAI_MODEL_TO_USE, prevImage=None, temperature=0.0, maxTokens=800, jsonResponse:bool=False):
+    global OPENAI_REQUESTS_ERRORS
+    global OPENAI_REQUESTS_NOERRORS
+
+    while (OPENAI_REQUESTS_ERRORS < 5):
+        try:
+            result = OpenAIGetCompletionHelper(client, promptStr, promptImages, model, prevImage, temperature, maxTokens, jsonResponse)
+            OPENAI_REQUESTS_NOERRORS += 1
+            # If we get 100 requests without errors, reset the error counter
+            if (OPENAI_REQUESTS_NOERRORS > 100):
+                OPENAI_REQUESTS_ERRORS = 0
+            return result
+
+        except Exception as e:
+            print("ERROR: OpenAI request failed.")
+            print("ERROR: " + str(e))
+            OPENAI_REQUESTS_ERRORS += 1
+            # Wait a bit before trying again
+            print("Waiting 5 seconds before trying again.")
+            time.sleep(5)
+            
+    # If we get here, we've exceeded the number of errors
+    print("ERROR: Exceeded the number of OPEN_AI errors allowed (5 errors within 100 requests).  Exiting.")
+    exit(1)
+
+    
+
+def OpenAIGetCompletionHelper(client, promptStr:str, promptImages:list, model=OPENAI_MODEL_TO_USE, prevImage=None, temperature=0.0, maxTokens=800, jsonResponse:bool=False):
     content = []
 
     # If previous image was popualted, include it
@@ -249,6 +283,8 @@ def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model=OPENAI_M
     try:
         # First, lookup the cost per token for the model
         if (model in modelCostsPerToken):
+            global COST_PER_TOKEN_SENT
+            global COST_PER_TOKEN_RECEIVED
             COST_PER_TOKEN_SENT = modelCostsPerToken[model]["send"]
             COST_PER_TOKEN_RECEIVED = modelCostsPerToken[model]["receive"]
         else:
@@ -332,7 +368,7 @@ def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation, include
 
     # Query OpenAI with the observation
     #promptStr = "Please describe in detail what you see in this image."
-    promptStr = "You are playing a video game about making scientific discoveries.  The game is in the style of a 2D top-down RPG (you are the agent in the center of the image), and as input you get both an image, as well as information from the user interface (provided in the JSON below) that describes your location, inventory, objects in front of you, the result of your last action, and the task that you're assigned to complete.\n"
+    promptStr = "You are playing a video game about making scientific discoveries.  The game is in the style of a 2D top-down RPG (you are the agent with green hair in the center of the image), and as input you get both an image, as well as information from the user interface (provided in the JSON below) that describes your location, inventory, objects in front of you, the result of your last action, and the task that you're assigned to complete.\n"
     promptStr += "Because this is a game, the actions that you can complete are limited to a set of actions that are defined by the game. Those are also described below.\n"
     promptStr += "This game is played step-by-step.  At each step, you get the input that I am providing, and output a single action to take as the next step.\n"
     promptStr += "\n"
@@ -569,7 +605,7 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
 
     # Query OpenAI with the observation
     #promptStr = "Please describe in detail what you see in this image."
-    promptStr0 = "You are playing a video game about making scientific discoveries.  The game is in the style of a 2D top-down RPG (you are the agent in the center of the image), and as input you get both an image, as well as information from the user interface (provided in the JSON below) that describes your location, inventory, objects in front of you, the result of your last action, and the task that you're assigned to complete.\n"
+    promptStr0 = "You are playing a video game about making scientific discoveries.  The game is in the style of a 2D top-down RPG (you are the agent with green hair in the center of the image), and as input you get both an image, as well as information from the user interface (provided in the JSON below) that describes your location, inventory, objects in front of you, the result of your last action, and the task that you're assigned to complete.\n"
     promptStr0 += "Because this is a game, the actions that you can complete are limited to a set of actions that are defined by the game. Those are also described below.\n"
     promptStr0 += "This game is played step-by-step.  At each step, you get the input that I am providing, and output a single action to take as the next step.\n"
     promptStr0 += "\n"
@@ -1282,7 +1318,8 @@ if __name__ == "__main__":
     parser.add_argument('--video', action='store_true', help='Export video of agent actions')
     parser.add_argument('--threadId', type=int, default=randomThreadId)
 
-    OPENAI_MODEL_TO_USE = "gpt-4-turbo-2024-04-09"
+    OPENAI_MODEL_TO_USE = "gpt-4o-2024-05-13"
+    #OPENAI_MODEL_TO_USE = "gpt-4-turbo-2024-04-09"
     #OPENAI_MODEL_TO_USE = "gpt-3.5-turbo-0125"
     parser.add_argument("--model", default=OPENAI_MODEL_TO_USE, help="OpenAI model to use (default: " + OPENAI_MODEL_TO_USE + ")")
 

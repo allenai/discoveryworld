@@ -20,6 +20,7 @@ def getPerformance(filenameIn:str):
             scoreCard = scoreCard[0]
             lastStepIdx = idx
             if (scoreCard["completed"] == True):
+                # Break on the first step when the task is marked completed
                 break
         
     print(scoreCard)
@@ -54,7 +55,12 @@ def getPerformance(filenameIn:str):
         # Everything between the third and fourth "-" is the images flag
         images = processedFilename.split("-")[3]
         # Remove the 'images' prefix
-        images = bool(images[6:])
+        imagesStr = images[6:]
+        if (imagesStr == "True"):
+            images = True
+        else:
+            images = False
+
         # Everything between "-model" and "-thread" is the model name
         model = processedFilename.split("-model")[1]
         model = model.split("-thread")[0]
@@ -132,15 +138,18 @@ if __name__ == "__main__":
         print("Processing file: " + filename)
         performance = getPerformance(dataPath + "/" + filename)
         print(performance)
-        if (allPerformance == None):
+        if (performance != None):
             allPerformance.append(performance)
         print("")
 
 
+    # Sort by taskName, then by difficulty, then model, then images, then by seed, then date
+    allPerformance.sort(key=lambda x: str(x["taskName"]) + str(x["difficulty"]) + str(x["model"]) + str(x["images"]) + str(x["seed"]) + str(x["timestamp"]))
+
     # Step 3: Export as JSON
     print("Writing performanceSummary.json...")
     with open("performanceSummary.json", "w") as f:
-        json.dump(allPerformance, f)
+        f.write(json.dumps(allPerformance, indent=4))
 
     # Step 4: Export as TSV
     print("Writing performanceSummary.tsv...")
@@ -150,7 +159,14 @@ if __name__ == "__main__":
         f.write("\t".join(header) + "\n")
         # Write the data
         for performance in allPerformance:
-            row = [str(performance[key]) for key in header]
+            print(performance)
+            row = []#[str(performance[key]) for key in header]
+            for key in header:
+                if (key in performance):
+                    row.append(str(performance[key]))
+                else:
+                    row.append("")
+            print("row: " + str(row))
             f.write("\t".join(row) + "\n")
 
     
