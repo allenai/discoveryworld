@@ -1355,6 +1355,10 @@ class Agent(Object):
         #  Note: The 'timestamp' field is used to break ties in priority
         self.autopilotActionQueue.sort(key=lambda x: (x.priority, -x.timestamp), reverse=True)
 
+    # Clear the autopilot action queue
+    def clearAutopilotActionQueue(self):
+        self.autopilotActionQueue = []
+
     # Returns TRUE if there are one or more actions in the autopilot queue with a priority greater than 1
     def isBusyAutopilot(self):
         for action in self.autopilotActionQueue:
