@@ -36,6 +36,16 @@ def getPerformance(filenameIn:str):
         scoreMax = scoreCard["maxScore"]
         completed = scoreCard["completed"]
         completedSuccessfully = scoreCard["completedSuccessfully"]
+        # Change completed and completed successfully to ints (0/1) instead of bools
+        if (completed == True):
+            completed = 1
+        else:
+            completed = 0
+        
+        if (completedSuccessfully == True):
+            completedSuccessfully = 1
+        else:
+            completedSuccessfully = 0
 
         # Try and extract metadata from the filename
         # Filenames are of the form: output_allhistory.Small Skills/ Search Test-Normal-s0-imagesFalse-modelgpt-3.5-turbo-0125-thread5108.20240510-164312.json
@@ -123,7 +133,9 @@ def getPerformance(filenameIn:str):
 #
 if __name__ == "__main__":
 
-    dataPath = "."   # Current directory
+    #dataPath = "."   # Current directory
+    #dataPath = "output-hypothesizer-8unit/"
+    dataPath = "output-hypothesizer-gpt4o-9discovery/"
 
     # Step 1: Find a list of files that start with "output_allhistory" that end with ".json"
     filterPrefix = "output_allhistory"
@@ -147,13 +159,15 @@ if __name__ == "__main__":
     allPerformance.sort(key=lambda x: str(x["taskName"]) + str(x["difficulty"]) + str(x["model"]) + str(x["images"]) + str(x["seed"]) + str(x["timestamp"]))
 
     # Step 3: Export as JSON
-    print("Writing performanceSummary.json...")
-    with open("performanceSummary.json", "w") as f:
+    filenameOut = dataPath + "/performanceSummary.json"
+    print("Writing " + filenameOut + "...")
+    with open(filenameOut, "w") as f:
         f.write(json.dumps(allPerformance, indent=4))
 
     # Step 4: Export as TSV
-    print("Writing performanceSummary.tsv...")
-    with open("performanceSummary.tsv", "w") as f:
+    filenameOut = dataPath + "/performanceSummary.tsv"
+    print("Writing " + filenameOut + "...")
+    with open(filenameOut, "w") as f:
         # Write the header
         header = ["taskName", "difficulty", "seed", "images", "model", "thread", "timestamp", "scoreNormalized", "scoreRaw", "scoreMax", "completed", "completedSuccessfully", "lastStepIdx", "filename", "totalCost", "totalSteps", "totalTokensReceived", "totalTokensSent"]
         f.write("\t".join(header) + "\n")

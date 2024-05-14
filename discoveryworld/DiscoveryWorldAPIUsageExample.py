@@ -12,6 +12,9 @@ import json
 import time
 import random
 import copy
+import signal
+import sys
+
 
 #LIMITED_ACTIONS = True     # Disables a few actions
 LIMITED_ACTIONS = False
@@ -50,6 +53,21 @@ modelCostsPerToken = {
         "receive": 15.0 / 1000000.0
     }
 }
+
+
+#
+#   Kill signal handler
+#
+def signal_handler(signum, frame):
+    print("Signal handler called with signal", signum)
+    sys.exit(1)  # Exit the program
+
+# Register the signal handlers
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGQUIT, signal_handler)
+signal.signal(signal.SIGHUP, signal_handler)
+
 
 #
 #   Helper functions
@@ -177,6 +195,16 @@ def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model=OPENAI_M
             if (OPENAI_REQUESTS_NOERRORS > 100):
                 OPENAI_REQUESTS_ERRORS = 0
             return result
+
+        # Keyboard interrupt
+        except KeyboardInterrupt:
+            print("Keyboard interrupt detected.  Exiting.")
+            exit(1)
+
+        # Kill signal
+        except SystemExit:
+            print("System exit detected.  Exiting.")
+            exit(1)
 
         except Exception as e:
             print("ERROR: OpenAI request failed.")
