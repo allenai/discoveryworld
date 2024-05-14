@@ -16,6 +16,8 @@ from discoveryworld.scenarios.smallskills_doors_keys import *
 from discoveryworld.scenarios.smallskills_navigation_house import *
 from discoveryworld.scenarios.smallskills_search import *
 from discoveryworld.scenarios.smallskills_discoveryfeed import *
+from discoveryworld.scenarios.smallskills_moving_agents import *
+
 
 SCENARIOS = {
     "Town": makeScenarioTown,

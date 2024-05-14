@@ -26,6 +26,7 @@ SCENARIOS = [
     "smallskills_navigation_house_test",
     "smallskills_search_test",
     "smallskills_discoveryfeed_test",
+    "smallskills_moving_agents_test",
     ]
 
 # Canonical (outside) names
@@ -40,6 +41,7 @@ SCENARIO_NAMES = [
     "Small Skills: Navigation in a House Test",
     "Small Skills: Search Test",
     "Small Skills: Discovery Feed Test",
+    "Small Skills: Moving Agents Test",
 #    "TODO 1", "TODO 2"
 ]
 
@@ -105,6 +107,10 @@ SCENARIO_INFOS = {
         "variations": ["1"],
     },
     "Small Skills: Discovery Feed Test": {
+        "difficulty": ["Normal"],
+        "variations": ["1"],
+    },
+    "Small Skills: Moving Agents Test": {
         "difficulty": ["Normal"],
         "variations": ["1"],
     },
@@ -197,6 +203,9 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
 
     elif (scenarioNameIn == "Small Skills: Discovery Feed Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
         scenarioName = "smallskills_discoveryfeed_test"
+
+    elif (scenarioNameIn == "Small Skills: Moving Agents Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+        scenarioName = "smallskills_moving_agents_test"
 
     # Return the internal scenario name to use
     return scenarioName
@@ -316,6 +325,12 @@ class ScenarioMaker():
         elif (scenarioName == "smallskills_discoveryfeed_test"):
             scoringInfo = makeScenarioDiscoveryFeedTest(self.world, numUserAgents)
             self.world.addTaskByName("SmallSkillsDiscoveryFeedTask", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+        
+        elif (scenarioName == "smallskills_moving_agents_test"):
+            scoringInfo = makeScenarioMovingAgentsTest(self.world, numUserAgents)
+            self.world.addTaskByName("SmallSkillsMovingAgentsTask", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 
