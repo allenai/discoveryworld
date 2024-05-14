@@ -56,6 +56,7 @@ class DiscoveryFeed:
     #
     #   Add posts
     #
+    ## TODO: (PJ) I think `signals` should default to [], not None (just needs to be tested to make sure it doesn't break anything)
     def addUpdatePost(self, curStep:int, authorName:str, content:str, signals:list = None):
         postID = self.getUniquePostID()
         self.updatePosts.append({"step": curStep, "author": authorName, "content": content, "signals": signals, "postID": postID, "type": "update"})
