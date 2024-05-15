@@ -11,7 +11,83 @@ from discoveryworld.objects import *
 from discoveryworld.Pathfinding import *
 
 
+# Generate data for the clustering task
+def generate_clustering_data(clusterSeed, numDimensions, numInliers, numOutliers):
+    rng = random.Random(clusterSeed)
+    if numDimensions not in [1, 2, 3, 4]:
+        raise ValueError("Dimensions must be between 1 and 4.")
+    
+    # Generate a random center within the unit space for the inliers
+    #center = np.random.rand(numDimensions)
+    inliers = None
+    outliers = None
+    attempts0 = 0
+    while (inliers == None or outliers == None):
+        center = [rng.uniform(0.2, 0.8), rng.uniform(0.2, 0.8)]
+        #print("Center is ", center)
 
+        # Function to generate points in a sphere around a center
+        def generate_points(n, radius, center):
+            points = []
+            attempts = 0
+            while (len(points) < n):
+                # Randomly generate an angle
+                angle = rng.uniform(0, 2 * np.pi)
+                # Generate a point (x1, y1), from center (x0, y0) and radius r
+                x1 = center[0] + radius * math.cos(angle)
+                y1 = center[1] + radius * math.sin(angle)
+
+                #print("Generated point: ", (x1, y1))
+                # Check the points are within the (0-1) space
+                if (x1 >= 0 and x1 <= 1) and (y1 >= 0 and y1 <= 1):
+                    points.append([x1, y1])
+
+                attempts += 1
+                if (attempts > 1000):
+                    return None
+            return points
+        
+        # Generate inliers and outliers
+        inliers = generate_points(numInliers, 0.1, center)
+        outliers = generate_points(numOutliers, 0.5, center)
+
+        attempts0 += 1
+        if (attempts0 > 1000):
+            print("Failed to generate random numbers for clustering data.  The parameters provided may be invalid or impossible/improbable to generate data for.")
+            return None, None
+    
+    return inliers, outliers
+
+import matplotlib.pyplot as plt
+
+def plot_data(inliers, outliers):
+    import matplotlib.pyplot as plt
+
+    # Plot inliers
+    #plt.scatter(inliers[:, 0], inliers[:, 1], c='blue', label='Inliers', edgecolors='w')
+    plt.scatter([x[0] for x in inliers], [x[1] for x in inliers], c='blue', label='Inliers', edgecolors='w')
+    
+    # Plot outliers
+    #plt.scatter(outliers[:, 0], outliers[:, 1], c='red', label='Outliers', marker='x', edgecolors='w')
+    plt.scatter([x[0] for x in outliers], [x[1] for x in outliers], c='red', label='Outliers', marker='x', edgecolors='w')
+    
+    plt.xlabel('Dimension 1')
+    plt.ylabel('Dimension 2')
+    plt.title('Clustering Data Visualization')
+    # Make the range 0-1 on both axes
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+# Example usage
+# rng = random.Random(0)
+# inliers, outliers = generate_clustering_data(rng, numDimensions=2, numInliers=4, numOutliers=1)
+# print("Inliers:\n", inliers)
+# print("Outliers:\n", outliers)
+# plot_data(inliers, outliers)
+# exit(1)
 
 def mkProteomicsResearchBuilding(x, y, world):
     # Create a small building
@@ -161,23 +237,48 @@ def makeScenarioProteomics(world, numUserAgents=1):
     animalLocations += [(4, 12), (4, 20), (28, 12), (28, 20)]   # sides
     random.shuffle(animalLocations)
 
-    outlierProteomicsValues = {
-        "Protein A": 0.1,
-        "Protein B": 0.2,
-    }
-    inlierProteomicsValues = {
-        "Protein A": 0.5,
-        "Protein B": 0.5,
-    }
 
+    # Generate proteomics values
+    numDimensions = 2
+    numInliers = 5
+    numOutliers = 1
+    inliers, outliers = generate_clustering_data(world.randomSeed, numDimensions, numInliers, numOutliers)
+
+    # Print the inliers and outliers
+    # print("Inliers: ") 
+    # for inlier in inliers:
+    #     print(inlier)
+    # print("Outliers: ")
+    # for outlier in outliers:
+    #     print(outlier)
+    
+    # # Plot the data
+    # plot_data(inliers, outliers)
+    #exit(1)
+
+    inlierProteomicsValues = []
+    for inlier in inliers:
+        inlierValues = {}
+        for i in range(0, numDimensions):
+            inlierValues["Protein " + chr(ord('A') + i)] = inlier[i]
+        inlierProteomicsValues.append(inlierValues)
+
+    outlierProteomicsValues = []
+    for outlier in outliers:
+        outlierValues = {}
+        for i in range(0, numDimensions):
+            outlierValues["Protein " + chr(ord('A') + i)] = outlier[i]
+        outlierProteomicsValues.append(outlierValues)
+
+    # Generate animals
     animals = []
     for i in range(0, 10):
         animalIdx = i % 5
         proteomicsValues = None
         if (animalIdx == answerAnimalIdx):
-            proteomicsValues = copy.deepcopy(outlierProteomicsValues)
+            proteomicsValues = copy.deepcopy(outlierProteomicsValues[0])
         else:
-            proteomicsValues = copy.deepcopy(inlierProteomicsValues)
+            proteomicsValues = copy.deepcopy(inlierProteomicsValues[animalIdx])
             
         animal = mkAnimal(animalIdx, world, animalLocations[i][0], animalLocations[i][1], proteomicsValues=proteomicsValues)
         world.addObject(animalLocations[i][0], animalLocations[i][1], Layer.AGENT, animal)
