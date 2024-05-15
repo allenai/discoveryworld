@@ -155,7 +155,7 @@ class SmallSkillsDoorsKeysTask(Task):
 
         #taskDescription = "Your task is to follow the instructions of the other person in the room.\n"
         #taskDescription = "Your task is to pick up the `" + self.objectToMove.name + "` and place it in the `" + self.destinationContainer.name + "`.\n"
-        taskDescription = "Your task is to enter the building, and go through all the doors until you reach a flag.  When you see the flag, pick it up to complete the task.\n"
+        taskDescription = "Your task is to enter the building, and go through all the doors until you reach a flag.  When you see the flag, pick it up to complete the task.  Note that for the task to be considered complete, all the doors must be opened, too.\n"
 
         super().__init__("SmallSkillsDoorsKeysTask", taskDescription, world, scoringInfo)
 

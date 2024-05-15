@@ -233,6 +233,9 @@ def makeScenarioSearchTest(world, numUserAgents=1):
         objTypes = [obj.type for obj in objs]
         if ("wall" in objTypes) or ("door" in objTypes):
             continue
+        # If there's more than one object, do not place the flag here
+        if (len(objTypes) > 1):
+            continue
 
         # Place the object
         world.addObject(randX, randY, Layer.OBJECTS, flag)

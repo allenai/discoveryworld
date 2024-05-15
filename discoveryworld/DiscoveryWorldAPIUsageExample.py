@@ -61,7 +61,7 @@ modelCostsPerToken = {
 # MAXIMUM COST OF A RUN (in dollars)
 MAXIMUM_COST_DOLLARS = 0.0
 
-# Consoladation step tracking
+# consolidation step tracking
 CONSOLATATE_TRACKING = []
 
 #
@@ -934,8 +934,9 @@ def countTokens(strIn):
     num_tokens = len(encoding.encode(strIn))
     return num_tokens
 
-def consolodateKnowledgeStep(client, scientificKnowledge, stepIdx):
-    KNOWLEDGEBASE_MAX_SIZE_ENTRIES = 30
+def consolidateKnowledgeStep(client, scientificKnowledge, stepIdx):
+    global CONSOLATATE_TRACKING
+    KNOWLEDGEBASE_MAX_SIZE_ENTRIES = 40
     KNOWLEDGEBASE_MAX_SIZE_TOKENS = 2000
     promptStr = ""
     promptStr += "You are an agent playing a game about automated scientific discovery.\n"
@@ -946,32 +947,35 @@ def consolodateKnowledgeStep(client, scientificKnowledge, stepIdx):
     promptStr += "Hypotheses are statements that you believe to be true, and that you'd like to test. These should be formulated as IF statements.\n"
     promptStr += "Both measurements and hypotheses should be written in terms of: objects (either specific objects and their UUIDs, or their types), object properties (like temperature), and actions (like eating). \n"
     promptStr += "Unfortunately, sometimes this knowledge base gets very large, and contains repeated, duplicated, or irrelevant knowledge, which makes it hard to use in practice, and very expensive to keep. \n"
-    promptStr += "Your job is to take the knowledge base below, and consolodate it into a smaller, more compact, and more useful knowledge base, but in exactly the same format (i.e. the list of measurements and hypotheses).\n"
+    promptStr += "Your job is to take the knowledge base below, and consolidate it into a smaller, more compact, and more useful knowledge base, but in exactly the same format (i.e. the list of measurements and hypotheses).\n"
     promptStr += "You can do this by removing any repeated or duplicated knowledge, and by removing any irrelevant knowledge.\n"
     promptStr += "You can also do this by combining multiple measurements or hypotheses into a single measurement or hypothesis, if they are logically equivalent.\n"
-    promptStr += "Consolodated hypotheses must still have a `status` (i.e. pending, confirmed, rejected) and ideally succinct `supporting evidence` supporting that status.\n"
+    promptStr += "consolidated hypotheses must still have a `status` (i.e. pending, confirmed, rejected) and ideally succinct `supporting evidence` supporting that status.\n"
     promptStr += "The output should be in JSON, and should have a single top-level key (`scientific_knowledge`), which is an array of measurements and/or hypotheses.\n"
     promptStr += "\n"
+
     # Limits
-    promptStr += "LIMITS:\n"
+    limitStr = "LIMITS (IMPORTANT!):\n"
     # Limits: Entries
     numEntries = len(scientificKnowledge["scientific_knowledge"])
-    promptStr += "The current size of your knowledge base is: " + str(numEntries) + " entries.\n"
-    promptStr += "The MAXIMUM allowable size of your knowledge base is " + str(KNOWLEDGEBASE_MAX_SIZE_ENTRIES) + " entries"
+    limitStr += "The current size of your knowledge base is: " + str(numEntries) + " entries.\n"
+    limitStr += "The MAXIMUM allowable size of your knowledge base is " + str(KNOWLEDGEBASE_MAX_SIZE_ENTRIES) + " entries"
     if (numEntries > KNOWLEDGEBASE_MAX_SIZE_ENTRIES):
         numToRemove = len(scientificKnowledge["scientific_knowledge"]) - KNOWLEDGEBASE_MAX_SIZE_ENTRIES
-        promptStr += " (WARNING: You have exceeded this limit, meaning you must reduce the memory size by at least " + str(numToRemove) + " entries).\n"
+        limitStr += " (WARNING: You have exceeded this limit, meaning you must reduce the memory size by at least " + str(numToRemove) + " entries).\n"
     else:
-        promptStr += ".\n"
+        limitStr += ".\n"
     # Limits: Tokens
     numTokensKB = countTokens(json.dumps(scientificKnowledge, indent=4, sort_keys=True))
-    promptStr += "The current size of your knowledge base is: " + str(numTokensKB) + " tokens.\n"
-    promptStr += "The MAXIMUM allowable size of your knowledge base is " + str(KNOWLEDGEBASE_MAX_SIZE_TOKENS) + " tokens"
+    limitStr += "The current size of your knowledge base is: " + str(numTokensKB) + " tokens.\n"
+    limitStr += "The MAXIMUM allowable size of your knowledge base is " + str(KNOWLEDGEBASE_MAX_SIZE_TOKENS) + " tokens"
     if (numTokensKB > KNOWLEDGEBASE_MAX_SIZE_TOKENS):
         numToRemove = numTokensKB - KNOWLEDGEBASE_MAX_SIZE_TOKENS
-        promptStr += " (WARNING: You have exceeded this limit, meaning you must reduce the memory size by at least " + str(numToRemove) + " tokens).\n"
+        limitStr += " (WARNING: You have exceeded this limit, meaning you must reduce the memory size by at least " + str(numToRemove) + " tokens).\n"
     else:
-        promptStr += ".\n"
+        limitStr += ".\n"
+
+    promptStr += limitStr
 
     # Current knowledge base
     promptStr += "\n"    
@@ -980,7 +984,10 @@ def consolodateKnowledgeStep(client, scientificKnowledge, stepIdx):
     promptStr += json.dumps(scientificKnowledge, indent=4, sort_keys=True)
     promptStr += "```\n"
     promptStr += "\n"
-    promptStr += "Please write down your new, consolodated knowledge base below.  Please write it in the JSON form expected above. You can write a short amount of prose before if that's helpful for your thought process, and only the last item in code blocks (```) will be parsed as JSON.\n"
+    
+    promptStr += limitStr + "\n"
+
+    promptStr += "Please write down your new, SIGNIFICANTLY consolidated knowledge base below. Remember, if something isn't important and your knowledge base is full, you can discard it if you need to meet the knowledge base limit.  Please write it in the JSON form expected above. You can write a short amount of prose before if that's helpful for your thought process, and only the last item in code blocks (```) will be parsed as JSON.\n"
 
     print("Consolidation Step:")
     print("\tEntries before consoloation: " + str(numEntries))
@@ -1001,13 +1008,12 @@ def consolodateKnowledgeStep(client, scientificKnowledge, stepIdx):
         #return scientificKnowledge # Deep copy
         packed = {
             "stepIdx": stepIdx,
-            "error": "Failed to parse response -- knowledge not consoladated.", 
+            "error": "Failed to parse response -- knowledge not consolidated.", 
             "entries_before": numEntries,
             "tokens_before": numTokensKB,
             "initial_knowledge": copy.deepcopy(scientificKnowledge),
             "response": copy.deepcopy(responseStrKnowledge),
         }
-        global CONSOLATATE_TRACKING
         CONSOLATATE_TRACKING.append(packed)
                 
         return copy.deepcopy(scientificKnowledge)
@@ -1033,7 +1039,6 @@ def consolodateKnowledgeStep(client, scientificKnowledge, stepIdx):
                     "initial_knowledge": copy.deepcopy(scientificKnowledge),
                     "new_knowledge": copy.deepcopy(newKnowledge),
                 }
-                global CONSOLATATE_TRACKING
                 CONSOLATATE_TRACKING.append(packed)
 
                 return {"scientific_knowledge": newKnowledge}
@@ -1048,7 +1053,6 @@ def consolodateKnowledgeStep(client, scientificKnowledge, stepIdx):
         "initial_knowledge": copy.deepcopy(scientificKnowledge),
         "response": copy.deepcopy(responseStrKnowledge),
     }
-    global CONSOLATATE_TRACKING
     CONSOLATATE_TRACKING.append(packed)
     return copy.deepcopy(scientificKnowledge)
 
@@ -1151,13 +1155,13 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
             }
             observationHistory.append(packed)
 
-            # Every 10 steps, consolodate the knowledge
+            # Every 10 steps, consolidate the knowledge
             if (i % 10 == 0) and (i > 0):
-                print("Consolodating Scientific Knowledge:")
-                currentScientificKnowledge = consolodateKnowledgeStep(client, currentScientificKnowledge, stepIdx=i)
+                print("consolidating Scientific Knowledge:")
+                currentScientificKnowledge = consolidateKnowledgeStep(client, currentScientificKnowledge, stepIdx=i)
 
                 # Add to history
-                allHistory.append({"consolodated_scientific_knowledge": currentScientificKnowledge})
+                allHistory.append({"consolidated_scientific_knowledge": currentScientificKnowledge})
 
 
             # Print estimated tokens/costs
@@ -1208,7 +1212,7 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
                 json.dump(allHistory, file, indent=4, sort_keys=True)
             with open("output_costAnalysis" + logFileSuffix + ".json", "w") as file:
                 json.dump(costAnalysis, file, indent=4, sort_keys=True)
-            with open("output_consoladatedKnowledge" + logFileSuffix + ".json", "w") as file:
+            with open("output_consolidatedKnowledge" + logFileSuffix + ".json", "w") as file:
                 json.dump(CONSOLATATE_TRACKING, file, indent=4, sort_keys=False)
 
             # Check if the task has been completed
