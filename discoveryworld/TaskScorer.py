@@ -65,6 +65,8 @@ class TaskMaker():
             return TutorialTask(self.world, scoringInfo)
         elif (taskName == "ReactorTask"):
             return ReactorTask(self.world, scoringInfo)
+        elif (taskName == "ProteomicsTaskNormal"):
+            return ProteomicsTaskNormal(self.world, scoringInfo)
 
         # Small Skills
 
@@ -1835,3 +1837,194 @@ class TutorialTask(Task):
             self.completed = True
             self.completedSuccessfully = True
             #print("Task completed successfully: " + self.taskName)
+
+
+
+#
+#   Specific Task: Archeology dig task (generic radioisotopes)
+#
+class ProteomicsTaskNormal(Task):
+    # Constructor
+    def __init__(self, world, scoringInfo):
+        # TODO: modify description
+        taskDescription = "You are on an archeological dig on Planet X.  6 sites of suspected ancient artifacts have been found, 3 of which have already been uncovered. "
+        taskDescription += "It's not clear how or if radioisotope dating works on Planet X, or how it would differ from Earth, but your task is to figure out if it can be used. "
+        taskDescription += "Your task is to excavate the remaining sites, and figure out a way to use the radioisotope meter to approximately date the artifacts.  Then, once completed, place the red flag beside the sign of the dig site with the oldest artifact. "
+
+        Task.__init__(self, "ProteomicsTaskNormal", taskDescription, world, scoringInfo)
+        self.score = 0
+        self.maxScore = 1                       # Maximum score
+
+        self.uncoveredArtifacts = set()         # A list of the artifacts that have been uncovered
+
+
+        # Scorecard elements (TODO)
+        # Taking critical objects
+        self.scorecardRadioisotopeMeter = ScorecardElement("Take radioisotope meter", "The radioisotope meter has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardRadioisotopeMeter)
+        self.scorecardShovel = ScorecardElement("Take shovel", "The shovel has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardShovel)
+        self.scorecardFlag = ScorecardElement("Take flag", "The flag has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardFlag)
+
+        # 3 unknown objects uncovered
+        self.scorecardUncoveredArtifacts = ScorecardElement("Uncover 3 unknown artifacts", "3 unknown artifacts have been uncovered", maxScore=3)
+        self.scoreCard.append(self.scorecardUncoveredArtifacts)
+
+        # Radioisotope meter used on 3 seed artifacts
+        self.scorecardRadioisotopeMeterUsedSeed = ScorecardElement("Use radioisotope meter (seed)", "The radioisotope meter has been used on 3 seed artifacts", maxScore=3)
+        self.scoreCard.append(self.scorecardRadioisotopeMeterUsedSeed)
+
+        # Radioisotope meter used on 3 unknown artifacts
+        self.scorecardRadioisotopeMeterUsedUnknown = ScorecardElement("Use radioisotope meter on (unknown)", "The radioisotope meter has been used on 3 unknown artifacts", maxScore=3)
+        self.scoreCard.append(self.scorecardRadioisotopeMeterUsedUnknown)
+
+        # Flag moved to correct location (or not) -- ends task
+        self.scorecardFlagPlaced = ScorecardElement("Move flag to correct location", "The flag has been moved to the correct location", maxScore=1)
+        self.scoreCard.append(self.scorecardFlagPlaced)
+
+        # Add hypotheses from scoringInfo
+        self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+
+        # Scoring Info passed from the scenario
+        # scoringInfo["seedArtifacts"] = []
+        # scoringInfo["unknownArtifacts"] = []
+        # scoringInfo["radioisotopeMeter"] = radioisotopeMeter
+        # scoringInfo["shovel"] = shovel
+        # scoringInfo["flag"] = flag
+        # scoringInfo["signs"] = []
+        # scoringInfo["targetSign"]  # The oldest sign, where the flag should be placed
+
+    # Task setup: Add any necessary objects to the world to perform the task.
+    def taskSetup(self):
+        # Add the colonists?
+        pass
+
+    def initialize(self):
+        pass
+
+    # Update the task progress
+    def updateTick(self):
+        # Do not update the score if the task is already marked as completed
+        #if (self.completed == True):
+        #    return
+
+        #### DEBUG: REMOVE THIS
+        print("SCORING FOR PROTEOMICS COMMENTED OUT DURING DEVELOPMENT!!!!!")
+        return
+
+
+        # Check if they have the radioisotope meter in an agent's inventory
+        if (not self.scorecardRadioisotopeMeter.completed):
+            radioisotopeMeterContainer = self.scoringInfo["radioisotopeMeter"].parentContainer
+            if (radioisotopeMeterContainer != None):
+                if (radioisotopeMeterContainer.type == "agent"):
+                    self.scorecardRadioisotopeMeter.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["radioisotopeMeter"].uuid], associatedNotes="The radioisotope meter has been in the inventory of the agent with uuid " + str(self.scoringInfo["radioisotopeMeter"].uuid))
+
+        # Check if they have the shovel in an agent's inventory
+        if (not self.scorecardShovel.completed):
+            shovelContainer = self.scoringInfo["shovel"].parentContainer
+            if (shovelContainer != None):
+                if (shovelContainer.type == "agent"):
+                    self.scorecardShovel.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["shovel"].uuid], associatedNotes="The shovel has been in the inventory of the agent with uuid " + str(shovelContainer.uuid))
+
+        # Check if they have the flag in an agent's inventory
+        if (not self.scorecardFlag.completed):
+            flagContainer = self.scoringInfo["flag"].parentContainer
+            if (flagContainer != None):
+                if (flagContainer.type == "agent"):
+                    self.scorecardFlag.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["flag"].uuid], associatedNotes="The flag has been in the inventory of the agent with uuid " + str(flagContainer.uuid))
+
+        # Check if the 3 unknown objects have been uncovered
+        if (not self.scorecardUncoveredArtifacts.completed):
+            # Measure the number of unknown artifacts that have been uncovered
+            for artifact in self.scoringInfo["unknownArtifacts"]:
+                parentContainer = artifact.parentContainer
+                if (parentContainer != None):
+                    if (parentContainer.type == "soil"):
+                        if (parentContainer.attributes["hasHole"] == True):
+                            self.uncoveredArtifacts.add(artifact.uuid)
+                    else:
+                        # If not in soil, then it's been moved (which means it must have been uncovered)
+                        self.uncoveredArtifacts.add(artifact.uuid)
+
+            numArtifactsUncovered = len(self.uncoveredArtifacts)
+
+            # Update the scorecard
+            isComplete = False
+            if (numArtifactsUncovered >= 3):
+                isComplete = True
+            self.scorecardUncoveredArtifacts.updateScore(score=numArtifactsUncovered, completed=isComplete, associatedUUIDs=list(self.uncoveredArtifacts), associatedNotes="The following artifacts have been uncovered: " + str(self.uncoveredArtifacts))
+
+
+        # Check if the radioisotope meter has been used on 3 seed artifacts
+        if (not self.scorecardRadioisotopeMeterUsedSeed.completed):
+            seedArtifactsDated = set()
+            for agent in self.world.getUserAgents():
+                for artifact in self.scoringInfo["seedArtifacts"]:
+                    foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=self.scoringInfo["radioisotopeMeter"], arg2=artifact, stopAtFirst=True)
+                    if (len(foundActions) > 0):
+                        seedArtifactsDated.add(artifact.uuid)
+
+            numArtifactsDated = len(seedArtifactsDated)
+            isComplete = False
+            if (numArtifactsDated >= 3):
+                isComplete = True
+            self.scorecardRadioisotopeMeterUsedSeed.updateScore(score=numArtifactsDated, completed=isComplete, associatedUUIDs=list(seedArtifactsDated), associatedNotes="The following seed artifacts have been dated: " + str(seedArtifactsDated))
+
+        # Check if the radioisotope meter has been used on 3 unknown artifacts
+        if (not self.scorecardRadioisotopeMeterUsedUnknown.completed):
+            unknownArtifactsDated = set()
+            for agent in self.world.getUserAgents():
+                for artifact in self.scoringInfo["unknownArtifacts"]:
+                    foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=self.scoringInfo["radioisotopeMeter"], arg2=artifact, stopAtFirst=True)
+                    if (len(foundActions) > 0):
+                        unknownArtifactsDated.add(artifact.uuid)
+
+            numArtifactsDated = len(unknownArtifactsDated)
+            isComplete = False
+            if (numArtifactsDated >= 3):
+                isComplete = True
+            self.scorecardRadioisotopeMeterUsedUnknown.updateScore(score=numArtifactsDated, completed=isComplete, associatedUUIDs=list(unknownArtifactsDated), associatedNotes="The following unknown artifacts have been dated: " + str(unknownArtifactsDated))
+
+
+        # Check if the flag has been placed near ANY of the signs (+/- 2 grid spaces).
+        if (not self.scorecardFlagPlaced.completed):
+            # First, check to see if the flag has been placed
+            flagPlaced = False
+            placedCorrectly = False
+            if (self.scoringInfo["flag"].parentContainer == None):
+                for sign in self.scoringInfo["signs"]:
+                    distance = sign.distanceTo(self.scoringInfo["flag"])
+                    if (distance <= 2):
+                        flagPlaced = True
+                        placedNearSignUUID = sign.uuid
+                        # Check if the flag has been placed near the correct sign
+                        if (sign.uuid == self.scoringInfo["targetSign"].uuid):
+                            placedCorrectly = True
+                        break
+
+            # Update the scorecard
+            if (flagPlaced == True):
+                if (placedCorrectly == True):
+                    self.scorecardFlagPlaced.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["flag"].uuid, placedNearSignUUID], associatedNotes="The flag has been placed near the correct sign")
+                else:
+                    self.scorecardFlagPlaced.updateScore(score=0, completed=True, associatedUUIDs=[self.scoringInfo["flag"].uuid, placedNearSignUUID], associatedNotes="The flag has been placed near an incorrect sign")
+
+            # If the flag has been placed, the task is complete
+            if (flagPlaced == True):
+                self.completed = True
+                if (placedCorrectly == True):
+                    self.completedSuccessfully = True
+                else:
+                    self.completedSuccessfully = False
+            else:
+                self.completed = False
+                self.completedSuccessfully = False
+
+        # Update the score, as the sum of the scorecard elements
+        self.score = 0
+        self.maxScore = 0
+        for element in self.scoreCard:
+            self.score += element.score
+            self.maxScore += element.maxScore

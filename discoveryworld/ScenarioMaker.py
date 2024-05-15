@@ -16,7 +16,8 @@ SCENARIOS = [
     "lost_in_translation_easy",
     "lost_in_translation_medium",
     "lost_in_translation_hard",
-    "reactor_lab"
+    "reactor_lab",
+    "proteomics_normal",
     "smallskills_dialog_test",
     "smallskills_pickandplace_test",
     "smallskills_pickandgive_test",
@@ -31,7 +32,7 @@ SCENARIOS = [
 
 # Canonical (outside) names
 SCENARIO_NAMES = [
-    "Tutorial", "Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick",
+    "Tutorial", "Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "Proteomics",
     "Small Skills: Dialog Test",
     "Small Skills: Pick and Place Test",
     "Small Skills: Pick and Give Test",
@@ -71,6 +72,10 @@ SCENARIO_INFOS = {
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Space Sick": {
+        "difficulty": ["Normal"],
+        "variations": ["1", "2", "3", "4", "5"],
+    },
+    "Proteomics": {
         "difficulty": ["Normal"],
         "variations": ["1", "2", "3", "4", "5"],
     },
@@ -172,9 +177,9 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
     elif (scenarioNameIn == "TODO 1") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
         scenarioName = None
     # Scenario 8: TODO 2
-    elif (scenarioNameIn == "TODO 2") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
-        scenarioName = None
-    elif (scenarioNameIn == "TODO 2") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
+    elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+        scenarioName = "proteomics_normal"
+    elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
         scenarioName = None
 
     elif (scenarioNameIn == "Small Skills: Dialog Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
@@ -265,6 +270,12 @@ class ScenarioMaker():
         elif (scenarioName == "reactor_lab"):
             scoringInfo = makeScenarioReactorLab(self.world, numUserAgents)
             self.world.addTaskByName("ReactorTask", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+        
+        elif (scenarioName == "proteomics_normal"):
+            scoringInfo = makeScenarioProteomics(self.world, numUserAgents)
+            self.world.addTaskByName("ProteomicsTaskNormal", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 
