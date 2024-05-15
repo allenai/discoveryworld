@@ -4,4 +4,4 @@ psutil
 openai
 numpy
 termcolor
-
+tiktoken

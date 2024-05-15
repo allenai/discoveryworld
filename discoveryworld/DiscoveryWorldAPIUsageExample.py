@@ -15,6 +15,10 @@ import copy
 import signal
 import sys
 
+# Tiktoken
+import tiktoken
+encoding = tiktoken.get_encoding("cl100k_base")
+
 
 #LIMITED_ACTIONS = True     # Disables a few actions
 LIMITED_ACTIONS = False
@@ -54,6 +58,11 @@ modelCostsPerToken = {
     }
 }
 
+# MAXIMUM COST OF A RUN (in dollars)
+MAXIMUM_COST_DOLLARS = 0.0
+
+# Consoladation step tracking
+CONSOLATATE_TRACKING = []
 
 #
 #   Kill signal handler
@@ -920,8 +929,14 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
     #return nextAction, observation, promptStr, responseStr, currentScientificKnowledge
     return packedOut
 
+# Count the number of tokens (as OpenAI would count them)
+def countTokens(strIn):
+    num_tokens = len(encoding.encode(strIn))
+    return num_tokens
 
-def consolodateKnowledgeStep(client, scientificKnowledge):
+def consolodateKnowledgeStep(client, scientificKnowledge, stepIdx):
+    KNOWLEDGEBASE_MAX_SIZE_ENTRIES = 30
+    KNOWLEDGEBASE_MAX_SIZE_TOKENS = 2000
     promptStr = ""
     promptStr += "You are an agent playing a game about automated scientific discovery.\n"
     promptStr += "In this game, you are given a task to complete, and you can complete this task by taking actions in the environment.\n"
@@ -930,12 +945,36 @@ def consolodateKnowledgeStep(client, scientificKnowledge):
     promptStr += "Measurements are observations that you've made about the world.\n"
     promptStr += "Hypotheses are statements that you believe to be true, and that you'd like to test. These should be formulated as IF statements.\n"
     promptStr += "Both measurements and hypotheses should be written in terms of: objects (either specific objects and their UUIDs, or their types), object properties (like temperature), and actions (like eating). \n"
-    promptStr += "Unfortunately, sometimes this knowledge base gets very large, and contains repeated, duplicated, or irrelevant knowledge, which makes it hard to use in practice. \n"
+    promptStr += "Unfortunately, sometimes this knowledge base gets very large, and contains repeated, duplicated, or irrelevant knowledge, which makes it hard to use in practice, and very expensive to keep. \n"
     promptStr += "Your job is to take the knowledge base below, and consolodate it into a smaller, more compact, and more useful knowledge base, but in exactly the same format (i.e. the list of measurements and hypotheses).\n"
     promptStr += "You can do this by removing any repeated or duplicated knowledge, and by removing any irrelevant knowledge.\n"
     promptStr += "You can also do this by combining multiple measurements or hypotheses into a single measurement or hypothesis, if they are logically equivalent.\n"
     promptStr += "Consolodated hypotheses must still have a `status` (i.e. pending, confirmed, rejected) and ideally succinct `supporting evidence` supporting that status.\n"
     promptStr += "The output should be in JSON, and should have a single top-level key (`scientific_knowledge`), which is an array of measurements and/or hypotheses.\n"
+    promptStr += "\n"
+    # Limits
+    promptStr += "LIMITS:\n"
+    # Limits: Entries
+    numEntries = len(scientificKnowledge["scientific_knowledge"])
+    promptStr += "The current size of your knowledge base is: " + str(numEntries) + " entries.\n"
+    promptStr += "The MAXIMUM allowable size of your knowledge base is " + str(KNOWLEDGEBASE_MAX_SIZE_ENTRIES) + " entries"
+    if (numEntries > KNOWLEDGEBASE_MAX_SIZE_ENTRIES):
+        numToRemove = len(scientificKnowledge["scientific_knowledge"]) - KNOWLEDGEBASE_MAX_SIZE_ENTRIES
+        promptStr += " (WARNING: You have exceeded this limit, meaning you must reduce the memory size by at least " + str(numToRemove) + " entries).\n"
+    else:
+        promptStr += ".\n"
+    # Limits: Tokens
+    numTokensKB = countTokens(json.dumps(scientificKnowledge, indent=4, sort_keys=True))
+    promptStr += "The current size of your knowledge base is: " + str(numTokensKB) + " tokens.\n"
+    promptStr += "The MAXIMUM allowable size of your knowledge base is " + str(KNOWLEDGEBASE_MAX_SIZE_TOKENS) + " tokens"
+    if (numTokensKB > KNOWLEDGEBASE_MAX_SIZE_TOKENS):
+        numToRemove = numTokensKB - KNOWLEDGEBASE_MAX_SIZE_TOKENS
+        promptStr += " (WARNING: You have exceeded this limit, meaning you must reduce the memory size by at least " + str(numToRemove) + " tokens).\n"
+    else:
+        promptStr += ".\n"
+
+    # Current knowledge base
+    promptStr += "\n"    
     promptStr += "Here is the existing knowledge base:\n"
     promptStr += "```json\n"
     promptStr += json.dumps(scientificKnowledge, indent=4, sort_keys=True)
@@ -943,12 +982,15 @@ def consolodateKnowledgeStep(client, scientificKnowledge):
     promptStr += "\n"
     promptStr += "Please write down your new, consolodated knowledge base below.  Please write it in the JSON form expected above. You can write a short amount of prose before if that's helpful for your thought process, and only the last item in code blocks (```) will be parsed as JSON.\n"
 
-
+    print("Consolidation Step:")
+    print("\tEntries before consoloation: " + str(numEntries))
+    print("\tTokens before consoloation: " + str(numTokensKB))
     response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=[], model=OPENAI_MODEL_TO_USE, prevImage=None, temperature=0.1, maxTokens=3000)
     print(response)
+    
 
     # Extract the JSON from the response
-    print("EXCTRACTING MESSAGE")
+    print("EXTRACTING MESSAGE")
     responseStrKnowledge = response.choices[0].message.content
     print("SUCCESS1")
     responseJSONKnowledge = extractJSONfromGPT4Response(responseStrKnowledge)
@@ -957,6 +999,17 @@ def consolodateKnowledgeStep(client, scientificKnowledge):
     if (responseJSONKnowledge == None):
         # Failed for some reason -- return original knowledge base
         #return scientificKnowledge # Deep copy
+        packed = {
+            "stepIdx": stepIdx,
+            "error": "Failed to parse response -- knowledge not consoladated.", 
+            "entries_before": numEntries,
+            "tokens_before": numTokensKB,
+            "initial_knowledge": copy.deepcopy(scientificKnowledge),
+            "response": copy.deepcopy(responseStrKnowledge),
+        }
+        global CONSOLATATE_TRACKING
+        CONSOLATATE_TRACKING.append(packed)
+                
         return copy.deepcopy(scientificKnowledge)
 
 
@@ -968,10 +1021,35 @@ def consolodateKnowledgeStep(client, scientificKnowledge):
             newKnowledge = responseJSONKnowledge["scientific_knowledge"]
             if (len(newKnowledge) > 0):
                 # Return the new KB to replace the old one.
+                numEntriesAfter = len(newKnowledge)
+                numTokensKBAfer = countTokens(json.dumps(newKnowledge, indent=4, sort_keys=True))
+
+                packed = {
+                    "stepIdx": stepIdx,
+                    "entries_before": numEntries,
+                    "entries_after": numEntriesAfter,
+                    "tokens_before": numTokensKB,
+                    "tokens_after": numTokensKBAfer,
+                    "initial_knowledge": copy.deepcopy(scientificKnowledge),
+                    "new_knowledge": copy.deepcopy(newKnowledge),
+                }
+                global CONSOLATATE_TRACKING
+                CONSOLATATE_TRACKING.append(packed)
+
                 return {"scientific_knowledge": newKnowledge}
 
     # Otherwise, return the old one
     #return scientificKnowledge # deep copy
+    packed = {
+        "stepIdx": stepIdx,
+        "error": "Unknown error when condoladating knowledge.", 
+        "entries_before": numEntries,
+        "tokens_before": numTokensKB,
+        "initial_knowledge": copy.deepcopy(scientificKnowledge),
+        "response": copy.deepcopy(responseStrKnowledge),
+    }
+    global CONSOLATATE_TRACKING
+    CONSOLATATE_TRACKING.append(packed)
     return copy.deepcopy(scientificKnowledge)
 
 
@@ -1076,7 +1154,7 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
             # Every 10 steps, consolodate the knowledge
             if (i % 10 == 0) and (i > 0):
                 print("Consolodating Scientific Knowledge:")
-                currentScientificKnowledge = consolodateKnowledgeStep(client, currentScientificKnowledge)
+                currentScientificKnowledge = consolodateKnowledgeStep(client, currentScientificKnowledge, stepIdx=i)
 
                 # Add to history
                 allHistory.append({"consolodated_scientific_knowledge": currentScientificKnowledge})
@@ -1102,6 +1180,11 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
 
             print("*" * 80)
 
+            costLimitExceeded = False
+            if (totalCost > MAXIMUM_COST_DOLLARS):
+                print("Cost limit exceeded.")
+                costLimitExceeded = True
+
             costAnalysis = {
                 "model": OPENAI_MODEL_TO_USE,
                 "total_tokens_sent": TOTAL_TOKENS_SENT,
@@ -1112,7 +1195,9 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
                 "total_cost_received": TOTAL_COST_RECEIVED,
                 "total_cost": totalCost,
                 "total_steps": i+1,
-                "cost_per_step": costPerStep
+                "cost_per_step": costPerStep,
+                "hard_cost_limit": MAXIMUM_COST_DOLLARS,
+                "cost_limit_exceeded": costLimitExceeded,
             }
 
 
@@ -1123,7 +1208,8 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
                 json.dump(allHistory, file, indent=4, sort_keys=True)
             with open("output_costAnalysis" + logFileSuffix + ".json", "w") as file:
                 json.dump(costAnalysis, file, indent=4, sort_keys=True)
-
+            with open("output_consoladatedKnowledge" + logFileSuffix + ".json", "w") as file:
+                json.dump(CONSOLATATE_TRACKING, file, indent=4, sort_keys=False)
 
             # Check if the task has been completed
             #if (api.isTaskComplete()):
@@ -1132,6 +1218,16 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
             if (api.areTasksComplete()):
                 print("All tasks have been completed.  Exiting.")
                 break
+
+            # Check if the cost of the run has exceeded the limit
+            if (costLimitExceeded):
+                print("Cost limit exceeded. ")
+                print("\tMAXIMUM_COST_DOLLARS: " + str(MAXIMUM_COST_DOLLARS))
+                print("\tTOTAL_COST_SENT: " + str(TOTAL_COST_SENT))
+                print("\tTOTAL_COST_RECEIVED: " + str(TOTAL_COST_RECEIVED))
+                print("\tTOTAL_COST: " + str(totalCost))
+                break
+
 
         except KeyboardInterrupt:
             print("Keyboard interrupt detected.  Exiting.")
@@ -1345,7 +1441,7 @@ if __name__ == "__main__":
     ##parser.add_argument('--runall', action='store_true', help='Run all scenarios with random agent')      ## Disabled -- would be extremely expensive and time consuming to do this
     parser.add_argument('--video', action='store_true', help='Export video of agent actions')
     parser.add_argument('--threadId', type=int, default=randomThreadId)
-
+    parser.add_argument('--maxCostDollars', type=float, default=0.0, help='Maximum cost in dollars to run the agent (default: 0.0)')
     OPENAI_MODEL_TO_USE = "gpt-4o-2024-05-13"
     #OPENAI_MODEL_TO_USE = "gpt-4-turbo-2024-04-09"
     #OPENAI_MODEL_TO_USE = "gpt-3.5-turbo-0125"
@@ -1356,6 +1452,13 @@ if __name__ == "__main__":
     parser.add_argument('--noimages', action='store_true', help='Do not include images in the prompt')
 
     args = parser.parse_args()
+
+    # Cost limit
+    MAXIMUM_COST_DOLLARS = args.maxCostDollars
+    print("Maximum cost limit: $" + str(MAXIMUM_COST_DOLLARS))
+    if (MAXIMUM_COST_DOLLARS <= 0.01):
+        print("ERROR: Maximum cost limit must be greater than $0.01.")
+        exit(1)
 
     # Whether or not to include images in the prompt
     includeImages = True
@@ -1442,3 +1545,16 @@ if __name__ == "__main__":
 
         exportVideo = args.video
         finalScore = runHypothesizerAgent(scenarioName=args.scenario, difficultyStr=args.difficulty, seed=args.seed, numSteps=args.numSteps, includeImages=includeImages, exportVideo=exportVideo, threadId=args.threadId, debug=False)
+
+    totalCost = TOTAL_COST_SENT + TOTAL_COST_RECEIVED
+    print("Total cost: $" + str(round(totalCost, 2)))
+    print("Maximum cost limit: $" + str(MAXIMUM_COST_DOLLARS))
+    print("Total tokens sent: " + str(TOTAL_TOKENS_SENT))
+    print("Total tokens received: " + str(TOTAL_TOKENS_RECEIVED))
+    print("Cost per token sent: $" + str(COST_PER_TOKEN_SENT))
+    print("Cost per token received: $" + str(COST_PER_TOKEN_RECEIVED))
+    print("Total cost of sent tokens: $" + str(TOTAL_COST_SENT))
+    print("Total cost of received tokens: $" + str(TOTAL_COST_RECEIVED))
+    
+    if (totalCost > MAXIMUM_COST_DOLLARS):
+        print("Cost limit exceeded.  Early exit.")
