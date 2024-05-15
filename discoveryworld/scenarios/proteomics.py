@@ -191,7 +191,7 @@ def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
     animalNames = ["spheroid", "echojelly", "vortisquid", "animaplant", "prismatic beast"]
     answerAnimalName = animalNames[answerAnimalIdx]
 
-    scoringInfo["criticalHypotheses"].append("The " + answerAnimalName + " has proteomics values that appear to be outliers compared to the other animals.")
+    scoringInfo["criticalHypotheses"].append("When performing a clustering analysis, the " + answerAnimalName + " has proteomics values that appear to be outliers compared to the other animals, whose proteomics values all cluster together.")
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 5
