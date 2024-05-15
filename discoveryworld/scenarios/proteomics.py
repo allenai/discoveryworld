@@ -130,6 +130,20 @@ def makeScenarioProteomics(world, numUserAgents=1):
     mkTallTree(20, 18, world)
 
 
+    # Add a table near the sign
+    table = world.createObject("Table")
+    world.addObject(14, 19, Layer.FURNITURE, table)
+    # Add a meter to the table
+    meter = world.createObject("SoilNutrientMeter")
+    table.addObject(meter)
+    scoringInfo["meter"] = meter
+
+    # Add a flag under the table
+    flag = world.createObject("Flag")
+    world.addObject(14, 20, Layer.FURNITURE, flag)
+    scoringInfo["flag"] = flag
+
+
     # Animal locations are nominally 4 along the top, 4 along the bottom, and 2 along the sides. 
     animalLocations = [(4, 4), (12, 4), (20, 4), (28, 4)]   # top
     animalLocations += [(4, 28), (12, 28), (20, 28), (28, 28)]   # bottom
