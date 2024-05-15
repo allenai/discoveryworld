@@ -178,8 +178,9 @@ def makeScenarioProteomics(world, numUserAgents=1):
         for i in range(-1, 2):
             for j in range(-1, 2):
                 world.addObject(statueLocation[0]+i, statueLocation[1]+j, Layer.BUILDING, world.createObject("Path"))
-        statue = world.createObject("Statue")
-        statue.name = "statue of a " + animalNames[idx]
+        #statue = world.createObject("Statue")
+        #statue.name = "statue of a " + animalNames[idx]
+        statue = mkStatue(idx, world)
         world.addObject(statueLocation[0], statueLocation[1], Layer.FURNITURE, statue)
 
         # Scoring info
@@ -523,6 +524,20 @@ def mkAnimal(animalIdx:int, world, preferredX:int, preferredY:int, proteomicsVal
     else:
         return None
 
+def mkStatue(animalIdx:int, world):
+    if (animalIdx == 0):
+        return StatueAnimal1(world)
+    elif (animalIdx == 1):
+        return StatueAnimal2(world)
+    elif (animalIdx == 2):
+        return StatueAnimal3(world)
+    elif (animalIdx == 3):
+        return StatueAnimal4(world)
+    elif (animalIdx == 4):
+        return StatueAnimal5(world)
+    else:
+        return None
+    
 
 class NPCAnimal1(NPCMovingAnimal):
     def __init__(self, world, preferredX, preferredY, proteomicsValues):
@@ -558,3 +573,66 @@ class NPCAnimal5(NPCMovingAnimal):
         spriteCharacterPrefix = "enemy16_03_"
         NPCMovingAnimal.__init__(self, world, name, preferredX=preferredX, preferredY=preferredY, spriteCharacterPrefix=spriteCharacterPrefix)
         self.attributes["proteomicsValues"] = proteomicsValues
+
+
+
+
+
+class StatueAnimal(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "statue", "statue", defaultSpriteName = "statue_statue1")
+
+        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isPassable"] = False                      # Agen't can't walk over this
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Rock"]
+
+    # Add readable text (e.g. for a plaque on the statue)
+    def addReadableText(self, text):
+        self.attributes["isReadable"] = True
+        self.attributes['document'] = text
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+
+class StatueAnimal1(StatueAnimal):
+    def __init__(self, world):
+        StatueAnimal.__init__(self, world)
+        self.defaultSpriteName = "enemy01_04_greyscale_agent_facing_south"
+        self.name = "statue of a spheroid"
+        self.addReadableText("This statue depicts a spheroid, a creature that is known for its round shape and ability to roll around like a ball.  It is a common sight in the fields of the discovery world, and is known to be a peaceful creature.")
+
+class StatueAnimal2(StatueAnimal):
+    def __init__(self, world):
+        StatueAnimal.__init__(self, world)
+        self.defaultSpriteName = "enemy06_04_greyscale_agent_facing_south"
+        self.name = "statue of an echojelly"
+        self.addReadableText("This statue depicts an echojelly, a creature that is known for its transparent body and ability to reflect light in a dazzling display.  It is a common sight in both the land and waters of the discovery world, and is known to be a peaceful creature.")
+
+class StatueAnimal3(StatueAnimal):
+    def __init__(self, world):
+        StatueAnimal.__init__(self, world)
+        self.defaultSpriteName = "enemy10_02_greyscale_agent_facing_south"
+        self.name = "statue of a vortisquid"
+        self.addReadableText("This statue depicts a vortisquid, a creature that is known for its tentacles and ability to move quickly through land and water.  It is a common sight on discovery world, and is known to be a peaceful creature.")
+
+class StatueAnimal4(StatueAnimal):
+    def __init__(self, world):
+        StatueAnimal.__init__(self, world)
+        self.defaultSpriteName = "enemy11_01_greyscale_agent_facing_south"
+        self.name = "statue of an animaplant"
+        self.addReadableText("This statue depicts an animaplant, a creature that is known for its ability to blend in with the plants around it.  It is a common sight in the forests of the discovery world, and is known to be a peaceful creature.")
+
+class StatueAnimal5(StatueAnimal):
+    def __init__(self, world):
+        StatueAnimal.__init__(self, world)
+        self.defaultSpriteName = "enemy16_03_greyscale_agent_facing_south"
+        self.name = "statue of a prismatic beast"
+        self.addReadableText("This statue depicts a prismatic beast, a creature that is known for its apperance, which resembles a bear made out of crystals.  It is a rare sight in the discovery world, and is known to be a peaceful creature.")
+
+
