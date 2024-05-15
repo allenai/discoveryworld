@@ -130,13 +130,52 @@ def makeScenarioProteomics(world, numUserAgents=1):
     mkTallTree(20, 18, world)
 
 
-    # Add NPC animals
-    for i in range(0, 5):
-        # Add a random animal
-        animal = NPCMovingAnimal(world, "Animal" + str(i))
-        world.addObject(15+i, 15, Layer.AGENT, animal)
-        # Add the animal to the list of agents
-        world.addAgent(animal)
+    # Animal locations are nominally 4 along the top, 4 along the bottom, and 2 along the sides. 
+    animalLocations = [(4, 4), (12, 4), (20, 4), (28, 4)]   # top
+    animalLocations += [(4, 28), (12, 28), (20, 28), (28, 28)]   # bottom
+    animalLocations += [(4, 12), (4, 20), (28, 12), (28, 20)]   # sides
+    random.shuffle(animalLocations)
+
+    animals = []
+    for i in range(0, 10):
+        animals.append(NPCMovingAnimal(world, "Animal" + str(i), preferredX=animalLocations[i][0], preferredY=animalLocations[i][1], homeX=animalLocations[i][0], homeY=animalLocations[i][1]))
+        world.addObject(animalLocations[i][0], animalLocations[i][1], Layer.AGENT, animals[i])
+        world.addAgent(animals[i])
+
+
+    # Randomly place trees near the animal locations, but not directly on them.
+    for location in animalLocations:
+        treesPlaced = 0
+        while (treesPlaced < 2):
+            # Pick a random location
+            randX = world.rng.randint(location[0]-3, location[0]+3)
+            randY = world.rng.randint(location[1]-3, location[1]+3)
+
+            # Make sure the location is within the world bounds
+            if (randX < 0):
+                randX = 0
+            if (randX >= world.sizeX):
+                randX = world.sizeX - 1
+            if (randY < 0):
+                randY = 0
+            if (randY >= world.sizeY):
+                randY = world.sizeY - 1
+
+            # Make sure the location isn't the same as the animal location
+            if ((randX == location[0]) and (randY == location[1])):
+                continue
+
+            # Place a tree
+            mkTallTree(randX, randY, world)
+            treesPlaced += 1
+
+    # # Add NPC animals
+    # for i in range(0, 5):
+    #     # Add a random animal
+    #     animal = NPCMovingAnimal(world, "Animal" + str(i))
+    #     world.addObject(15+i, 15, Layer.AGENT, animal)
+    #     # Add the animal to the list of agents
+    #     world.addAgent(animal)
 
     # Randomly place a few decorative plants
     plantCount = 0
@@ -156,6 +195,27 @@ def makeScenarioProteomics(world, numUserAgents=1):
             if (len(objTypes) == 1):
                 # Add a plant
                 world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
+                plantCount += 1
+
+
+    # Add some small plants (randomly placed)
+    plantCount = 0
+    minPlants = 15
+    while (plantCount < minPlants):
+        # Pick a random location
+        randX = world.rng.randint(2, world.sizeX - 2)
+        randY = world.rng.randint(2, world.sizeY - 2)
+
+        # Check to see if there are any objects other than grass there
+        objs = world.getObjectsAt(randX, randY)
+        # Get types of objects
+        objTypes = [obj.type for obj in objs]
+        # Check to see that there is grass here
+        if ("grass" in objTypes):
+            # Check that there is not other things here
+            if (len(objTypes) == 1):
+                # Add a plant
+                world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantRandomSmall"))
                 plantCount += 1
 
 
