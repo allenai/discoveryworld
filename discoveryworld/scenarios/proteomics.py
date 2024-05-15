@@ -603,35 +603,39 @@ class StatueAnimal(Object):
 class StatueAnimal1(StatueAnimal):
     def __init__(self, world):
         StatueAnimal.__init__(self, world)
-        self.defaultSpriteName = "enemy01_04_greyscale_agent_facing_south"
+        self.defaultSpriteName = "statue-01-04_statue1"
         self.name = "statue of a spheroid"
         self.addReadableText("This statue depicts a spheroid, a creature that is known for its round shape and ability to roll around like a ball.  It is a common sight in the fields of the discovery world, and is known to be a peaceful creature.")
 
 class StatueAnimal2(StatueAnimal):
     def __init__(self, world):
         StatueAnimal.__init__(self, world)
-        self.defaultSpriteName = "enemy06_04_greyscale_agent_facing_south"
+        #self.defaultSpriteName = "enemy06_04_greyscale_agent_facing_south"
+        self.defaultSpriteName = "statue-06-04_statue1"
         self.name = "statue of an echojelly"
         self.addReadableText("This statue depicts an echojelly, a creature that is known for its transparent body and ability to reflect light in a dazzling display.  It is a common sight in both the land and waters of the discovery world, and is known to be a peaceful creature.")
 
 class StatueAnimal3(StatueAnimal):
     def __init__(self, world):
         StatueAnimal.__init__(self, world)
-        self.defaultSpriteName = "enemy10_02_greyscale_agent_facing_south"
+        #self.defaultSpriteName = "enemy10_02_greyscale_agent_facing_south"
+        self.defaultSpriteName = "statue-10-2_statue1"
         self.name = "statue of a vortisquid"
         self.addReadableText("This statue depicts a vortisquid, a creature that is known for its tentacles and ability to move quickly through land and water.  It is a common sight on discovery world, and is known to be a peaceful creature.")
 
 class StatueAnimal4(StatueAnimal):
     def __init__(self, world):
         StatueAnimal.__init__(self, world)
-        self.defaultSpriteName = "enemy11_01_greyscale_agent_facing_south"
+        #self.defaultSpriteName = "enemy11_01_greyscale_agent_facing_south"
+        self.defaultSpriteName = "statue-11-01_statue1"
         self.name = "statue of an animaplant"
         self.addReadableText("This statue depicts an animaplant, a creature that is known for its ability to blend in with the plants around it.  It is a common sight in the forests of the discovery world, and is known to be a peaceful creature.")
 
 class StatueAnimal5(StatueAnimal):
     def __init__(self, world):
         StatueAnimal.__init__(self, world)
-        self.defaultSpriteName = "enemy16_03_greyscale_agent_facing_south"
+        #self.defaultSpriteName = "enemy16_03_greyscale_agent_facing_south"
+        self.defaultSpriteName = "statue-16-03_statue1"
         self.name = "statue of a prismatic beast"
         self.addReadableText("This statue depicts a prismatic beast, a creature that is known for its apperance, which resembles a bear made out of crystals.  It is a rare sight in the discovery world, and is known to be a peaceful creature.")
 
