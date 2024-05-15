@@ -161,7 +161,6 @@ def makeScenarioProteomics(world, numUserAgents=1):
     animalLocations += [(4, 12), (4, 20), (28, 12), (28, 20)]   # sides
     random.shuffle(animalLocations)
 
-    outlierAnimal = i%5
     outlierProteomicsValues = {
         "Protein A": 0.1,
         "Protein B": 0.2,
@@ -175,7 +174,7 @@ def makeScenarioProteomics(world, numUserAgents=1):
     for i in range(0, 10):
         animalIdx = i % 5
         proteomicsValues = None
-        if (animalIdx == outlierAnimal):
+        if (animalIdx == answerAnimalIdx):
             proteomicsValues = copy.deepcopy(outlierProteomicsValues)
         else:
             proteomicsValues = copy.deepcopy(inlierProteomicsValues)
@@ -186,9 +185,9 @@ def makeScenarioProteomics(world, numUserAgents=1):
         animals.append(animal)
 
         # Store all the references to each of the 5 animal types
-        if ("animal" + str(i) not in scoringInfo):
-            scoringInfo["animal" + str(i)] = []
-        scoringInfo["animal" + str(i)].append(animal)
+        if ("animal" + str(animalIdx) not in scoringInfo):
+            scoringInfo["animal" + str(animalIdx)] = []
+        scoringInfo["animal" + str(animalIdx)].append(animal)
 
 
     # Randomly place trees near the animal locations, but not directly on them.
