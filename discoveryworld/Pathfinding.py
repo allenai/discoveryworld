@@ -108,6 +108,8 @@ class Pathfinder():
             result = self.runBlankTileInAreaThenMove(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.WANDER):
             result = self.runWander(autopilotAction.args, agent, world)
+        elif (actionType == AutopilotActionType.WANDER_SLOW):
+            result = self.runWander(autopilotAction.args, agent, world, probabilityToMove=0.25)
         elif (actionType == AutopilotActionType.WAIT):
             result = self.runWait(autopilotAction.args, agent, world)
         elif (actionType == AutopilotActionType.EAT_OBJ_IN_INVENTORY):
@@ -743,16 +745,7 @@ class Pathfinder():
             return result
 
 
-    def runWander(self, args:dict, agent, world):
-        ## OLD WANDER
-        # Randomly pick a location to move to on the map
-        #newX = random.randint(0, world.sizeX-1)
-        #newY = random.randint(0, world.sizeX-1)
-
-        # Generate a GOTO action to move to that location
-        #print("runWander:  Generating new x/y location to wander to (" + str(newX) + ", " + str(newY) + ")" )
-        #action = AutopilotAction_GotoXY(newX, newY, priority=args['priority']+1)
-
+    def runWander(self, args:dict, agent, world, probabilityToMove=0.5):
         # NEW WANDER
         # Check if the agent is at args['preferredX'], args['preferredY']
         agentLocation = agent.getWorldLocation()
@@ -762,7 +755,7 @@ class Pathfinder():
         if (distToPreferred < 4):
             # We're close to the preferred location, so do a low-computation move
             # Only move 50% of the time -- keeps the agent's speed slow when it's wandering, so a user can catch up.
-            if (random.random() < 0.5):
+            if (random.random() < probabilityToMove):
                 # Randomly pick a direction to move in
                 directions = ["north", "east", "south", "west"]
                 direction = random.choice(directions)
@@ -1078,6 +1071,15 @@ class AutopilotAction_Wander(AutopilotAction):
         self.args['preferredY'] = preferredY
         self.args['priority'] = priority
 
+class AutopilotAction_WanderSlow(AutopilotAction):
+    # Constructor
+    def __init__(self, preferredX, preferredY, priority=0):
+        self.actionType = AutopilotActionType.WANDER_SLOW
+        self.args = {}
+        self.args['preferredX'] = preferredX
+        self.args['preferredY'] = preferredY
+        self.args['priority'] = priority
+
 class AutopilotAction_Wait(AutopilotAction):
     # Constructor
     def __init__(self, priority=0):
@@ -1138,3 +1140,4 @@ class AutopilotActionType(Enum):
     MOVE_RELATIVE           = 12
     ROTATE_TO_FACE_DIRECTION = 13
     CHECK_CONDITION         = 14
+    WANDER_SLOW             = 15

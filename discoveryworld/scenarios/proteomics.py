@@ -142,7 +142,6 @@ def makeScenarioProteomics(world, numUserAgents=1):
 
     # Soil research building
     #mkProteomicsResearchBuilding(12, 12, world)
-    world.addTeleportLocation("Research Building", 12+3, 12+2)
  
 
     # Make path along fields
@@ -188,6 +187,9 @@ def makeScenarioProteomics(world, numUserAgents=1):
             scoringInfo["correctStatue"] = statue
         scoringInfo["statues"].append(statue)
 
+        # Teleport location
+        world.addTeleportLocation("Statue of a " + animalNames[idx], statueLocation[0], statueLocation[1]+1)
+
     # Add big trees to either side of the research facility
     #mkTallTree(12, 10, world)
     #mkTallTree(9, 10, world)
@@ -225,6 +227,8 @@ def makeScenarioProteomics(world, numUserAgents=1):
     table.addObject(meter)
     scoringInfo["meter"] = meter
 
+    world.addTeleportLocation("Instrument Table", 15, 19)
+
     # Add a flag under the table
     flag = world.createObject("Flag")
     world.addObject(14, 20, Layer.FURNITURE, flag)
@@ -235,8 +239,14 @@ def makeScenarioProteomics(world, numUserAgents=1):
     animalLocations = [(4, 4), (12, 4), (20, 4), (28, 4)]   # top
     animalLocations += [(4, 28), (12, 28), (20, 28), (28, 28)]   # bottom
     animalLocations += [(4, 12), (4, 20), (28, 12), (28, 20)]   # sides
-    random.shuffle(animalLocations)
 
+    # Add each as possible locations for the animals
+    #world.addTeleportLocation("Instrument Table", 15, 19)
+    for idx, location in enumerate(animalLocations):
+        world.addTeleportLocation("Possible Animal Area " + str(idx+1), location[0], location[1])
+
+    # Randomize the order of the animal locations
+    random.shuffle(animalLocations)
 
     # Generate proteomics values
     numDimensions = 2
@@ -375,7 +385,7 @@ def makeScenarioProteomics(world, numUserAgents=1):
         userAgent = Agent(world)
         # TODO: Add starting tools for agent
         # Add the agent to a specfic location
-        world.addObject(13+userAgentIdx, 14, Layer.AGENT, userAgent)      # Near center of dig site
+        world.addObject(15, 16+userAgentIdx, Layer.AGENT, userAgent)      # Near center of dig site
         # Register the agent with the World so we can keep track of it
         world.addAgent(userAgent)
 
@@ -443,7 +453,7 @@ class NPCMovingAnimal(NPC):
         self.pathfinder = Pathfinder()
 
         # Add default action (wandering), which has a low priority
-        self.addAutopilotActionToQueue( AutopilotAction_Wander(preferredX=preferredX, preferredY=preferredY) )
+        self.addAutopilotActionToQueue( AutopilotAction_WanderSlow(preferredX=preferredX, preferredY=preferredY) )
 
         # Store this agent's home location
         #self.attributes['homeX'] = homeX

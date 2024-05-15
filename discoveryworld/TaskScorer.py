@@ -1847,9 +1847,11 @@ class ProteomicsTaskNormal(Task):
     # Constructor
     def __init__(self, world, scoringInfo):
         # TODO: modify description
-        taskDescription = "You are on an archeological dig on Planet X.  6 sites of suspected ancient artifacts have been found, 3 of which have already been uncovered. "
-        taskDescription += "It's not clear how or if radioisotope dating works on Planet X, or how it would differ from Earth, but your task is to figure out if it can be used. "
-        taskDescription += "Your task is to excavate the remaining sites, and figure out a way to use the radioisotope meter to approximately date the artifacts.  Then, once completed, place the red flag beside the sign of the dig site with the oldest artifact. "
+        ## TODO: MODIFY DESCRIPTION FOR PROTEOMICS
+        taskDescription = "You are in a biological preserve on Planet X, that has 5 different animal species. "
+        taskDescription += "We suspect that one of these animal species is not native to the area, but migrated from an isolated island in the recent past. "
+        taskDescription += "Your task is to use the proteomics meter to analyze the proteins of each of the 5 animal species, and determine which species is the anomoly. "
+        taskDescription += "Once you have completed your task, drop the red flag directly beside the statue of the animal species that is the anomoly."
 
         Task.__init__(self, "ProteomicsTaskNormal", taskDescription, world, scoringInfo)
         self.score = 0
