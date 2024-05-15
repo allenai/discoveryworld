@@ -14,20 +14,26 @@ from discoveryworld.Pathfinding import *
 # Generate data for the clustering task
 def generate_clustering_data(clusterSeed, numDimensions, numInliers, numOutliers):
     rng = random.Random(clusterSeed)
-    if numDimensions not in [1, 2, 3, 4]:
-        raise ValueError("Dimensions must be between 1 and 4.")
     
+    if (numDimensions != 2) and (numDimensions != 3):
+        print("The number of dimensions must be 2 or 3 for the clustering data.")
+        return None, None
+
     # Generate a random center within the unit space for the inliers
     #center = np.random.rand(numDimensions)
     inliers = None
     outliers = None
     attempts0 = 0
     while (inliers == None or outliers == None):
-        center = [rng.uniform(0.2, 0.8), rng.uniform(0.2, 0.8)]
+        center = None
+        if (numDimensions == 2):
+            center = [rng.uniform(0.2, 0.8), rng.uniform(0.2, 0.8)]
+        elif (numDimensions == 3):
+            center = [rng.uniform(0.2, 0.8), rng.uniform(0.2, 0.8), rng.uniform(0.2, 0.8)]
         #print("Center is ", center)
 
         # Function to generate points in a sphere around a center
-        def generate_points(n, radius, center):
+        def generate_points2D(n, radius, center):
             points = []
             attempts = 0
             while (len(points) < n):
@@ -47,9 +53,35 @@ def generate_clustering_data(clusterSeed, numDimensions, numInliers, numOutliers
                     return None
             return points
         
+        def generate_points3D(n, radius, center):
+            points = []
+            attempts = 0
+            while (len(points) < n):
+                # Randomly generate an angle
+                angle1 = rng.uniform(0, 2 * np.pi)
+                angle2 = rng.uniform(0, 2 * np.pi)
+                # Generate a point (x1, y1), from center (x0, y0) and radius r
+                x1 = center[0] + radius * math.cos(angle1) * math.sin(angle2)
+                y1 = center[1] + radius * math.sin(angle1) * math.sin(angle2)
+                z1 = center[2] + radius * math.cos(angle2)
+
+                #print("Generated point: ", (x1, y1))
+                # Check the points are within the (0-1) space
+                if (x1 >= 0 and x1 <= 1) and (y1 >= 0 and y1 <= 1) and (z1 >= 0 and z1 <= 1):
+                    points.append([x1, y1, z1])
+
+                attempts += 1
+                if (attempts > 1000):
+                    return None
+            return points
+        
         # Generate inliers and outliers
-        inliers = generate_points(numInliers, 0.1, center)
-        outliers = generate_points(numOutliers, 0.5, center)
+        if (numDimensions == 2):
+            inliers = generate_points2D(numInliers, 0.1, center)
+            outliers = generate_points2D(numOutliers, 0.5, center)
+        elif (numDimensions == 3):
+            inliers = generate_points3D(numInliers, 0.1, center)
+            outliers = generate_points3D(numOutliers, 0.5, center)
 
         attempts0 += 1
         if (attempts0 > 1000):
@@ -60,7 +92,7 @@ def generate_clustering_data(clusterSeed, numDimensions, numInliers, numOutliers
 
 import matplotlib.pyplot as plt
 
-def plot_data(inliers, outliers):
+def plot_data2D(inliers, outliers):
     import matplotlib.pyplot as plt
 
     # Plot inliers
@@ -81,12 +113,43 @@ def plot_data(inliers, outliers):
     plt.grid(True)
     plt.show()
 
-# Example usage
-# rng = random.Random(0)
-# inliers, outliers = generate_clustering_data(rng, numDimensions=2, numInliers=4, numOutliers=1)
+def plot_data3D(inliers, outliers):
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Plot inliers
+    #ax.scatter(inliers[:, 0], inliers[:, 1], inliers[:, 2], c='blue', label='Inliers', edgecolors='w')
+    ax.scatter([x[0] for x in inliers], [x[1] for x in inliers], [x[2] for x in inliers], c='blue', label='Inliers', edgecolors='w')
+    
+    # Plot outliers
+    #ax.scatter(outliers[:, 0], outliers[:, 1], outliers[:, 2], c='red', label='Outliers', marker='x', edgecolors='w')
+    ax.scatter([x[0] for x in outliers], [x[1] for x in outliers], [x[2] for x in outliers], c='red', label='Outliers', marker='x', edgecolors='w')
+    
+    ax.set_xlabel('Dimension 1')
+    ax.set_ylabel('Dimension 2')
+    ax.set_zlabel('Dimension 3')
+    ax.set_title('Clustering Data Visualization')
+    # Make the range 0-1 on all axes
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.set_zlim(0, 1)
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+#Example usage
+#numDimensions = 2
+# numDimensions = 3
+# inliers, outliers = generate_clustering_data(clusterSeed=2, numDimensions=numDimensions, numInliers=4, numOutliers=1)
 # print("Inliers:\n", inliers)
 # print("Outliers:\n", outliers)
-# plot_data(inliers, outliers)
+# if (numDimensions == 2):
+#     plot_data2D(inliers, outliers)
+# elif (numDimensions == 3):
+#     plot_data3D(inliers, outliers)
 # exit(1)
 
 def mkProteomicsResearchBuilding(x, y, world):
@@ -118,7 +181,7 @@ def mkProteomicsResearchBuilding(x, y, world):
     world.addObject(x+2, y+2, Layer.FURNITURE, shovel)
 
 
-def makeScenarioProteomics(world, numUserAgents=1):
+def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
 
@@ -251,6 +314,8 @@ def makeScenarioProteomics(world, numUserAgents=1):
 
     # Generate proteomics values
     numDimensions = 2
+    if (challengeVersion == True):
+        numDimensions = 3
     numInliers = 5
     numOutliers = 1
     inliers, outliers = generate_clustering_data(world.randomSeed, numDimensions, numInliers, numOutliers)
@@ -467,7 +532,7 @@ class NPCMovingAnimal(NPC):
             return
 
         # Debug
-        print("*** NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        #print("*** NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -484,7 +549,7 @@ class NPCMovingAnimal(NPC):
         #     self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=homeX, y=homeY, priority=100) )
 
         # Display autopilot action queue (debug)
-        print(self.displayAutopilotQueueStr())
+        #print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
         if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):

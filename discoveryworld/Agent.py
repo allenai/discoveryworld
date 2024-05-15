@@ -2240,7 +2240,7 @@ class NPCChef1(NPC):
             return
 
         # Debug
-        print("*** NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        #print("*** NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -2366,7 +2366,7 @@ class NPCChef1(NPC):
         # Run the autopilot action queue
 
         # Display autopilot action queue (debug)
-        print(self.displayAutopilotQueueStr())
+        #print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
         if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):
@@ -2433,7 +2433,7 @@ class NPCColonistAuto2(NPC):
             return
 
         # Debug
-        print("*** NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        #print("*** NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -2544,7 +2544,7 @@ class NPCColonistAuto2(NPC):
         # Run the autopilot action queue
 
         # Display autopilot action queue (debug)
-        print(self.displayAutopilotQueueStr())
+        #print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
         if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):
@@ -2614,7 +2614,7 @@ class NPCFarmer1(NPC):
             return
 
         # Debug
-        print("*** NPC States (name: " + self.name + "): " + str(self.attributes['states']))
+        #print("*** NPC States (name: " + self.name + "): " + str(self.attributes['states']))
 
         # Call superclass
         NPC.tick(self)
@@ -2737,7 +2737,7 @@ class NPCFarmer1(NPC):
         # Run the autopilot action queue
 
         # Display autopilot action queue (debug)
-        print(self.displayAutopilotQueueStr())
+        #print(self.displayAutopilotQueueStr())
 
         # Get the NPC's current autopilot action
         if (len(self.autopilotActionQueue) > 0) and (self.attributes['inDialogWith'] == None):

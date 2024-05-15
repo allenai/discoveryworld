@@ -76,7 +76,7 @@ SCENARIO_INFOS = {
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Proteomics": {
-        "difficulty": ["Normal"],
+        "difficulty": ["Normal", "Challenge"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Small Skills: Dialog Test": {
@@ -180,7 +180,7 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
     elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
         scenarioName = "proteomics_normal"
     elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
-        scenarioName = None
+        scenarioName = "proteomics_challenge"
 
     elif (scenarioNameIn == "Small Skills: Dialog Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
         scenarioName = "smallskills_dialog_test"
@@ -274,8 +274,14 @@ class ScenarioMaker():
             return (True, "")
         
         elif (scenarioName == "proteomics_normal"):
-            scoringInfo = makeScenarioProteomics(self.world, numUserAgents)
+            scoringInfo = makeScenarioProteomics(self.world, numUserAgents, challengeVersion=False)
             self.world.addTaskByName("ProteomicsTaskNormal", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+        
+        elif (scenarioName == "proteomics_challenge"):
+            scoringInfo = makeScenarioProteomics(self.world, numUserAgents, challengeVersion=True)
+            self.world.addTaskByName("ProteomicsTaskChallenge", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 

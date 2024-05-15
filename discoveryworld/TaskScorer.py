@@ -47,6 +47,7 @@ class TaskMaker():
 
     # Make a task
     def makeTask(self, taskName:str, scoringInfo:dict=None):
+        # Discovery tasks
         if (taskName == "EatMushroomTask"):
             return EatMushroomTask(self.world, scoringInfo)
         elif (taskName == "RustedKeyTask"):
@@ -66,10 +67,11 @@ class TaskMaker():
         elif (taskName == "ReactorTask"):
             return ReactorTask(self.world, scoringInfo)
         elif (taskName == "ProteomicsTaskNormal"):
-            return ProteomicsTaskNormal(self.world, scoringInfo)
+            return ProteomicsTask(self.world, scoringInfo, challengeVersion=False)
+        elif (taskName == "ProteomicsTaskChallenge"):
+            return ProteomicsTask(self.world, scoringInfo, challengeVersion=True)
 
         # Small Skills
-
         elif (taskName == "SmallSkillsDialogTask"):
             from discoveryworld.scenarios import SmallSkillsDialogTask
             return SmallSkillsDialogTask(self.world, scoringInfo)
@@ -1841,11 +1843,13 @@ class TutorialTask(Task):
 
 
 #
-#   Specific Task: Archeology dig task (generic radioisotopes)
+#   Specific Task: Proteomics Task
 #
-class ProteomicsTaskNormal(Task):
+            
+# Normal and Challenge versions of the Proteomics Task use the same class
+class ProteomicsTask(Task):
     # Constructor
-    def __init__(self, world, scoringInfo):
+    def __init__(self, world, scoringInfo, challengeVersion:bool = False):
         # TODO: modify description
         ## TODO: MODIFY DESCRIPTION FOR PROTEOMICS
         taskDescription = "You are in a biological preserve on Planet X, that has 5 different animal species. "
@@ -1853,7 +1857,10 @@ class ProteomicsTaskNormal(Task):
         taskDescription += "Your task is to use the proteomics meter to analyze the proteins of each of the 5 animal species, and determine which species is the anomoly. "
         taskDescription += "Once you have completed your task, drop the red flag directly beside the statue of the animal species that is the anomoly."
 
-        Task.__init__(self, "ProteomicsTaskNormal", taskDescription, world, scoringInfo)
+        if (challengeVersion == True):
+            Task.__init__(self, "ProteomicsTaskChallenge", taskDescription, world, scoringInfo)
+        else:
+            Task.__init__(self, "ProteomicsTaskNormal", taskDescription, world, scoringInfo)
         self.score = 0
         self.maxScore = 1                       # Maximum score
 
