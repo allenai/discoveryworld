@@ -138,10 +138,11 @@ def makeScenarioProteomics(world, numUserAgents=1):
 
     animals = []
     for i in range(0, 10):
-        animals.append(NPCMovingAnimal(world, "Animal" + str(i), preferredX=animalLocations[i][0], preferredY=animalLocations[i][1], homeX=animalLocations[i][0], homeY=animalLocations[i][1]))
-        world.addObject(animalLocations[i][0], animalLocations[i][1], Layer.AGENT, animals[i])
-        world.addAgent(animals[i])
-
+        animalIdx = i % 5
+        animal = mkAnimal(animalIdx, world, animalLocations[i][0], animalLocations[i][1])
+        world.addObject(animalLocations[i][0], animalLocations[i][1], Layer.AGENT, animal)
+        world.addAgent(animal)
+        animals.append(animal)
 
     # Randomly place trees near the animal locations, but not directly on them.
     for location in animalLocations:
@@ -257,12 +258,16 @@ def makeScenarioProteomics(world, numUserAgents=1):
 
 
 
+        
+
+
 # NPC
 class NPCMovingAnimal(NPC):
     #def __init__(self, world, name):
-    def __init__(self, world, name, preferredX=15, preferredY=15, homeX=15, homeY=15):
+    def __init__(self, world, name, preferredX=15, preferredY=15, spriteCharacterPrefix="character32_"):
         # Default sprite name
-        super().__init__(world, name, defaultSpriteName="character32_agent_facing_east")
+        #super().__init__(world, name, defaultSpriteName="character32_agent_facing_east")
+        super().__init__(world, name, defaultSpriteName=spriteCharacterPrefix + "agent_facing_east")
 
         # Randomly pick a sprite
 
@@ -271,8 +276,9 @@ class NPCMovingAnimal(NPC):
         #self.spriteCharacterPrefix = "character32_"
         # Randomly pick a sprite
         #spriteChoices = ["character32_", "character17_", "character16_", "character35_", "character9_"]
-        spriteChoices = ["enemy01_04_", "enemy06_04_", "enemy10_02_", "enemy11_01_", "enemy14_03_", "enemy16_03_"]
-        self.spriteCharacterPrefix = random.choice(spriteChoices)
+        #spriteChoices = ["enemy01_04_", "enemy06_04_", "enemy10_02_", "enemy11_01_", "enemy14_03_", "enemy16_03_"]
+        #self.spriteCharacterPrefix = random.choice(spriteChoices)
+        self.spriteCharacterPrefix = spriteCharacterPrefix
 
         # Default attributes
         self.attributes["isMovable"] = False                       # Elder cannot be picked.
@@ -293,8 +299,8 @@ class NPCMovingAnimal(NPC):
         self.addAutopilotActionToQueue( AutopilotAction_Wander(preferredX=preferredX, preferredY=preferredY) )
 
         # Store this agent's home location
-        self.attributes['homeX'] = homeX
-        self.attributes['homeY'] = homeY
+        #self.attributes['homeX'] = homeX
+        #self.attributes['homeY'] = homeY
 
     # Tick
     def tick(self):
@@ -308,16 +314,16 @@ class NPCMovingAnimal(NPC):
         # Call superclass
         NPC.tick(self)
 
-        # Check for specific states
-        if (("goHome_" + self.name) in self.attributes['states']):
-            # Remove state
-            self.attributes['states'].remove("goHome_" + self.name)
-            # Clear all actions in the autopilot action queue
-            self.clearAutopilotActionQueue()
-            # Move to a specific location
-            homeX = self.attributes['homeX']
-            homeY = self.attributes['homeY']
-            self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=homeX, y=homeY, priority=100) )
+        # # Check for specific states
+        # if (("goHome_" + self.name) in self.attributes['states']):
+        #     # Remove state
+        #     self.attributes['states'].remove("goHome_" + self.name)
+        #     # Clear all actions in the autopilot action queue
+        #     self.clearAutopilotActionQueue()
+        #     # Move to a specific location
+        #     homeX = self.attributes['homeX']
+        #     homeY = self.attributes['homeY']
+        #     self.addAutopilotActionToQueue( AutopilotAction_GotoXY(x=homeX, y=homeY, priority=100) )
 
         # Display autopilot action queue (debug)
         print(self.displayAutopilotQueueStr())
@@ -344,3 +350,48 @@ class NPCMovingAnimal(NPC):
                 self.autopilotActionQueue.remove(curAutopilotAction)
                 #print("(Agent: " + self.name + "): Action invalid.  Removed from queue.")
 
+
+# Generator for a specific animal
+def mkAnimal(animalIdx:int, world, preferredX:int, preferredY:int):
+    if (animalIdx == 0):
+        return NPCAnimal1(world, preferredX, preferredY)
+    elif (animalIdx == 1):
+        return NPCAnimal2(world, preferredX, preferredY)
+    elif (animalIdx == 2):
+        return NPCAnimal3(world, preferredX, preferredY)
+    elif (animalIdx == 3):
+        return NPCAnimal4(world, preferredX, preferredY)
+    elif (animalIdx == 4):
+        return NPCAnimal5(world, preferredX, preferredY)
+    else:
+        return None
+
+class NPCAnimal1(NPCMovingAnimal):
+    def __init__(self, world, preferredX, preferredY):
+        name = "spheroid"
+        spriteCharacterPrefix = "enemy01_04_"
+        NPCMovingAnimal.__init__(self, world, name, preferredX=preferredX, preferredY=preferredY, spriteCharacterPrefix=spriteCharacterPrefix)
+
+class NPCAnimal2(NPCMovingAnimal):
+    def __init__(self, world, preferredX, preferredY):
+        name = "echojelly"
+        spriteCharacterPrefix = "enemy06_04_"
+        NPCMovingAnimal.__init__(self, world, name, preferredX=preferredX, preferredY=preferredY, spriteCharacterPrefix=spriteCharacterPrefix)
+
+class NPCAnimal3(NPCMovingAnimal):
+    def __init__(self, world, preferredX, preferredY):
+        name = "vortisquid"
+        spriteCharacterPrefix = "enemy10_02_"
+        NPCMovingAnimal.__init__(self, world, name, preferredX=preferredX, preferredY=preferredY, spriteCharacterPrefix=spriteCharacterPrefix)
+
+class NPCAnimal4(NPCMovingAnimal):
+    def __init__(self, world, preferredX, preferredY):
+        name = "animaplant"
+        spriteCharacterPrefix = "enemy11_01_"
+        NPCMovingAnimal.__init__(self, world, name, preferredX=preferredX, preferredY=preferredY, spriteCharacterPrefix=spriteCharacterPrefix)
+
+class NPCAnimal5(NPCMovingAnimal):
+    def __init__(self, world, preferredX, preferredY):
+        name = "prismatic beast"
+        spriteCharacterPrefix = "enemy16_03_"
+        NPCMovingAnimal.__init__(self, world, name, preferredX=preferredX, preferredY=preferredY, spriteCharacterPrefix=spriteCharacterPrefix)
