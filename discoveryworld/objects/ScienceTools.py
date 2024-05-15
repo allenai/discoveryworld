@@ -693,3 +693,68 @@ class FloppyDisk(Object):
 
         # Material
         self.attributes["manualMaterialNames"] = ["Metal"]
+
+
+#
+#   Proteomics meter
+#
+class ProteomicsMeter(Object):
+    # Constructor
+    def __init__(self, world):
+        Object.__init__(self, world, "proteomics meter", "proteomics meter", defaultSpriteName = "instruments_generic_meter")
+
+        # Default attributes
+        self.attributes['isUsable'] = True                       # Can this device be used with another object? (e.g. specifically through the 'use' action)
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
+        pass
+
+
+    #
+    #   Actions (use with)
+    #
+    def actionUseWith(self, patientObj):
+        # Use this object on the patient object
+        useDescriptionStr = "You use the proteomics meter to investigate the " + patientObj.name + ".\n"
+
+        # Check for the "proteomicsValues" attribute in the patient object
+        if ("proteomicsValues" not in patientObj.attributes):
+            useDescriptionStr += "The results are inconclusive.\n"
+            return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+
+        # Check that the dictionary contains more than one key
+        if (len(patientObj.attributes["proteomicsValues"]) == 0):
+            useDescriptionStr += "The results are inconclusive.\n"
+            return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+
+        # If there are values, then report the values
+        useDescriptionStr += "The results are as follows:\n"
+        for key in patientObj.attributes["proteomicsValues"].keys():
+            value = patientObj.attributes["proteomicsValues"][key]
+            # report the value to 2 decimal places
+            valueDescription = "{:.2f}".format(value)
+
+            useDescriptionStr += "- " + key + ": " + valueDescription + "\n"
+
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+
+    #
+    #   Tick
+    #
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        self.curSpriteName = self.defaultSpriteName
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName

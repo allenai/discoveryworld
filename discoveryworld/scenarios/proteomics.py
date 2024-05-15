@@ -46,8 +46,13 @@ def makeScenarioProteomics(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
 
-    # Example of using the world RNG
-    whichNutrientPositive = world.rng.choice([1, 2, 3])
+    # The index of the correct animal for this scenario
+    answerAnimalIdx = world.randomSeed % 5
+    # names of the animals (indexed correctly -- e.g. animal index 0 is called a "spheroid", animal index 1 is called a "echojelly", etc.)
+    animalNames = ["spheroid", "echojelly", "vortisquid", "animaplant", "prismatic beast"]
+    answerAnimalName = animalNames[answerAnimalIdx]
+
+    scoringInfo["criticalHypotheses"].append("The " + answerAnimalName + " has proteomics values that appear to be outliers compared to the other animals.")
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 5
@@ -90,16 +95,22 @@ def makeScenarioProteomics(world, numUserAgents=1):
     world.addObject(13, 20, Layer.FURNITURE, sign)
 
 
-    statueLocations = [(12, 12), (12, 16), (18, 12), (18, 16), (15, 14)]
-
-    for statueLocation in statueLocations:
+    statueLocations = [(12, 12), (12, 16), (18, 12), (18, 16), (15, 14)]    
+    scoringInfo["statues"] = []
+    scoringInfo["correctStatue"] = None
+    for idx, statueLocation in enumerate(statueLocations):
         # Add a plot of path under the statue
         for i in range(-1, 2):
             for j in range(-1, 2):
                 world.addObject(statueLocation[0]+i, statueLocation[1]+j, Layer.BUILDING, world.createObject("Path"))
-        world.addObject(statueLocation[0], statueLocation[1], Layer.FURNITURE, world.createObject("Statue"))
+        statue = world.createObject("Statue")
+        statue.name = "statue of a " + animalNames[idx]
+        world.addObject(statueLocation[0], statueLocation[1], Layer.FURNITURE, statue)
 
-
+        # Scoring info
+        if (idx == answerAnimalIdx):
+            scoringInfo["correctStatue"] = statue
+        scoringInfo["statues"].append(statue)
 
     # Add big trees to either side of the research facility
     #mkTallTree(12, 10, world)
@@ -134,7 +145,7 @@ def makeScenarioProteomics(world, numUserAgents=1):
     table = world.createObject("Table")
     world.addObject(14, 19, Layer.FURNITURE, table)
     # Add a meter to the table
-    meter = world.createObject("SoilNutrientMeter")
+    meter = world.createObject("ProteomicsMeter")
     table.addObject(meter)
     scoringInfo["meter"] = meter
 
@@ -150,13 +161,35 @@ def makeScenarioProteomics(world, numUserAgents=1):
     animalLocations += [(4, 12), (4, 20), (28, 12), (28, 20)]   # sides
     random.shuffle(animalLocations)
 
+    outlierAnimal = i%5
+    outlierProteomicsValues = {
+        "Protein A": 0.1,
+        "Protein B": 0.2,
+    }
+    inlierProteomicsValues = {
+        "Protein A": 0.5,
+        "Protein B": 0.5,
+    }
+
     animals = []
     for i in range(0, 10):
         animalIdx = i % 5
-        animal = mkAnimal(animalIdx, world, animalLocations[i][0], animalLocations[i][1])
+        proteomicsValues = None
+        if (animalIdx == outlierAnimal):
+            proteomicsValues = copy.deepcopy(outlierProteomicsValues)
+        else:
+            proteomicsValues = copy.deepcopy(inlierProteomicsValues)
+            
+        animal = mkAnimal(animalIdx, world, animalLocations[i][0], animalLocations[i][1], proteomicsValues=proteomicsValues)
         world.addObject(animalLocations[i][0], animalLocations[i][1], Layer.AGENT, animal)
         world.addAgent(animal)
         animals.append(animal)
+
+        # Store all the references to each of the 5 animal types
+        if ("animal" + str(i) not in scoringInfo):
+            scoringInfo["animal" + str(i)] = []
+        scoringInfo["animal" + str(i)].append(animal)
+
 
     # Randomly place trees near the animal locations, but not directly on them.
     for location in animalLocations:
@@ -366,46 +399,52 @@ class NPCMovingAnimal(NPC):
 
 
 # Generator for a specific animal
-def mkAnimal(animalIdx:int, world, preferredX:int, preferredY:int):
+def mkAnimal(animalIdx:int, world, preferredX:int, preferredY:int, proteomicsValues=None):
     if (animalIdx == 0):
-        return NPCAnimal1(world, preferredX, preferredY)
+        return NPCAnimal1(world, preferredX, preferredY, proteomicsValues)
     elif (animalIdx == 1):
-        return NPCAnimal2(world, preferredX, preferredY)
+        return NPCAnimal2(world, preferredX, preferredY, proteomicsValues)
     elif (animalIdx == 2):
-        return NPCAnimal3(world, preferredX, preferredY)
+        return NPCAnimal3(world, preferredX, preferredY, proteomicsValues)
     elif (animalIdx == 3):
-        return NPCAnimal4(world, preferredX, preferredY)
+        return NPCAnimal4(world, preferredX, preferredY, proteomicsValues)
     elif (animalIdx == 4):
-        return NPCAnimal5(world, preferredX, preferredY)
+        return NPCAnimal5(world, preferredX, preferredY, proteomicsValues)
     else:
         return None
 
+
 class NPCAnimal1(NPCMovingAnimal):
-    def __init__(self, world, preferredX, preferredY):
+    def __init__(self, world, preferredX, preferredY, proteomicsValues):
         name = "spheroid"
         spriteCharacterPrefix = "enemy01_04_"
         NPCMovingAnimal.__init__(self, world, name, preferredX=preferredX, preferredY=preferredY, spriteCharacterPrefix=spriteCharacterPrefix)
+        self.attributes["proteomicsValues"] = proteomicsValues
 
 class NPCAnimal2(NPCMovingAnimal):
-    def __init__(self, world, preferredX, preferredY):
+    def __init__(self, world, preferredX, preferredY, proteomicsValues):
         name = "echojelly"
         spriteCharacterPrefix = "enemy06_04_"
         NPCMovingAnimal.__init__(self, world, name, preferredX=preferredX, preferredY=preferredY, spriteCharacterPrefix=spriteCharacterPrefix)
+        self.attributes["proteomicsValues"] = proteomicsValues
 
 class NPCAnimal3(NPCMovingAnimal):
-    def __init__(self, world, preferredX, preferredY):
+    def __init__(self, world, preferredX, preferredY, proteomicsValues):
         name = "vortisquid"
         spriteCharacterPrefix = "enemy10_02_"
         NPCMovingAnimal.__init__(self, world, name, preferredX=preferredX, preferredY=preferredY, spriteCharacterPrefix=spriteCharacterPrefix)
+        self.attributes["proteomicsValues"] = proteomicsValues
 
 class NPCAnimal4(NPCMovingAnimal):
-    def __init__(self, world, preferredX, preferredY):
+    def __init__(self, world, preferredX, preferredY, proteomicsValues):
         name = "animaplant"
         spriteCharacterPrefix = "enemy11_01_"
         NPCMovingAnimal.__init__(self, world, name, preferredX=preferredX, preferredY=preferredY, spriteCharacterPrefix=spriteCharacterPrefix)
+        self.attributes["proteomicsValues"] = proteomicsValues
 
 class NPCAnimal5(NPCMovingAnimal):
-    def __init__(self, world, preferredX, preferredY):
+    def __init__(self, world, preferredX, preferredY, proteomicsValues):
         name = "prismatic beast"
         spriteCharacterPrefix = "enemy16_03_"
         NPCMovingAnimal.__init__(self, world, name, preferredX=preferredX, preferredY=preferredY, spriteCharacterPrefix=spriteCharacterPrefix)
+        self.attributes["proteomicsValues"] = proteomicsValues

@@ -263,6 +263,7 @@ class ObjectMaker:
             "FloppyDisk": FloppyDisk,
             "Stick": Stick,
             "MeasuringTape": MeasuringTape,
+            "ProteomicsMeter": ProteomicsMeter,
 
             # Colored objects
             "PaintBucket": PaintBucket,
