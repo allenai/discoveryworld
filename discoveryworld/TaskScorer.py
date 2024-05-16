@@ -1854,8 +1854,8 @@ class ProteomicsTask(Task):
         ## TODO: MODIFY DESCRIPTION FOR PROTEOMICS
         taskDescription = "You are in a biological preserve on Planet X, that has 5 different animal species. "
         taskDescription += "We suspect that one of these animal species is not native to the area, but migrated from an isolated island in the recent past. "
-        taskDescription += "Your task is to use the proteomics meter to analyze the proteins of each of the 5 animal species, and determine which species is the anomoly. "
-        taskDescription += "Once you have completed your task, drop the red flag directly beside the statue of the animal species that is the anomoly."
+        taskDescription += "Your task is to use the proteomics meter to analyze the proteins of each of the 5 animal species, which can be found throughout the environment away from the central statue area, and determine which species is the anomoly. "
+        taskDescription += "Once you have completed your task, return to the statue area and drop the red flag directly beside the statue of the animal species that is the anomoly."
 
         if (challengeVersion == True):
             Task.__init__(self, "ProteomicsTaskChallenge", taskDescription, world, scoringInfo)
