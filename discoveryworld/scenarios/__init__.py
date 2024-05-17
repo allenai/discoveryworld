@@ -7,6 +7,7 @@ from discoveryworld.scenarios.reactor_lab import makeScenarioReactorLab
 from discoveryworld.scenarios.town import makeScenarioTown
 from discoveryworld.scenarios.reactor_lab import makeScenarioReactorLab
 from discoveryworld.scenarios.proteomics import makeScenarioProteomics
+from discoveryworld.scenarios.not_rocket_science import makeScenarioNotRocketScience
 from discoveryworld.scenarios.tutorial import makeScenarioTutorial
 from discoveryworld.scenarios.smallskills_dialog import *
 from discoveryworld.scenarios.smallskills_pickandplace import *
@@ -27,6 +28,8 @@ SCENARIOS = {
     "ArchaeologicalDig": makeScenarioArchaeologicalDig,
     "ArchaeologicalDigGenericRadioisotope": makeScenarioArchaeologicalDigGenericRadioisotope,
     "RosettaStone": makeScenarioRosettaStone,
+    "Proteomics": makeScenarioProteomics,
+    "NotRocketScience": makeScenarioNotRocketScience,
     "ReactorLab": makeScenarioReactorLab,
     "Tutorial": makeScenarioTutorial,
 }

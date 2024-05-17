@@ -22,50 +22,6 @@ from discoveryworld.World import World
 from discoveryworld.constants import ASSETS_PATH
 
 
-# SCENARIO_NAMES = [
-#     "Tutorial", "Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick",
-# #    "TODO 1", "TODO 2"
-# ]
-# SCENARIO_INFOS = {
-#     "Tutorial": {
-#         "difficulty": ["Normal"],
-#         "variations": ["1"],
-#     },
-#     "Combinatorial Chemistry": {
-#         "difficulty": ["Normal", "Challenge"],
-#         "variations": ["1", "2", "3", "4", "5"],
-#     },
-#     "Archaeology Dating": {
-#         "difficulty": ["Normal", "Challenge"],
-#         "variations": ["1", "2", "3", "4", "5"],
-#     },
-#     "Plant Nutrients": {
-#         "difficulty": ["Normal"],
-#         "variations": ["1", "2", "3", "4", "5"],
-#     },
-#     "Reactor Lab": {
-#         "difficulty": ["Normal"],
-#         "variations": ["1", "2", "3", "4", "5"],
-#     },
-#     "Lost in Translation": {
-#         "difficulty": ["Normal", "Challenge"],
-#         "variations": ["1", "2", "3", "4", "5"],
-#     },
-#     "Space Sick": {
-#         "difficulty": ["Normal"],
-#         "variations": ["1", "2", "3", "4", "5"],
-#     },
-#     # "TODO 1": {
-#     #     "difficulty": ["Easy", "Challenge"],
-#     #     "variations": ["1", "2", "3", "4", "5"],
-#     # },
-#     # "TODO 2": {
-#     #     "difficulty": ["Easy", "Challenge"],
-#     #     "variations": ["1", "2", "3", "4", "5"],
-#     # },
-# }
-
-
 # Helper for showing a dialog box containing a number of options, with the user able to pick one using arrow keys/return.
 def dialogPickOption(window, options:list, displayMessage:str=None):
     # Initialize Pygame fonts
@@ -263,49 +219,6 @@ def pickScenario(window):
 
     # Map between the choice and the scenario name
     scenarioName = getInternalScenarioName(choiceTaskName, choiceDifficulty)
-    # # Scenario 0: Tutorial
-    # if choiceTaskName == "Tutorial":
-    #     scenarioName = "tutorial"
-    # # Scenario 1: Combinatorial Chemistry
-    # elif (choiceTaskName == "Combinatorial Chemistry") and (choiceDifficulty == optionsDifficulty[0]):
-    #     scenarioName = "combinatorial_chemistry"
-    # elif (choiceTaskName == "Combinatorial Chemistry") and (choiceDifficulty == optionsDifficulty[1]):
-    #     scenarioName = "combinatorial_chemistry_challenge"
-    # # Scenario 2: Archaeology Dating
-    # elif (choiceTaskName == "Archaeology Dating") and (choiceDifficulty == optionsDifficulty[0]):
-    #     scenarioName = "archaeology_dating_simple"
-    # elif (choiceTaskName == "Archaeology Dating") and (choiceDifficulty == optionsDifficulty[1]):
-    #     scenarioName = "archaeology_dating_challenge"
-    # # Scenario 3: Plant Nutrients
-    # elif (choiceTaskName == "Plant Nutrients") and (choiceDifficulty == optionsDifficulty[0]):
-    #     scenarioName = "plant_nutrients"
-    # elif (choiceTaskName == "Plant Nutrients") and (choiceDifficulty == optionsDifficulty[1]):
-    #     scenarioName = None
-    # # Scenario 4: Reactor Lab
-    # elif (choiceTaskName == "Reactor Lab") and (choiceDifficulty == optionsDifficulty[0]):
-    #     scenarioName = "reactor_lab"
-    # elif (choiceTaskName == "Reactor Lab") and (choiceDifficulty == optionsDifficulty[1]):
-    #     scenarioName = None
-    # # Scenario 5: Lost in Translation
-    # elif (choiceTaskName == "Lost in Translation") and (choiceDifficulty == optionsDifficulty[0]):
-    #     scenarioName = "lost_in_translation_easy"
-    # elif (choiceTaskName == "Lost in Translation") and (choiceDifficulty == optionsDifficulty[1]):
-    #     scenarioName = "lost_in_translation_hard"
-    # # Scenario 6: Space Sick
-    # elif (choiceTaskName == "Space Sick") and (choiceDifficulty == optionsDifficulty[0]):
-    #     scenarioName = "food_illness"
-    # elif (choiceTaskName == "Space Sick") and (choiceDifficulty == optionsDifficulty[1]):
-    #     scenarioName = None
-    # # Scenario 7: TODO 1
-    # elif (choiceTaskName == "TODO 1") and (choiceDifficulty == optionsDifficulty[0]):
-    #     scenarioName = None
-    # elif (choiceTaskName == "TODO 1") and (choiceDifficulty == optionsDifficulty[1]):
-    #     scenarioName = None
-    # # Scenario 8: TODO 2
-    # elif (choiceTaskName == "TODO 2") and (choiceDifficulty == optionsDifficulty[0]):
-    #     scenarioName = None
-    # elif (choiceTaskName == "TODO 2") and (choiceDifficulty == optionsDifficulty[1]):
-    #     scenarioName = None
 
     # Map between variation and random seed
     seed = int(choiceVariation)-1
@@ -903,4 +816,3 @@ if __name__ == "__main__":
     print("Seed: " + str(args.seed))
 
     main(args)
-

@@ -33,7 +33,7 @@ SCENARIOS = [
 
 # Canonical (outside) names
 SCENARIO_NAMES = [
-    "Tutorial", "Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "Proteomics", "
+    "Tutorial", "Combinatorial Chemistry", "Archaeology Dating", "Plant Nutrients", "Reactor Lab", "Lost in Translation", "Space Sick", "Proteomics",
     "It's (not) Rocket Science!",
     "Small Skills: Dialog Test",
     "Small Skills: Pick and Place Test",
@@ -135,7 +135,7 @@ SCENARIO_INFOS = {
     # },
 }
 
-SCENARIO_DIFFICULTY_OPTIONS = ["Normal", "Challenge"]
+SCENARIO_DIFFICULTY_OPTIONS = ["Normal", "Challenge", "Test"]
 
 
 # Mapping canonical scenario names to internal scenario names
@@ -178,20 +178,16 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
     elif (scenarioNameIn == "Space Sick") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
         scenarioName = None
     # Scenario 7: TODO 1
-    elif (scenarioNameIn == "TODO 1") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
-        scenarioName = None
-    elif (scenarioNameIn == "TODO 1") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
-        scenarioName = None
-    # Scenario 8: TODO 2
     elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
         scenarioName = "proteomics_normal"
     elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
         scenarioName = "proteomics_challenge"
-    elif (scenarioNameIn == "It's (not) Rocket Science!") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    # Scenario 8: TODO 2
+    elif (scenarioNameIn == "It's (not) Rocket Science!") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[-1]):
         scenarioName = "not_rocket_science_easy"
     elif (scenarioNameIn == "It's (not) Rocket Science!") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
         scenarioName = "not_rocket_science_normal"
-    
+
     elif (scenarioNameIn == "Small Skills: Dialog Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
         scenarioName = "smallskills_dialog_test"
 
@@ -282,27 +278,22 @@ class ScenarioMaker():
             self.world.addTaskByName("ReactorTask", scoringInfo)
             self.world.initialFilter()
             return (True, "")
-        
+
         elif (scenarioName == "proteomics_normal"):
             scoringInfo = makeScenarioProteomics(self.world, numUserAgents, challengeVersion=False)
             self.world.addTaskByName("ProteomicsTaskNormal", scoringInfo)
             self.world.initialFilter()
             return (True, "")
-        
+
         elif (scenarioName == "proteomics_challenge"):
             scoringInfo = makeScenarioProteomics(self.world, numUserAgents, challengeVersion=True)
             self.world.addTaskByName("ProteomicsTaskChallenge", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 
-        elif (scenarioName == "not_rocket_science_easy"):
-            scoringInfo = makeScenarioNotRocketScience(self.world, numUserAgents, "easy")
-            self.world.addTaskByName("NotRocketScienceTask", scoringInfo)
-            self.world.initialFilter()
-            return (True, "")
-
-        elif (scenarioName == "not_rocket_science_normal"):
-            scoringInfo = makeScenarioNotRocketScience(self.world, numUserAgents, "normal")
+        elif (scenarioName.startswith("not_rocket_science")):
+            difficulty = scenarioName.rsplit("_")[-1]
+            scoringInfo = makeScenarioNotRocketScience(self.world, numUserAgents, difficulty)
             self.world.addTaskByName("NotRocketScienceTask", scoringInfo)
             self.world.initialFilter()
             return (True, "")
@@ -360,13 +351,13 @@ class ScenarioMaker():
             self.world.addTaskByName("SmallSkillsSearchTask", scoringInfo)
             self.world.initialFilter()
             return (True, "")
-        
+
         elif (scenarioName == "smallskills_discoveryfeed_test"):
             scoringInfo = makeScenarioDiscoveryFeedTest(self.world, numUserAgents)
             self.world.addTaskByName("SmallSkillsDiscoveryFeedTask", scoringInfo)
             self.world.initialFilter()
             return (True, "")
-        
+
         elif (scenarioName == "smallskills_moving_agents_test"):
             scoringInfo = makeScenarioMovingAgentsTest(self.world, numUserAgents)
             self.world.addTaskByName("SmallSkillsMovingAgentsTask", scoringInfo)
