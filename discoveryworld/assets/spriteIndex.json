@@ -98,6 +98,137 @@
             }
     },
     {
+        "sheetName": "desert1",
+        "filename": "pixymoon/CuteRPG_Desert/32x32/CuteRPG_Desert_Outside_modified.png",
+        "tileSize": [32, 32],
+        "sprites":
+        {
+            "sand":         { "baseTile": [1, 0],  "size": [1, 1] },
+
+            "rock1":         { "baseTile": [10, 7],  "size": [1, 1] },
+            "rock2":         { "baseTile": [10, 8],  "size": [1, 1] },
+            "rock3":         { "baseTile": [10, 9],  "size": [1, 1] },
+            "rock4":         { "baseTile": [10, 10],  "size": [1, 1] },
+            "rock5":         { "baseTile": [10, 11],  "size": [1, 1] },
+
+            "cactus_top":   { "baseTile": [7, 0],  "size": [1, 1] },
+            "cactus_bottom":{ "baseTile": [7, 1],  "size": [1, 1] },
+
+            "cactus1_top_left":   { "baseTile": [8, 0],  "size": [1, 1] },
+            "cactus1_bottom_left":{ "baseTile": [8, 1],  "size": [1, 1] },
+            "cactus1_top_right":   { "baseTile": [9, 0],  "size": [1, 1] },
+            "cactus1_bottom_right":{ "baseTile": [9, 1],  "size": [1, 1] },
+
+            "cactus4_top":   { "baseTile": [10, 0],  "size": [1, 1] },
+            "cactus4_bottom":{ "baseTile": [10, 1],  "size": [1, 1] },
+
+            "path_c":       { "baseTile": [3, 3],  "size": [1, 1] },
+            "path_l":       { "baseTile": [2, 3],  "size": [1, 1] },
+            "path_r":       { "baseTile": [4, 3],  "size": [1, 1] },
+            "path_t":       { "baseTile": [3, 2],  "size": [1, 1] },
+            "path_b":       { "baseTile": [3, 4],  "size": [1, 1] },
+
+            "path_tl":      { "baseTile": [2, 2],  "size": [1, 1] },
+            "path_tr":      { "baseTile": [4, 2],  "size": [1, 1] },
+            "path_bl":      { "baseTile": [2, 4],  "size": [1, 1] },
+            "path_br":      { "baseTile": [4, 4],  "size": [1, 1] },
+
+            "path_lr":      { "baseTile": [0, 4],  "size": [1, 1] },
+            "path_tb":      { "baseTile": [1, 4],  "size": [1, 1] },
+
+            "path_1way_r":  { "baseTile": [0, 5],  "size": [1, 1] },
+            "path_1way_b":  { "baseTile": [1, 5],  "size": [1, 1] },
+            "path_1way_l":  { "baseTile": [2, 5],  "size": [1, 1] },
+            "path_1way_t":  { "baseTile": [3, 5],  "size": [1, 1] },
+
+            "path_single":  { "baseTile": [2, 12],  "size": [1, 1] }
+
+        },
+        "composites": {}
+    },
+    {
+        "sheetName": "desert1",
+        "filename": "pixymoon/CuteRPG_Desert/32x32/CuteRPG_Desert_Inside.png",
+        "tileSize": [32, 32],
+        "sprites":
+        {
+
+            "sand_bump":    { "baseTile": [1, 2],  "size": [1, 1] }
+        },
+        "composites": {}
+    },
+    {
+        "sheetName": "launchSite2",
+        "filename": "pixymoon/CuteRPG_Village/32x32/CuteRPG_Village_House.png",
+        "tileSize": [32, 32],
+        "sprites":
+        {
+
+            "pad_bl":    { "baseTile": [35, 18],  "size": [1, 1] },
+            "pad_bc":    { "baseTile": [36, 18],  "size": [1, 1] },
+            "pad_br":    { "baseTile": [39, 18],  "size": [1, 1] },
+            "pad_tl":    { "baseTile": [35, 14],  "size": [1, 1] },
+            "pad_tc":    { "baseTile": [36, 14],  "size": [1, 1] },
+            "pad_tr":    { "baseTile": [39, 14],  "size": [1, 1] },
+            "pad_lc":    { "baseTile": [35, 16],  "size": [1, 1] },
+            "pad_cc":    { "baseTile": [37, 16],  "size": [1, 1] },
+            "pad_rc":    { "baseTile": [39, 16],  "size": [1, 1] }
+        },
+        "composites": {}
+    },
+    {
+        "sheetName": "launchSite",
+        "filename": "pixymoon/CuteRPG_Houses/32x32/CuteRPG_Houses_C.png",
+        "tileSize": [32, 32],
+        "sprites":
+        {
+
+            "pad_bl":    { "baseTile": [12, 28],  "size": [1, 1] },
+            "pad_bc":    { "baseTile": [13, 28],  "size": [1, 1] },
+            "pad_br":    { "baseTile": [15, 28],  "size": [1, 1] },
+            "pad_tl":    { "baseTile": [12, 25],  "size": [1, 1] },
+            "pad_tc":    { "baseTile": [13, 25],  "size": [1, 1] },
+            "pad_tr":    { "baseTile": [15, 25],  "size": [1, 1] },
+            "pad_lc":    { "baseTile": [12, 26],  "size": [1, 1] },
+            "pad_cc":    { "baseTile": [13, 26],  "size": [1, 1] },
+            "pad_rc":    { "baseTile": [15, 26],  "size": [1, 1] }
+        },
+        "composites": {}
+    },
+    {
+        "sheetName": "launchSite",
+        "filename": "placeholder/instruments2.png",
+        "tileSize": [32, 32],
+        "sprites":
+        {
+
+            "rocket_top":           { "baseTile": [1, 2],  "size": [1, 1] },
+            "rocket_bottom":        { "baseTile": [1, 3],  "size": [1, 1] },
+            "rocket_bottom_fire":   { "baseTile": [0, 3],  "size": [1, 1] },
+            "rocket_fire":          { "baseTile": [0, 4],  "size": [1, 1] },
+
+            "monitor_tl":         { "baseTile": [2, 2],  "size": [1, 1] },
+            "monitor_t":          { "baseTile": [3, 2],  "size": [1, 1] },
+            "monitor_tr":         { "baseTile": [4, 2],  "size": [1, 1] },
+            "monitor_bl":         { "baseTile": [2, 3],  "size": [1, 1] },
+            "monitor_b":          { "baseTile": [3, 3],  "size": [1, 1] },
+            "monitor_br":         { "baseTile": [4, 3],  "size": [1, 1] },
+
+            "fuel_tank_A_t":      { "baseTile": [5, 2],  "size": [1, 1] },
+            "fuel_tank_A_c":      { "baseTile": [5, 3],  "size": [1, 1] },
+            "fuel_tank_A_b":      { "baseTile": [5, 4],  "size": [1, 1] },
+
+            "fuel_tank_B_t":      { "baseTile": [6, 2],  "size": [1, 1] },
+            "fuel_tank_B_c":      { "baseTile": [6, 3],  "size": [1, 1] },
+            "fuel_tank_B_b":      { "baseTile": [6, 4],  "size": [1, 1] },
+
+            "fuel_tank_C_t":      { "baseTile": [7, 2],  "size": [1, 1] },
+            "fuel_tank_C_c":      { "baseTile": [7, 3],  "size": [1, 1] },
+            "fuel_tank_C_b":      { "baseTile": [7, 4],  "size": [1, 1] }
+        },
+        "composites": {}
+    },
+    {
         "sheetName": "forest1",
         "filename": "pixymoon/CuteRPG_Forest/32x32/CuteRPG_Forest_modified2.png",
         "tileSize": [32, 32],
@@ -325,6 +456,10 @@
 
                 "stick":             { "baseTile": [6, 0],  "size": [1, 1] },
                 "measuring_tape":    { "baseTile": [7, 0],  "size": [1, 1] },
+                "speed_square":      { "baseTile": [7, 1],  "size": [1, 1] },
+                "pendulum":          { "baseTile": [7, 5],  "size": [1, 2] },
+                "pendulum_top":      { "baseTile": [7, 5],  "size": [1, 1] },
+                "pendulum_bottom":   { "baseTile": [7, 6],  "size": [1, 1] },
 
                 "mushroom_white":  { "baseTile": [4, 1],  "size": [1, 1], "color": "white" },
                 "mushroom_red":    { "baseTile": [4, 1],  "size": [1, 1], "color": "red" },
@@ -341,6 +476,7 @@
                 "flower_yellow": { "baseTile": [5, 1],  "size": [1, 1], "color": "yellow" },
                 "flower_pink":  { "baseTile": [5, 1],  "size": [1, 1], "color": "deeppink" },
                 "flower_orange": { "baseTile": [5, 1],  "size": [1, 1], "color": "orange" }
+
             },
         "composites":
             {

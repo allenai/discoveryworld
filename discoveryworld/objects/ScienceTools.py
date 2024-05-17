@@ -758,3 +758,36 @@ class ProteomicsMeter(Object):
 
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
+
+
+class Rocket(Object):
+    def __init__(self, world, part=None, isFiring=False):
+        assert part is not None, "Rocket must have a part"
+        super().__init__(world, "rocket", "rocket", defaultSpriteName=f"launchSite_rocket_{part}")
+        self.attributes['isMovable'] = False
+        self.isFiring = isFiring
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
+
+class LaunchMonitor(Object):
+    def __init__(self, world, part=None):
+        assert part is not None, "LaunchMonitor must have a part"
+        super().__init__(world, "monitor", "monitor", defaultSpriteName=f"launchSite_monitor_{part}")
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
+        self.attributes['isReadable'] = True                       # Can it be read?
+        self.attributes["document"] = "A lot of data is displayed on the monitor; none useful for you."
+
+
+class FuelTank(Object):
+    def __init__(self, world, variant=None, part=None):
+        assert part is not None, "FuelTank must have a part"
+        assert variant is not None, "FuelTank must have a variant"
+        super().__init__(world, "tank", "tank", defaultSpriteName=f"launchSite_fuel_tank_{variant}_{part}")
+
+        self.attributes["isPassable"] = (part != "b")
+        self.attributes["manualMaterialNames"] = ["Metal"]

@@ -34,7 +34,7 @@ from discoveryworld.World import World
 
 def main(args):
     print("Initializing...")
-    displayGrid = args.debug
+    displayGrid = False
 
     # 32 pixels/tile * 32 tiles = 1024 pixels
 
@@ -66,11 +66,6 @@ def main(args):
         viewportSizeY = 32
 
     scale = 1.0
-    if os.environ.get("MARC", False):
-        scale = 2.0
-        viewportSizeX //= 2
-        viewportSizeY //= 2
-
 
     # Open window
     #window = pygame.display.set_mode((gameParams["width"], gameParams["height"]))
@@ -197,6 +192,14 @@ def main(args):
                     displayGrid = not displayGrid
                     doNextTurn = True
                     success = True
+
+                if (keys[pygame.K_x]):
+                    # Zoom in
+                    scale = (scale % 2) + 1.0
+                    viewportSizeX = 32 // int(scale)
+                    viewportSizeY = 32 // int(scale)
+                    doNextTurn = False
+                    time.sleep(0.3)
 
                 # Manual "wait"
                 elif (keys[pygame.K_w]):

@@ -1,6 +1,7 @@
 import numpy as np
 from discoveryworld.ActionSuccess import ActionSuccess, MessageImportance
 from discoveryworld.objects.Object import Object
+from discoveryworld.objects.Terrain import Sand
 
 
 class Flag(Object):
@@ -333,3 +334,57 @@ class ColoredKey(Object):
     def tick(self):
         super().tick()
         self.curSpriteModifiers.add(f"instruments_key_{self.color}")
+
+class SpeedSquare(Object):
+    def __init__(self, world):
+        super().__init__(world, "speed square", "speed square", defaultSpriteName="instruments2_speed_square")
+        self.attributes['isUsable'] = True
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
+    def actionUseWith(self, otherObject=None):
+        if isinstance(otherObject, Sand):
+            ground = otherObject
+            useDescriptionStr = f"The rays coming from Planet X's star are {ground.attributes['lightAngle']} degrees from the ground.\n"
+
+            if ground.attributes["lightAngle"] >= 2:
+                useDescriptionStr = useDescriptionStr.replace("degree", "degrees")
+
+        else:
+            useDescriptionStr = "Use on open sky ground tile to measure light angle.\n"
+            return ActionSuccess(False, useDescriptionStr, importance=MessageImportance.LOW)
+
+        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+
+
+class Pendulum(Object):
+    def __init__(self, world, part=None):
+        # assert part in ["top", "bottom"]
+        # super().__init__(world, "pendulum", f"pendulum ({part})", defaultSpriteName=f"instruments2_pendulum_{part}")
+        super().__init__(world, "pendulum", f"pendulum", defaultSpriteName=f"instruments2_pendulum")
+        self.attributes['isActivatable'] = True
+        self.attributes['isActivated'] = False
+        self.attributes['isPassable'] = False
+        self.attributes['isReadable'] = True
+        self.nbTicksSinceActivation = 0
+        self.oscillationPeriod = 7
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Metal"]
+
+    def tick(self):
+        super().tick()
+        if self.attributes['isActivated']:
+            self.nbTicksSinceActivation += 1
+        else:
+            self.nbTicksSinceActivation = 0
+
+        # Compute the number of oscillations since activation.
+        # nbOscillations = self.nbTicksSinceActivation // self.oscillationPeriod
+        nbOscillations = np.round(self.nbTicksSinceActivation / self.oscillationPeriod, 3)
+        self.attributes["document"] = f"{nbOscillations} oscillations in {self.nbTicksSinceActivation} ticks."
+
+    def getTextDescription(self):
+        status = "activated" if self.attributes['isActivated'] else "deactivated"
+        return f"{self.name} ({status}) => {self.attributes['document']}"

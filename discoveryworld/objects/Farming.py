@@ -899,3 +899,22 @@ class ColoredFlower(Object):
     def tick(self):
         super().tick()
         self.curSpriteModifiers.add(f"instruments2_flower_{self.color}")
+
+
+class Cactus(Object):
+    def __init__(self, world, part=None):
+        assert part in ("top", "bottom")
+        super().__init__(world, "cactus", f"cactus {part}", defaultSpriteName=f"desert1_cactus_{part}")
+
+        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isPassable"] = (part == "top")           # Agen't can't walk over this
+
+
+class BigCactus(Object):
+    def __init__(self, world, side=None, part=None):
+        assert part in ("top", "bottom")
+        assert side in ("left", "right")
+        super().__init__(world, "cactus", f"cactus {part} {side}", defaultSpriteName=f"desert1_cactus1_{part}_{side}")
+
+        self.attributes["isMovable"] = False                       # Can it be moved?
+        self.attributes["isPassable"] = (part == "top")           # Agen't can't walk over this

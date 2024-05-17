@@ -10,6 +10,16 @@ def mkGrassFill(world):
             world.addObject(x, y, Layer.WORLD, world.createObject("Grass"))
 
 
+def mkSandFill(world):
+    """ Fill the world with a base layer of sand. """
+    for y in range(world.sizeY):
+        for x in range(world.sizeX):
+            if world.rng.random() > 0.1:
+                world.addObject(x, y, Layer.WORLD, world.createObject("Sand"))
+            else:
+                world.addObject(x, y, Layer.WORLD, world.createObject("Sand", variant="bump"))
+
+
 def mkTownSquare(x, y, world):
     # Add statue
     statue = world.createObject("Statue")
@@ -25,16 +35,16 @@ def mkTownSquare(x, y, world):
 
 
 # Path making
-def mkPathX(x, y, lengthX, world):
+def mkPathX(x, y, lengthX, world, type="Sand"):
     for i in range(0, lengthX):
         if (not world.hasObj(x+i, y, "path")):
-            world.addObject(x+i, y, Layer.WORLD, world.createObject("Path"))
+            world.addObject(x+i, y, Layer.WORLD, world.createObject(type))
 
 
-def mkPathY(x, y, lengthY, world):
+def mkPathY(x, y, lengthY, world, type="Sand"):
     for i in range(0, lengthY):
         if (not world.hasObj(x, y+i, "path")):
-            world.addObject(x, y+i, Layer.WORLD, world.createObject("Path"))
+            world.addObject(x, y+i, Layer.WORLD, world.createObject(type))
 
 
 # Fence making

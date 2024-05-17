@@ -70,6 +70,9 @@ class TaskMaker():
             return ProteomicsTask(self.world, scoringInfo, challengeVersion=False)
         elif (taskName == "ProteomicsTaskChallenge"):
             return ProteomicsTask(self.world, scoringInfo, challengeVersion=True)
+        elif (taskName == "NotRocketScienceTask"):
+            from discoveryworld.scenarios.not_rocket_science import NotRocketScienceTask
+            return NotRocketScienceTask(self.world, scoringInfo)
 
         # Small Skills
         elif (taskName == "SmallSkillsDialogTask"):

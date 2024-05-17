@@ -1,6 +1,7 @@
 # UtilSpriteSheetGrid.py
 import argparse
 from os.path import join as pjoin
+import time
 
 # Font
 import pygame
@@ -12,7 +13,7 @@ from discoveryworld.constants import ASSETS_PATH
 # This function loads a spritesheet, and displays them all in a grid. It shows the grid coordinates for each sprite.
 # This is useful for figuring out the coordinates of sprites in a spritesheet.
 # Offset is an (x, y) tuple that is added to the coordinates of each sprite.
-def displayGrid(filename, tileSize, offset, transparentColor, window):
+def displayGrid(filename, tileSize, offset, transparentColor, window, scale=1.0):
     pygame.font.init()
 
     # Load the spritesheet
@@ -20,19 +21,25 @@ def displayGrid(filename, tileSize, offset, transparentColor, window):
     spritesheet.set_colorkey(transparentColor)
 
     # Display the spritesheet
-    window.blit(spritesheet, (0, 0))
+    spritesheet = pygame.transform.scale(spritesheet, (int(spritesheet.get_width() * scale), int(spritesheet.get_height() * scale)))
+    window.blit(spritesheet, offset)
 
     # Display the grid
     for y in range(0, spritesheet.get_height(), tileSize[1]):
+    #for y in range(offset[1], spritesheet.get_height() + offset[1], tileSize[1]):
         pygame.draw.line(window, (255, 255, 255), (0 + offset[0], y + offset[1]), (spritesheet.get_width(), y + offset[1]))
+        # pygame.draw.line(window, (255, 255, 255), (0, y), (spritesheet.get_width(), y))
     for x in range(0, spritesheet.get_width(), tileSize[0]):
+    # for x in range(offset[0], spritesheet.get_width() + offset[0], tileSize[0]):
         pygame.draw.line(window, (255, 255, 255), (x + offset[0], 0 + offset[1]), (x + offset[0], spritesheet.get_height()))
+        # pygame.draw.line(window, (255, 255, 255), (x, 0), (x, spritesheet.get_height()))
 
     # Display the grid coordinates
-    font = pygame.font.SysFont("Arial", 8)
+    font = pygame.font.SysFont("Arial", int(8*scale))
     for y in range(0, spritesheet.get_height(), tileSize[1]):
         for x in range(0, spritesheet.get_width(), tileSize[0]):
             text = font.render(str(x // tileSize[0]) + "," + str(y // tileSize[1]), True, (255, 255, 255))
+            #text = pygame.transform.scale(text, (int(text.get_width() * scale), int(text.get_height() * scale)))
             window.blit(text, (x + 2 + offset[0], y + 2 + offset[1]))
 
 
@@ -51,6 +58,7 @@ def main(args):
     #tileSize = (24, 24)
     #offset = (8, 0)
     offset = (0, 0)
+    scale = 1.0
     transparentColor = (0, 0, 0)
 
     windowSize = (1800, 1200)
@@ -78,12 +86,39 @@ def main(args):
 
         # Display the sprite sheet
         try:
-            displayGrid(args.filename, tileSize, offset, transparentColor, window)
+            displayGrid(args.filename, tileSize, offset, transparentColor, window, scale)
         except:
-            displayGrid(pjoin(ASSETS_PATH, args.filename), tileSize, offset, transparentColor, window)
+            displayGrid(pjoin(ASSETS_PATH, args.filename), tileSize, offset, transparentColor, window, scale)
 
         # Flip the backbuffer
         pygame.display.flip()
+
+        # Add zooming with x and z keys
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_x]:
+            scale *= 2
+            tileSize = (tileSize[0] * 2, tileSize[1] * 2)
+        if keys[pygame.K_z]:
+            scale //= 2
+            tileSize = (tileSize[0] // 2, tileSize[1] // 2)
+
+        # Use arrows to move center
+        if keys[pygame.K_LEFT]:
+            offset = (offset[0] + tileSize[0], offset[1])
+            time.sleep(0.3)
+
+        if keys[pygame.K_RIGHT]:
+            offset = (offset[0] - tileSize[0], offset[1])
+            time.sleep(0.3)
+
+        if keys[pygame.K_UP]:
+            offset = (offset[0], offset[1] + tileSize[1])
+            time.sleep(0.3)
+
+        if keys[pygame.K_DOWN]:
+            offset = (offset[0], offset[1] - tileSize[1])
+            time.sleep(0.3)
+
 
 
 # Main

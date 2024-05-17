@@ -176,19 +176,23 @@ Each concept can be introduced through interactive elements, puzzles, and story-
 
 # How to build a rocket (it's not rocket science...).
 
+-> Make sure the object's attributes are not exposed to the LLM via the JSON dict!
+
 ### Unknown variables
 - Gravity
+  - Planet Radius
+  - Planet Mass
 - Air resistance
 - Fuel energy output
+  - Thrust energy output from the engine
 
 ### Controllable variables
-- Thrust
 - Fuel source
+- Amount of fuel
 - Angle of launch
 
 ### Target variables
-- Orbit distance from planet
-- Orbital speed
+- Orbit distance from planet <-> Orbital speed
 
 
 ## Small experiments to figure out the unknown variables

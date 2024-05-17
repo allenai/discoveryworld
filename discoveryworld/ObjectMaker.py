@@ -295,7 +295,19 @@ class ObjectMaker:
             "SubstanceA": [Substance, "Substance A"],
             "SubstanceB": [Substance, "Substance B"],
             "SubstanceC": [Substance, "Substance C"],
-            "SubstanceD": [Substance, "Substance D"]
+            "SubstanceD": [Substance, "Substance D"],
+
+            "Sand": Sand,
+            "LaunchPad": LaunchPad,
+            "Rocket": Rocket,
+            "Cactus": Cactus,
+            "BigCactus": BigCactus,
+            "SandPath": SandPath,
+            "LaunchMonitor": LaunchMonitor,
+            "FuelTank": FuelTank,
+            "SpeedSquare": SpeedSquare,
+            "Pendulum": Pendulum,
+
         }
 
 
