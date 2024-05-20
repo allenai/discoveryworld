@@ -334,19 +334,8 @@ def makeScenarioStorageShedEasyDistilled(world, numUserAgents=1):
     #scoringInfo["criticalHypotheses"] = ["If the key is placed in a mixture of 1 part Chemical A and 2 parts Chemical C, then the rust will be removed."]
     # TODO: Use the chemical solution dict to generate the critical hypothesis parametrically
 
-    # Should be of the form "X part(s) Chemical A, Y part(s) Chemical B, ..., *AND* Z part(s) Chemical C"
-    mixtureStrElems = []
-    for key in sorted(chemicalSolutionDict.keys()):
-        if (chemicalSolutionDict[key] == 1):
-            mixtureStrElems.append(str(chemicalSolutionDict[key]) + " part " + key)
-        else:
-            mixtureStrElems.append(str(chemicalSolutionDict[key]) + " parts " + key)
-    for i in range(0, len(mixtureStrElems)):
-        if (i == len(mixtureStrElems) - 1):
-            mixtureStrElems[i] = "and " + mixtureStrElems[i]
-        else:
-            mixtureStrElems[i] = mixtureStrElems[i] + ", "
-    scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of " + "".join(mixtureStrElems) + ", then the rust will be removed.")
+    solutionKey = list(chemicalSolutionDict.keys())[0]
+    scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of pure " + str(solutionKey) + ", then the rust will be removed.")
     #scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of 1 part Chemical A and 2 parts Chemical C, then the rust will be removed.")
 
     # Paths
