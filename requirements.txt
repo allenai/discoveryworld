@@ -5,3 +5,4 @@ openai
 numpy
 termcolor
 tiktoken
+matplotlib
