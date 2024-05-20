@@ -1,4 +1,4 @@
-from discoveryworld.scenarios.archaeology import makeScenarioArchaeologicalDig
+from discoveryworld.scenarios.archaeology import makeScenarioArchaeologicalDig, makeScenarioArchaeologicalDigEasyDistilled
 from discoveryworld.scenarios.archaeology import makeScenarioArchaeologicalDigGenericRadioisotope
 from discoveryworld.scenarios.plant_growing import makeScenarioPlantGrowing
 from discoveryworld.scenarios.rosetta_stone import makeScenarioRosettaStone

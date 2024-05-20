@@ -60,7 +60,7 @@ SCENARIO_INFOS = {
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Archaeology Dating": {
-        "difficulty": ["Normal", "Challenge"],
+        "difficulty": ["Easy", "Normal", "Challenge"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Plant Nutrients": {
@@ -156,6 +156,8 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
     elif (scenarioNameIn == "Combinatorial Chemistry") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = "combinatorial_chemistry_challenge"
     # Scenario 2: Archaeology Dating
+    elif (scenarioNameIn == "Archaeology Dating") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["easy"]):
+        scenarioName = "archaeology_dating_easy"
     elif (scenarioNameIn == "Archaeology Dating") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "archaeology_dating_simple"
     elif (scenarioNameIn == "Archaeology Dating") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
@@ -253,15 +255,21 @@ class ScenarioMaker():
             self.world.initialFilter()
             return (True, "")
 
+        elif (scenarioName == "archaeology_dating_easy"):
+            scoringInfo = makeScenarioArchaeologicalDigEasyDistilled(self.world, numUserAgents)
+            self.world.addTaskByName("ArchaeologyDigTaskEasy", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+
         elif (scenarioName == "archaeology_dating_simple"):
             scoringInfo = makeScenarioArchaeologicalDig(self.world, numUserAgents)
-            self.world.addTaskByName("ArcheologyDigTaskEasy", scoringInfo)
+            self.world.addTaskByName("ArchaeologyDigTaskNormal", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 
         elif (scenarioName == "archaeology_dating_challenge"):
             scoringInfo = makeScenarioArchaeologicalDigGenericRadioisotope(self.world, numUserAgents)
-            self.world.addTaskByName("ArcheologyDigTaskGenericRadioisotope", scoringInfo)
+            self.world.addTaskByName("ArchaeologyDigTaskGenericRadioisotope", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 

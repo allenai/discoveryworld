@@ -54,10 +54,12 @@ class TaskMaker():
             return RustedKeyTask(self.world, scoringInfo)
         elif (taskName == "RustedKeyTaskChallenge"):
             return RustedKeyTaskChallenge(self.world, scoringInfo)
-        elif (taskName == "ArcheologyDigTaskEasy"):
-            return ArcheologyDigEasy(self.world, scoringInfo)
-        elif (taskName == "ArcheologyDigTaskGenericRadioisotope"):
-            return ArcheologyDigGenericRadioisotopes(self.world, scoringInfo)
+        elif (taskName == "ArchaeologyDigTaskEasy"):
+            return ArchaeologyDigEasy(self.world, scoringInfo)
+        elif (taskName == "ArchaeologyDigTaskNormal"):
+            return ArchaeologyDigNormal(self.world, scoringInfo)
+        elif (taskName == "ArchaeologyDigTaskGenericRadioisotope"):
+            return ArchaeologyDigGenericRadioisotopes(self.world, scoringInfo)
         elif (taskName == "SoilNutrientTask"):
             return SoilNutrientTask(self.world, scoringInfo)
         elif (taskName == "RosettaStoneTask"):
@@ -804,15 +806,143 @@ class RustedKeyTaskChallenge(Task):
 
 
 #
-#   Specific Task: Archeology dig task
+#   Specific Task: Archaeology dig task
 #
-class ArcheologyDigEasy(Task):
+class ArchaeologyDigEasy(Task):
     # Constructor
     def __init__(self, world, scoringInfo):
-        taskDescription = "You are on an archeological dig on Planet X.  3 ancient sites have been found. "
+        taskDescription = "You are in archaeological dig store room on Planet X.  3 ancient artifacts have been found. "
+        taskDescription += "Your task is to date the artifacts with the radiocarbon meter.  Then, once completed, place the red flag directly beside (i.e. one square right/to the west) of the artifact with the oldest age."
+
+        Task.__init__(self, "ArchaeologyDigTaskEasy", taskDescription, world, scoringInfo)
+        self.score = 0
+        self.maxScore = 1                       # Maximum score
+        self.uncoveredArtifacts = set()
+
+        self.scorecardRadiocarbonMeter = ScorecardElement("Take radiocarbon meter", "The radiocarbon meter has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardRadiocarbonMeter)
+        self.scorecardFlag = ScorecardElement("Take flag", "The flag has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardFlag)
+
+        self.scorecardArtifactsDated = ScorecardElement("Artifacts dated", "The artifacts have been dated with the radiocarbon meter", maxScore=3)
+        self.scoreCard.append(self.scorecardArtifactsDated)
+
+        self.scorecardFlagPlaced = ScorecardElement("Flag placed", "The flag has been placed in the correct location", maxScore=1)
+        self.scoreCard.append(self.scorecardFlagPlaced)
+
+        # Critical Hypotheses
+        self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+
+        # Update max score based on the scorecard elements.
+        self.maxScore = sum(element.maxScore for element in self.scoreCard)
+
+    # scoringInfo["unknownArtifacts"] = []
+    # scoringInfo["signs"] = []
+    # scoringInfo["targetSign"] = sign
+    # scoringInfo["radioCarbonMeter"] = radioCarbonMeter
+    # scoringInfo["shovel"] = shovel
+    # scoringInfo["flag"] = flag
+
+
+    # Task setup: Add any necessary objects to the world to perform the task.
+    def taskSetup(self):
+        # Add the colonists?
+        pass
+
+    def initialize(self):
+        pass
+
+    # Update the task progress
+    def updateTick(self):
+        # Do not update the score if the task is already marked as completed
+        #if (self.completed == True):
+        #    return
+
+        # Check if they have the radioisotope meter in an agent's inventory
+        if (not self.scorecardRadiocarbonMeter.completed):
+            radioisotopeMeterContainer = self.scoringInfo["radioCarbonMeter"].parentContainer
+            if (radioisotopeMeterContainer != None):
+                if (radioisotopeMeterContainer.type == "agent"):
+                    self.scorecardRadiocarbonMeter.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["radioCarbonMeter"].uuid], associatedNotes="The radiocarbon meter has been in the inventory of the agent with uuid " + str(self.scoringInfo["radioCarbonMeter"].uuid))
+
+        # Check if they have the flag in an agent's inventory
+        if (not self.scorecardFlag.completed):
+            flagContainer = self.scoringInfo["flag"].parentContainer
+            if (flagContainer != None):
+                if (flagContainer.type == "agent"):
+                    self.scorecardFlag.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["flag"].uuid], associatedNotes="The flag has been in the inventory of the agent with uuid " + str(flagContainer.uuid))
+
+        # Check if the radioisotope meter has been used on 3 seed artifacts
+        if (not self.scorecardArtifactsDated.completed):
+            seedArtifactsDated = set()
+            for agent in self.world.getUserAgents():
+                for artifact in self.scoringInfo["unknownArtifacts"]:
+                    foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=self.scoringInfo["radioCarbonMeter"], arg2=artifact, stopAtFirst=True)
+                    if (len(foundActions) > 0):
+                        seedArtifactsDated.add(artifact.uuid)
+
+            numArtifactsDated = len(seedArtifactsDated)
+            isComplete = False
+            if (numArtifactsDated >= 3):
+                isComplete = True
+            self.scorecardArtifactsDated.updateScore(score=numArtifactsDated, completed=isComplete, associatedUUIDs=list(seedArtifactsDated), associatedNotes="The following artifacts have been dated: " + str(seedArtifactsDated))
+
+
+        # Check if the flag has been placed near ANY of the signs (+/- 2 grid spaces).
+        # NOTE, changed this so that the flag must be plaged at (x+1, y) of one of the artifacts.
+        # `targetArtifact` is the correct one.
+        if (not self.scorecardFlagPlaced.completed):
+            # First, check to see if the flag has been placed
+            flagPlaced = False
+            placedCorrectly = False
+            objectUUID = None
+            if (self.scoringInfo["flag"].parentContainer == None):
+                flagLocation = self.scoringInfo["flag"].getWorldLocation()  # (x, y) tuple
+                for artifact in self.scoringInfo["unknownArtifacts"]:
+                    artifactLocation = artifact.getWorldLocation()
+                    # Check to see if the flag has been placed one square to the right of the artifact
+                    if (flagLocation[0] == artifactLocation[0]+1) and (flagLocation[1] == artifactLocation[1]):
+                        flagPlaced = True
+                        objectUUID = artifact.uuid
+                        if (artifact == self.scoringInfo["targetArtifact"]):
+                            placedCorrectly = True
+                        break
+
+            # Update the scorecard
+            if (flagPlaced == True):
+                if (placedCorrectly == True):
+                    self.scorecardFlagPlaced.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["flag"].uuid, objectUUID], associatedNotes="The flag has been placed near the correct artifact")
+                else:
+                    self.scorecardFlagPlaced.updateScore(score=0, completed=True, associatedUUIDs=[self.scoringInfo["flag"].uuid, objectUUID], associatedNotes="The flag has been placed near an incorrect artifact")
+
+            # If the flag has been placed, the task is complete
+            if (flagPlaced == True):
+                self.completed = True
+                if (placedCorrectly == True):
+                    self.completedSuccessfully = True
+                else:
+                    self.completedSuccessfully = False
+            else:
+                self.completed = False
+                self.completedSuccessfully = False
+
+        # Update the score, as the sum of the scorecard elements
+        self.score = 0
+        self.maxScore = 0
+        for element in self.scoreCard:
+            self.score += element.score
+            self.maxScore += element.maxScore
+
+#
+#   Archaeology Dig Task (Normal)
+#
+class ArchaeologyDigNormal(Task):
+    # Constructor
+    def __init__(self, world, scoringInfo):
+        taskDescription = "You are on an archaeological dig on Planet X.  3 ancient sites have been found. "
         taskDescription += "Your task is to excavate the sites, and date any artifacts with the radiocarbon meter.  Then, once completed, place the red flag beside the sign of the dig site with the oldest artifact. "
 
-        Task.__init__(self, "ArcheologyDigTaskEasy", taskDescription, world, scoringInfo)
+        Task.__init__(self, "ArchaeologyDigTaskNormal", taskDescription, world, scoringInfo)
         self.score = 0
         self.maxScore = 1                       # Maximum score
         self.uncoveredArtifacts = set()
@@ -961,20 +1091,18 @@ class ArcheologyDigEasy(Task):
             self.score += element.score
             self.maxScore += element.maxScore
 
-
-
 #
-#   Specific Task: Archeology dig task (generic radioisotopes)
+#   Specific Task: Archaeology dig task (generic radioisotopes)
 #
-class ArcheologyDigGenericRadioisotopes(Task):
+class ArchaeologyDigGenericRadioisotopes(Task):
     # Constructor
     def __init__(self, world, scoringInfo):
         # TODO: modify description
-        taskDescription = "You are on an archeological dig on Planet X.  6 sites of suspected ancient artifacts have been found, 3 of which have already been uncovered. "
+        taskDescription = "You are on an archaeological dig on Planet X.  6 sites of suspected ancient artifacts have been found, 3 of which have already been uncovered. "
         taskDescription += "It's not clear how or if radioisotope dating works on Planet X, or how it would differ from Earth, but your task is to figure out if it can be used. "
         taskDescription += "Your task is to excavate the remaining sites, and figure out a way to use the radioisotope meter to approximately date the artifacts.  Then, once completed, place the red flag beside the sign of the dig site with the oldest artifact. "
 
-        Task.__init__(self, "ArcheologyDigTaskGenericRadioisotope", taskDescription, world, scoringInfo)
+        Task.__init__(self, "ArchaeologyDigTaskGenericRadioisotope", taskDescription, world, scoringInfo)
         self.score = 0
         self.maxScore = 1                       # Maximum score
 
@@ -1980,6 +2108,7 @@ class ProteomicsTask(Task):
         for element in self.scoreCard:
             self.score += element.score
             self.maxScore += element.maxScore
+
 
 # Normal and Challenge versions of the Proteomics Task use the same class
 class ProteomicsTaskEasy(Task):

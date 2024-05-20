@@ -1,12 +1,12 @@
 
 
-# Archeology Dig Site
+# Archaeology Dig Site
 from discoveryworld.Layer import Layer
 
 
 def mkDigSite(x, y, world, r, digSiteNum, artifactAge):
     minSize = 2
-    # Randomly make size of archeology dig site (x-y each between 1-2)
+    # Randomly make size of archaeology dig site (x-y each between 1-2)
     totalLocations = 0
     while (totalLocations < minSize):       # Keep trying until we get a big enough dig site (at least 2 squares)
         digSiteSizeX = r.randint(1, 2)
@@ -48,10 +48,10 @@ def mkDigSite(x, y, world, r, digSiteNum, artifactAge):
 
 
 
-# Archeology Dig Site
+# Archaeology Dig Site
 def mkDigSiteWithObj(x, y, world, r, digSiteNum, artifactObj, artifactExposed=False):
     minSize = 2
-    # Randomly make size of archeology dig site (x-y each between 1-2)
+    # Randomly make size of archaeology dig site (x-y each between 1-2)
     totalLocations = 0
     while (totalLocations < minSize):       # Keep trying until we get a big enough dig site (at least 2 squares)
         digSiteSizeX = r.randint(1, 2)
