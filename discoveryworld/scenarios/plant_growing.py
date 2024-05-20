@@ -287,7 +287,8 @@ def makeScenarioPlantGrowingEasy(world, numUserAgents=1):
         # Get tile location
         location = pilotSoilTiles[i].getWorldLocation()    # (x, y) tuple
         # Add a mushroom here
-        mushroom = world.createObject("Mushroom")
+        #mushroom = world.createObject("Mushroom")
+        mushroom = world.createObject("mushroom4")
         world.addObject(location[0], location[1], Layer.OBJECTS, mushroom)
 
     # Add hypothesis
