@@ -6,7 +6,7 @@ from discoveryworld.scenarios.storage_shed import makeScenarioStorageShed, makeS
 from discoveryworld.scenarios.reactor_lab import makeScenarioReactorLab
 from discoveryworld.scenarios.town import makeScenarioTown
 from discoveryworld.scenarios.reactor_lab import makeScenarioReactorLab
-from discoveryworld.scenarios.proteomics import makeScenarioProteomics
+from discoveryworld.scenarios.proteomics import makeScenarioProteomics, makeScenarioProteomicsEasyDistilled
 from discoveryworld.scenarios.not_rocket_science import makeScenarioNotRocketScience
 from discoveryworld.scenarios.tutorial import makeScenarioTutorial
 from discoveryworld.scenarios.smallskills_dialog import *

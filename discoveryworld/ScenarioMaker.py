@@ -17,7 +17,9 @@ SCENARIOS = [
     "lost_in_translation_medium",
     "lost_in_translation_hard",
     "reactor_lab",
+    "proteomics_easy",
     "proteomics_normal",
+    "proteomics_challenge",
     "not_rocket_science",
     "smallskills_dialog_test",
     "smallskills_pickandplace_test",
@@ -78,7 +80,7 @@ SCENARIO_INFOS = {
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Proteomics": {
-        "difficulty": ["Normal", "Challenge"],
+        "difficulty": ["Easy", "Normal", "Challenge"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "It's (not) Rocket Science!": {
@@ -135,7 +137,8 @@ SCENARIO_INFOS = {
     # },
 }
 
-SCENARIO_DIFFICULTY_OPTIONS = ["Normal", "Challenge", "Test"]
+SCENARIO_DIFFICULTY_OPTIONS = ["Easy", "Normal", "Challenge", "Test"]
+SCENARIO_DIFFICULTY_OPTIONS = {"easy": "Easy", "normal": "Normal", "challenge": "Challenge", "test": "Test"}
 
 
 # Mapping canonical scenario names to internal scenario names
@@ -143,79 +146,81 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
     # Map between the choice and the scenario name
     scenarioName = None
     # Scenario 0: Tutorial
-    if (scenarioNameIn == "Tutorial") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    if (scenarioNameIn == "Tutorial") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "tutorial"
-    elif (scenarioNameIn == "Tutorial") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
+    elif (scenarioNameIn == "Tutorial") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = None
     # Scenario 1: Combinatorial Chemistry
-    elif (scenarioNameIn == "Combinatorial Chemistry") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Combinatorial Chemistry") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "combinatorial_chemistry"
-    elif (scenarioNameIn == "Combinatorial Chemistry") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
+    elif (scenarioNameIn == "Combinatorial Chemistry") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = "combinatorial_chemistry_challenge"
     # Scenario 2: Archaeology Dating
-    elif (scenarioNameIn == "Archaeology Dating") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Archaeology Dating") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "archaeology_dating_simple"
-    elif (scenarioNameIn == "Archaeology Dating") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
+    elif (scenarioNameIn == "Archaeology Dating") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = "archaeology_dating_challenge"
     # Scenario 3: Plant Nutrients
-    elif (scenarioNameIn == "Plant Nutrients") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Plant Nutrients") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "plant_nutrients"
-    elif (scenarioNameIn == "Plant Nutrients") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
+    elif (scenarioNameIn == "Plant Nutrients") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = None
     # Scenario 4: Reactor Lab
-    elif (scenarioNameIn == "Reactor Lab") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Reactor Lab") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "reactor_lab"
-    elif (scenarioNameIn == "Reactor Lab") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
+    elif (scenarioNameIn == "Reactor Lab") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = None
     # Scenario 5: Lost in Translation
-    elif (scenarioNameIn == "Lost in Translation") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Lost in Translation") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "lost_in_translation_easy"
-    elif (scenarioNameIn == "Lost in Translation") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
+    elif (scenarioNameIn == "Lost in Translation") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = "lost_in_translation_hard"
     # Scenario 6: Space Sick
-    elif (scenarioNameIn == "Space Sick") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Space Sick") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "food_illness"
-    elif (scenarioNameIn == "Space Sick") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
+    elif (scenarioNameIn == "Space Sick") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = None
     # Scenario 7: TODO 1
-    elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["easy"]):
+        scenarioName = "proteomics_easy"
+    elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "proteomics_normal"
-    elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[1]):
+    elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = "proteomics_challenge"
     # Scenario 8: TODO 2
-    elif (scenarioNameIn == "It's (not) Rocket Science!") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[-1]):
+    elif (scenarioNameIn == "It's (not) Rocket Science!") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["test"]):      #### DEBUG?
         scenarioName = "not_rocket_science_easy"
-    elif (scenarioNameIn == "It's (not) Rocket Science!") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "It's (not) Rocket Science!") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "not_rocket_science_normal"
 
-    elif (scenarioNameIn == "Small Skills: Dialog Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Small Skills: Dialog Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "smallskills_dialog_test"
 
-    elif (scenarioNameIn == "Small Skills: Pick and Place Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Small Skills: Pick and Place Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "smallskills_pickandplace_test"
 
-    elif (scenarioNameIn == "Small Skills: Pick and Give Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Small Skills: Pick and Give Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "smallskills_pickandgive_test"
 
-    elif (scenarioNameIn == "Small Skills: Instrument Measurement Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Small Skills: Instrument Measurement Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "smallskills_measurement_test"
 
-    elif (scenarioNameIn == "Small Skills: Doors Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Small Skills: Doors Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "smallskills_doors_test"
 
-    elif (scenarioNameIn == "Small Skills: Doors with Keys Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Small Skills: Doors with Keys Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "smallskills_doors_keys_test"
 
-    elif (scenarioNameIn == "Small Skills: Navigation in a House Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Small Skills: Navigation in a House Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "smallskills_navigation_house_test"
 
-    elif (scenarioNameIn == "Small Skills: Search Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Small Skills: Search Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "smallskills_search_test"
 
-    elif (scenarioNameIn == "Small Skills: Discovery Feed Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Small Skills: Discovery Feed Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "smallskills_discoveryfeed_test"
 
-    elif (scenarioNameIn == "Small Skills: Moving Agents Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS[0]):
+    elif (scenarioNameIn == "Small Skills: Moving Agents Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "smallskills_moving_agents_test"
 
     # Return the internal scenario name to use
@@ -276,6 +281,12 @@ class ScenarioMaker():
         elif (scenarioName == "reactor_lab"):
             scoringInfo = makeScenarioReactorLab(self.world, numUserAgents)
             self.world.addTaskByName("ReactorTask", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+
+        elif (scenarioName == "proteomics_easy"):
+            scoringInfo = makeScenarioProteomicsEasyDistilled(self.world, numUserAgents)
+            self.world.addTaskByName("ProteomicsTaskEasy", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 

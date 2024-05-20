@@ -14,7 +14,7 @@ from discoveryworld.Pathfinding import *
 # Generate data for the clustering task
 def generate_clustering_data(clusterSeed, numDimensions, numInliers, numOutliers):
     rng = random.Random(clusterSeed)
-    
+
     if (numDimensions != 2) and (numDimensions != 3):
         print("The number of dimensions must be 2 or 3 for the clustering data.")
         return None, None
@@ -52,7 +52,7 @@ def generate_clustering_data(clusterSeed, numDimensions, numInliers, numOutliers
                 if (attempts > 1000):
                     return None
             return points
-        
+
         def generate_points3D(n, radius, center):
             points = []
             attempts = 0
@@ -74,7 +74,7 @@ def generate_clustering_data(clusterSeed, numDimensions, numInliers, numOutliers
                 if (attempts > 1000):
                     return None
             return points
-        
+
         # Generate inliers and outliers
         if (numDimensions == 2):
             inliers = generate_points2D(numInliers, 0.1, center)
@@ -87,7 +87,7 @@ def generate_clustering_data(clusterSeed, numDimensions, numInliers, numOutliers
         if (attempts0 > 1000):
             print("Failed to generate random numbers for clustering data.  The parameters provided may be invalid or impossible/improbable to generate data for.")
             return None, None
-    
+
     return inliers, outliers
 
 import matplotlib.pyplot as plt
@@ -98,11 +98,11 @@ def plot_data2D(inliers, outliers):
     # Plot inliers
     #plt.scatter(inliers[:, 0], inliers[:, 1], c='blue', label='Inliers', edgecolors='w')
     plt.scatter([x[0] for x in inliers], [x[1] for x in inliers], c='blue', label='Inliers', edgecolors='w')
-    
+
     # Plot outliers
     #plt.scatter(outliers[:, 0], outliers[:, 1], c='red', label='Outliers', marker='x', edgecolors='w')
     plt.scatter([x[0] for x in outliers], [x[1] for x in outliers], c='red', label='Outliers', marker='x', edgecolors='w')
-    
+
     plt.xlabel('Dimension 1')
     plt.ylabel('Dimension 2')
     plt.title('Clustering Data Visualization')
@@ -123,11 +123,11 @@ def plot_data3D(inliers, outliers):
     # Plot inliers
     #ax.scatter(inliers[:, 0], inliers[:, 1], inliers[:, 2], c='blue', label='Inliers', edgecolors='w')
     ax.scatter([x[0] for x in inliers], [x[1] for x in inliers], [x[2] for x in inliers], c='blue', label='Inliers', edgecolors='w')
-    
+
     # Plot outliers
     #ax.scatter(outliers[:, 0], outliers[:, 1], outliers[:, 2], c='red', label='Outliers', marker='x', edgecolors='w')
     ax.scatter([x[0] for x in outliers], [x[1] for x in outliers], [x[2] for x in outliers], c='red', label='Outliers', marker='x', edgecolors='w')
-    
+
     ax.set_xlabel('Dimension 1')
     ax.set_ylabel('Dimension 2')
     ax.set_zlabel('Dimension 3')
@@ -152,33 +152,7 @@ def plot_data3D(inliers, outliers):
 #     plot_data3D(inliers, outliers)
 # exit(1)
 
-def mkProteomicsResearchBuilding(x, y, world):
-    # Create a small building
-    houseSizeX = 4
-    houseSizeY = 4
-    mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Research Building")
 
-    # Add a seed jar
-    #seedJar = world.createObject("Jar")
-    #seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
-    #seedJar.setAutoFill(checkObjectName="seed", fillObjectName=whichSeedName, minCount=1, replenishTime=0)
-    #seedJar.name = "seed jar"
-
-    # Table for seed jar
-    seedTable = world.createObject("Table")
-    #seedTable.addObject(seedJar)
-    world.addObject(x+3, y+1, Layer.FURNITURE, seedTable)
-
-    # Add a soil nutrient meter
-    soilMeter = world.createObject("SoilNutrientMeter")
-    # Table for soil meter
-    soilMeterTable = world.createObject("Table")
-    soilMeterTable.addObject(soilMeter)
-    world.addObject(x+2, y+1, Layer.FURNITURE, soilMeterTable)
-
-    # Add a shovel in the farm house
-    shovel = world.createObject("Shovel")
-    world.addObject(x+2, y+2, Layer.FURNITURE, shovel)
 
 
 def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
@@ -205,7 +179,7 @@ def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
 
     # Soil research building
     #mkProteomicsResearchBuilding(12, 12, world)
- 
+
 
     # Make path along fields
     #mkPathX(10, 18, 10, world)
@@ -233,7 +207,8 @@ def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
     world.addObject(13, 20, Layer.FURNITURE, sign)
 
 
-    statueLocations = [(12, 12), (12, 16), (18, 12), (18, 16), (15, 14)]    
+    statueLocations = [(12, 12), (12, 16), (18, 12), (18, 16), (15, 14)]
+    world.rng.shuffle(statueLocations)
     scoringInfo["statues"] = []
     scoringInfo["correctStatue"] = None
     for idx, statueLocation in enumerate(statueLocations):
@@ -299,7 +274,7 @@ def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
     scoringInfo["flag"] = flag
 
 
-    # Animal locations are nominally 4 along the top, 4 along the bottom, and 2 along the sides. 
+    # Animal locations are nominally 4 along the top, 4 along the bottom, and 2 along the sides.
     animalLocations = [(4, 4), (12, 4), (20, 4), (28, 4)]   # top
     animalLocations += [(4, 28), (12, 28), (20, 28), (28, 28)]   # bottom
     animalLocations += [(4, 12), (4, 20), (28, 12), (28, 20)]   # sides
@@ -310,7 +285,7 @@ def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
         world.addTeleportLocation("Possible Animal Area " + str(idx+1), location[0], location[1])
 
     # Randomize the order of the animal locations
-    random.shuffle(animalLocations)
+    world.rng.shuffle(animalLocations)
 
     # Generate proteomics values
     numDimensions = 2
@@ -321,13 +296,13 @@ def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
     inliers, outliers = generate_clustering_data(world.randomSeed, numDimensions, numInliers, numOutliers)
 
     # Print the inliers and outliers
-    # print("Inliers: ") 
+    # print("Inliers: ")
     # for inlier in inliers:
     #     print(inlier)
     # print("Outliers: ")
     # for outlier in outliers:
     #     print(outlier)
-    
+
     # # Plot the data
     # plot_data(inliers, outliers)
     #exit(1)
@@ -355,7 +330,7 @@ def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
             proteomicsValues = copy.deepcopy(outlierProteomicsValues[0])
         else:
             proteomicsValues = copy.deepcopy(inlierProteomicsValues[animalIdx])
-            
+
         animal = mkAnimal(animalIdx, world, animalLocations[i][0], animalLocations[i][1], proteomicsValues=proteomicsValues)
         world.addObject(animalLocations[i][0], animalLocations[i][1], Layer.AGENT, animal)
         world.addAgent(animal)
@@ -481,7 +456,7 @@ def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
 
 
 
-        
+
 
 
 # NPC
@@ -602,7 +577,7 @@ def mkStatue(animalIdx:int, world):
         return StatueAnimal5(world)
     else:
         return None
-    
+
 
 class NPCAnimal1(NPCMovingAnimal):
     def __init__(self, world, preferredX, preferredY, proteomicsValues):
@@ -705,3 +680,264 @@ class StatueAnimal5(StatueAnimal):
         self.addReadableText("This statue depicts a prismatic beast, a creature that is known for its apperance, which resembles a bear made out of crystals.  It is a rare sight in the discovery world, and is known to be a peaceful creature.")
 
 
+
+
+
+#
+#   Proteomics -- Easy/Distilled
+#
+
+def makeScenarioProteomicsEasyDistilled(world, numUserAgents=1):
+    scoringInfo = {}
+    scoringInfo["criticalHypotheses"] = []
+
+    # NORMAL/CHALLENGE VERSION
+    # The index of the correct animal for this scenario
+    answerAnimalIdx = world.randomSeed % 5
+    # names of the animals (indexed correctly -- e.g. animal index 0 is called a "spheroid", animal index 1 is called a "echojelly", etc.)
+    animalNames = ["spheroid", "echojelly", "vortisquid", "animaplant", "prismatic beast"]
+    answerAnimalName = animalNames[answerAnimalIdx]
+
+    # EASY VERSION
+    easyValidAnimalIndices = [answerAnimalIdx, (answerAnimalIdx+1)%5, (answerAnimalIdx-1)%5]
+
+
+
+    scoringInfo["criticalHypotheses"].append("When performing a clustering analysis, the " + answerAnimalName + " has proteomics values that appear to be outliers compared to the other animals, whose proteomics values all cluster together.")
+
+    # Set a limit for the number of user agents
+    MAX_NUM_AGENTS = 1
+    if (numUserAgents > MAX_NUM_AGENTS):
+        numUserAgents = MAX_NUM_AGENTS
+
+    # Populate with structures/objects
+
+    # Fill with grass
+    mkGrassFill(world)
+
+    # Soil research building
+    #mkProteomicsResearchBuilding(12, 12, world)
+    houseSizeX = 5
+    houseSizeY = 6
+    mkBuildingOneRoom(world, x=13, y=12, width=houseSizeX, height=houseSizeY, signText="Research Building")
+
+
+    # Make path along fields
+    #mkPathX(10, 18, 10, world)
+    #mkPathX(10, 17, 10, world)
+    # Make path to research building
+    #mkPathY(15, 12, 12, world)
+
+    # Bottom
+    mkFenceX(9, 19, 5, world)     # Bottom (left)
+    mkFenceX(17, 19, 5, world)     # Bottom (right)
+    # Top
+    mkFenceX(9, 9, 5, world)     # Top (left)
+    mkFenceX(17, 9, 5, world)     # Top (right)
+    # Left
+    mkFenceY(9, 9, 4, world)     # Left (top)
+    mkFenceY(9, 16, 3, world)     # Left (bottom)
+    # Right
+    mkFenceY(21, 9, 4, world)     # Right (top)
+    mkFenceY(21, 16, 3, world)     # Right (bottom)
+
+
+    # Sign for the whole research facility
+    sign = world.createObject("Sign")
+    sign.setText("Proteomics Research Facility")
+    world.addObject(13, 20, Layer.FURNITURE, sign)
+
+
+    statueLocations = [(16, 13), (16, 14), (16, 15)]
+    scoringInfo["statues"] = []
+    scoringInfo["correctStatue"] = None
+    # Shuffle
+    world.rng.shuffle(statueLocations)
+    for idx, easyAnimalIdx in enumerate(easyValidAnimalIndices):
+    #for idx, statueLocation in enumerate(statueLocations):
+        # Add a plot of path under the statue
+        #for i in range(-1, 2):
+        #    for j in range(-1, 2):
+        #        world.addObject(statueLocation[0]+i, statueLocation[1]+j, Layer.BUILDING, world.createObject("Path"))
+        #statue = world.createObject("Statue")
+        #statue.name = "statue of a " + animalNames[idx]
+        statue = mkStatue(easyAnimalIdx, world)
+        world.addObject(statueLocations[idx][0], statueLocations[idx][1], Layer.FURNITURE, statue)
+
+        # Scoring info
+        if (easyAnimalIdx == answerAnimalIdx):
+            scoringInfo["correctStatue"] = statue
+        scoringInfo["statues"].append(statue)
+
+        # Teleport location
+        world.addTeleportLocation("Statue of a " + animalNames[idx], statueLocations[idx][0]-1, statueLocations[idx][1])
+
+    # Add big trees to either side of the research facility
+    #mkTallTree(12, 10, world)
+    #mkTallTree(9, 10, world)
+    #mkTallTree(7, 10, world)
+
+    #mkTallTree(18, 10, world)
+    #mkTallTree(20, 10, world)
+    #mkTallTree(22, 10, world)
+
+    # Trees at bottom entrance
+    mkTallTree(12, 20, world)
+    mkTallTree(18, 20, world)
+    # Trees at top entrance
+    mkTallTree(12, 8, world)
+    mkTallTree(18, 8, world)
+    # Trees at left entrance
+    mkTallTree(8, 12, world)
+    mkTallTree(8, 16, world)
+    # Trees at right entrance
+    mkTallTree(22, 12, world)
+    mkTallTree(22, 16, world)
+
+    # Trees at 4 corners
+    mkTallTree(10, 10, world)
+    mkTallTree(10, 18, world)
+    mkTallTree(20, 10, world)
+    mkTallTree(20, 18, world)
+
+
+    # Add a table near the sign
+    table = world.createObject("Table")
+    world.addObject(14, 16, Layer.FURNITURE, table)
+    # Add a meter to the table
+    meter = world.createObject("ProteomicsMeter")
+    table.addObject(meter)
+    scoringInfo["meter"] = meter
+
+    world.addTeleportLocation("Instrument Table", 15, 16)
+
+    # Add a flag under the table
+    flag = world.createObject("Flag")
+    world.addObject(16, 16, Layer.FURNITURE, flag)
+    scoringInfo["flag"] = flag
+
+
+    # Animal locations are nominally 4 along the top, 4 along the bottom, and 2 along the sides.
+    animalLocations = [(14, 13), (14, 14), (14, 15)]
+
+    # Add each as possible locations for the animals
+    #world.addTeleportLocation("Instrument Table", 15, 19)
+    for idx, location in enumerate(animalLocations):
+        world.addTeleportLocation("Animal Area " + str(idx+1), location[0]+1, location[1])
+
+    # Randomize the order of the animal locations
+    world.rng.shuffle(animalLocations)
+
+    # Generate proteomics values
+    numDimensions = 2
+    numInliers = 5
+    numOutliers = 1
+    inliers, outliers = generate_clustering_data(world.randomSeed, numDimensions, numInliers, numOutliers)
+
+    # Print the inliers and outliers
+    # print("Inliers: ")
+    # for inlier in inliers:
+    #     print(inlier)
+    # print("Outliers: ")
+    # for outlier in outliers:
+    #     print(outlier)
+
+    # # Plot the data
+    # plot_data(inliers, outliers)
+    #exit(1)
+
+    inlierProteomicsValues = []
+    for inlier in inliers:
+        inlierValues = {}
+        for i in range(0, numDimensions):
+            inlierValues["Protein " + chr(ord('A') + i)] = inlier[i]
+        inlierProteomicsValues.append(inlierValues)
+
+    outlierProteomicsValues = []
+    for outlier in outliers:
+        outlierValues = {}
+        for i in range(0, numDimensions):
+            outlierValues["Protein " + chr(ord('A') + i)] = outlier[i]
+        outlierProteomicsValues.append(outlierValues)
+
+    # Generate animals
+    animals = []
+    for i, easyAnimalIdx in enumerate(easyValidAnimalIndices):
+    #for i in range(0, 10):
+        #animalIdx = i % 5
+        animalIdx = easyAnimalIdx
+        proteomicsValues = None
+        if (animalIdx == answerAnimalIdx):
+            proteomicsValues = copy.deepcopy(outlierProteomicsValues[0])
+        else:
+            proteomicsValues = copy.deepcopy(inlierProteomicsValues[animalIdx])
+
+        animal = mkAnimal(animalIdx, world, animalLocations[i][0], animalLocations[i][1], proteomicsValues=proteomicsValues)
+        # In this easy version, remove the wandering behavior, so the animal stands still
+        animal.clearAutopilotActionQueue()
+        world.addObject(animalLocations[i][0], animalLocations[i][1], Layer.AGENT, animal)
+        world.addAgent(animal)
+        animals.append(animal)
+
+        # Store all the references to each of the 5 animal types
+        if ("animal" + str(i) not in scoringInfo):
+            scoringInfo["animal" + str(i)] = []
+        scoringInfo["animal" + str(i)].append(animal)
+
+
+    # Randomly place a few decorative plants
+    plantCount = 0
+    minPlants = 25
+    while (plantCount < minPlants):
+        # Pick a random location
+        randX = world.rng.randint(0, world.sizeX - 1)
+        randY = world.rng.randint(0, world.sizeY - 1)
+
+        # Check to see if there are any objects other than grass there
+        objs = world.getObjectsAt(randX, randY)
+        # Get types of objects
+        objTypes = [obj.type for obj in objs]
+        # Check to see that there is grass here
+        if ("grass" in objTypes):
+            # Check that there is not other things here
+            if (len(objTypes) == 1):
+                # Add a plant
+                world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantGeneric"))
+                plantCount += 1
+
+
+    # Add some small plants (randomly placed)
+    plantCount = 0
+    minPlants = 15
+    while (plantCount < minPlants):
+        # Pick a random location
+        randX = world.rng.randint(2, world.sizeX - 2)
+        randY = world.rng.randint(2, world.sizeY - 2)
+
+        # Check to see if there are any objects other than grass there
+        objs = world.getObjectsAt(randX, randY)
+        # Get types of objects
+        objTypes = [obj.type for obj in objs]
+        # Check to see that there is grass here
+        if ("grass" in objTypes):
+            # Check that there is not other things here
+            if (len(objTypes) == 1):
+                # Add a plant
+                world.addObject(randX, randY, Layer.OBJECTS, world.createObject("PlantRandomSmall"))
+                plantCount += 1
+
+
+    # DialogMaker
+    dialogMaker = DialogMaker()
+
+    # Add some number of user agents
+    for userAgentIdx in range(0, numUserAgents):
+        userAgent = Agent(world)
+        # TODO: Add starting tools for agent
+        # Add the agent to a specfic location
+        world.addObject(15, 16+userAgentIdx, Layer.AGENT, userAgent)      # Near center of dig site
+        # Register the agent with the World so we can keep track of it
+        world.addAgent(userAgent)
+
+    # Return the helpful info for scoring
+    return scoringInfo

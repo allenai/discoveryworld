@@ -66,6 +66,8 @@ class TaskMaker():
             return TutorialTask(self.world, scoringInfo)
         elif (taskName == "ReactorTask"):
             return ReactorTask(self.world, scoringInfo)
+        elif (taskName == "ProteomicsTaskEasy"):
+            return ProteomicsTaskEasy(self.world, scoringInfo)
         elif (taskName == "ProteomicsTaskNormal"):
             return ProteomicsTask(self.world, scoringInfo, challengeVersion=False)
         elif (taskName == "ProteomicsTaskChallenge"):
@@ -105,7 +107,7 @@ class TaskMaker():
         elif (taskName == "SmallSkillsMovingAgentsTask"):
             from discoveryworld.scenarios import SmallSkillsMovingAgentsTask
             return SmallSkillsMovingAgentsTask(self.world, scoringInfo)
-        
+
         else:
             print("ERROR: UNKNOWN TASK NAME: " + taskName)
             exit(1)
@@ -1848,7 +1850,7 @@ class TutorialTask(Task):
 #
 #   Specific Task: Proteomics Task
 #
-            
+
 # Normal and Challenge versions of the Proteomics Task use the same class
 class ProteomicsTask(Task):
     # Constructor
@@ -1953,6 +1955,145 @@ class ProteomicsTask(Task):
                         if (statue.uuid == self.scoringInfo["correctStatue"].uuid):
                             placedCorrectly = True
                         break
+
+            # Update the scorecard
+            if (flagPlaced == True):
+                if (placedCorrectly == True):
+                    self.scorecardFlagPlaced.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["flag"].uuid, placedNearSignUUID], associatedNotes="The flag has been placed near the correct statue")
+                else:
+                    self.scorecardFlagPlaced.updateScore(score=0, completed=True, associatedUUIDs=[self.scoringInfo["flag"].uuid, placedNearSignUUID], associatedNotes="The flag has been placed near an incorrect statue")
+
+            # If the flag has been placed, the task is complete
+            if (flagPlaced == True):
+                self.completed = True
+                if (placedCorrectly == True):
+                    self.completedSuccessfully = True
+                else:
+                    self.completedSuccessfully = False
+            else:
+                self.completed = False
+                self.completedSuccessfully = False
+
+        # Update the score, as the sum of the scorecard elements
+        self.score = 0
+        self.maxScore = 0
+        for element in self.scoreCard:
+            self.score += element.score
+            self.maxScore += element.maxScore
+
+# Normal and Challenge versions of the Proteomics Task use the same class
+class ProteomicsTaskEasy(Task):
+    # Constructor
+    def __init__(self, world, scoringInfo):
+        # TODO: modify description
+        ## TODO: MODIFY DESCRIPTION FOR PROTEOMICS
+        taskDescription = "You are in a biological preserve on Planet X, that has 5 different animal species. "
+        taskDescription += "We suspect that one of these animal species is not native to the area, but migrated from an isolated island in the recent past. "
+        taskDescription += "Your task is to use the proteomics meter to analyze the proteins of each of the 5 animal species, which can be found throughout the environment away from the central statue area, and determine which species is the anomoly. "
+        taskDescription += "Once you have completed your task, return to the statue area and drop the red flag directly beside the statue of the animal species that is the anomoly."
+
+        Task.__init__(self, "ProteomicsTaskEasy", taskDescription, world, scoringInfo)
+        self.score = 0
+        self.maxScore = 1                       # Maximum score
+
+        #self.uncoveredArtifacts = set()         # A list of the artifacts that have been uncovered
+
+        # Scorecard elements (TODO)
+        # Taking critical objects
+        self.scorecardProteomicsMeter = ScorecardElement("Take proteomics meter", "The proteomics meter has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardProteomicsMeter)
+        self.scorecardFlag = ScorecardElement("Take flag", "The flag has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardFlag)
+
+        # Proteomics meter used on at least one instance of all 5 animal types
+        self.scorecardProteomicsMeterUsedAnimals = ScorecardElement("Use proteomics meter", "The proteomics meter has been used on each of the 3 different animal types", maxScore=3)
+        self.scoreCard.append(self.scorecardProteomicsMeterUsedAnimals)
+
+        # Flag moved to correct location (or not) -- ends task
+        self.scorecardFlagPlaced = ScorecardElement("Move flag to correct location", "The flag has been moved to the correct location", maxScore=1)
+        self.scoreCard.append(self.scorecardFlagPlaced)
+
+        # Add hypotheses from scoringInfo
+        self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+
+
+    # Task setup: Add any necessary objects to the world to perform the task.
+    def taskSetup(self):
+        # Add the colonists?
+        pass
+
+    def initialize(self):
+        pass
+
+    # Update the task progress
+    def updateTick(self):
+        # Do not update the score if the task is already marked as completed
+        #if (self.completed == True):
+        #    return
+
+        # Check if they have the radioisotope meter in an agent's inventory
+        if (not self.scorecardProteomicsMeter.completed):
+            meterContainer = self.scoringInfo["meter"].parentContainer
+            if (meterContainer != None):
+                if (meterContainer.type == "agent"):
+                    self.scorecardProteomicsMeter.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["meter"].uuid], associatedNotes="The proteomics meter has been in the inventory of the agent with uuid " + str(self.scoringInfo["meter"].uuid))
+
+        # Check if they have the flag in an agent's inventory
+        if (not self.scorecardFlag.completed):
+            flagContainer = self.scoringInfo["flag"].parentContainer
+            if (flagContainer != None):
+                if (flagContainer.type == "agent"):
+                    self.scorecardFlag.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["flag"].uuid], associatedNotes="The flag has been in the inventory of the agent with uuid " + str(flagContainer.uuid))
+
+        # Check if the radioisotope meter has been used on 3 seed artifacts
+        if (not self.scorecardProteomicsMeterUsedAnimals.completed):
+            animalTypesInvestigated = set()
+            animalUUIDsInvestigated = set()
+
+            for agent in self.world.getUserAgents():
+                for animalIdx in range(0, 3):
+                    animalInstances = self.scoringInfo["animal" + str(animalIdx)]
+                    for animal in animalInstances:
+                        foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=self.scoringInfo["meter"], arg2=animal, stopAtFirst=True)
+                        if (len(foundActions) > 0):
+                            animalUUIDsInvestigated.add(animal.uuid)
+                            animalTypesInvestigated.add(animal.name)
+                            break
+
+            numAnimalTypesInvestigated = len(animalTypesInvestigated)
+            isComplete = False
+            if (numAnimalTypesInvestigated >= 3):
+                isComplete = True
+            self.scorecardProteomicsMeterUsedAnimals.updateScore(score=numAnimalTypesInvestigated, completed=isComplete, associatedUUIDs=list(animalUUIDsInvestigated), associatedNotes="The following animal types have been investigated: " + str(animalTypesInvestigated))
+
+
+        # Check if the flag has been placed near ANY of the signs (+/- 2 grid spaces).
+        if (not self.scorecardFlagPlaced.completed):
+            # First, check to see if the flag has been placed
+            flagPlaced = False
+            placedCorrectly = False
+            if (self.scoringInfo["flag"].parentContainer == None):
+                locationFlag = self.scoringInfo["flag"].getWorldLocation()   # Returns a tuple (x, y)
+                for statue in self.scoringInfo["statues"]:
+                    locationStatue = statue.getWorldLocation()
+                    # Here, we're just going to check if the flag is DIRECTLY (1 square) left of the statue (i.e. x-1 of the statue)
+                    #if (self.scoringInfo["flag"].x == statue.x - 1) and (self.scoringInfo["flag"].y == statue.y):
+                    if (locationFlag[0] == locationStatue[0] - 1) and (locationFlag[1] == locationStatue[1]):
+                        flagPlaced = True
+                        placedNearSignUUID = statue.uuid
+                        # Check if the flag has been placed near the correct sign
+                        if (statue.uuid == self.scoringInfo["correctStatue"].uuid):
+                            placedCorrectly = True
+                        break
+
+                    # distance = statue.distanceTo(self.scoringInfo["flag"])
+                    # if (distance <= 1):
+                    #     flagPlaced = True
+                    #     placedNearSignUUID = statue.uuid
+                    #     # Check if the flag has been placed near the correct sign
+                    #     if (statue.uuid == self.scoringInfo["correctStatue"].uuid):
+                    #         placedCorrectly = True
+                    #     break
 
             # Update the scorecard
             if (flagPlaced == True):
