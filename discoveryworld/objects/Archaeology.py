@@ -16,11 +16,11 @@ class AncientArtifact(Object):
         #self.name = "ancient artifact (" + str(self.attributes['radiocarbonAge']) + " years old)"
 
 
-class ArtifactBrassChisel(Object):
+class ArtifactBronzeChisel(Object):
     # Constructor
     def __init__(self, world):
         # Default sprite name
-        Object.__init__(self, world, "ancient brass chisel", "ancient brass chisel", defaultSpriteName = "instruments_brass_chisel")
+        Object.__init__(self, world, "ancient bronze chisel", "ancient bronze chisel", defaultSpriteName = "instruments_bronze_chisel")
 
         # Material
         self.attributes["manualMaterialNames"] = ["Metal"]

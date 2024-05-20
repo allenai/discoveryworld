@@ -242,7 +242,7 @@ class ObjectMaker:
             "RadioCarbonMeter": RadioCarbonMeter,
             "RadioisotopeMeter": RadioisotopeMeter,
             "ArtifactStoneHammer": ArtifactStoneHammer,
-            "ArtifactBrassChisel": ArtifactBrassChisel,
+            "ArtifactBronzeChisel": ArtifactBronzeChisel,
             "ArtifactIronTongs": ArtifactIronTongs,
             "SoilController": SoilController,
             "PlantTreeBig": PlantTreeBig,

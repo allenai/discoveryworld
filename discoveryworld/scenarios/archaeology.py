@@ -222,7 +222,7 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
     world.rng.shuffle(digSiteLocations)
 
     #"ArtifactStoneHammer": ArtifactStoneHammer,
-    #"ArtifactBrassChisel": ArtifactBrassChisel,
+    #"ArtifactBronzeChisel": ArtifactBronzeChisel,
     #"ArtifactIronTongs": ArtifactIronTongs,
     knownArtifactAges = [10000, 4000, 1000]
     oldArtifactAge = world.rng.choice([40000, 35000, 30000, 20000])
@@ -240,6 +240,8 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
     realRadioisotopeValues = [val/50000 for val in realRadioisotopeValues]
     # Add some noise (+/- 0.01) to each value
     realRadioisotopeValues = [val + world.rng.uniform(-0.01, 0.01) for val in realRadioisotopeValues]
+    # Take 1-the value
+    realRadioisotopeValues = [1-val for val in realRadioisotopeValues]
     # Round to 3 decimal places
     realRadioisotopeValues = [round(val, 3) for val in realRadioisotopeValues]
 
@@ -299,7 +301,7 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
     seedOldArtifact.attributes["radioisotopeValues"] = radioisotopeValues
     seedOldArtifact.attributes["radiocarbonAge"] = knownArtifactAges[0]
 
-    seedMediumArtifact = world.createObject("ArtifactBrassChisel")
+    seedMediumArtifact = world.createObject("ArtifactBronzeChisel")
     radioisotopeValues = [realRadioisotopeValues[1], fakeRadioisotope1Values[1], fakeRadioisotope2Values[1], fakeRadioisotope3Values[1]]
     radioisotopeValues = radioisotopeValues[-channelShift:] + radioisotopeValues[:-channelShift]        # Shift the list so that the real radioisotope value is in the real channel
     seedMediumArtifact.attributes["radioisotopeValues"] = radioisotopeValues
