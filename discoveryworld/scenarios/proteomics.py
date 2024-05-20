@@ -719,7 +719,7 @@ def makeScenarioProteomicsEasyDistilled(world, numUserAgents=1):
     #mkProteomicsResearchBuilding(12, 12, world)
     houseSizeX = 5
     houseSizeY = 6
-    mkBuildingOneRoom(world, x=13, y=12, width=houseSizeX, height=houseSizeY, signText="Research Building")
+    mkBuildingOneRoom(world, x=13, y=12, width=houseSizeX, height=houseSizeY, signText="Research Building", doorKeyID=123)  # Door is locked, and no key is provided, to make sure they stay in the building
 
 
     # Make path along fields
