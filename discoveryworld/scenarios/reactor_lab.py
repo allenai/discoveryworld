@@ -74,6 +74,56 @@ def mkCrystalProperties(quantumCrystalIn, rng, keyDimension:int=0, slope:float=1
         # Return
         return quantumCrystalIn
 
+# Make random properties of a quantum crystal
+def mkCrystalPropertiesEasy(quantumCrystalIn, rng, keyDimension:int=0, slope:float=100.0, offset:float=100):
+        # Resonance Frequency of the crystal (a set property for a given crystal)
+        #quantumCrystalIn.attributes['resonanceFreq'] = 5000                    # The resonance frequency of the crystal
+        precision = 2   # Number of decimal places to round to
+
+        # Quantities that the crystal depends on
+        quantumCrystalIn.attributes['density'] = round(rng.uniform(10.0, 70.0), precision)          # The density of the crystal (in g/cm^3)
+        quantumCrystalIn.attributes['temperatureC'] = round(rng.uniform(10.0, 50.0), precision)    # The temperature of the crystal (in degrees C)
+        quantumCrystalIn.attributes['quantumSize'] = round(rng.uniform(10.0, 70.0), precision)   # The quantum size of the crystal (in nm)
+        # Add a faux material, with a given radiation and spectrum
+        fauxMaterial = {}
+        fauxMaterial['radiationusvh'] = round(rng.uniform(10.0, 50.0), precision)       # The radiation of the crystal (in mSv)
+        spectrum = []
+        for i in range(0, 5):
+            channelValue = round(rng.uniform(10.0, 70.0), precision)
+            if (i == 0) or (i == 4):
+                spectrum.append(channelValue)
+            else:
+                spectrum.append(0)
+        fauxMaterial['spectrum'] = spectrum            # The spectrum of the crystal (on 5 spectral channels)
+        fauxMaterial['microscopeDesc'] = "The quantum gap of this crystal appears to be " + str(quantumCrystalIn.attributes['quantumSize']) + " nm"  # The description of the crystal under a microscope
+        ##quantumCrystalIn.attributes['materials'].append(fauxMaterial)     ## OLD -- adds a new material, so there are two materials (the default, and this one) -- generates lots of bugs with instruments.
+        quantumCrystalIn.attributes['materials'] = [ fauxMaterial ]       ## NEW -- replaces the default material with this generated one
+
+        # Pick one dimension (density, temperature, quantumSize, radiation, or spectrum) to be the "key" dimension.  Dimensions are numbered (0, 1, 2, 3, 4)
+        keyValue = 0
+        # NOTE: These key dimensions are different between Easy and Normal
+        if (keyDimension == 0):
+            keyValue = quantumCrystalIn.attributes['quantumSize']
+        elif (keyDimension == 1):
+            keyValue = quantumCrystalIn.attributes['density']
+        elif (keyDimension == 2):
+            keyValue = fauxMaterial['spectrum'][0]
+        elif (keyDimension == 3):
+            keyValue = quantumCrystalIn.attributes['temperatureC']
+        elif (keyDimension == 4):
+            keyValue = fauxMaterial['radiationusvh']
+        else:
+            print("Error: mkCrystalProperties(): keyDimension must be between 0 and 4")
+
+        # The value of 'resonanceFreq' will be a linear function of the keyValue, with the specified slope and offset
+        resonanceFreq = (slope * keyValue) + offset
+        # NOTE, resonance frequency is now a float, rounded to 2 decimal places
+        resonanceFreq = round(resonanceFreq, 2)
+        quantumCrystalIn.attributes['resonanceFreq'] = resonanceFreq
+
+        # Return
+        return quantumCrystalIn
+
 
 def mkPlaza(x, y, world):
     # Add statue
@@ -333,7 +383,8 @@ def makeScenarioReactorLab(world, numUserAgents=1):
 def mkReactorLabEasy(x, y, world, rng, randomSeed, scoringInfo):
     # Create a building (science lab)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)
-    mkBuildingDivided(world, x=x, y=y, width=13, height=6, dividerX=6, apertureX=3, dividerY=0, apertureY=0, doorX=3, signText="Quantum Reactor Lab")
+    #mkBuildingDivided(world, x=x, y=y, width=13, height=6, dividerX=6, apertureX=3, dividerY=0, apertureY=0, doorX=3, signText="Quantum Reactor Lab")
+    mkBuildingOneRoom(world, x=x, y=y, width=5, height=6, signText="Quantum Reactor Lab", doorKeyID=123)
 
     instruments = []
     instrumentMicroscope = world.createObject("Microscope")
@@ -353,31 +404,39 @@ def mkReactorLabEasy(x, y, world, rng, randomSeed, scoringInfo):
     rng.shuffle(instruments)
 
     # Add the tables and an instrument to each
-    for i in range(0, 5):
-        bench = world.createObject("Table")
-        bench.addObject( instruments[i] )
-        world.addObject(x+1+i, y+1, Layer.FURNITURE, bench)
+    #for i in range(0, 5):
+    #    bench = world.createObject("Table")
+    #    bench.addObject( instruments[i] )
+    #    world.addObject(x+1+i, y+4, Layer.FURNITURE, bench)
 
 
     # Reactor portion
     quantumCrystals = []
     #keyDimension = rng.randint(0, 4)        # Which dimension (temperature, density, quantum size, radiation, spectrum) will be the "key" dimension that the resonance frequency depends on
     keyDimension = randomSeed % 5            # Makes sure that random seeds 1-5 cycle through all available dimensions
-    randomSlope = int(rng.uniform(90, 110))
-    randomOffset = int(rng.uniform(90, 110))
+    randomSlope = int(rng.uniform(50, 80))
+    #randomOffset = int(rng.uniform(20, 50))
+    randomOffset = 0
 
     # Store the critical instrument (note, the 0-4 alignment is the same as in mkCrystalProperties)
     scoringInfo['criticalInstrument'] = None
     if (keyDimension == 0):
-        scoringInfo['criticalInstrument'] = instrumentDensitometer
-    elif (keyDimension == 1):
-        scoringInfo['criticalInstrument'] = instrumentThermometer
-    elif (keyDimension == 2):
         scoringInfo['criticalInstrument'] = instrumentMicroscope
-    elif (keyDimension == 3):
-        scoringInfo['criticalInstrument'] = instrumentRadiationMeter
-    elif (keyDimension == 4):
+    elif (keyDimension == 1):
+        scoringInfo['criticalInstrument'] = instrumentDensitometer
+    elif (keyDimension == 2):
         scoringInfo['criticalInstrument'] = instrumentSpectrometer
+    elif (keyDimension == 3):
+        scoringInfo['criticalInstrument'] = instrumentThermometer
+    elif (keyDimension == 4):
+        scoringInfo['criticalInstrument'] = instrumentRadiationMeter
+
+
+    # Add the single critical instrument
+    bench = world.createObject("Table")
+    bench.addObject( scoringInfo["criticalInstrument"] )
+    world.addObject(x+1, y+4, Layer.FURNITURE, bench)
+
 
     scoringInfo["criticalHypotheses"] = []
     # Add the critical hypotheses
@@ -387,11 +446,11 @@ def mkReactorLabEasy(x, y, world, rng, randomSeed, scoringInfo):
 
 
     # Generate the quantum crystals
-    for i in range(0, 4):
+    for i in range(0, 3):
         quantumCrystal = world.createObject("QuantumCrystal")
         #quantumCrystal.attributes['density'] = random.uniform(0.5, 1.5)
         # Make random quantum crystal values
-        quantumCrystal = mkCrystalProperties(quantumCrystal, rng=rng, keyDimension=keyDimension, slope=randomSlope, offset=randomOffset)
+        quantumCrystal = mkCrystalPropertiesEasy(quantumCrystal, rng=rng, keyDimension=keyDimension, slope=randomSlope, offset=randomOffset)
         quantumCrystals.append(quantumCrystal)
 
     scoringInfo['quantumCrystals'] = quantumCrystals
@@ -399,7 +458,7 @@ def mkReactorLabEasy(x, y, world, rng, randomSeed, scoringInfo):
     # Shuffle
     rng.shuffle(quantumCrystals)
     # Give the crystals a number
-    for i in range(0, 4):
+    for i in range(0, 3):
         quantumCrystals[i].name = "quantum crystal " + str(i+1)
         #print("Quantum Crystal " + str(i+1) + " resonance frequency: " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz")
         scoringInfo["criticalHypotheses"].append("The resonance frequency of " + quantumCrystals[i].name + " is " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz.")
@@ -410,7 +469,7 @@ def mkReactorLabEasy(x, y, world, rng, randomSeed, scoringInfo):
     # Add the tables and a quantum crystal reactor to each
     crystalReactors = []
     scoringInfo['reactorsToChange'] = []
-    for i in range(0, 4):
+    for i in range(0, 3):
         reactorBench = world.createObject("Table")
         reactor = world.createObject("CrystalReactor")
         reactor.setReactorNum(i+1)
@@ -428,19 +487,19 @@ def mkReactorLabEasy(x, y, world, rng, randomSeed, scoringInfo):
         # Note the default resonance frequency
         reactor.attributes['resonanceFreqDefault'] = reactor.attributes['resonanceFreq']
         # Add the reactor to the bench
-        world.addObject(x+8+i, y+2, Layer.FURNITURE, reactorBench)
+        world.addObject(x+1+i, y+2, Layer.FURNITURE, reactorBench)
 
     scoringInfo['reactors'] = crystalReactors
 
     # Put the other 2 quantum crystals on tables on the other side of the room
-    for i in range(0, 2):
+    for i in range(0, 1):
         bench = world.createObject("Table")
         bench.addObject( quantumCrystals[i+2] )
-        world.addObject(x+4+i, y+4, Layer.FURNITURE, bench)
+        world.addObject(x+3+i, y+4, Layer.FURNITURE, bench)
 
 
     # Add the generator
-    mkGenerator(x+8, y+1, world, linkedObjects = crystalReactors, reactorLength=3)
+    mkGenerator(x+1, y+1, world, linkedObjects = crystalReactors, reactorLength=2)
 
 
 
@@ -474,7 +533,7 @@ def makeScenarioReactorLabEasy(world, numUserAgents=1):
     #mkHouse(4, 4, world)
 
     # Reactor Lab
-    mkReactorLabEasy(10, 15, world, rng=world.rng, randomSeed=world.randomSeed, scoringInfo=scoringInfo)
+    mkReactorLabEasy(14, 15, world, rng=world.rng, randomSeed=world.randomSeed, scoringInfo=scoringInfo)
 
     # Plaza
     mkPlaza(15, 22, world)
@@ -482,8 +541,8 @@ def makeScenarioReactorLabEasy(world, numUserAgents=1):
     # Paths
     mkPathX(10, 23, 5, world)
     mkPathX(18, 23, 5, world)
+    mkPathY(16, 21, 1, world)   # Down from building
     mkPathY(16, 25, 5, world)   # Down from plaza
-    mkPathY(13, 21, 2, world)   # Down from plaza
 
     # Trees
     mkTallTree(9, 23, world)
@@ -541,17 +600,14 @@ def makeScenarioReactorLabEasy(world, numUserAgents=1):
         #userAgent.addObject(world.createObject("Shovel"))
         #userAgent.addObject(world.createObject("Seed"))
         # Add the agent to a specfic location
-        #world.addObject(14+userAgentIdx, 14, Layer.AGENT, userAgent)      # In farm field
-        world.addObject(12+userAgentIdx, 18, Layer.AGENT, userAgent)      # Near farm
+        world.addObject(16+userAgentIdx, 18, Layer.AGENT, userAgent)      # Middle of reactor room
         # Register the agent with the World so we can keep track of it
         world.addAgent(userAgent)
 
 
     # Add teleport locations to world
     # TODO
-    world.addTeleportLocation("science lab (instruments)", 13, 17)
-    world.addTeleportLocation("science lab (crystal bench)", 14, 18)
-    world.addTeleportLocation("reactor lab", 20, 18)
+    world.addTeleportLocation("start location", 16, 18)
 
     # Return scoring info
     return scoringInfo
