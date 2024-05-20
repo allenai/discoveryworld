@@ -310,16 +310,16 @@ def makeScenarioStorageShedEasyDistilled(world, numUserAgents=1):
     chemicalSolutionDict = {}
     if ((world.randomSeed % 5) == 0):
         # Hardcode the first version of the task
-        chemicalSolutionDict = {"Substance A": 1}
+        chemicalSolutionDict = {"Substance B": 1}
     elif ((world.randomSeed % 5) == 1):
         # Hardcode the first version of the task
-        chemicalSolutionDict = {"Substance B": 1}
+        chemicalSolutionDict = {"Substance D": 1}
     elif ((world.randomSeed % 5) == 2):
         # Hardcode the first version of the task
         chemicalSolutionDict = {"Substance C": 1}
     elif ((world.randomSeed % 5) == 3):
         # Hardcode the first version of the task
-        chemicalSolutionDict = {"Substance D": 1}
+        chemicalSolutionDict = {"Substance A": 1}
     elif ((world.randomSeed % 5) == 4):
         # Hardcode the first version of the task
         chemicalSolutionDict = {"Substance C": 1}
