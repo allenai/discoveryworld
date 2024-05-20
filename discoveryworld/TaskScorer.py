@@ -50,8 +50,10 @@ class TaskMaker():
         # Discovery tasks
         if (taskName == "EatMushroomTask"):
             return EatMushroomTask(self.world, scoringInfo)
-        elif (taskName == "RustedKeyTask"):
-            return RustedKeyTask(self.world, scoringInfo)
+        elif (taskName == "RustedKeyTaskEasy"):
+            return RustedKeyTaskEasy(self.world, scoringInfo)
+        elif (taskName == "RustedKeyTaskNormal"):
+            return RustedKeyTaskNormal(self.world, scoringInfo)
         elif (taskName == "RustedKeyTaskChallenge"):
             return RustedKeyTaskChallenge(self.world, scoringInfo)
         elif (taskName == "ArchaeologyDigTaskEasy"):
@@ -430,7 +432,7 @@ class EatMushroomTask(Task):
 #
 #   Specific Task: Rusted key task
 #
-class RustedKeyTask(Task):
+class RustedKeyTaskNormal(Task):
     # Constructor
     def __init__(self, world, scoringInfo):
         taskDescription = "You were venturing into the wilderness of Planet X to a storage shed to fetch some supplies. The shed door locked behind you, and your key appears too rusted to work in the lock. "
@@ -447,7 +449,7 @@ class RustedKeyTask(Task):
         taskDescription += "7. When you have successfully derusted the key and opened the door, please leave the shed. \n"
         ## taskDescription += "HERE'S A WALKTHROUGH/HINT: To complete this task, you need to pick up the jar, put 1 unit of Chemical A and 2 units of Chemical C into the jar, and then put the key into the jar.  The key will change from rusted to not rusted.  Then you can open the door, walk 3 steps out, and the task will be completed."
 
-        Task.__init__(self, "RustedKeyTask", taskDescription, world, scoringInfo)
+        Task.__init__(self, "RustedKeyTaskNormal", taskDescription, world, scoringInfo)
         self.score = 0
         self.maxScore = 2                       # Maximum score
 
@@ -773,6 +775,182 @@ class RustedKeyTaskChallenge(Task):
             x0 = 16
             y0 = 10
             x1 = 16+7
+            y1 = 10+3
+            isOutside = False
+            for agent in self.world.agents:
+                # Check if the agent is outside the room
+                # Get agent position
+                isWithinBounds = agent.isWithinLocationBounds(x0, y0, x1, y1)
+                if (isWithinBounds == False):
+                    isOutside = True
+                    break
+
+            if (isOutside == True):
+                self.scorecardAgentOutside.updateScore(1, True, associatedUUIDs=[], associatedNotes="The agent is outside the shed")
+
+
+        # Update score
+        score = 0
+        maxScore = 0
+        for element in self.scoreCard:
+            score += element.score
+            maxScore += element.maxScore
+        self.score = score
+        self.maxScore = maxScore
+
+        # Check whether the task is complete
+        # Here, the task is complete if the key is not rusted, and the agent is outside
+        if (self.scorecardKeyNotRusted.completed and self.scorecardAgentOutside.completed):
+            self.completed = True
+            self.completedSuccessfully = True
+            #print("Task completed successfully: " + self.taskName)
+        else:
+            self.completed = False
+            self.completedSuccessfully = False
+
+
+#
+#   Specific Task: Rusted key task
+#
+class RustedKeyTaskEasy(Task):
+    # Constructor
+    def __init__(self, world, scoringInfo):
+        taskDescription = "You were venturing into the wilderness of Planet X to a storage shed to fetch some supplies. The shed door locked behind you, and your key appears too rusted to work in the lock. "
+        taskDescription += "You remember one of the other colonists mentioning that one of the chemicals in the shed is a rust remover, but unfortunately the chemicals you see are all unlabelled."
+        taskDescription += "You need to figure out which is a rust remover, and use it to remove the rust from the key.  Then, use the key to open the shed door, and make your way back to the colony. "
+        taskDescription += "You have no means of communication with the other colonists, and must figure this out on your own. \n"
+        taskDescription += "Some helpful notes: \n"
+        taskDescription += "1. The rusted key is in the shed. \n"
+        taskDescription += "2. The shed door is locked, and will only open using a non-rusted key. \n"
+        taskDescription += "3. You can add chemicals to the jar. Just use a chemical dispenser on the jar to add chemicals to the jar. \n"
+        taskDescription += "4. The solution is only a single chemical, and should not require mixing chemicals. If you add multiple chemicals into the same jar, they will automatically mix, having different properties than any single chemical. \n"
+        taskDescription += "5. Placing the rusted key into the jar will automatically apply the chemical in that jar to the key.  If the chemical is correct, the rust will be removed, though it may up to 2 steps for this to happen. \n"
+        taskDescription += "6. If you need to clean the jar of chemicals to try a new chemical, use the bottle washer on the jar. \n"
+        taskDescription += "7. When you have successfully derusted the key and opened the door, please leave the shed. \n"
+        ## taskDescription += "HERE'S A WALKTHROUGH/HINT: To complete this task, you need to pick up the jar, put 1 unit of Chemical A and 2 units of Chemical C into the jar, and then put the key into the jar.  The key will change from rusted to not rusted.  Then you can open the door, walk 3 steps out, and the task will be completed."
+
+        Task.__init__(self, "RustedKeyTaskEasy", taskDescription, world, scoringInfo)
+        self.score = 0
+        self.maxScore = 2                       # Maximum score
+
+        #scoringInfo['dispensers'] = [dispenser1, dispenser2, dispenser3]
+        #scoringInfo['mixingJar'] = mixingJar
+        #scoringInfo['bottleCleaner'] = BottleCleaner
+        #scoringInfo['key'] = rustyKey
+
+        # Scorecard elements (TODO)
+        # Taking critical objects
+        self.scorecardKey = ScorecardElement("Take key", "The key has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardKey)
+        self.scorecardJar = ScorecardElement("Take jar", "The mixing jar has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardJar)
+
+        # Has used each chemical dispenser
+        self.scorecardUsedDispensers = ScorecardElement("Use each chemical dispenser", "Each chemical dispenser has been used", maxScore=4)
+        self.scoreCard.append(self.scorecardUsedDispensers)
+
+        # Has used the bottle cleaner
+        self.scorecardUsedBottleCleaner = ScorecardElement("Use bottle cleaner", "The bottle cleaner has been used", maxScore=1)
+        self.scoreCard.append(self.scorecardUsedBottleCleaner)
+
+        # Has placed the key in the jar
+        self.scorecardKeyInJar = ScorecardElement("Place key in jar", "The key has been placed in the jar at least once", maxScore=1)
+        self.scoreCard.append(self.scorecardKeyInJar)
+
+        # Key is not rusted
+        self.scorecardKeyNotRusted = ScorecardElement("Key is not rusted", "The key is not rusted (includes levels for reduced amounts of rust)", maxScore=3)
+        self.scoreCard.append(self.scorecardKeyNotRusted)
+
+        # Agent is outside
+        self.scorecardAgentOutside = ScorecardElement("Agent is outside", "The agent is outside the shed", maxScore=1)
+        self.scoreCard.append(self.scorecardAgentOutside)
+
+        # Add hypotheses from scoringInfo
+        self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+
+        # Update max score based on the scorecard elements.
+        self.maxScore = sum(element.maxScore for element in self.scoreCard)
+
+
+    # Task setup: Add any necessary objects to the world to perform the task.
+    def taskSetup(self):
+        # Add the colonists?
+        pass
+
+    # Update the task progress
+    def updateTick(self):
+        # Do not update the score if the task is already marked as completed
+        #if (self.completed == True):
+        #    return
+
+        # Check whether key has been in agents inventory
+        if (not self.scorecardKey.completed):
+            key = self.scoringInfo['key']
+            if (key.parentContainer != None) and (key.parentContainer.type == "agent"):
+                self.scorecardKey.updateScore(1, True, associatedUUIDs=[key.uuid, key.parentContainer.uuid], associatedNotes="The key has been in an agent's (UUID: " + str(key.parentContainer.uuid) + ") inventory")
+
+        # Check whether jar has been in agents inventory
+        if (not self.scorecardJar.completed):
+            jar = self.scoringInfo['mixingJar']
+            if (jar.parentContainer != None) and (jar.parentContainer.type == "agent"):
+                self.scorecardJar.updateScore(1, True, associatedUUIDs=[jar.uuid, jar.parentContainer.uuid], associatedNotes="The jar has been in an agent's (UUID: " + str(jar.parentContainer.uuid) + ") inventory")
+
+        # Check whether each chemical dispenser has been used
+        if (not self.scorecardUsedDispensers.completed):
+            usedDispensers = set()
+            for agent in self.world.agents:
+                for dispenser in self.scoringInfo['dispensers']:
+                    # query the action history
+                    foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=dispenser, arg2=self.scoringInfo['mixingJar'], stopAtFirst=True)
+                    if (len(foundActions) > 0):
+                        usedDispensers.add(dispenser.uuid)
+
+            isCompleted = False
+            if (len(usedDispensers) >= 4):
+                isCompleted = True
+            associatedNotes = str(len(usedDispensers)) + " of " + str(len(self.scoringInfo["dispensers"])) + " dispensers have been used"
+            self.scorecardUsedDispensers.updateScore(len(usedDispensers), isCompleted, associatedUUIDs=list(usedDispensers), associatedNotes=associatedNotes)
+
+        # Check whether the bottle cleaner has been used
+        if (not self.scorecardUsedBottleCleaner.completed):
+            usedBottleCleaner = False
+            for agent in self.world.agents:
+                foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=self.scoringInfo['bottleCleaner'], arg2=self.scoringInfo['mixingJar'], stopAtFirst=True)
+                if (len(foundActions) > 0):
+                    usedBottleCleaner = True
+                    break
+            if (usedBottleCleaner == True):
+                self.scorecardUsedBottleCleaner.updateScore(1, usedBottleCleaner, associatedUUIDs=[self.scoringInfo['bottleCleaner'].uuid], associatedNotes="The bottle cleaner has been used")
+
+        # Check whether the key is in the jar
+        if (not self.scorecardKeyInJar.completed):
+            # Check whether the key's parent container is the jar
+            key = self.scoringInfo['key']
+            if (key.parentContainer != None) and (key.parentContainer.uuid == self.scoringInfo['mixingJar'].uuid):
+                self.scorecardKeyInJar.updateScore(1, True, associatedUUIDs=[key.uuid, key.parentContainer.uuid], associatedNotes="The key has been placed in the jar at least once")
+
+        # Check whether the key is not rusted
+        if (not self.scorecardKeyNotRusted.completed):
+            # Check the rust level of the key
+            key = self.scoringInfo['key']
+#        self.attributes['isRusted'] = isRusted                    # Is the key rusted?
+#        self.attributes['rustLevel'] = 3 if isRusted else 0       # Description of the rust (0=none, 1=light, 2=medium, 3=heavy)
+            if (key.attributes['isRusted'] == False):
+                self.scorecardKeyNotRusted.updateScore(3, True, associatedUUIDs=[key.uuid], associatedNotes="The key is not rusted")
+            else:
+                # Partial
+                rustScore = 3 - key.attributes['rustLevel']
+                if (rustScore == 3):
+                    self.scorecardKeyNotRusted.updateScore(rustScore, completed=False, associatedUUIDs=[key.uuid], associatedNotes="The key is fully rusted")
+                else:
+                    self.scorecardKeyNotRusted.updateScore(rustScore, completed=False, associatedUUIDs=[key.uuid], associatedNotes="The key is partially rusted")
+
+        # Check to see whether one or more agents are outside of the room
+        if (not self.scorecardAgentOutside.completed):
+            # Bounds
+            x0 = 16
+            y0 = 10
+            x1 = 16+6
             y1 = 10+3
             isOutside = False
             for agent in self.world.agents:

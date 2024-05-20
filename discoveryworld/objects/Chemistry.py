@@ -249,6 +249,12 @@ class Substance(Object):
         # Material
         self.attributes["manualMaterialNames"] = ["SubstanceA"]  # Currently all the same, since these properties aren't really used in any existing scenario
 
+    def normalizeSubstanceName(self, strIn:str):
+        # Normalize the substance name -- remove any `substance name (X measures)` and just keep the substance name
+        normalizedName = strIn
+        if ("(" in strIn):
+            normalizedName = strIn.split(" (")[0].strip()
+        return normalizedName
 
     def tick(self):
         # Stop if tick has already been completed
@@ -267,7 +273,9 @@ class Substance(Object):
         if (len(self.contents) == 0):
             # Pure substance, keep current substance name
             #self.attributes["substanceName"] = "unknown substance"
-            self.attributes['mixtureDict'] = {self.attributes["substanceName"]: 1.0}
+            #self.attributes['mixtureDict'] = {self.attributes["substanceName"]: 1.0}
+            self.attributes['mixtureDict'] = { self.normalizeSubstanceName(self.attributes["substanceName"]): 1.0}
+
             #print("SUBSTANCE TICK: Pure substance")
             pass
 
@@ -280,7 +288,8 @@ class Substance(Object):
             else:
                 self.attributes["substanceName"] = "unknown substance"
 
-            self.attributes['mixtureDict'] = {self.attributes["substanceName"]: 1.0}
+            # Normalize the substance name -- remove any `substance name (X measures)` and just keep the substance name
+            self.attributes['mixtureDict'] = { self.normalizeSubstanceName(self.attributes["substanceName"]): 1.0}
 
             #print("SUBSTANCE TICK: Only 1 substance")
         # Case 3: Multiple substances
@@ -306,7 +315,7 @@ class Substance(Object):
             # Check if there is only one key in the frequency counter
             elif (len(contentsFreq) == 1):
                 self.attributes["substanceName"] = list(contentsFreq.keys())[0] + " (" + str(contentsFreq[list(contentsFreq.keys())[0]]) + " measures)"
-                self.attributes['mixtureDict'] = {self.attributes["substanceName"]: 1.0}
+                self.attributes['mixtureDict'] = {self.normalizeSubstanceName(self.attributes["substanceName"]): 1.0}
 
             # If there are multiple keys in the frequency counter, then we need to create a mixture name
             else:
@@ -613,6 +622,8 @@ class KeyRustyParametric(Object):
     def evaluateRustRemovalProgress(self, chemicalDict:dict):
         # Calculate cosine similarity of the two dictionaries (rustRemovalDict and chemicalDict)
 
+        print("ChemicalDict: " + str(chemicalDict))
+
         # First, get a list of all the keys in the two dictionaries
         allKeys = set(self.attributes['rustRemovalDict'].keys()).union(set(chemicalDict.keys()))
         # Then, create two lists of the values for each key in the dictionaries
@@ -627,11 +638,29 @@ class KeyRustyParametric(Object):
                 list2.append(chemicalDict[key])
             else:
                 list2.append(0)
-        # Then, calculate the cosine similarity
-        dotProduct = sum([list1[i] * list2[i] for i in range(len(list1))])
+
+        print("Vector (solution): " + str(list1))
+        print("Vector (chemical): " + str(list2))
+
+        # Then, normalize each list to unit length
         magnitude1 = math.sqrt(sum([list1[i] ** 2 for i in range(len(list1))]))
         magnitude2 = math.sqrt(sum([list2[i] ** 2 for i in range(len(list2))]))
-        cosineSimilarity = dotProduct / (magnitude1 * magnitude2)
+        list1 = [list1[i] / magnitude1 for i in range(len(list1))]
+        list2 = [list2[i] / magnitude2 for i in range(len(list2))]
+        # Then, calculate the cosine similarity
+        dotProduct = sum([list1[i] * list2[i] for i in range(len(list1))])
+        #magnitude1 = math.sqrt(sum([list1[i] ** 2 for i in range(len(list1))]))
+        #magnitude2 = math.sqrt(sum([list2[i] ** 2 for i in range(len(list2))]))
+        cosineSimilarity = dotProduct #/ (magnitude1 * magnitude2)
+
+        print("### RUST EVALUATION:")
+        print("All Keys:" + str(allKeys))
+        print("After normalization:")
+        print("\tVector (solution): " + str(list1))
+        print("\tVector (chemical): " + str(list2))
+        print("Dot Product: " + str(dotProduct))
+
+
 
         #print("### RUST COSINE: " + str(cosineSimilarity) + " (dict1: " + str(self.attributes['rustRemovalDict']) + ", dict2: " + str(chemicalDict) + ")")
 

@@ -8,7 +8,8 @@ import random
 SCENARIOS = [
     "tutorial",
     "food_illness",
-    "combinatorial_chemistry",
+    "combinatorial_chemistry_easy",
+    "combinatorial_chemistry_normal",
     "combinatorial_chemistry_challenge",
     "archaeology_dating_simple",
     "archaeology_dating_challenge",
@@ -56,7 +57,7 @@ SCENARIO_INFOS = {
         "variations": ["1"],
     },
     "Combinatorial Chemistry": {
-        "difficulty": ["Normal", "Challenge"],
+        "difficulty": ["Easy", "Normal", "Challenge"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Archaeology Dating": {
@@ -151,8 +152,10 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
     elif (scenarioNameIn == "Tutorial") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = None
     # Scenario 1: Combinatorial Chemistry
+    elif (scenarioNameIn == "Combinatorial Chemistry") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["easy"]):
+        scenarioName = "combinatorial_chemistry_easy"
     elif (scenarioNameIn == "Combinatorial Chemistry") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
-        scenarioName = "combinatorial_chemistry"
+        scenarioName = "combinatorial_chemistry_normal"
     elif (scenarioNameIn == "Combinatorial Chemistry") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = "combinatorial_chemistry_challenge"
     # Scenario 2: Archaeology Dating
@@ -245,9 +248,15 @@ class ScenarioMaker():
             self.world.initialFilter()
             return (True, "")
 
-        elif (scenarioName == "combinatorial_chemistry"):
+        elif (scenarioName == "combinatorial_chemistry_easy"):
+            scoringInfo = makeScenarioStorageShedEasyDistilled(self.world, numUserAgents)
+            self.world.addTaskByName("RustedKeyTaskEasy", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+
+        elif (scenarioName == "combinatorial_chemistry_normal"):
             scoringInfo = makeScenarioStorageShed(self.world, numUserAgents)
-            self.world.addTaskByName("RustedKeyTask", scoringInfo)
+            self.world.addTaskByName("RustedKeyTaskNormal", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 
