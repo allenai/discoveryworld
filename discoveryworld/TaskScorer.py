@@ -1055,7 +1055,8 @@ class ArchaeologyDigNormal(Task):
             # First, check to see if the flag has been placed
             flagPlaced = False
             placedCorrectly = False
-            if (self.scoringInfo["flag"].parentContainer == None):
+            flagContainer = self.scoringInfo["flag"].parentContainer
+            if (flagContainer == None) or (flagContainer.attributes["isAgent"] == False):
                 for sign in self.scoringInfo["signs"]:
                     distance = sign.distanceTo(self.scoringInfo["flag"])
                     if (distance <= 2):
