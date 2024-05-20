@@ -693,7 +693,7 @@ def makeScenarioProteomicsEasyDistilled(world, numUserAgents=1):
 
     # NORMAL/CHALLENGE VERSION
     # The index of the correct animal for this scenario
-    answerAnimalIdx = world.randomSeed % 5
+    answerAnimalIdx = (world.randomSeed+2) % 5
     # names of the animals (indexed correctly -- e.g. animal index 0 is called a "spheroid", animal index 1 is called a "echojelly", etc.)
     animalNames = ["spheroid", "echojelly", "vortisquid", "animaplant", "prismatic beast"]
     answerAnimalName = animalNames[answerAnimalIdx]
