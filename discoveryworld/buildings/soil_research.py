@@ -102,3 +102,17 @@ def mkRandomSoilNutrientsWithSetValues(setValuesDict:dict, rng):
         out[nutrientName] = setValuesDict[nutrientName]
 
     return out
+
+# Randomly set the soil nutrients for each parameter
+def mkRandomSoilNutrientsWithSetValuesEasy(setValuesDict:dict, rng):
+    # Randomly set the soil nutrients for each parameter
+    out = {}
+    possibleValues = [0, 1]
+    for nutrientName in ["potassium", "titanium", "lithium", "thorium", "barium"]:
+        out[nutrientName] = rng.choice(possibleValues)
+
+    # Then, for any nutrient that is in the setValuesDict, set it to the value in the setValuesDict
+    for nutrientName in setValuesDict:
+        out[nutrientName] = setValuesDict[nutrientName]
+
+    return out

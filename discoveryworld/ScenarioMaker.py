@@ -65,7 +65,7 @@ SCENARIO_INFOS = {
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Plant Nutrients": {
-        "difficulty": ["Normal"],
+        "difficulty": ["Easy", "Normal"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Reactor Lab": {
@@ -166,8 +166,10 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
     elif (scenarioNameIn == "Archaeology Dating") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = "archaeology_dating_challenge"
     # Scenario 3: Plant Nutrients
+    elif (scenarioNameIn == "Plant Nutrients") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["easy"]):
+        scenarioName = "plant_nutrients_easy"
     elif (scenarioNameIn == "Plant Nutrients") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
-        scenarioName = "plant_nutrients"
+        scenarioName = "plant_nutrients_normal"
     elif (scenarioNameIn == "Plant Nutrients") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = None
     # Scenario 4: Reactor Lab
@@ -284,9 +286,15 @@ class ScenarioMaker():
             self.world.initialFilter()
             return (True, "")
 
-        elif (scenarioName == "plant_nutrients"):
+        elif (scenarioName == "plant_nutrients_easy"):
+            scoringInfo = makeScenarioPlantGrowingEasy(self.world, numUserAgents)
+            self.world.addTaskByName("SoilNutrientTaskEasy", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+
+        elif (scenarioName == "plant_nutrients_normal"):
             scoringInfo = makeScenarioPlantGrowing(self.world, numUserAgents)
-            self.world.addTaskByName("SoilNutrientTask", scoringInfo)
+            self.world.addTaskByName("SoilNutrientTaskNormal", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 

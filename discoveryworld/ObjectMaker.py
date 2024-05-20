@@ -13,7 +13,7 @@ from discoveryworld.objects import *
 from discoveryworld.Agent import *
 
 from discoveryworld.constants import DATA_PATH
-
+from discoveryworld.scenarios.plant_growing import SoilControllerEasy
 
 class ObjectMaker:
     # Constructor
@@ -264,6 +264,7 @@ class ObjectMaker:
             "Stick": Stick,
             "MeasuringTape": MeasuringTape,
             "ProteomicsMeter": ProteomicsMeter,
+            "SoilControllerEasy": SoilControllerEasy,
 
             # Colored objects
             "PaintBucket": PaintBucket,
