@@ -220,8 +220,10 @@ def makeScenarioPlantGrowingEasy(world, numUserAgents=1):
     numPlantSites = 1
 
     # Randomly choose what value is helpful for growing plants
-    possibleNutrients = ["potassium", "titanium", "lithium", "thorium", "barium"]
-    positiveNutrient = world.rng.choice(possibleNutrients)
+    possibleNutrients = ["titanium", "potassium", "barium", "lithium", "thorium"]
+    whichCorrect = ["potassium", "thorium", "titanium", "lithium", "barium"]
+    #positiveNutrient = world.rng.choice(possibleNutrients)
+    positiveNutrient = whichCorrect[world.randomSeed % 5]
     #whichSeedName = mapSeedToObjectName(whichNutrientPositive, whichValuePositive)      ## TODO -- CHECK THIS
     negativeNutrients = copy.deepcopy(possibleNutrients)
     negativeNutrients.remove(positiveNutrient)
@@ -279,7 +281,7 @@ def makeScenarioPlantGrowingEasy(world, numUserAgents=1):
         for nutrient in possibleNutrients:
             soilNutrients[nutrient] = 0
         # Set the one positive nutrient
-        soilNutrients[positiveNutrient] = 1
+        soilNutrients[positiveNutrient] = 3
         # Set the soil nutrients
         pilotSoilTiles[i].attributes["soilNutrients"] = soilNutrients
 
@@ -306,7 +308,7 @@ def makeScenarioPlantGrowingEasy(world, numUserAgents=1):
         negativeNutrient = world.rng.choice(negativeNutrients)
 
         # Set the one negative nutrient
-        soilNutrients[negativeNutrient] = 1
+        soilNutrients[negativeNutrient] = 3
         # Set the soil nutrients
         soilTile.attributes["soilNutrients"] = soilNutrients
 
