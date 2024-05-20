@@ -35,13 +35,13 @@ def mkTownSquare(x, y, world):
 
 
 # Path making
-def mkPathX(x, y, lengthX, world, type="Sand"):
+def mkPathX(x, y, lengthX, world, type="Path"):
     for i in range(0, lengthX):
         if (not world.hasObj(x+i, y, "path")):
             world.addObject(x+i, y, Layer.WORLD, world.createObject(type))
 
 
-def mkPathY(x, y, lengthY, world, type="Sand"):
+def mkPathY(x, y, lengthY, world, type="Path"):
     for i in range(0, lengthY):
         if (not world.hasObj(x, y+i, "path")):
             world.addObject(x, y+i, Layer.WORLD, world.createObject(type))
