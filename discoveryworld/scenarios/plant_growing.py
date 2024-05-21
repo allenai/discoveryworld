@@ -305,7 +305,7 @@ def makeScenarioPlantGrowingEasy(world, numUserAgents=1):
         for nutrient in possibleNutrients:
             soilNutrients[nutrient] = 0
         # Randomly select one nutrient
-        negativeNutrient = world.rng.choice(negativeNutrients)
+        negativeNutrient = negativeNutrients[i % 4]
 
         # Set the one negative nutrient
         soilNutrients[negativeNutrient] = 3
@@ -371,18 +371,16 @@ def makeScenarioPlantGrowingEasy(world, numUserAgents=1):
         userAgent = Agent(world)
         # TODO: Add starting tools for agent
         # Add the agent to a specfic location
-        world.addObject(13+userAgentIdx, 14, Layer.AGENT, userAgent)      # Near center of dig site
+        world.addObject(16-userAgentIdx, 15, Layer.AGENT, userAgent)      # Near center of dig site
         # Register the agent with the World so we can keep track of it
         world.addAgent(userAgent)
+    # Add initial teleport location
+    world.addTeleportLocation("initial location", 16, 15)
 
-    # Keep track of starting plants that have grown
-    scoringInfo["startingPlants"] = []
     # Get all objects in the world
     allObjects = world.getAllWorldObjects()
     for obj in allObjects:
         # If the object is an instance of the "Mushroom" class, then add it to the list of starting mushrooms
-        if (isinstance(obj, Mushroom)):
-            scoringInfo["startingPlants"].append(obj)
         if (isinstance(obj, SoilNutrientMeter)):
             scoringInfo["soilNutrientMeter"] = obj
 
@@ -447,7 +445,7 @@ def mkDialogSoilNutrientControllerEasy(self, agent):
     rootNode = DialogNode("rootNode", "Hello, I am the soil nutrient controller.  Please select which nutrient is required for plants to grow.", statesToAdd = [], statesToRemove = [])
     # Potassium
     rootNode.addDialogOption("Potassium", "selectPotassium")
-    rootNode.addDialogOption("Titanium", "selectTitanian")
+    rootNode.addDialogOption("Titanium", "selectTitanium")
     rootNode.addDialogOption("Lithium", "selectLithium")
     rootNode.addDialogOption("Thorium", "selectThorium")
     rootNode.addDialogOption("Barium", "selectBarium")

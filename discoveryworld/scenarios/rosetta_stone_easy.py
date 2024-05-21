@@ -156,16 +156,13 @@ def makeScenarioRosettaStoneEasy(world, numUserAgents=1):
         # Add the agent to a specfic location
         #world.addObject(18+userAgentIdx, 12, Layer.AGENT, userAgent)      # Near farm
         # Put the agent in the next AgentLocation
-        world.addObject(agentLocations[3+userAgentIdx][0], agentLocations[3+userAgentIdx][1], Layer.AGENT, userAgent)
+        world.addObject(18, 12, Layer.AGENT, userAgent)
         # Register the agent with the World so we can keep track of it
         world.addAgent(userAgent)
 
 
     # Add teleport locations to world
-    #world.addTeleportLocation("initial location", 16, 12)
-    world.addTeleportLocation("initial location", agentLocations[3][0], agentLocations[3][1])
-
-
+    world.addTeleportLocation("initial location", 18, 12)
 
     return scoringInfo
 
