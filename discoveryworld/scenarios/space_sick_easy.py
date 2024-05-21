@@ -74,17 +74,18 @@ def makeScenarioSpaceSickEasy(world, numUserAgents=1):
 
     # Random task object names
     taskObjects = []
-    for i in range(0, 4):
+    for i in range(0, 3):
         taskObject = world.createObject("Mushroom")
         if (i == 0):
             taskObject.attributes["pathogen"] = currentPathogen
             scoringInfo["objectToMove"] = taskObject
         taskObjects.append(taskObject)
-    world.rng.shuffle(taskObjects)
+    #world.rng.shuffle(taskObjects)
     scoringInfo["taskObjects"] = taskObjects
 
     tableLocations = [(16, 13), (17, 13), (19, 13), (20, 13)]
-    world.rng.shuffle(tableLocations)
+    for i in range(0, (world.randomSeed%3)+1):
+        world.rng.shuffle(tableLocations)
     for i in range(0, 3):
         objectTable = world.createObject("Table")
         world.addObject(tableLocations[i][0], tableLocations[i][1], Layer.OBJECTS, objectTable)
