@@ -7,6 +7,7 @@ import random
 # Internal names
 SCENARIOS = [
     "tutorial",
+    "space_sick_easy",
     "food_illness",
     "combinatorial_chemistry_easy",
     "combinatorial_chemistry_normal",
@@ -78,7 +79,7 @@ SCENARIO_INFOS = {
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Space Sick": {
-        "difficulty": ["Normal"],
+        "difficulty": ["Easy", "Normal"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Proteomics": {
@@ -188,6 +189,8 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
     elif (scenarioNameIn == "Lost in Translation") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = "lost_in_translation_hard"
     # Scenario 6: Space Sick
+    elif (scenarioNameIn == "Space Sick") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["easy"]):
+        scenarioName = "space_sick_easy"
     elif (scenarioNameIn == "Space Sick") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "food_illness"
     elif (scenarioNameIn == "Space Sick") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
@@ -250,6 +253,12 @@ class ScenarioMaker():
         if (scenarioName == "food_illness"):
             scoringInfo = makeScenarioTown(self.world, numUserAgents)
             self.world.addTaskByName("EatMushroomTask", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+
+        elif (scenarioName == "space_sick_easy"):
+            scoringInfo = makeScenarioSpaceSickEasy(self.world, numUserAgents)
+            self.world.addTaskByName("SpaceSickTaskEasy", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 

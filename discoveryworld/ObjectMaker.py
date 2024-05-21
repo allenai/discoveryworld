@@ -14,6 +14,8 @@ from discoveryworld.Agent import *
 
 from discoveryworld.constants import DATA_PATH
 from discoveryworld.scenarios.plant_growing import SoilControllerEasy
+from discoveryworld.scenarios.space_sick_easy import SimplifiedScientificInstrument
+
 
 class ObjectMaker:
     # Constructor
@@ -308,6 +310,13 @@ class ObjectMaker:
             "FuelTank": FuelTank,
             "SpeedSquare": SpeedSquare,
             "Pendulum": Pendulum,
+
+            # Simplified Scientific Instruments
+            "SimplifiedMicroscope": [SimplifiedScientificInstrument, "microscope"],
+            "SimplifiedSpectrometer": [SimplifiedScientificInstrument, "spectrometer"],
+            "SimplifiedPHMeter": [SimplifiedScientificInstrument, "ph_meter"],
+            "SimplifiedRadiationMeter": [SimplifiedScientificInstrument, "radiation_meter"],
+            "SimplifiedDensitometer": [SimplifiedScientificInstrument, "densitometer"],
 
         }
 

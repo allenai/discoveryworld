@@ -50,6 +50,9 @@ class TaskMaker():
         # Discovery tasks
         if (taskName == "EatMushroomTask"):
             return EatMushroomTask(self.world, scoringInfo)
+        elif (taskName == "SpaceSickTaskEasy"):
+            from discoveryworld.scenarios.space_sick_easy import SpaceSickTaskEasy
+            return SpaceSickTaskEasy(self.world, scoringInfo)
         elif (taskName == "RustedKeyTaskEasy"):
             return RustedKeyTaskEasy(self.world, scoringInfo)
         elif (taskName == "RustedKeyTaskNormal"):
