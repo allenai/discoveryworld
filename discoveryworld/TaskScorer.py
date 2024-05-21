@@ -66,6 +66,9 @@ class TaskMaker():
             return SoilNutrientTaskEasy(self.world, scoringInfo)
         elif (taskName == "SoilNutrientTaskNormal"):
             return SoilNutrientTaskNormal(self.world, scoringInfo)
+        elif (taskName == "RosettaStoneTaskEasy"):
+            from discoveryworld.scenarios.rosetta_stone_easy import RosettaStoneTaskEasy
+            return RosettaStoneTaskEasy(self.world, scoringInfo)
         elif (taskName == "RosettaStoneTask"):
             return RosettaStoneTask(self.world, scoringInfo)
         elif (taskName == "TutorialTask"):

@@ -14,6 +14,7 @@ SCENARIOS = [
     "archaeology_dating_simple",
     "archaeology_dating_challenge",
     "plant_nutrients",
+    "lost_in_translation_distilled",
     "lost_in_translation_easy",
     "lost_in_translation_medium",
     "lost_in_translation_hard",
@@ -73,7 +74,7 @@ SCENARIO_INFOS = {
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Lost in Translation": {
-        "difficulty": ["Normal", "Challenge"],
+        "difficulty": ["Easy", "Normal", "Challenge"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Space Sick": {
@@ -180,6 +181,8 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
     elif (scenarioNameIn == "Reactor Lab") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = None
     # Scenario 5: Lost in Translation
+    elif (scenarioNameIn == "Lost in Translation") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["easy"]):
+        scenarioName = "lost_in_translation_distilled"
     elif (scenarioNameIn == "Lost in Translation") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "lost_in_translation_easy"
     elif (scenarioNameIn == "Lost in Translation") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
@@ -295,6 +298,12 @@ class ScenarioMaker():
         elif (scenarioName == "plant_nutrients_normal"):
             scoringInfo = makeScenarioPlantGrowing(self.world, numUserAgents)
             self.world.addTaskByName("SoilNutrientTaskNormal", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+
+        elif (scenarioName == "lost_in_translation_distilled"):
+            scoringInfo = makeScenarioRosettaStoneEasy(self.world, numUserAgents)
+            self.world.addTaskByName("RosettaStoneTaskEasy", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 

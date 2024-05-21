@@ -2,6 +2,7 @@ from discoveryworld.scenarios.archaeology import makeScenarioArchaeologicalDig, 
 from discoveryworld.scenarios.archaeology import makeScenarioArchaeologicalDigGenericRadioisotope
 from discoveryworld.scenarios.plant_growing import makeScenarioPlantGrowing, makeScenarioPlantGrowingEasy
 from discoveryworld.scenarios.rosetta_stone import makeScenarioRosettaStone
+from discoveryworld.scenarios.rosetta_stone_easy import makeScenarioRosettaStoneEasy
 from discoveryworld.scenarios.storage_shed import makeScenarioStorageShed, makeScenarioStorageShedChallenge, makeScenarioStorageShedEasyDistilled
 from discoveryworld.scenarios.reactor_lab import makeScenarioReactorLab
 from discoveryworld.scenarios.town import makeScenarioTown
