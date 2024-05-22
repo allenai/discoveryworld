@@ -267,6 +267,9 @@ class ObjectMaker:
             "MeasuringTape": MeasuringTape,
             "ProteomicsMeter": ProteomicsMeter,
             "SoilControllerEasy": SoilControllerEasy,
+            "MushroomDirectlyPoisonousRandom": MushroomDirectlyPoisonousRandom,
+            "SeedDirectlyPoisonousMushroom": SeedDirectlyPoisonousMushroom,
+            "GlowingRockDetector": GlowingRockDetector,
 
             # Colored objects
             "PaintBucket": PaintBucket,

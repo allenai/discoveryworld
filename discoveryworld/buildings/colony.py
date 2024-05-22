@@ -130,6 +130,65 @@ def mkCafeteria(x, y, world, rng=None):
     return tables, pot
 
 
+def mkCafeteriaChallenge(x, y, world, rng=None):
+    rng = rng or random.Random()
+    # Create an L-shaped building (cafeteria)
+    #mkBuildingLDivided(world, x=x, y=y, width=10, height=8, dividerX=5)
+    # Create a divided building (cafeteria)
+    #mkBuildingDivided(world, x=x, y=y, width=8, height=7, dividerX=0, apertureX=0, dividerY=3, apertureY=1, doorX=3, signText="Cafeteria")
+    mkBuildingOneRoom(world, x=x, y=y, width=8, height=7, signText="Cafeteria")
+
+    # Front (eating area)
+    # Table and chairs
+    #mkTableAndChairs(world, x=x+7, y=y+5, chairsPresent=["n", "s", "e", "w"])
+    mkTableAndChairs(world, x=x+2, y=y+5, chairsPresent=["", "", "e", "w"])
+
+    # Counter
+    tables = []
+    for i in range(5):
+        tableToAdd = world.createObject("Table")
+        #if (i == 2):
+        #    tableToAdd.addObject(Mushroom(world, "red"))
+        #tableToAdd.addObject(world.createObject("mushroom3"))
+        #tableToAdd.addObject(world.createObject("mushroom1"))
+        # Randomly choose between mushroom1 and mushroom2
+        #mushroom = mkMushroomScenarioAppropriate(world, world.randomSeed, rng)
+        # Create a mushroom that is itself potentially poisonous, rather than through mold/etc.
+        mushroom = world.createObject("MushroomDirectlyPoisonousRandom")
+        tableToAdd.addObject(mushroom)
+        # if (rng.random() < 0.5):
+        #     tableToAdd.addObject(world.createObject("mushroom1"))
+        # else:
+        #     tableToAdd.addObject(world.createObject("mushroom2"))
+
+        world.addObject(x+i+2, y+3, Layer.FURNITURE, tableToAdd)
+        tables.append(tableToAdd)
+
+    #world.addObject(x+2, y+5, Layer.FURNITURE, Table(world))
+
+    # Back (kitchen)
+    pot = world.createObject("Pot")
+    # add 5 mushrooms to pot
+    #for i in range(5):
+    #    pot.addObject(Mushroom(world))
+    # Put the pot on a table
+    kitchenPrepTable = world.createObject("Table")
+    kitchenPrepTable.addObject(pot)
+    world.addObject(x+3, y+1, Layer.FURNITURE, kitchenPrepTable)
+    world.addObject(x+4, y+1, Layer.FURNITURE, world.createObject("Fridge"))
+    world.addObject(x+5, y+1, Layer.FURNITURE, world.createObject("Sink"))
+    world.addObject(x+6, y+1, Layer.FURNITURE, world.createObject("Stove"))
+
+    # Front (decorations)
+    flowerpot = world.createObject("FlowerPot")
+    flowerTable = world.createObject("Table")
+    flowerTable.addObject(flowerpot)
+    world.addObject(x+6, y+5, Layer.FURNITURE, flowerTable)
+
+    ## debug
+    return tables, pot
+
+
 def mkScienceLab(x, y, world):
     # Create a building (science lab)
     #buildingMaker.mkBuildingOneRoom(world, x=x, y=y, width=5, height=5)

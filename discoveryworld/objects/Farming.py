@@ -218,7 +218,6 @@ class Mushroom(Object):
         #if (self.attributes["color"] == "red"):
         #    self.attributes['isPoisonous'] = True
 
-
     def getTextDescription(self):
         # Get a text description of this object
         addedProperties = []
@@ -272,6 +271,104 @@ class Mushroom(Object):
         self.tempLastSpriteName = self.curSpriteName
 
 
+class MushroomDirectlyPoisonousRandom(Object):
+    # Constructor
+    def __init__(self, world, color:str=""):
+        # Default sprite name
+        Object.__init__(self, world, "mushroom", "mushroom", defaultSpriteName = "forest1_mushroom_pink")
+
+        #self.attributes["color"] = "pink"                           # Color of the mushroom (valid: "yellow", "pink", "red", "green")
+        # Randomly choose a color
+        if (color == ""):
+            self.attributes["color"] = self.world.rng.choice(["yellow", "pink", "red", "green"])
+        else:
+            self.attributes["color"] = color
+
+        # Food attributes
+        self.attributes['isEdible'] = True                         # Can it be eaten?
+
+        # Material
+        if (world.rng.random() < 0.5):
+            self.attributes["manualMaterialNames"] = ["PlantMatterWhite"]
+        else:
+            self.attributes["manualMaterialNames"] = ["PlantMatterGreen"]
+
+        # Poison/health attributes
+        self.attributes['isPoisonous'] = False                     # Is it poisonous? (default no)
+
+        probabilityPoisonous = 0.50
+        whichSuperPoisonous = self.world.randomSeed % 4
+        if (whichSuperPoisonous == 0) and (color == "yellow"):
+            probabilityPoisonous = 0.75
+        elif (whichSuperPoisonous == 1) and (color == "pink"):
+            probabilityPoisonous = 0.75
+        elif (whichSuperPoisonous == 2) and (color == "red"):
+            probabilityPoisonous = 0.75
+        elif (whichSuperPoisonous == 3) and (color == "green"):
+            probabilityPoisonous = 0.75
+
+        # Randomly choose if it's poisonous
+        if (self.world.rng.random() < probabilityPoisonous):
+            self.attributes['isPoisonous'] = True
+
+            ## DEBUG
+            #self.name = self.name + " (POISONOUS)"     # Breaks many things
+
+        # Make red mushrooms poisonous
+        #if (self.attributes["color"] == "red"):
+        #    self.attributes['isPoisonous'] = True
+
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's cooked
+        if (self.attributes['isCooked'] == True):
+            addedProperties.append("cooked")
+
+        # DEBUG (add temperature)
+        #addedProperties.append(str(round(self.attributes["temperatureC"], 1)) + "C")
+
+        # Add color
+        addedProperties.append(self.attributes["color"])
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+        # If the mushroom ever goes above 100C, then it's cooked
+        if (self.attributes['temperatureC'] >= 100):
+            self.attributes['isCooked'] = True
+
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # Infer sprite based on color
+        if (self.attributes["color"] == "yellow"):
+            self.curSpriteName = "forest1_mushroom_yellow"
+        elif (self.attributes["color"] == "pink"):
+            self.curSpriteName = "forest1_mushroom_pink"
+        elif (self.attributes["color"] == "red"):
+            self.curSpriteName = "forest1_mushroom_red"
+        elif (self.attributes["color"] == "green"):
+            self.curSpriteName = "forest1_mushroom_green"
+        else:
+            # Throw warning, default to pink
+            print("WARNING: Mushroom color not recognized (" + str(self.attributes["color"]) + "). Defaulting to pink.")
+            self.curSpriteName = "forest1_mushroom_pink"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
 
 
 class PlantGeneric(Object):
@@ -491,6 +588,115 @@ class Seed(Object):
                     # Plant did not grow this cycle
                     pass
 
+class SeedDirectlyPoisonousMushroom(Object):
+    # Constructor
+    def __init__(self, world):
+        # Default sprite name
+        Object.__init__(self, world, "seed", "seed", defaultSpriteName = "placeholder_seed")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+        self.attributes["sproutTime"] = -1                        # How many ticks until the seed sprouts?
+
+        # Microscope description
+        fauxMaterial = {}
+        fauxMaterial['radiationusvh'] = 0.0                           # The radiation of the crystal (in mSv)
+        fauxMaterial['spectrum'] = [2.0, 3.0, 2.0, 1.0, 1.0]           # The spectrum of the seed
+        fauxMaterial['microscopeDesc'] = "The smooth shell of an ungerminated seed."  # The description of the crystal under a microscope
+        self.attributes['materials'].append(fauxMaterial)
+
+
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's cooked
+        if (self.attributes['isCooked'] == True):
+            addedProperties.append("cooked")
+
+        if (self.attributes["temperatureC"] < 10):
+            addedProperties.append("cold")
+        elif (self.attributes["temperatureC"] > 100):
+            addedProperties.append("hot")
+        elif (self.attributes["temperatureC"] > 50):
+            addedProperties.append("warm")
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+        # Note if it's been heated
+        if (self.attributes['temperatureC'] >= 100):
+            self.attributes['isCooked'] = True
+
+        # Check if the conditions for the seed to grow have been met
+        # Condition 1: Check that the seed is contained in a 'SoilTile' object
+        inSoilTile = False
+        hasHole = False
+        if (self.parentContainer is not None):
+            #print("*** Parent Container Attributes: " + str(self.parentContainer.attributes))
+            if (self.parentContainer.type == "soil"):
+                inSoilTile = True
+
+        # Condition 2: Also check that the hole is filled
+        if (self.parentContainer is not None):
+            if (self.parentContainer.attributes['hasHole'] == True):
+                hasHole = True
+
+        # Debug information
+        #print("*** Seed: inSoilTile = " + str(inSoilTile) + ", hasHole = " + str(hasHole) + ", sproutTime: " + str(self.attributes["sproutTime"]))
+
+        # If the conditions have been met, continue the growth process
+        if (inSoilTile and not hasHole) and (not self.attributes["isCooked"]):
+            # Perform action based on sprout time
+            if (self.attributes["sproutTime"] == 0):
+                #print("Turn into plant")
+                # Turn into plant
+
+                #def mkMushroomScenarioAppropriate(world, seed, rng=None):
+                #plant = mkMushroomScenarioAppropriate(self.world, self.world.randomSeed, rng=self.world.rng) ### TODO
+                plant = self.world.createObject("MushroomDirectlyPoisonousRandom")
+
+                # Replace self with the plant
+                #self.replaceSelfWithObject(plant)
+                # Return, since this object is no longer valid
+                # Add the plant to the same world location as the soil tile
+                #self.world.addObjectToLocation(plant, self.parentContainer.parentContainer)
+                #def addObject(self, x, y, layer, object:Object):
+                seedLocation = self.getWorldLocation()
+                self.world.addObject(seedLocation[0], seedLocation[1], Layer.OBJECTS, plant)
+
+                # Remove self
+                self.world.removeObject(self)
+
+                return
+
+            elif (self.attributes["sproutTime"] == -1):
+                #print("Random sprout time")
+                # Sprout time was not set -- so this is the first time the conditions have been met. Set sprout time to a random value between 10 and 20 ticks
+                self.attributes["sproutTime"] = self.rng.randint(10, 20)
+            else:
+                #print("Decrement sprout time")
+                # If the sprout time has already been set, then decrement it
+                # How fast the plant grows is determined by the quality of its soil. The better the soil, the faster it grows.
+                # Soil quality is determined by NPK content. The higher the NPK content, the better the soil.  Use the ScienceHelper.getNPKContent() to calculate this.
+                npk = getNPKContent(self.parentContainer)
+                sumNPK = npk["nitrogen"] + npk["phosphorus"] + npk["potassium"]
+                # NPK is nominally between 0-10, but most of the soil in DiscoveryWorld has starting values between 1-4 for each.  Call the nominal max growth rate at 5.  5*3 = 15, so divide by 15 to get a growth rate.
+                growthRate = sumNPK / 30.0
+                # Randomly generate a number, and see if that number is less than the growth rate. If it is, then the plant grows.
+                randGrowth = self.rng.random()
+                if (randGrowth < growthRate):
+                    self.attributes["sproutTime"] -= 1
+                else:
+                    # Plant did not grow this cycle
+                    pass
 
 class SeedRequiringNutrients(Object):
     # Constructor

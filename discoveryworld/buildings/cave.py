@@ -61,3 +61,25 @@ def mkCave(x, y, world):
 
     world.addObject(x+1, y+2, Layer.OBJECTS, world.createObject("rock_glowing"))
     world.addObject(x+2, y+1, Layer.OBJECTS, world.createObject("rock_glowing"))
+
+
+def mkCaveChallenge(x, y, world):
+    glowingRocks = []
+    # Make the cave
+    mkCaveOneRoom(world, x, y, 6, 5, signText="Cave")
+
+    # Add some rocks
+    world.addObject(x+1, y+1, Layer.OBJECTS, world.createObject("rock_lg"))
+    world.addObject(x+4, y+1, Layer.OBJECTS, world.createObject("rock_med"))
+    world.addObject(x+4, y+2, Layer.OBJECTS, world.createObject("rock_lg"))
+    world.addObject(x+4, y+3, Layer.OBJECTS, world.createObject("rock_sm"))
+    world.addObject(x+3, y+1, Layer.OBJECTS, world.createObject("rock_sm"))
+
+    glowingRock1 = world.createObject("GlowingRockDetector")
+    world.addObject(x+1, y+2, Layer.OBJECTS, glowingRock1)
+    glowingRocks.append(glowingRock1)
+    glowingRock2 = world.createObject("GlowingRockDetector")
+    world.addObject(x+2, y+1, Layer.OBJECTS, glowingRock2)
+    glowingRocks.append(glowingRock2)
+
+    return glowingRocks

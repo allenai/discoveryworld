@@ -189,7 +189,7 @@ class World:
     def getObjectsAt(self, x, y, respectContainerStatus=False, includeParts=False, excludeObjectsOnAgents=False, respectObscuringLowerLayers=False, includeContents=True):
         # Bound checking: Make sure the object is within the world bounds
         if x < 0 or x >= self.sizeX or y < 0 or y >= self.sizeY:
-            print("Error: Object out of bounds: " + str(x) + ", " + str(y))
+            #print("Error: Object out of bounds: " + str(x) + ", " + str(y))
             return []
 
         #print("\t\t\tGetting objects at (" + str(x) + ", " + str(y) + ")")

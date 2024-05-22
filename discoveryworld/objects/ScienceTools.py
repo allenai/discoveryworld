@@ -759,6 +759,82 @@ class ProteomicsMeter(Object):
         # This will be the next last sprite name (when we flip the backbuffer)
         self.tempLastSpriteName = self.curSpriteName
 
+#
+#   Glowing Rock (that detects poisonous mushrooms)
+#
+class GlowingRockDetector(Object):
+    def __init__(self, world):
+        Object.__init__(self, world, "rock (glowing)", "rock (glowing)", defaultSpriteName="cave1_rock_glowing")
+        self.attributes['isUsable'] = False
+
+        # Movable
+        self.attributes['isMovable'] = True
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["rock"]
+
+        # By default, not luminous
+        self.attributes["isLuminous"] = False
+
+    #
+    # Tick
+    #
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+        # The unusual thing about this rock is that it detects poisonous mushrooms.
+        # Get the current world coordinates
+        worldX = self.attributes["gridX"]
+        worldY = self.attributes["gridY"]
+        detectionSpan = 1
+        # Check the area around the rock
+        detected = False
+        for x in range(worldX - detectionSpan, worldX + detectionSpan + 1):
+            for y in range(worldY - detectionSpan, worldY + detectionSpan + 1):
+                # Get the object at this location
+                # def getObjectsAt(self, x, y, respectContainerStatus=False, includeParts=False, excludeObjectsOnAgents=False, respectObscuringLowerLayers=False, includeContents=True):
+                objs = self.world.getObjectsAt(x, y, respectContainerStatus=False, includeParts=False, excludeObjectsOnAgents=False, respectObscuringLowerLayers=False, includeContents=True)
+                for obj in objs:
+                    print("Checking object: " + obj.name + " (" + obj.type + ")  isPoisonous: " + str(obj.attributes['isPoisonous']) )
+                    if (obj.type == "mushroom") and (obj.attributes['isPoisonous'] == True):
+                        detected = True
+                        print("\t DETECTED!")
+                        break
+
+        # If a poisonous mushroom was detected, then change the sprite to the glowing rock
+        if (detected):
+            # Check to see if currently luminous
+            if (not self.attributes["isLuminous"]):
+                self.attributes["isLuminous"] = True
+                self.needsSpriteNameUpdate = True
+            # Otherwise, no change needed
+        else:
+            # Check to see if currently luminous
+            if (self.attributes["isLuminous"]):
+                self.attributes["isLuminous"] = False
+                self.needsSpriteNameUpdate = True
+            # Otherwise, no change needed
+
+    # Sprite
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        # Check to see if the sprite name needs to be updated
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # Check if the rock is luminous
+        if (self.attributes["isLuminous"]):
+            self.curSpriteName = "cave1_rock_luminous"
+            self.name = "rock (highly luminous)"
+        else:
+            self.curSpriteName = "cave1_rock_glowing"
+            self.name = "rock (glowing)"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
+
 
 class Rocket(Object):
     def __init__(self, world, part=None, isFiring=False):

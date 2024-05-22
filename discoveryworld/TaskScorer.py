@@ -479,6 +479,14 @@ class SpaceSickTaskChallenge(Task):
         self.scorecardInstruments2 = ScorecardElement("Use instruments on mushrooms", "Use each of the scientific instruments on a mushroom", maxScore=7)
         self.scoreCard.append(self.scorecardInstruments2)
 
+        # Have at least one of the glowing rocks in the agents inventory
+        self.scorecardGlowingRock = ScorecardElement("Collect glowing rock", "Collect at least one of the glowing rocks", maxScore=1)
+        self.scoreCard.append(self.scorecardGlowingRock)
+
+        # Have a glowing rock turn luminous
+        self.scorecardGlowingRockLuminous = ScorecardElement("Glowing rock luminous", "Have a glowing rock turn luminous", maxScore=1)
+        self.scoreCard.append(self.scorecardGlowingRockLuminous)
+
         # Have at least 10 mushrooms eaten by colonists
         self.scorecardMushroomsEaten = ScorecardElement("Eat mushrooms", "Have at least 10 mushrooms eaten by colonists", maxScore=10)
         self.scoreCard.append(self.scorecardMushroomsEaten)
@@ -519,6 +527,24 @@ class SpaceSickTaskChallenge(Task):
             if (len(self.collectedMushroomColors) >= 4):
                 completedColors = True
             self.scorecardMushrooms.updateScore(len(self.collectedMushroomColors), completedColors, associatedUUIDs=list(self.collectedMushroomUUIDs), associatedNotes="The following mushroom colors have been collected: " + str(self.collectedMushroomColors))
+
+        # Have a glowing rock in the agents inventory
+        if (not self.scorecardGlowingRock.completed):
+            glowingRockFound = False
+            glowingRockUUIDs = set()
+            for agent in self.world.getUserAgents():
+                for obj in agent.getAllContainedObjectsAndParts():
+                    if ("rock (glowing)" in obj.type):
+                        glowingRockFound = True
+                        glowingRockUUIDs.add(obj.uuid)
+            if (glowingRockFound == True):
+                self.scorecardGlowingRock.updateScore(1, glowingRockFound, associatedUUIDs=list(glowingRockUUIDs), associatedNotes="A glowing rock has been collected")
+
+        # Have any glowing rock turn luminous
+        if (not self.scorecardGlowingRockLuminous.completed):
+            for obj in self.scoringInfo["glowingRocks"]:
+                if ("isLuminous" in obj.attributes) and (obj.attributes['isLuminous'] == True):
+                    self.scorecardGlowingRockLuminous.updateScore(1, True, associatedUUIDs=[obj.uuid], associatedNotes="A glowing rock has turned luminous")
 
         # Score Element 2: Use different scientific instruments on a mushroom
         # Check if the agent has used each of the scientific instruments on a mushroom

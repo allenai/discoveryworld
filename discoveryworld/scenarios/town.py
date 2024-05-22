@@ -2,9 +2,9 @@ import random
 from discoveryworld.Agent import Agent, NPCChef1, NPCColonistAuto2, NPCFarmer1
 from discoveryworld.DialogTree import DialogMaker
 from discoveryworld.Layer import Layer
-from discoveryworld.buildings.cave import mkCave
-from discoveryworld.buildings.colony import mkBarracks, mkCafeteria, mkInfirmary, mkScienceLab
-from discoveryworld.buildings.farm import mkFarm
+from discoveryworld.buildings.cave import mkCave, mkCaveChallenge
+from discoveryworld.buildings.colony import mkBarracks, mkCafeteria, mkInfirmary, mkScienceLab, mkCafeteriaChallenge
+from discoveryworld.buildings.farm import mkFarm, mkFarmChallenge
 
 from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mkPathX, mkPathY, mkSignVillage, mkTownSquare
 
@@ -135,7 +135,7 @@ def makeScenarioTown(world, numUserAgents=1):
     world.addTeleportLocation("science lab", 10, 24)
     world.addTeleportLocation("cafeteria", 20, 23)
     world.addTeleportLocation("farm", 12, 13)
-    world.addTeleportLocation("cave", 5, 8)
+    world.addTeleportLocation("cave", 3, 5)
     world.addTeleportLocation("farmers field", 18, 25)
     world.addTeleportLocation("town square", 16, 18)
     world.addTeleportLocation("barracks", 18, 11)
@@ -204,16 +204,7 @@ def makeScenarioTownChallenge(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
 
-    scoringInfo["criticalHypotheses"].append("The mushrooms that make people ill have mold on them. The mold is directly observable with the microscope, or indirectly observable by elevated spectrometer readings, particularly with a value of 1.0 on Channel 5 of the spectrometer.")
-    criticalMushroom = {
-        0: "red",
-        1: "green",
-        2: "yellow",
-        3: "pink",
-        4: "red and pink",
-    }
-    criticialMushroomColor = criticalMushroom[(world.randomSeed % 5)]
-    scoringInfo["criticalHypotheses"].append("The mushrooms that make people ill have the following color(s): " + criticialMushroomColor + ".")
+    scoringInfo["criticalHypotheses"].append("While it's unclear exactly why the mushrooms are making people ill, the glowing rock from the cave becomes luminous when it is near a harmful mushroom, providing a mechanism of detecting them.")
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 5
@@ -239,15 +230,16 @@ def makeScenarioTownChallenge(world, numUserAgents=1):
     mkInfirmary(19, 4, world)
     mkBarracks(19, 11, world)
 
-    tables, pot = mkCafeteria(19, 20, world)
+    tables, pot = mkCafeteriaChallenge(19, 20, world)
 
     mkTownSquare(16, 18, world)
 
     ## TODO: Add Farm?
-    mushroomsAdded = mkFarm(10, 8, world, world.rng)
+    mushroomsAdded = mkFarmChallenge(10, 8, world, world.rng)
 
     # Cave
-    mkCave(0, 0, world)
+    glowingRocks = mkCaveChallenge(0, 0, world)
+    scoringInfo["glowingRocks"] = glowingRocks
 
 
     # Paths
@@ -326,7 +318,7 @@ def makeScenarioTownChallenge(world, numUserAgents=1):
     world.addTeleportLocation("science lab", 10, 24)
     world.addTeleportLocation("cafeteria", 20, 23)
     world.addTeleportLocation("farm", 12, 13)
-    world.addTeleportLocation("cave", 5, 8)
+    world.addTeleportLocation("cave", 3, 5)
     world.addTeleportLocation("farmers field", 18, 25)
     world.addTeleportLocation("town square", 16, 18)
     world.addTeleportLocation("barracks", 18, 11)
