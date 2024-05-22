@@ -19,8 +19,8 @@ ROCKET_FORMULAS = """
   /  \\
  /____\  Formulas:
  |    |    - Escape velocity: v = sqrt(2 * G * M / R)
- | D  |    - Orbital speed: v = sqrt(G * M / (R + h))
- | i  |    - Orbital period: T = 2 * pi * sqrt((R + h)^3 / (G * M))
+ | D  |    - Orbital speed: O_v = sqrt(G * M / (R + h))
+ | i  |    - Orbital period: O_T = 2 * pi * sqrt((R + h)^3 / (G * M))
  | s  |    - Gravitational acceleration: g = G * M / R^2
  | c  |    - Pendulum period: T = 2 * pi * sqrt(L / g)
  |----|    - Centripetal acceleration: a = v^2 / R
@@ -217,6 +217,8 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     if difficulty == "easy":
         planet = PLANETS[world.randomSeed % len(PLANETS)]
         scoringInfo["criticalHypotheses"].append(f"The planet's caracteristics are very similar to {planet}.")
+
+    scoringInfo["planet"] = planet
 
     # Critical values for the scenario.
     # Planet radius
