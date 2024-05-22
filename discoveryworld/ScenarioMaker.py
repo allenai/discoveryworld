@@ -21,7 +21,9 @@ SCENARIOS = [
     "lost_in_translation_easy",
     "lost_in_translation_medium",
     "lost_in_translation_hard",
-    "reactor_lab",
+    "reactor_lab_easy",
+    "reactor_lab_normal",
+    "reactor_lab_challenge",
     "proteomics_easy",
     "proteomics_normal",
     "proteomics_challenge",
@@ -73,7 +75,7 @@ SCENARIO_INFOS = {
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Reactor Lab": {
-        "difficulty": ["Easy", "Normal"],
+        "difficulty": ["Easy", "Normal", "Challenge"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Lost in Translation": {
@@ -182,7 +184,7 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
     elif (scenarioNameIn == "Reactor Lab") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "reactor_lab_normal"
     elif (scenarioNameIn == "Reactor Lab") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
-        scenarioName = None
+        scenarioName = "reactor_lab_challenge"
     # Scenario 5: Lost in Translation
     elif (scenarioNameIn == "Lost in Translation") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["easy"]):
         scenarioName = "lost_in_translation_distilled"
@@ -342,6 +344,12 @@ class ScenarioMaker():
         elif (scenarioName == "reactor_lab_normal"):
             scoringInfo = makeScenarioReactorLab(self.world, numUserAgents)
             self.world.addTaskByName("ReactorTaskNormal", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+
+        elif (scenarioName == "reactor_lab_challenge"):
+            scoringInfo = makeScenarioReactorLabChallenge(self.world, numUserAgents)
+            self.world.addTaskByName("ReactorTaskChallenge", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 
