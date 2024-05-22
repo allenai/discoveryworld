@@ -799,7 +799,7 @@ class GlowingRockDetector(Object):
                     print("Checking object: " + obj.name + " (" + obj.type + ")  isPoisonous: " + str(obj.attributes['isPoisonous']) )
                     if (obj.type == "mushroom") and (obj.attributes['isPoisonous'] == True):
                         detected = True
-                        print("\t DETECTED!")
+                        #print("\t DETECTED!")
                         break
 
         # If a poisonous mushroom was detected, then change the sprite to the glowing rock
