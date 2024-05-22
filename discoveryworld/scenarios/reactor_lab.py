@@ -55,14 +55,19 @@ def mkCrystalProperties(quantumCrystalIn, rng, keyDimension:int=0, slope:float=1
         keyValue = 0
         if (keyDimension == 0):
             keyValue = quantumCrystalIn.attributes['density']
+            quantumCrystalIn.attributes['keyMeasurement'] = "density"
         elif (keyDimension == 1):
             keyValue = quantumCrystalIn.attributes['temperatureC']
+            quantumCrystalIn.attributes['keyMeasurement'] = "temperature"
         elif (keyDimension == 2):
             keyValue = quantumCrystalIn.attributes['quantumSize']
+            quantumCrystalIn.attributes['keyMeasurement'] = "quantum size"
         elif (keyDimension == 3):
             keyValue = fauxMaterial['radiationusvh']
+            quantumCrystalIn.attributes['keyMeasurement'] = "radiation"
         elif (keyDimension == 4):
             keyValue = fauxMaterial['spectrum'][4]
+            quantumCrystalIn.attributes['keyMeasurement'] = "spectrum (channel 4)"
         else:
             print("Error: mkCrystalProperties(): keyDimension must be between 0 and 4")
 
@@ -71,6 +76,7 @@ def mkCrystalProperties(quantumCrystalIn, rng, keyDimension:int=0, slope:float=1
         # NOTE, resonance frequency is now a float, rounded to 2 decimal places
         resonanceFreq = round(resonanceFreq, 2)
         quantumCrystalIn.attributes['resonanceFreq'] = resonanceFreq
+        quantumCrystalIn.attributes['keyMeasurement'] += " of " + str(keyValue)
 
         # Return
         return quantumCrystalIn
@@ -101,15 +107,20 @@ def mkCrystalPropertiesQuadratic(quantumCrystalIn, rng, keyDimension:int=0, a:fl
         # Pick one dimension (density, temperature, quantumSize, radiation, or spectrum) to be the "key" dimension.  Dimensions are numbered (0, 1, 2, 3, 4)
         keyValue = 0
         if (keyDimension == 0):
-            keyValue = quantumCrystalIn.attributes['density']
-        elif (keyDimension == 1):
             keyValue = quantumCrystalIn.attributes['temperatureC']
+            quantumCrystalIn.attributes['keyMeasurement'] = "temperature"
+        elif (keyDimension == 1):
+            keyValue = quantumCrystalIn.attributes['density']
+            quantumCrystalIn.attributes['keyMeasurement'] = "density"
         elif (keyDimension == 2):
             keyValue = quantumCrystalIn.attributes['quantumSize']
+            quantumCrystalIn.attributes['keyMeasurement'] = "quantum size"
         elif (keyDimension == 3):
-            keyValue = fauxMaterial['radiationusvh']
-        elif (keyDimension == 4):
             keyValue = fauxMaterial['spectrum'][4]
+            quantumCrystalIn.attributes['keyMeasurement'] = "spectrum (channel 4)"
+        elif (keyDimension == 4):
+            keyValue = fauxMaterial['radiationusvh']
+            quantumCrystalIn.attributes['keyMeasurement'] = "radiation"
         else:
             print("Error: mkCrystalProperties(): keyDimension must be between 0 and 4")
 
@@ -120,6 +131,7 @@ def mkCrystalPropertiesQuadratic(quantumCrystalIn, rng, keyDimension:int=0, a:fl
         # NOTE, resonance frequency is now a float, rounded to 2 decimal places
         resonanceFreq = round(resonanceFreq, 2)
         quantumCrystalIn.attributes['resonanceFreq'] = resonanceFreq
+        quantumCrystalIn.attributes['keyMeasurement'] += " of " + str(keyValue)
 
         # Return
         return quantumCrystalIn
@@ -154,14 +166,19 @@ def mkCrystalPropertiesEasy(quantumCrystalIn, rng, keyDimension:int=0, slope:flo
         # NOTE: These key dimensions are different between Easy and Normal
         if (keyDimension == 0):
             keyValue = quantumCrystalIn.attributes['quantumSize']
+            quantumCrystalIn.attributes['keyMeasurement'] = "quantum size"
         elif (keyDimension == 1):
             keyValue = quantumCrystalIn.attributes['density']
+            quantumCrystalIn.attributes['keyMeasurement'] = "density"
         elif (keyDimension == 2):
             keyValue = fauxMaterial['spectrum'][0]
+            quantumCrystalIn.attributes['keyMeasurement'] = "spectrum (channel 0)"
         elif (keyDimension == 3):
             keyValue = quantumCrystalIn.attributes['temperatureC']
+            quantumCrystalIn.attributes['keyMeasurement'] = "temperature"
         elif (keyDimension == 4):
             keyValue = fauxMaterial['radiationusvh']
+            quantumCrystalIn.attributes['keyMeasurement'] = "radiation"
         else:
             print("Error: mkCrystalProperties(): keyDimension must be between 0 and 4")
 
@@ -170,6 +187,7 @@ def mkCrystalPropertiesEasy(quantumCrystalIn, rng, keyDimension:int=0, slope:flo
         # NOTE, resonance frequency is now a float, rounded to 2 decimal places
         resonanceFreq = round(resonanceFreq, 2)
         quantumCrystalIn.attributes['resonanceFreq'] = resonanceFreq
+        quantumCrystalIn.attributes['keyMeasurement'] += " of " + str(keyValue)
 
         # Return
         return quantumCrystalIn
@@ -264,7 +282,9 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
     for i in range(0, 4):
         quantumCrystals[i].name = "quantum crystal " + str(i+1)
         #print("Quantum Crystal " + str(i+1) + " resonance frequency: " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz")
+        scoringInfo["criticalHypotheses"].append("A critical measurement for " + quantumCrystals[i].name + " is: " + str(quantumCrystals[i].attributes['keyMeasurement']) + ".")
         scoringInfo["criticalHypotheses"].append("The resonance frequency of " + quantumCrystals[i].name + " is " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz.")
+
     #import time
     #time.sleep(10)
     #exit(1)
@@ -511,6 +531,7 @@ def mkReactorLabEasy(x, y, world, rng, randomSeed, scoringInfo):
     for i in range(0, 3):
         quantumCrystals[i].name = "quantum crystal " + str(i+1)
         #print("Quantum Crystal " + str(i+1) + " resonance frequency: " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz")
+        scoringInfo["criticalHypotheses"].append("A critical measurement for " + quantumCrystals[i].name + " is: " + str(quantumCrystals[i].attributes['keyMeasurement']) + ".")
         scoringInfo["criticalHypotheses"].append("The resonance frequency of " + quantumCrystals[i].name + " is " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz.")
     #import time
     #time.sleep(10)
@@ -705,15 +726,15 @@ def mkReactorLabChallenge(x, y, world, rng, randomSeed, scoringInfo):
     # Store the critical instrument (note, the 0-4 alignment is the same as in mkCrystalProperties)
     scoringInfo['criticalInstrument'] = None
     if (keyDimension == 0):
-        scoringInfo['criticalInstrument'] = instrumentDensitometer
-    elif (keyDimension == 1):
         scoringInfo['criticalInstrument'] = instrumentThermometer
+    elif (keyDimension == 1):
+        scoringInfo['criticalInstrument'] = instrumentDensitometer
     elif (keyDimension == 2):
         scoringInfo['criticalInstrument'] = instrumentMicroscope
     elif (keyDimension == 3):
-        scoringInfo['criticalInstrument'] = instrumentRadiationMeter
-    elif (keyDimension == 4):
         scoringInfo['criticalInstrument'] = instrumentSpectrometer
+    elif (keyDimension == 4):
+        scoringInfo['criticalInstrument'] = instrumentRadiationMeter
 
 
     done = False
@@ -759,6 +780,7 @@ def mkReactorLabChallenge(x, y, world, rng, randomSeed, scoringInfo):
     for i in range(0, 5):
         quantumCrystals[i].name = "quantum crystal " + str(i+1)
         #print("Quantum Crystal " + str(i+1) + " resonance frequency: " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz")
+        scoringInfo["criticalHypotheses"].append("A critical measurement for " + quantumCrystals[i].name + " is: " + str(quantumCrystals[i].attributes['keyMeasurement']) + ".")
         scoringInfo["criticalHypotheses"].append("The resonance frequency of " + quantumCrystals[i].name + " is " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz.")
     #import time
     #time.sleep(10)
