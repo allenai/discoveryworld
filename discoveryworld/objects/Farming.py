@@ -454,7 +454,7 @@ class Seed(Object):
                 # Turn into plant
 
                 #def mkMushroomScenarioAppropriate(world, seed, rng=None):
-                plant = mkMushroomScenarioAppropriate(self.world, self.world.randomSeed, rng=self.rng)
+                plant = mkMushroomScenarioAppropriate(self.world, self.world.randomSeed, rng=self.world.rng)
 
                 # Replace self with the plant
                 #self.replaceSelfWithObject(plant)
@@ -597,7 +597,8 @@ class SeedRequiringNutrients(Object):
                 # Turn into plant
                 plant = None
                 # Randomly choose one of 4 plants to turn into
-                rand = self.rng.randint(0, 3)
+                #rand = self.rng.randint(0, 3)
+                rand = self.world.rng.randint(0, 3)     # Deterministic
                 if (rand == 0):
                     plant = self.world.createObject("mushroom1")
                 elif (rand == 1):
@@ -645,6 +646,192 @@ class SeedRequiringNutrients(Object):
                 #else:
                 #    # Plant did not grow this cycle
                 #    pass
+
+
+class SeedRequiringNutrientsRuleBased(Object):
+    # Constructor
+    def __init__(self, world, needsNutrientLevels:dict={}):
+        # Default sprite name
+        Object.__init__(self, world, "seed", "seed", defaultSpriteName = "placeholder_seed")
+
+        self.attributes["isMovable"] = True                       # Can it be moved?
+        self.attributes["isPassable"] = True                      # Agen't can't walk over this
+
+        # Material
+        self.attributes["manualMaterialNames"] = ["Seed"]
+
+        self.attributes["sproutTime"] = -1                        # How many ticks until the seed sprouts?
+
+        # Nutrient requirements
+        #self.attributes["needsNutrientLevels"] = {"potassium": 1, "thorium": 2}                    # Soil nutrients.  If empty, then it's not applicable/inconclusive.
+        self.attributes["needsNutrientLevels"] = needsNutrientLevels              # For seeds/plants: What nutrient levels do they need to grow?
+
+        # Seed rule -- the rules specifying the conditions under which the seed will grow
+        self.attributes["seedRule"] = {}
+
+
+    def setSeedRule(self, rule):
+        # Set the seed rule
+        self.attributes["seedRule"] = rule
+
+    def getTextDescription(self):
+        # Get a text description of this object
+        addedProperties = []
+
+        # Add whether it's cooked
+        if (self.attributes['isCooked'] == True):
+            addedProperties.append("cooked")
+
+        if (self.attributes["temperatureC"] < 10):
+            addedProperties.append("cold")
+        elif (self.attributes["temperatureC"] > 100):
+            addedProperties.append("hot")
+        elif (self.attributes["temperatureC"] > 50):
+            addedProperties.append("warm")
+
+        outStr = " ".join(addedProperties) + " " + self.name + self._getContainerTextDescription()
+        outStr = outStr.strip()
+        return outStr
+
+
+    def tick(self):
+        # Call superclass
+        Object.tick(self)
+
+        # Note if it's been heated
+        if (self.attributes['temperatureC'] >= 100):
+            self.attributes['isCooked'] = True
+
+        # self.attributes["soilNutrients"] = {}                    # Soil nutrients.  If empty, then it's not applicable/inconclusive.
+        # self.attributes["needsNutrientLevels"] = {}              # For seeds/plants: What nutrient levels do they need to grow?
+        # self.attributes["antirequirementsNutrientLevels"] = []   # A list of dictionaries, each containing a list of nutrient levels under which the seed/plant will NOT grow
+
+        # Check if the conditions for the seed to grow have been met
+        # Condition 1: Check that the seed is contained in a 'SoilTile' object
+        inSoilTile = False
+        hasHole = False
+        if (self.parentContainer is not None):
+            #print("*** Parent Container Attributes: " + str(self.parentContainer.attributes))
+            if (self.parentContainer.type == "soil"):
+                inSoilTile = True
+
+        # Condition 2: Also check that the hole is filled
+        if (self.parentContainer is not None):
+            if (self.parentContainer.attributes['hasHole'] == True):
+                hasHole = True
+
+        # Debug information
+        #print("*** Seed: inSoilTile = " + str(inSoilTile) + ", hasHole = " + str(hasHole) + ", sproutTime: " + str(self.attributes["sproutTime"]))
+
+        # Check that the soil has the right nutrients
+        hasRequiredNutrients = False
+        if (inSoilTile):
+            # Nutrients in this soil tile
+            soilNutrients = self.parentContainer.attributes["soilNutrients"]
+
+            # Parse seed rules (4 types, "xor", "and", "or", "not")
+            # seedRule = {
+            #     "ruleType": "or",
+            #     "nutrient1": nutrient1,
+            #     "value1": value1,
+            #     "nutrient2": nutrient2,
+            #     "value2": value2
+            # }
+
+            # Seed rule for this seed
+            if ("seedRule" in self.attributes):
+                if("ruleType" in self.attributes["seedRule"]):
+                    seedRule = self.attributes["seedRule"]
+                    ruleType = seedRule["ruleType"]
+                    if (ruleType == "xor"):
+                        # Check that the soil has the right level for each nutrient that this seed requires
+                        if (soilNutrients[seedRule["nutrient1"]] == seedRule["value1"]) and (soilNutrients[seedRule["nutrient2"]] != seedRule["value2"]):
+                            # Has nutrient1, but not nutrient2 -- XOR -- positive
+                            hasRequiredNutrients = True
+                        elif (soilNutrients[seedRule["nutrient1"]] != seedRule["value1"]) and (soilNutrients[seedRule["nutrient2"]] == seedRule["value2"]):
+                            # Has nutrient2, but not nutrient1 -- XOR -- positive
+                            hasRequiredNutrients = True
+
+                    elif (ruleType == "and"):
+                        # Check that the soil has the right level for each nutrient that this seed requires
+                        if (soilNutrients[seedRule["nutrient1"]] == seedRule["value1"]) and (soilNutrients[seedRule["nutrient2"]] == seedRule["value2"]):
+                            # Has both nutrient1 and nutrient2 -- AND -- positive
+                            hasRequiredNutrients = True
+
+                    elif (ruleType == "or"):
+                        # Check that the soil has the right level for each nutrient that this seed requires
+                        if (soilNutrients[seedRule["nutrient1"]] == seedRule["value1"]) or (soilNutrients[seedRule["nutrient2"]] == seedRule["value2"]):
+                            # Has either nutrient1 or nutrient2 -- OR -- positive
+                            hasRequiredNutrients = True
+
+                    elif (ruleType == "not"):
+                        # Check that the soil has the right level for each nutrient that this seed requires
+                        if (soilNutrients[seedRule["nutrient1"]] != seedRule["value1"]):
+                            # Does not have nutrient1 -- NOT -- positive
+                            hasRequiredNutrients = True
+                    else:
+                        # Invalid/unknown rule type
+                        pass
+
+
+        # If the conditions have been met, continue the growth process
+        if (inSoilTile) and (not hasHole) and (hasRequiredNutrients) and (not self.attributes["isCooked"]):
+            # Perform action based on sprout time
+            if (self.attributes["sproutTime"] == 0):
+                #print("Turn into plant")
+                # Turn into plant
+                plant = None
+                # Randomly choose one of 4 plants to turn into
+                #rand = self.rng.randint(0, 3)
+                rand = self.world.rng.randint(0, 3)     # Deterministic
+                if (rand == 0):
+                    plant = self.world.createObject("mushroom1")
+                elif (rand == 1):
+                    plant = self.world.createObject("mushroom2")
+                elif (rand == 2):
+                    plant = self.world.createObject("mushroom3")
+                elif (rand == 3):
+                    plant = self.world.createObject("mushroom4")
+
+                # Replace self with the plant
+                #self.replaceSelfWithObject(plant)
+                # Return, since this object is no longer valid
+                # Add the plant to the same world location as the soil tile
+                #self.world.addObjectToLocation(plant, self.parentContainer.parentContainer)
+                #def addObject(self, x, y, layer, object:Object):
+                seedLocation = self.getWorldLocation()
+                self.world.addObject(seedLocation[0], seedLocation[1], Layer.OBJECTS, plant)
+                # Also note this spawn location
+                plant.attributes["locationGrown"] = seedLocation
+
+                # Remove self
+                self.world.removeObject(self)
+
+                return
+
+            elif (self.attributes["sproutTime"] == -1):
+                # Sprout time was not set -- so this is the first time the conditions have been met. Set sprout time to a random value between 10 and 20 ticks
+                self.attributes["sproutTime"] = self.rng.randint(3, 6)
+            else:
+                # Decrement sprout time
+                self.attributes["sproutTime"] -= 1
+
+                #print("Decrement sprout time")
+                # If the sprout time has already been set, then decrement it
+                # How fast the plant grows is determined by the quality of its soil. The better the soil, the faster it grows.
+                # Soil quality is determined by NPK content. The higher the NPK content, the better the soil.  Use the ScienceHelper.getNPKContent() to calculate this.
+                #npk = getNPKContent(self.parentContainer)
+                #sumNPK = npk["nitrogen"] + npk["phosphorus"] + npk["potassium"]
+                # NPK is nominally between 0-10, but most of the soil in DiscoveryWorld has starting values between 1-4 for each.  Call the nominal max growth rate at 5.  5*3 = 15, so divide by 15 to get a growth rate.
+                #growthRate = sumNPK / 30.0
+                # Randomly generate a number, and see if that number is less than the growth rate. If it is, then the plant grows.
+                #randGrowth = self.rng.random()
+                #if (randGrowth < growthRate):
+                #    self.attributes["sproutTime"] -= 1
+                #else:
+                #    # Plant did not grow this cycle
+                #    pass
+
 
 
 class SoilNutrientMeter(Object):

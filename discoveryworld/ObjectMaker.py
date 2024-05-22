@@ -290,6 +290,7 @@ class ObjectMaker:
             "SeedNutrientBar1": [SeedRequiringNutrients, {"barium": 1}],
             "SeedNutrientBar2": [SeedRequiringNutrients, {"barium": 2}],
             "SeedNutrientBar3": [SeedRequiringNutrients, {"barium": 3}],
+            "SeedRequiringNutrientsRuleBased": SeedRequiringNutrientsRuleBased,
 
             # Substances
             "TestSubstance": [Substance, "testSubstance"],

@@ -67,6 +67,35 @@ def mkSoilResearchBuilding(x, y, world, whichSeedName):
     world.addObject(x+2, y+2, Layer.FURNITURE, shovel)
 
 
+## TODO: SET SEED RULE!
+def mkSoilResearchBuildingChallenge(x, y, world, seedRule):
+    # Create a small building
+    houseSizeX = 4
+    houseSizeY = 4
+    mkBuildingOneRoom(world, x=x+1, y=y, width=houseSizeX, height=houseSizeY, signText="Storage Building")
+
+    # Add a seed jar
+    seedJar = world.createObject("Jar")
+    #seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
+    seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=1, replenishTime=0)     #### TODO!!!
+    seedJar.name = "seed jar"
+
+    # Table for seed jar
+    seedTable = world.createObject("Table")
+    seedTable.addObject(seedJar)
+    world.addObject(x+3, y+1, Layer.FURNITURE, seedTable)
+
+    # Add a soil nutrient meter
+    soilMeter = world.createObject("SoilNutrientMeter")
+    # Table for soil meter
+    soilMeterTable = world.createObject("Table")
+    soilMeterTable.addObject(soilMeter)
+    world.addObject(x+2, y+1, Layer.FURNITURE, soilMeterTable)
+
+    # Add a shovel in the farm house
+    shovel = world.createObject("Shovel")
+    world.addObject(x+2, y+2, Layer.FURNITURE, shovel)
+
 
 # Packing soil nutrients (potassium, titanium, lithium, thorium, barium)
 def packSoilNutrients(potassium, titanium, lithium, thorium, barium):

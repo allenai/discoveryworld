@@ -69,6 +69,8 @@ class TaskMaker():
             return SoilNutrientTaskEasy(self.world, scoringInfo)
         elif (taskName == "SoilNutrientTaskNormal"):
             return SoilNutrientTaskNormal(self.world, scoringInfo)
+        elif (taskName == "SoilNutrientTaskChallenge"):
+            return SoilNutrientTaskChallenge(self.world, scoringInfo)
         elif (taskName == "RosettaStoneTaskEasy"):
             from discoveryworld.scenarios.rosetta_stone_easy import RosettaStoneTaskEasy
             return RosettaStoneTaskEasy(self.world, scoringInfo)
@@ -1758,14 +1760,6 @@ class SoilNutrientTaskEasy(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
-        #self.testSoilTiles = scoringInfo["testSoilTiles"]
-        # Scoring Info passed from the scenario
-        # scoringInfo["startingPlants"] = []
-        # scoringInfo["startingSeeds"].append(seed)
-        # scoringInfo["soilNutrientMeter"] = obj
-        # scoringInfo["shovel"] = obj
-        # scoringInfo["jar"] = obj            # Seed jar
-        # scoringInfo["pilotFieldSoilTiles"]
 
 
     # Task setup: Add any necessary objects to the world to perform the task.
@@ -1847,6 +1841,204 @@ class SoilNutrientTaskEasy(Task):
                 self.completedSuccessfully = True
             else:
                 self.completedSuccessfully = False
+
+
+
+
+#
+#   Specific Task: Soil Nutrient Task
+#
+class SoilNutrientTaskChallenge(Task):
+    # Constructor
+    def __init__(self, world, scoringInfo):
+        # TODO: modify description
+        # ["potassium", "titanium", "lithium", "thorium", "barium"]
+        taskDescription = "You are at a botanical research station on Planet X.  A species of plant has been identified that appears to grow very quickly in the presence of an unusual nutrient uncommon on Earth. "
+        taskDescription += "Other scientists have narrowed down the nutrient to be one of the following: Potassium, Titanium, Lithium, Thorium, or Barium. "
+        taskDescription += "Your task is to figure out which nutrient it is, and what specific amount of the nutrient (low, medium, or high) is required in the soil for the plant to grow. "
+        taskDescription += "\n\nTo support your work, a pilot field was set up with 12 plots of soil, each with a different combination of nutrients.  The pilot field is located to the south west part of the research station. "
+        taskDescription += "The research station is equipped with three test fields, where you can configure the nutrient levels in the field using the nearby soil nutrient controller. Once you configure the nutrients for a field, it *can't* be changed again. "
+        taskDescription += "Under the right conditions, the plant tends to grow very quickly, so you should be able to see the results of your work within a few steps. "
+        taskDescription += "Inside the storage facility are some tools that may be helpful for your work, including a soil nutrient meter, a jar of seeds, and a shovel. "
+        taskDescription += "To plant the seeds, dig a hole in the soil, place a seed in the hole, then put the soil back into the hole.  If the conditions are correct, the plant will grow from the seed. "
+        taskDescription += "As part of your discovery process, you should grow at least 2 new plants to maturity. "
+
+        Task.__init__(self, "SoilNutrientTaskChallenge", taskDescription, world, scoringInfo)
+        self.score = 0
+        self.maxScore = 6                       # Maximum score
+
+        self.newSeedsPlanted = set()            # New seeds planted since the start of the task
+        self.newPlantsGrown = set()             # New plants grown since the start of the task
+
+        # Scorecard elements
+        self.scorecardSoilNutrientMeterPresent = ScorecardElement("Soil Nutrient Meter Present", "The soil nutrient meter has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardSoilNutrientMeterPresent)
+        self.scorecardShovelPresent = ScorecardElement("Shovel Present", "The shovel has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardShovelPresent)
+        self.scorecardJarPresent = ScorecardElement("Seed Jar Present", "The seed jar has been in an agent's inventory", maxScore=1)
+        self.scoreCard.append(self.scorecardJarPresent)
+        self.scorecardUseSoilNutrientMeter = ScorecardElement("Use Soil Nutrient Meter", "The soil nutrient meter has been used on at least 2 squares of soil from the pilot field", maxScore=2)
+        self.scoreCard.append(self.scorecardUseSoilNutrientMeter)
+        self.scorecardAtLeastTwoSeedsPlanted = ScorecardElement("At Least 2 Seeds Planted", "At least 2 seeds have been planted in the test fields", maxScore=2)
+        self.scoreCard.append(self.scorecardAtLeastTwoSeedsPlanted)
+        self.scorecardAtLeastTwoNewPlants = ScorecardElement("At Least Two New Plants", "At least two new plants (mushrooms) have been grown to maturity in the test fields", maxScore=2)
+        self.scoreCard.append(self.scorecardAtLeastTwoNewPlants)
+
+        # TODO: Add subtask that requires the agent to set the nutrients of at least one field
+
+
+        # Add hypotheses from scoringInfo
+        self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.testSoilTiles = scoringInfo["testSoilTiles"]
+        # Scoring Info passed from the scenario
+        # scoringInfo["startingPlants"] = []
+        # scoringInfo["startingSeeds"].append(seed)
+        # scoringInfo["soilNutrientMeter"] = obj
+        # scoringInfo["shovel"] = obj
+        # scoringInfo["jar"] = obj            # Seed jar
+        # scoringInfo["pilotFieldSoilTiles"]
+
+
+    # Task setup: Add any necessary objects to the world to perform the task.
+    def taskSetup(self):
+        # Add the colonists?
+        pass
+
+    def initialize(self):
+        pass
+
+    # Update the task progress
+    def updateTick(self):
+        # Do not update the score if the task is already marked as completed
+        #if (self.completed == True):
+        #    return
+
+        # Clear the previous score and scorecard
+        #self.scoreCard = []
+        #score = 0
+
+        # Check if they have the soil nutrient meter in an agent's inventory
+        if (not self.scorecardSoilNutrientMeterPresent.completed):
+            soilNutrientMeterContainer = self.scoringInfo["soilNutrientMeter"].parentContainer
+            if (soilNutrientMeterContainer != None):
+                if (soilNutrientMeterContainer.type == "agent"):
+                    self.scorecardSoilNutrientMeterPresent.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["soilNutrientMeter"].uuid], associatedNotes="The soil nutrient meter has been in the inventory of the agent with uuid " + str(soilNutrientMeterContainer.uuid))
+        #self.scoreCard.append(self.scorecardSoilNutrientMeterPresent)
+
+        # Check if the shovel is in an agent's inventory
+        if (not self.scorecardShovelPresent.completed):
+            shovelContainer = self.scoringInfo["shovel"].parentContainer
+            if (shovelContainer != None):
+                if (shovelContainer.type == "agent"):
+                    self.scorecardShovelPresent.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["shovel"].uuid], associatedNotes="The shovel has been in the inventory of the agent with uuid " + str(shovelContainer.uuid))
+        #self.scoreCard.append(self.scorecardShovelPresent)
+
+        # Check if the jar is in an agent's inventory
+        if (not self.scorecardJarPresent.completed):
+            jarContainer = self.scoringInfo["jar"].parentContainer
+            if (jarContainer != None):
+                if (jarContainer.type == "agent"):
+                    self.scorecardJarPresent.updateScore(score=1, completed=True, associatedUUIDs=[self.scoringInfo["jar"].uuid], associatedNotes="The jar has been in the inventory of the agent with uuid " + str(jarContainer.uuid))
+        #self.scoreCard.append(self.scorecardJarPresent)
+
+        # Check if the soil nutrient meter has been used on at least 2 squares of soil from the pilot field
+        if (not self.scorecardUseSoilNutrientMeter.completed):
+            soilTilesChecked = set()
+            for agent in self.world.getUserAgents():
+                for soilTile in self.scoringInfo["pilotFieldSoilTiles"]:
+                    foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=self.scoringInfo["soilNutrientMeter"], arg2=soilTile, stopAtFirst=True)
+                    if (len(foundActions) > 0):
+                        soilTilesChecked.add(soilTile.uuid)
+
+            numSoilTilesChecked = len(soilTilesChecked)
+            isComplete = False
+            if (numSoilTilesChecked >= 2):
+                isComplete = True
+            self.scorecardUseSoilNutrientMeter.updateScore(score=numSoilTilesChecked, completed=isComplete, associatedUUIDs=list(soilTilesChecked), associatedNotes="The following soil tiles have been checked with the soil nutrient meter: " + str(soilTilesChecked))
+
+        # Check for at least one seed that is not a starting seed to be in the ground
+        # First, get all objects
+        allObjects = self.world.getAllWorldObjects()
+
+        if (not self.scorecardAtLeastTwoSeedsPlanted.completed):
+            # Get locations of test soil tiles
+            testSoilTileLocations = []
+            for testSoilTile in self.scoringInfo["testSoilTiles"]:
+                testSoilTileLocations.append(testSoilTile.getWorldLocation())
+
+            for obj in allObjects:
+                if (obj.type == "seed"):
+                    # Make sure this seed isn't in the list of starting seeds
+                    if (obj not in self.scoringInfo["startingSeeds"]):
+                        # Check if the seed is in the ground
+                        parentContainer = obj.parentContainer
+                        if (parentContainer != None):
+                            if (parentContainer.type == "soil"):
+                                # Make sure there's no hole in the soil (i.e. the hole is filled in/the seed is planted)
+                                if (parentContainer.attributes['hasHole'] == False):
+                                    # Check to see if the location of this object is one of the test soil tiles
+                                    isOnTestSoilTile = False
+                                    for testSoilTileLocation in testSoilTileLocations:
+                                        print("Checking if " + str(obj.getWorldLocation()) + " is on " + str(testSoilTileLocation))
+                                        if (obj.getWorldLocation() == testSoilTileLocation):
+                                            isOnTestSoilTile = True
+                                            print("\tMATCH")
+                                            break
+                                    if (isOnTestSoilTile):
+                                        self.newSeedsPlanted.add(obj.uuid)
+
+            numNewSeedsPlanted = len(self.newSeedsPlanted)
+            isCompleted = False
+            if (numNewSeedsPlanted >= 2):
+                isCompleted = True
+                numNewSeedsPlanted = 2
+            self.scorecardAtLeastTwoSeedsPlanted.updateScore(score=numNewSeedsPlanted, completed=isCompleted, associatedUUIDs=list(self.newSeedsPlanted), associatedNotes="At least two new seeds have been planted in the ground")
+
+
+        # Check for at least 2 new plants (Mushrooms) to exist
+        if (not self.scorecardAtLeastTwoNewPlants.completed):
+            # Get locations of test soil tiles
+            testSoilTileLocations = []
+            for testSoilTile in self.scoringInfo["testSoilTiles"]:
+                testSoilTileLocations.append(testSoilTile.getWorldLocation())
+
+            # Check for new plants, that weren't in the simulation when it was initialized
+            for obj in allObjects:
+                if (isinstance(obj, Mushroom)):
+                    if (obj not in self.scoringInfo["startingPlants"]):
+                        if ("locationGrown" in obj.attributes):
+                            grownOnTestLocation = False
+                            for testSoilTileLocation in testSoilTileLocations:
+                                if (obj.attributes["locationGrown"] == testSoilTileLocation):
+                                    grownOnTestLocation = True
+                                    break
+                            if (grownOnTestLocation):
+                                self.newPlantsGrown.add(obj)
+
+            # Count the number of new plants
+            numMaturePlants = len(self.newPlantsGrown)
+            completedTwoNewPlants = False
+            if (numMaturePlants >= 2):
+                numMaturePlants = 2
+                completedTwoNewPlants = True
+
+            self.scorecardAtLeastTwoNewPlants.updateScore(score=numMaturePlants, completed=completedTwoNewPlants, associatedUUIDs=[plant.uuid for plant in self.newPlantsGrown], associatedNotes="At least two new plants have been grown to maturity")
+
+            # Ultimately, it's having successfully grown 2 new plants that determines whether the task is complete
+            if (completedTwoNewPlants == True):
+                self.completed = True
+                self.completedSuccessfully = True
+
+        # Count the score, based on the scorecard
+        score = 0
+        maxScore = 0
+        for scorecardElement in self.scoreCard:
+            score += scorecardElement.score
+            maxScore += scorecardElement.maxScore
+        self.score = score
+        self.maxScore = maxScore
+
+        # TODO: Add a timeout that marks the task complete 100 steps after the last soil controller has been used?
 
 
 
