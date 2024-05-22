@@ -765,6 +765,7 @@ class Rocket(Object):
         assert part is not None, "Rocket must have a part"
         super().__init__(world, "rocket", "rocket", defaultSpriteName=f"launchSite_rocket_{part}")
         self.attributes['isMovable'] = False
+        self.attributes['isPassable'] = (part not in ("bottom", "bottom_fire"))
         self.isFiring = isFiring
 
         # Material
@@ -791,3 +792,11 @@ class FuelTank(Object):
 
         self.attributes["isPassable"] = (part != "b")
         self.attributes["manualMaterialNames"] = ["Metal"]
+
+
+class RocketryBook(Object):
+    def __init__(self, world):
+        super().__init__(world, "book", "rocketry book", defaultSpriteName=f"instruments2_rocketry_book")
+
+        self.attributes["isMovable"] = True
+        self.attributes["isReadable"] = True

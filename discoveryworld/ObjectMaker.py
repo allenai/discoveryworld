@@ -310,6 +310,7 @@ class ObjectMaker:
             "FuelTank": FuelTank,
             "SpeedSquare": SpeedSquare,
             "Pendulum": Pendulum,
+            "RocketryBook": RocketryBook,
 
             # Simplified Scientific Instruments
             "SimplifiedMicroscope": [SimplifiedScientificInstrument, "microscope"],

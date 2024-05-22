@@ -225,6 +225,8 @@
             "fuel_tank_C_t":      { "baseTile": [7, 2],  "size": [1, 1] },
             "fuel_tank_C_c":      { "baseTile": [7, 3],  "size": [1, 1] },
             "fuel_tank_C_b":      { "baseTile": [7, 4],  "size": [1, 1] }
+
+
         },
         "composites": {}
     },
@@ -460,6 +462,8 @@
                 "pendulum":          { "baseTile": [7, 5],  "size": [1, 2] },
                 "pendulum_top":      { "baseTile": [7, 5],  "size": [1, 1] },
                 "pendulum_bottom":   { "baseTile": [7, 6],  "size": [1, 1] },
+
+                "rocketry_book":     { "baseTile": [2, 4],  "size": [1, 1] },
 
                 "mushroom_white":  { "baseTile": [4, 1],  "size": [1, 1], "color": "white" },
                 "mushroom_red":    { "baseTile": [4, 1],  "size": [1, 1], "color": "red" },

@@ -344,18 +344,19 @@ class SpeedSquare(Object):
         self.attributes["manualMaterialNames"] = ["Metal"]
 
     def actionUseWith(self, otherObject=None):
-        if isinstance(otherObject, Sand):
-            ground = otherObject
-            useDescriptionStr = f"The rays coming from Planet X's star are {ground.attributes['lightAngle']} degrees from the ground.\n"
+        objects = self.world.getObjectsAt(*self.getWorldLocation())
+        for obj in objects:
+            if "lightAngle" in obj.attributes:
+                useDescriptionStr = f"The rays coming from Planet X's star are {obj.attributes['lightAngle']} degrees from the ground at the current location.\n"
 
-            if ground.attributes["lightAngle"] >= 2:
-                useDescriptionStr = useDescriptionStr.replace("degree", "degrees")
+                if obj.attributes["lightAngle"] >= 2:
+                    useDescriptionStr = useDescriptionStr.replace("degree", "degrees")
 
-        else:
-            useDescriptionStr = "Use on open sky ground tile to measure light angle.\n"
-            return ActionSuccess(False, useDescriptionStr, importance=MessageImportance.LOW)
+                return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
 
-        return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
+        useDescriptionStr = "Use on open sky ground tile to measure light angle.\n"
+        return ActionSuccess(False, useDescriptionStr, importance=MessageImportance.LOW)
+
 
 
 class Pendulum(Object):
@@ -369,9 +370,14 @@ class Pendulum(Object):
         self.attributes['isReadable'] = True
         self.nbTicksSinceActivation = 0
         self.oscillationPeriod = 7
+        self.length = 1
 
         # Material
         self.attributes["manualMaterialNames"] = ["Metal"]
+
+    def setLength(self, length):
+        self.length = length
+        self.name = f"{length}-meter pendulum"
 
     def tick(self):
         super().tick()

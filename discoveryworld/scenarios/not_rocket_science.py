@@ -3,18 +3,98 @@
 import random
 
 import numpy as np
-from discoveryworld.Agent import NPC, Agent, NPCChef1, NPCColonistAuto2, NPCDevice, NPCFarmer1
+from discoveryworld.Agent import NPC, Agent, NPCDevice
 from discoveryworld.DialogTree import DialogMaker, DialogNode, DialogTree
 from discoveryworld.Layer import Layer
 from discoveryworld.TaskScorer import ScorecardElement, Task
-from discoveryworld.buildings.cave import mkCave
-from discoveryworld.buildings.colony import mkBarracks, mkCafeteria, mkInfirmary, mkRocket, mkScienceLab
-from discoveryworld.buildings.farm import mkFarm
+from discoveryworld.buildings.colony import mkRocket
 
-from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mkPathX, mkPathY, mkSandFill, mkSignVillage, mkTallTree, mkTownSquare
+from discoveryworld.buildings.terrain import mkPathX, mkPathY, mkSandFill, mkSignVillage
 
-from discoveryworld.buildings.house import mkBuildingDivided, mkBuildingOneRoom, mkTableAndChairs
+from discoveryworld.objects.Terrain import LaunchPad, Sand, SandPath
 
+
+ROCKET_FORMULAS = """
+   /\                 -= Rocketry Cheat Sheet =-
+  /  \\
+ /____\  Formulas:
+ |    |    - Escape velocity: v = sqrt(2 * G * M / R)
+ | D  |    - Orbital speed: v = sqrt(G * M / (R + h))
+ | i  |    - Orbital period: T = 2 * pi * sqrt((R + h)^3 / (G * M))
+ | s  |    - Gravitational acceleration: g = G * M / R^2
+ | c  |    - Pendulum period: T = 2 * pi * sqrt(L / g)
+ |----|    - Centripetal acceleration: a = v^2 / R
+ | o  |    - Centripetal force: F = m * v^2 / R
+ | v  |    - Thrust-to-weight ratio: TWR = F / (m * g)
+ | e  |    - Specific impulse: Isp = F / (m_dot * g)
+ | r  |    - Rocket equation: delta_v = Isp * g * ln(m0 / m1)
+ | y  |
+ |----|  Constants & variables:
+ |  W |    - G: gravitational constant (6.67430e-11 N m^2 / kg^2)
+ |  o |    - M: mass of planet
+ |  r |    - R: radius of planet
+ |  l |    - h: height above planet
+ |  d |    - g: acceleration due to gravity             _____
+ |____|    - v: velocity                            ,-:` \;',`'-,
+/|    |\   - T: period                            .'-;_,;  ':-;_,'.
+ ||  ||    - L: length of pendulum               /;   '/    ,  _`.-\\
+ ||  ||    - F: force                           | '`. (`     /` ` \`|
+ ||  ||    - a: acceleration                    |:.  `\`-.   \_   / |
+/_|__|_\   - m_dot: mass flow rate              |     (   `,  .`\ ;'|
+ ||||||    - m0: initial mass of rocket          \     | .'     `-'/
+ /||||\    - m1: final mass of rocket             `.   ;/        .'
+  /||\     - delta_v: change in velocity            `'-.______.-'
+"""
+
+
+PLANETS = [
+    "Earth",
+    "Moon",
+    "Mars",
+    "Io",
+    "Europa",
+    "Mercury",
+    "Venus",
+    "Jupiter",
+    "Saturn",
+    "Uranus",
+    "Neptune",
+    "Pluto",
+    "Ganymede",
+]
+
+# According to https://en.wikipedia.org/wiki/List_of_Solar_System_objects_by_size
+PLANET_RADII = {
+    "Mercury": 2439.4,
+    "Venus": 6052,
+    "Earth": 6371,
+    "Mars": 3389.5,
+    "Jupiter": 69911,
+    "Saturn": 58232,
+    "Uranus": 25362,
+    "Neptune": 24622,
+    "Pluto": 1188.3,
+    "Moon": 1737.5,
+    "Io": 1821.6,
+    "Europa": 1560.8,
+    "Ganymede": 2634.1,
+}
+
+PLANET_MASSES = {
+    "Mercury": 330.11e21,
+    "Venus": 4867.4e21,
+    "Earth": 5972.4e21,
+    "Mars": 641.71e21,
+    "Jupiter": 1898187e21,
+    "Saturn": 568317e21,
+    "Uranus": 86813e21,
+    "Neptune": 102413e21,
+    "Pluto": 13.03e21,
+    "Moon": 73.46e21,
+    "Io": 89.32e21,
+    "Europa": 48.00e21,
+    "Ganymede": 148.2e21,
+}
 
 
 def mkControlRoom(world, x, y):
@@ -25,6 +105,7 @@ def mkControlRoom(world, x, y):
         "#     #",
         "####ds#",
     ]
+    bounds = (x, y, x+len(layout[0]), y+len(layout))
 
     pendulum = world.createObject("Pendulum")
     launchTerminal = LaunchTerminal(world) #world.createObject("LaunchTerminal")
@@ -61,7 +142,7 @@ def mkControlRoom(world, x, y):
             elif char == "p":  # Add pendulum
                 world.addObject(x+i, y+j, Layer.OBJECTS, pendulum)
 
-    return pendulum, launchTerminal
+    return pendulum, launchTerminal, bounds
 
 
 def mkThrustTestingGround(world, x, y):
@@ -125,6 +206,7 @@ def mkLaunchPad(world, x, y, width, height):
     return bounds
 
 
+
 def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
@@ -161,9 +243,11 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
 
     # 1-meter pendulum period
     pendulumLength = 1  # (m)
+    scoringInfo["pendulumLength"] = pendulumLength
+    scoringInfo["criticalHypotheses"].append(f"The pendulum's length is {pendulumLength}m.")
     pendulumPeriod = 2 * np.pi * np.sqrt(pendulumLength / planetGravity)  # (s)
     scoringInfo["pendulumPeriod"] = pendulumPeriod
-    scoringInfo["criticalHypotheses"].append(f"1-meter pendulum period is {pendulumPeriod} ticks.")
+    scoringInfo["criticalHypotheses"].append(f"The pendulum's period is {pendulumPeriod} ticks.")
 
     # Target orbit height
     orbitHeight = world.rng.randint(100, 10000)  # (km)
@@ -194,7 +278,8 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     mkRocket(world, 16, 2)
 
     # Rocket Control Operations
-    pendulum, launchTerminal = mkControlRoom(world, 7, 20)
+    pendulum, launchTerminal, controlRoomBounds = mkControlRoom(world, 7, 20)
+    pendulum.setLength(scoringInfo["pendulumLength"])
     pendulum.oscillationPeriod = scoringInfo["pendulumPeriod"]
     launchTerminal.attributes["orbitHeight"] = scoringInfo["orbitHeight"]
     launchTerminal.attributes["targetOrbitSpeed"] = scoringInfo["orbitSpeed"]
@@ -206,10 +291,9 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     # Paths
     mkPathX(9, 25, 6, world, type="SandPath")
     mkPathX(18, 25, 13, world, type="SandPath")
-
-    mkPathY(15, 4, 28, world, type="SandPath")   # Down from plaza
-    mkPathY(16, 4, 28, world, type="SandPath")   # Down from plaza
-    mkPathY(17, 4, 28, world, type="SandPath")   # Down from plaza
+    mkPathY(15, 4, 28, world, type="SandPath")
+    mkPathY(16, 4, 28, world, type="SandPath")
+    mkPathY(17, 4, 28, world, type="SandPath")
 
     # Add big village sign
     mkSignVillage(15, 27, world)
@@ -262,9 +346,12 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
         # print(f"Light angle at row {y} is {lightAngle} degrees.")
 
         for x in range(world.sizeX):
+            if x >= controlRoomBounds[0] and x <= controlRoomBounds[2] and y >= controlRoomBounds[1] and y <= controlRoomBounds[3]:
+                continue
+
             for obj in world.getObjectsAt(x, y):
                 # Check if the object is Sand.
-                if (obj.type == "sand"):
+                if isinstance(obj, (Sand, SandPath, LaunchPad)):
                     obj.attributes["lightAngle"] = lightAngle
 
     # Add dialog to objects.
@@ -277,6 +364,11 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
         # Create tools
         speed_square = world.createObject("SpeedSquare")
         userAgent.addObject(speed_square)
+
+        rocketry_book = world.createObject("RocketryBook")
+        rocketry_book.attributes["document"] = ROCKET_FORMULAS
+        userAgent.addObject(rocketry_book)
+
         #userAgent.addObject(world.createObject("RocketryBook"))
         # Add the agent to a specfic location
         # world.addObject(16+userAgentIdx, 3, Layer.AGENT, userAgent)    # Near rocket
