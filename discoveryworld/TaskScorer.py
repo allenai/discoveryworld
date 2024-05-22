@@ -48,11 +48,13 @@ class TaskMaker():
     # Make a task
     def makeTask(self, taskName:str, scoringInfo:dict=None):
         # Discovery tasks
-        if (taskName == "EatMushroomTask"):
-            return EatMushroomTask(self.world, scoringInfo)
+        if (taskName == "SpaceSickTaskNormal"):
+            return SpaceSickTaskNormal(self.world, scoringInfo)
         elif (taskName == "SpaceSickTaskEasy"):
             from discoveryworld.scenarios.space_sick_easy import SpaceSickTaskEasy
             return SpaceSickTaskEasy(self.world, scoringInfo)
+        elif (taskName == "SpaceSickTaskChallenge"):
+            return SpaceSickTaskChallenge(self.world, scoringInfo)
         elif (taskName == "RustedKeyTaskEasy"):
             return RustedKeyTaskEasy(self.world, scoringInfo)
         elif (taskName == "RustedKeyTaskNormal"):
@@ -253,14 +255,14 @@ class ScorecardElement():
 #
 #   Specific Task: Agents eating space mushrooms without getting sick
 #
-class EatMushroomTask(Task):
+class SpaceSickTaskNormal(Task):
     # Constructor
     def __init__(self, world, scoringInfo):
         taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist sometimes have upset stomachs.  Your task is to figure out why people are feeling ill, and to prevent it.  You must demonstrate this by having colonists successfully eat 10 mushrooms in a row without eventually feeling sick. "
         taskDescription += "Since the food causes only mild illness, and getting the colony established is important, the colonists have volunteered to be test subjects.  The Chef in the Cafeteria can help you collect mushrooms, serve mushrooms from the cafeteria pot to the tables, and let the colonists know a meal is ready to eat, when you're ready. "
         taskDescription += "The colonists may post their status (like if they're feeling unwell) on the Discovery Feed (use 'v' to display it)."
         taskDescription += "After a colonist eats a mushroom, it will be automatically monitored by DiscoveryWorld for 50 turns to see if it gets sick.  (Note: If it successfully eats another mushroom within that 100 turns, assuming both are good, it will still only count as a single good case.)"
-        Task.__init__(self, "EatMushroomTask", taskDescription, world, scoringInfo)
+        Task.__init__(self, "SpaceSickTaskNormal", taskDescription, world, scoringInfo)
         self.score = 0
         self.maxScore = 10                       # TODO: Maximum score
         self.agentsToMonitorForSickness = {}        # Key: agent name, value: step they were added
@@ -439,6 +441,195 @@ class EatMushroomTask(Task):
         else:
             self.completed = False
             self.completedSuccessfully = False
+
+
+#
+#   Specific Task: Agents eating space mushrooms without getting sick
+#
+class SpaceSickTaskChallenge(Task):
+    # Constructor
+    def __init__(self, world, scoringInfo):
+        taskDescription = "The only food on this planet are local mushrooms, but after eating them, the colonist sometimes have upset stomachs.  Your task is to figure out why people are feeling ill, and to prevent it.  You must demonstrate this by having colonists successfully eat 10 mushrooms in a row without eventually feeling sick. "
+        taskDescription += "Since the food causes only mild illness, and getting the colony established is important, the colonists have volunteered to be test subjects.  The Chef in the Cafeteria can help you collect mushrooms, serve mushrooms from the cafeteria pot to the tables, and let the colonists know a meal is ready to eat, when you're ready. "
+        taskDescription += "The colonists may post their status (like if they're feeling unwell) on the Discovery Feed (use 'v' to display it)."
+        taskDescription += "After a colonist eats a mushroom, it will be automatically monitored by DiscoveryWorld for 50 turns to see if it gets sick.  (Note: If it successfully eats another mushroom within that 100 turns, assuming both are good, it will still only count as a single good case.)"
+        Task.__init__(self, "SpaceSickTaskChallenge", taskDescription, world, scoringInfo)
+        self.score = 0
+        self.maxScore = 10                       # TODO: Maximum score
+        self.agentsToMonitorForSickness = {}        # Key: agent name, value: step they were added
+
+        # TODO: Add subtasks?
+    # instruments['microscope'] = world.createObject("Microscope")
+    # instruments['spectrometer'] = world.createObject("Spectrometer")
+    # instruments['phmeter'] = world.createObject("PHMeter")
+    # instruments['radiationmeter'] = world.createObject("RadiationMeter")
+    # instruments['sampler'] = world.createObject("Sampler")
+    # instruments['thermometer'] = world.createObject("Thermometer")
+    # instruments['npkmeter'] = world.createObject("NPKMeter")
+
+        # Have collected at least one of each of the 4 different colors of mushrooms
+        self.collectedMushroomColors = set()
+        self.collectedMushroomUUIDs = set()
+        self.scorecardMushrooms = ScorecardElement("Collect different mushrooms", "Collect at least one of each of the 4 different colors of mushrooms", maxScore=4)
+        self.scoreCard.append(self.scorecardMushrooms)
+
+        # Use all the different scientific instruments on something
+        self.scorecardInstruments = ScorecardElement("Use instruments", "Use each of the scientific instruments on an object", maxScore=7)
+        self.scoreCard.append(self.scorecardInstruments)
+        self.scorecardInstruments2 = ScorecardElement("Use instruments on mushrooms", "Use each of the scientific instruments on a mushroom", maxScore=7)
+        self.scoreCard.append(self.scorecardInstruments2)
+
+        # Have at least 10 mushrooms eaten by colonists
+        self.scorecardMushroomsEaten = ScorecardElement("Eat mushrooms", "Have at least 10 mushrooms eaten by colonists", maxScore=10)
+        self.scoreCard.append(self.scorecardMushroomsEaten)
+
+        # Have 10 mushrooms eaten by colonists without them having got sick
+        self.scorecardMushroomsEatenNoSickness = ScorecardElement("Eat mushrooms without sickness", "Have 10 mushrooms eaten by colonists without them getting sick", maxScore=10)
+        self.scoreCard.append(self.scorecardMushroomsEatenNoSickness)
+
+        # Store the colonists
+        self.colonists = scoringInfo['colonists']
+        self.numAgentsSuccessfullyEatenMushrooms = 0
+
+        # Add hypotheses from scoringInfo
+        self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+
+        # Update max score based on the scorecard elements.
+        self.maxScore = sum(element.maxScore for element in self.scoreCard)
+
+
+    # Task setup: Add any necessary objects to the world to perform the task.
+    def taskSetup(self):
+        # Add the colonists?
+        pass
+
+    # Update the task progress
+    def updateTick(self):
+        # Score Element 1: Collect different mushrooms
+        # Check what mushrooms the agent has in their inventory
+        if (not self.scorecardMushrooms.completed):
+            for agent in self.world.getUserAgents():
+                for obj in agent.getAllContainedObjectsAndParts():
+                    if ("mushroom" in obj.type):
+                        mushroomColor = obj.attributes['color']
+                        if (mushroomColor not in self.collectedMushroomColors):
+                            self.collectedMushroomColors.add(obj.attributes['color'])
+                            self.collectedMushroomUUIDs.add(obj.uuid)
+            completedColors = False
+            if (len(self.collectedMushroomColors) >= 4):
+                completedColors = True
+            self.scorecardMushrooms.updateScore(len(self.collectedMushroomColors), completedColors, associatedUUIDs=list(self.collectedMushroomUUIDs), associatedNotes="The following mushroom colors have been collected: " + str(self.collectedMushroomColors))
+
+        # Score Element 2: Use different scientific instruments on a mushroom
+        # Check if the agent has used each of the scientific instruments on a mushroom
+        if (not self.scorecardInstruments.completed) or (not self.scorecardInstruments2.completed):
+            usedInstrumentsUUIDs = set()
+            usedInstrumentNames = set()
+            usedInstrumentsUUIDs2 = set()
+            usedInstrumentNames2 = set()
+            for agent in self.world.getUserAgents():
+                for instrument in self.scoringInfo['instruments'].values():
+                    # Check if the agent has used the instrument on anything
+                    foundActions = agent.actionHistory.queryActionObjects(ActionType.USE, arg1=instrument, arg2="*", stopAtFirst=False)
+                    if (len(foundActions) > 0):
+                        usedInstrumentsUUIDs.add(instrument.uuid)
+                        usedInstrumentNames.add(instrument.name)
+
+                    # Check if the agent has used the instrument on a mushroom
+                    #def queryActionObjectsByArgType(self, actionType:ActionType, arg1=None, arg2TypeContains="", stopAtFirst:bool = False):
+                    foundActionsMushroom = agent.actionHistory.queryActionObjectsByArg2Type(ActionType.USE, arg1=instrument, arg2TypeContains="mushroom", stopAtFirst=True)
+                    if (len(foundActionsMushroom) > 0):
+                        usedInstrumentsUUIDs2.add(instrument.uuid)
+                        usedInstrumentNames2.add(instrument.name)
+
+            completed1 = False
+            if (len(usedInstrumentNames) == 7):
+                completed1 = True
+            self.scorecardInstruments.updateScore(len(usedInstrumentNames), completed1, associatedUUIDs=list(usedInstrumentsUUIDs), associatedNotes="The following instruments have been used: " + str(usedInstrumentNames))
+            completed2 = False
+            if (len(usedInstrumentNames2) == 7):
+                completed2 = True
+            self.scorecardInstruments2.updateScore(len(usedInstrumentNames2), completed2, associatedUUIDs=list(usedInstrumentsUUIDs2), associatedNotes="The following instruments have been used on a mushroom: " + str(usedInstrumentNames))
+
+
+        # Score Element 3: Have at least 10 mushrooms eaten by colonists
+        if (not self.scorecardMushroomsEaten.completed):
+            associatedUUIDs = set()
+            for colonist in self.colonists:
+                foundActions = colonist.actionHistory.queryActionObjectsByArg1Type(ActionType.EAT, arg1TypeContains="mushroom", stopAtFirst=False)
+                for action in foundActions:
+                    associatedUUIDs.add(action['arg1'].uuid)
+
+            numEaten = len(associatedUUIDs)
+
+            completedEaten = False
+            if (numEaten >= 10):
+                completedEaten = True
+            if (completedEaten == True):
+                self.scorecardMushroomsEaten.updateScore(numEaten, completedEaten, associatedUUIDs=list(associatedUUIDs), associatedNotes="At least 10 mushrooms have been eaten by colonists")
+            else:
+                self.scorecardMushroomsEaten.updateScore(numEaten, completedEaten, associatedUUIDs=list(associatedUUIDs), associatedNotes= str(numEaten) + " mushrooms have been eaten by colonists")
+
+
+        # Monitoring task 1: Check if any agents have just eaten a mushroom
+        # List of names of agents to check for whether they've just eaten a mushroom
+        ## NOTE: Slightly hacky because this was early code
+        agentsToCheck = []
+        for i in range (0, 5):
+            agentsToCheck.append("Colonist " + str(i))
+
+        for agent in self.world.agents:
+            if agent.name in agentsToCheck:
+                # Check if they have eaten a mushroom
+
+                # Check if they successfully ate something on the last tick
+                lastAction = agent.actionHistory.getLastStepAction()
+                if (lastAction != None) and (lastAction['actionType'] == ActionType.EAT) and (lastAction['success'] == True):
+                    # Check if it was a mushroom
+                    if (lastAction['arg1'].name == "mushroom"):
+                        #self.score += 1
+                        self.agentsToMonitorForSickness[agent.name] = self.world.getStepCounter()
+
+
+        # Monitoring task 2: Check if any agents that recently ate a mushroom are now sick
+        agentsToCheckForSickess = list(self.agentsToMonitorForSickness.keys())      # Deep copy, so we can delete from the original without changing keys while iterating
+        for agentName in agentsToCheckForSickess:
+            # Check if the agent is sick
+            agent = self.world.getAgentByName(agentName)
+            if (agent.attributes['isPoisoned'] == True):
+                # Reset score to 0
+                #print("Agent " + agentName + " is sick!  Score reset to 0.")
+                self.numAgentsSuccessfullyEatenMushrooms = 0
+            else:
+                # Check if the agent has been well for 50 steps
+                if (self.world.getStepCounter() - self.agentsToMonitorForSickness[agentName] >= 50):
+                    # If they've been well for 50 steps, increment the score, and remove the monitor
+                    self.numAgentsSuccessfullyEatenMushrooms += 1
+                    del self.agentsToMonitorForSickness[agentName]
+
+        completedEaten = False
+        if (self.numAgentsSuccessfullyEatenMushrooms >= 10):
+            completedEaten = True
+        self.scorecardMushroomsEatenNoSickness.updateScore(self.numAgentsSuccessfullyEatenMushrooms, completedEaten, associatedUUIDs=[], associatedNotes= str(self.numAgentsSuccessfullyEatenMushrooms) + " mushrooms have been eaten by colonists without them getting sick")
+
+        # Update score
+        score = 0
+        maxScore = 0
+        for element in self.scoreCard:
+            score += element.score
+            maxScore += element.maxScore
+        self.score = score
+        self.maxScore = maxScore
+
+        # Monitoring task 3: Check if the task is complete
+        if (completedEaten):
+            self.completed = True
+            self.completedSuccessfully = True
+            #print("Task completed successfully: " + self.taskName)
+        else:
+            self.completed = False
+            self.completedSuccessfully = False
+
 
 
 #

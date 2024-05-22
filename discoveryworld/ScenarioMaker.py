@@ -8,7 +8,8 @@ import random
 SCENARIOS = [
     "tutorial",
     "space_sick_easy",
-    "food_illness",
+    "space_sick_normal",
+    "space_sick_challenge",
     "combinatorial_chemistry_easy",
     "combinatorial_chemistry_normal",
     "combinatorial_chemistry_challenge",
@@ -83,7 +84,7 @@ SCENARIO_INFOS = {
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Space Sick": {
-        "difficulty": ["Easy", "Normal"],
+        "difficulty": ["Easy", "Normal", "Challenge"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Proteomics": {
@@ -196,9 +197,9 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
     elif (scenarioNameIn == "Space Sick") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["easy"]):
         scenarioName = "space_sick_easy"
     elif (scenarioNameIn == "Space Sick") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
-        scenarioName = "food_illness"
+        scenarioName = "space_sick_normal"
     elif (scenarioNameIn == "Space Sick") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
-        scenarioName = None
+        scenarioName = "space_sick_challenge"
     # Scenario 7: Proteomics
     elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["easy"]):
         scenarioName = "proteomics_easy"
@@ -256,15 +257,21 @@ class ScenarioMaker():
 
     # Make a scenario
     def setupScenario(self, scenarioName:str, numUserAgents:int=1):
-        if (scenarioName == "food_illness"):
+        if (scenarioName == "space_sick_normal"):
             scoringInfo = makeScenarioTown(self.world, numUserAgents)
-            self.world.addTaskByName("EatMushroomTask", scoringInfo)
+            self.world.addTaskByName("SpaceSickTaskNormal", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 
         elif (scenarioName == "space_sick_easy"):
             scoringInfo = makeScenarioSpaceSickEasy(self.world, numUserAgents)
             self.world.addTaskByName("SpaceSickTaskEasy", scoringInfo)
+            self.world.initialFilter()
+            return (True, "")
+
+        elif (scenarioName == "space_sick_challenge"):
+            scoringInfo = makeScenarioTownChallenge(self.world, numUserAgents)
+            self.world.addTaskByName("SpaceSickTaskChallenge", scoringInfo)
             self.world.initialFilter()
             return (True, "")
 
