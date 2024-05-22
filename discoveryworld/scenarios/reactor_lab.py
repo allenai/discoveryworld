@@ -29,6 +29,7 @@ def mkGenerator(x, y, world, linkedObjects, reactorLength=3):
 
 
 # Make random properties of a quantum crystal
+# Linear function (y=mx+b)
 def mkCrystalProperties(quantumCrystalIn, rng, keyDimension:int=0, slope:float=100.0, offset:float=100):
         # Resonance Frequency of the crystal (a set property for a given crystal)
         #quantumCrystalIn.attributes['resonanceFreq'] = 5000                    # The resonance frequency of the crystal
@@ -67,6 +68,55 @@ def mkCrystalProperties(quantumCrystalIn, rng, keyDimension:int=0, slope:float=1
 
         # The value of 'resonanceFreq' will be a linear function of the keyValue, with the specified slope and offset
         resonanceFreq = (slope * keyValue) + offset
+        # NOTE, resonance frequency is now a float, rounded to 2 decimal places
+        resonanceFreq = round(resonanceFreq, 2)
+        quantumCrystalIn.attributes['resonanceFreq'] = resonanceFreq
+
+        # Return
+        return quantumCrystalIn
+
+# Make random properties of a quantum crystal
+# Quadratic function (y=ax^2 + bx + c)
+def mkCrystalPropertiesQuadratic(quantumCrystalIn, rng, keyDimension:int=0, a:float=100.0, b:float=100, c:float=0):
+        # Resonance Frequency of the crystal (a set property for a given crystal)
+        #quantumCrystalIn.attributes['resonanceFreq'] = 5000                    # The resonance frequency of the crystal
+        precision = 2   # Number of decimal places to round to
+
+        # Quantities that the crystal depends on
+        quantumCrystalIn.attributes['density'] = round(rng.uniform(5.0, 20.0), precision)          # The density of the crystal (in g/cm^3)
+        quantumCrystalIn.attributes['temperatureC'] = round(rng.uniform(5.0, 20.0), precision)    # The temperature of the crystal (in degrees C)
+        quantumCrystalIn.attributes['quantumSize'] = round(rng.uniform(5.0, 20.0), precision)   # The quantum size of the crystal (in nm)
+        # Add a faux material, with a given radiation and spectrum
+        fauxMaterial = {}
+        fauxMaterial['radiationusvh'] = round(rng.uniform(5.0, 20.0), precision)       # The radiation of the crystal (in mSv)
+        spectrum = []
+        for i in range(0, 5):
+            channelValue = round(rng.uniform(5.0, 20.0), precision)
+            spectrum.append(channelValue)
+        fauxMaterial['spectrum'] = spectrum            # The spectrum of the crystal (on 5 spectral channels)
+        fauxMaterial['microscopeDesc'] = "The quantum gap of this crystal appears to be " + str(quantumCrystalIn.attributes['quantumSize']) + " nm"  # The description of the crystal under a microscope
+        ##quantumCrystalIn.attributes['materials'].append(fauxMaterial)     ## OLD -- adds a new material, so there are two materials (the default, and this one) -- generates lots of bugs with instruments.
+        quantumCrystalIn.attributes['materials'] = [ fauxMaterial ]       ## NEW -- replaces the default material with this generated one
+
+        # Pick one dimension (density, temperature, quantumSize, radiation, or spectrum) to be the "key" dimension.  Dimensions are numbered (0, 1, 2, 3, 4)
+        keyValue = 0
+        if (keyDimension == 0):
+            keyValue = quantumCrystalIn.attributes['density']
+        elif (keyDimension == 1):
+            keyValue = quantumCrystalIn.attributes['temperatureC']
+        elif (keyDimension == 2):
+            keyValue = quantumCrystalIn.attributes['quantumSize']
+        elif (keyDimension == 3):
+            keyValue = fauxMaterial['radiationusvh']
+        elif (keyDimension == 4):
+            keyValue = fauxMaterial['spectrum'][4]
+        else:
+            print("Error: mkCrystalProperties(): keyDimension must be between 0 and 4")
+
+        # The value of 'resonanceFreq' will be a quadratic function of the keyValue, with the specified slope and offset
+
+        #resonanceFreq = (slope * keyValue) + offset                # Linear
+        resonanceFreq = (a * (keyValue ** 2)) + (b * keyValue) + c  # Quadratic
         # NOTE, resonance frequency is now a float, rounded to 2 decimal places
         resonanceFreq = round(resonanceFreq, 2)
         quantumCrystalIn.attributes['resonanceFreq'] = resonanceFreq
@@ -651,8 +701,6 @@ def mkReactorLabChallenge(x, y, world, rng, randomSeed, scoringInfo):
     quantumCrystals = []
     #keyDimension = rng.randint(0, 4)        # Which dimension (temperature, density, quantum size, radiation, spectrum) will be the "key" dimension that the resonance frequency depends on
     keyDimension = randomSeed % 5            # Makes sure that random seeds 1-5 cycle through all available dimensions
-    randomSlope = int(rng.uniform(90, 110))
-    randomOffset = int(rng.uniform(90, 110))
 
     # Store the critical instrument (note, the 0-4 alignment is the same as in mkCrystalProperties)
     scoringInfo['criticalInstrument'] = None
@@ -667,27 +715,48 @@ def mkReactorLabChallenge(x, y, world, rng, randomSeed, scoringInfo):
     elif (keyDimension == 4):
         scoringInfo['criticalInstrument'] = instrumentSpectrometer
 
-    scoringInfo["criticalHypotheses"] = []
-    # Add the critical hypotheses
-    #scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading.")
-    functionStr = "That is, the resonance frequency = (" + str(randomSlope) + " * " + scoringInfo['criticalInstrument'].name + " reading) + " + str(randomOffset) + "."
-    scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading, with a slope of " + str(randomSlope) + " and an offset of " + str(randomOffset) + ". " + functionStr)
 
+    done = False
+    while (not done):
+        done = True
+        quantumCrystals = []
+        randomA = int(rng.uniform(10, 20))
+        randomB = int(rng.uniform(20, 40))
+        randomC = int(rng.uniform(20, 850))
 
-    # Generate the quantum crystals
-    for i in range(0, 4):
-        quantumCrystal = world.createObject("QuantumCrystal")
-        #quantumCrystal.attributes['density'] = random.uniform(0.5, 1.5)
-        # Make random quantum crystal values
-        quantumCrystal = mkCrystalProperties(quantumCrystal, rng=rng, keyDimension=keyDimension, slope=randomSlope, offset=randomOffset)
-        quantumCrystals.append(quantumCrystal)
+        # Generate the quantum crystals
+        for i in range(0, 5):
+            quantumCrystal = world.createObject("QuantumCrystal")
+            #quantumCrystal.attributes['density'] = random.uniform(0.5, 1.5)
+            # Make random quantum crystal values
+            quantumCrystal = mkCrystalPropertiesQuadratic(quantumCrystal, rng=rng, keyDimension=keyDimension, a=randomA, b=randomB, c=randomC)
+            quantumCrystals.append(quantumCrystal)
+
+            # Check to see if the resonance frequency is out of range, and should be regenerated
+            if (quantumCrystal.attributes['resonanceFreq'] < 500.0) or (quantumCrystal.attributes['resonanceFreq'] >= 9999.0):
+                print("Crystal out of range -- regenerating")
+                done = False
+                break
+            print("Crystal in range: " + str(quantumCrystal.attributes['resonanceFreq']))
+
 
     scoringInfo['quantumCrystals'] = quantumCrystals
+
+
+    # Critical hypothesis
+    scoringInfo["criticalHypotheses"] = []
+    # Add the critical hypotheses
+    functionStr = "That is, the resonance frequency = " + str(randomA) + " * (" + scoringInfo['criticalInstrument'].name + " reading)^2 + " + str(randomB) + " * " + scoringInfo['criticalInstrument'].name + " reading + " + str(randomC) + "."
+    criticalHypothesis = "The resonance frequency of the quantum crystal is a quadtratic function of the " + scoringInfo['criticalInstrument'].name + " reading, "
+    criticalHypothesis += "of the form `y = a*x^2 + b*x + c`, where `a` is " + str(randomA) + ", `b` is " + str(randomB) + ", and `c` is " + str(randomC) + ". "
+    criticalHypothesis += functionStr
+    scoringInfo["criticalHypotheses"].append(criticalHypothesis)
+
 
     # Shuffle
     rng.shuffle(quantumCrystals)
     # Give the crystals a number
-    for i in range(0, 4):
+    for i in range(0, 5):
         quantumCrystals[i].name = "quantum crystal " + str(i+1)
         #print("Quantum Crystal " + str(i+1) + " resonance frequency: " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz")
         scoringInfo["criticalHypotheses"].append("The resonance frequency of " + quantumCrystals[i].name + " is " + str(quantumCrystals[i].attributes['resonanceFreq']) + " Hz.")
@@ -698,14 +767,14 @@ def mkReactorLabChallenge(x, y, world, rng, randomSeed, scoringInfo):
     # Add the tables and a quantum crystal reactor to each
     crystalReactors = []
     scoringInfo['reactorsToChange'] = []
-    for i in range(0, 4):
+    for i in range(0, 5):
         reactorBench = world.createObject("Table")
         reactor = world.createObject("CrystalReactor")
         reactor.setReactorNum(i+1)
         crystalReactors.append(reactor)
         reactorBench.addObject( reactor )
-        # TODO: Set first 2 reactors to appropriate state
-        if (i < 2):
+        # TODO: Set first 3 reactors to appropriate state
+        if (i < 3):
             # Add a crystal to the contents of this reactor
             reactor.addObject( quantumCrystals[i] )
             # Set the reactor to the appropriate frequency
@@ -716,19 +785,19 @@ def mkReactorLabChallenge(x, y, world, rng, randomSeed, scoringInfo):
         # Note the default resonance frequency
         reactor.attributes['resonanceFreqDefault'] = reactor.attributes['resonanceFreq']
         # Add the reactor to the bench
-        world.addObject(x+8+i, y+2, Layer.FURNITURE, reactorBench)
+        world.addObject(x+7+i, y+2, Layer.FURNITURE, reactorBench)
 
     scoringInfo['reactors'] = crystalReactors
 
     # Put the other 2 quantum crystals on tables on the other side of the room
     for i in range(0, 2):
         bench = world.createObject("Table")
-        bench.addObject( quantumCrystals[i+2] )
+        bench.addObject( quantumCrystals[i+3] )
         world.addObject(x+4+i, y+4, Layer.FURNITURE, bench)
 
 
     # Add the generator
-    mkGenerator(x+8, y+1, world, linkedObjects = crystalReactors, reactorLength=3)
+    mkGenerator(x+7, y+1, world, linkedObjects = crystalReactors, reactorLength=4)
 
 
 
