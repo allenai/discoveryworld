@@ -31,25 +31,25 @@ ROCKET_FORMULAS = """
  | y  |
  |----|  Constants & variables:
  |  W |    - G: gravitational constant (6.67430e-11 N m^2 / kg^2)
- |  o |    - M: mass of planet
- |  r |    - R: radius of planet
- |  l |    - h: height above planet
- |  d |    - g: acceleration due to gravity             _____
- |____|    - v: velocity                            ,-:` \;',`'-,
-/|    |\   - T: period                            .'-;_,;  ':-;_,'.
- ||  ||    - L: length of pendulum               /;   '/    ,  _`.-\\
- ||  ||    - F: force                           | '`. (`     /` ` \`|
- ||  ||    - a: acceleration                    |:.  `\`-.   \_   / |
-/_|__|_\   - m_dot: mass flow rate              |     (   `,  .`\ ;'|
- ||||||    - m0: initial mass of rocket          \     | .'     `-'/
- /||||\    - m1: final mass of rocket             `.   ;/        .'
-  /||\     - delta_v: change in velocity            `'-.______.-'
+ |  o |    - M: mass of planet (kg)
+ |  r |    - R: radius of planet (m)
+ |  l |    - h: height above planet (m)
+ |  d |    - g: acceleration due to gravity (m/s^2)     _____
+ |____|    - v: velocity (m/s)                      ,-:` \;',`'-,
+/|    |\   - T: period (s)                        .'-;_,;  ':-;_,'.
+ ||  ||    - L: length of pendulum (m)           /;   '/    ,  _`.-\\
+ ||  ||    - F: force (N)                       | '`. (`     /` ` \`|
+ ||  ||    - a: acceleration (m/s^2)            |:.  `\`-.   \_   / |
+/_|__|_\   - m_dot: mass flow rate (kg/s)       |     (   `,  .`\ ;'|
+ ||||||    - m0: initial mass of rocket (kg)     \     | .'     `-'/
+ /||||\    - m1: final mass of rocket (kg)        `.   ;/        .'
+  /||\     - delta_v: change in velocity (m/s)      `'-.______.-'
 """
 
 
 PLANETS = [
     "Earth",
-    "Moon",
+    "the Moon",
     "Mars",
     "Io",
     "Europa",
@@ -74,7 +74,7 @@ PLANET_RADII = {
     "Uranus": 25362,
     "Neptune": 24622,
     "Pluto": 1188.3,
-    "Moon": 1737.5,
+    "the Moon": 1737.5,
     "Io": 1821.6,
     "Europa": 1560.8,
     "Ganymede": 2634.1,
@@ -90,7 +90,7 @@ PLANET_MASSES = {
     "Uranus": 86813e21,
     "Neptune": 102413e21,
     "Pluto": 13.03e21,
-    "Moon": 73.46e21,
+    "the Moon": 73.46e21,
     "Io": 89.32e21,
     "Europa": 48.00e21,
     "Ganymede": 148.2e21,
@@ -211,11 +211,18 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
 
+    scoringInfo["difficulty"] = difficulty
+
+    planet = "X"
+    if difficulty == "easy":
+        planet = PLANETS[world.randomSeed % len(PLANETS)]
+        scoringInfo["criticalHypotheses"].append(f"The planet's caracteristics are very similar to {planet}.")
+
     # Critical values for the scenario.
     # Planet radius
     planetRadius = world.rng.randint(400, 10000)  # (km)
     if difficulty == "easy":
-        planetRadius = 6371  # Earth's radius (km)
+        planetRadius = PLANET_RADII[planet]  # (km)
 
     worldHeight = (world.sizeY-1) / 1000  # (km)
     diffAngle = (360 * worldHeight) / (2*planetRadius*np.pi)  # (degrees)
@@ -231,7 +238,7 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     MAX_PLANET_MASS = 1e25  # kg
     planetMass = MIN_PLANET_MASS + world.rng.random() * (MAX_PLANET_MASS - MIN_PLANET_MASS)  # (kg)
     if difficulty == "easy":
-        planetMass = 5.9722 * 1e24 # Earth's mass (kg)
+        planetMass = PLANET_MASSES[planet]  # (kg)
 
     scoringInfo["planetMass"] = planetMass
     scoringInfo["criticalHypotheses"].append(f"Planet mass is {planetMass} kg.")
@@ -429,16 +436,30 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
 
 
 class NotRocketScienceTask(Task):
-    # Constructor
+
     def __init__(self, world, scoringInfo):
         orbitHeight = scoringInfo["orbitHeight"]
         taskDescription = "You are at the new Launch Site on Planet X. "
         taskDescription += f"To better monitor the weather patterns, you were tasked to send a new probe on orbit at {orbitHeight} meters from the ground. "
-        taskDescription += "Upon arriving at the launch site, you realized the rocket hasn't been fueled yet. "
-        taskDescription += "You will need to figure what type of propellant to use and how much to put in the rocket.\n"
-        taskDescription += "While you brought your faithful rocketry book, it was designed for Earth. "
-        taskDescription += "For sure, you will need to adjust some values for Planet X."
-        #TODO: mention grid cell is 1 meter.
+        taskDescription += "You were told to simply punch in the target orbital speed needed for such an altitude in the launch terminal and the system will take care of the rest. "
+
+        if scoringInfo["difficulty"] == "challenge":
+            taskDescription += "Upon arriving at the launch site, you realized the rocket hasn't been fueled yet. "
+            taskDescription += "You will need to figure what type of propellant to use and how much to put in the rocket."
+
+        if scoringInfo["difficulty"] == "easy":
+            taskDescription += f"Thankfully, you know the planet's caracteristics are exactly the same as {scoringInfo['planet']}."
+
+        taskDescription += "Good thing, you brought with you your faithful rocketry book!\n"
+        taskDescription += "Some helpful notes: \n"
+        taskDescription += "  1. The grid cells on Planet X are 1-meter square.\n"
+        taskDescription += "  2. You can assume air resistance is neglible.\n"
+        taskDescription += "  3. Pay attention to the units in the formulas.\n"
+        taskDescription += "  4. The formulas are simplifications and may not be 100% accurate.\n"
+        taskDescription += "  5. Keep as much decimal places in your calculations."
+
+        #taskDescription += "\nWhile you brought your faithful rocketry book, it was designed for Earth. "
+        #taskDescription += "You might need to adjust some values for Planet X."
 
         super().__init__("NotRocketScienceTask", taskDescription, world, scoringInfo)
         self.score = 0

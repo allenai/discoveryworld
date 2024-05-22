@@ -87,7 +87,7 @@ SCENARIO_INFOS = {
         "variations": ["1", "2", "3", "4", "5"],
     },
     "It's (not) Rocket Science!": {
-        "difficulty": ["Test", "Normal"],
+        "difficulty": ["Easy", "Normal", "Challenge"],
         "variations": ["1", "2", "3", "4", "5"],
     },
     "Small Skills: Dialog Test": {
@@ -195,18 +195,20 @@ def getInternalScenarioName(scenarioNameIn:str, difficulty:str):
         scenarioName = "food_illness"
     elif (scenarioNameIn == "Space Sick") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = None
-    # Scenario 7: TODO 1
+    # Scenario 7: Proteomics
     elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["easy"]):
         scenarioName = "proteomics_easy"
     elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "proteomics_normal"
     elif (scenarioNameIn == "Proteomics") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
         scenarioName = "proteomics_challenge"
-    # Scenario 8: TODO 2
-    elif (scenarioNameIn == "It's (not) Rocket Science!") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["test"]):      #### DEBUG?
+    # Scenario 8: It's (not) Rocket Science!
+    elif (scenarioNameIn == "It's (not) Rocket Science!") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["easy"]):      #### DEBUG?
         scenarioName = "not_rocket_science_easy"
     elif (scenarioNameIn == "It's (not) Rocket Science!") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "not_rocket_science_normal"
+    elif (scenarioNameIn == "It's (not) Rocket Science!") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["challenge"]):
+        scenarioName = "not_rocket_science_challenge"
 
     elif (scenarioNameIn == "Small Skills: Dialog Test") and (difficulty == SCENARIO_DIFFICULTY_OPTIONS["normal"]):
         scenarioName = "smallskills_dialog_test"
