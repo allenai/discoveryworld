@@ -76,9 +76,15 @@ def mkSoilResearchBuildingChallenge(x, y, world, seedRule):
 
     # Add a seed jar
     seedJar = world.createObject("Jar")
-    #seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=5)
-    seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=1, replenishTime=0)     #### TODO!!!
+    #seedJar.setAutoFill(checkObjectName="seed", fillObjectName="Seed", minCount=1, replenishTime=0)  # Not using autofill, just populating with 10 static seeds due to the special requirements for each seed
     seedJar.name = "seed jar"
+
+    # Add 10 seeds
+    for i in range(0, 10):
+        seed = world.createObject("SeedRequiringNutrientsRuleBased")
+        seed.setSeedRule(seedRule)
+        seedJar.addObject(seed)
+
 
     # Table for seed jar
     seedTable = world.createObject("Table")
