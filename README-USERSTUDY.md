@@ -66,7 +66,7 @@ Proteomics -- Normal and Challenge
 Reactor Lab -- Normal and Challenge
 Lost in Translation -- Normal and Challenge
 Space Sick -- Normal and Challenge
-It's (not) Rocket Science -- Normal (*Challenge* will be ready shortly)
+It's (not) Rocket Science -- Normal (*Challenge* is not yet ready, and should not be played)
 ```
 
 Scenarios not on this list are not yet complete, and should not be played.
