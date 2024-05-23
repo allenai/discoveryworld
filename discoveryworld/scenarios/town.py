@@ -203,8 +203,7 @@ def makeScenarioTown(world, numUserAgents=1):
 def makeScenarioTownChallenge(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
-
-    scoringInfo["criticalHypotheses"].append("While it's unclear exactly why the mushrooms are making people ill, the glowing rock from the cave becomes luminous when it is near a harmful mushroom, providing a mechanism of detecting them.")
+    scoringInfo["criticalHypotheses"].append("While it's unclear exactly why the mushrooms are making people ill, the glowing rock from the cave becomes luminous when it is near a harmful mushroom, providing a mechanism of detecting them.  Further, while some properties, such as color, appear to be suggestive of harmful mushrooms, they are only probabilistic, while the glowing rock is the only definitive indicator.")
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 5
@@ -306,7 +305,7 @@ def makeScenarioTownChallenge(world, numUserAgents=1):
         userAgent = Agent(world)
         # TODO: Add starting tools for agent
         userAgent.addObject(world.createObject("Shovel"))
-        userAgent.addObject(world.createObject("Seed"))
+        userAgent.addObject(world.createObject("SeedDirectlyPoisonousMushroom"))
         # Add the agent to a specfic location
         #world.addObject(14+userAgentIdx, 14, Layer.AGENT, userAgent)      # In farm field
         world.addObject(12+userAgentIdx, 18, Layer.AGENT, userAgent)      # Near farm

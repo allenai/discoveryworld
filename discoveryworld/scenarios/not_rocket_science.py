@@ -442,7 +442,7 @@ class NotRocketScienceTask(Task):
     def __init__(self, world, scoringInfo):
         orbitHeight = scoringInfo["orbitHeight"]
         taskDescription = "You are at the new Launch Site on Planet X. "
-        taskDescription += f"To better monitor the weather patterns, you were tasked to send a new probe on orbit at {orbitHeight} meters from the ground. "
+        taskDescription += f"To better monitor the weather patterns, you were tasked to send a new probe on orbit at {orbitHeight} kilometers from the ground. "
         taskDescription += "You were told to simply punch in the target orbital speed needed for such an altitude in the launch terminal and the system will take care of the rest. "
 
         if scoringInfo["difficulty"] == "challenge":
@@ -450,7 +450,7 @@ class NotRocketScienceTask(Task):
             taskDescription += "You will need to figure what type of propellant to use and how much to put in the rocket."
 
         if scoringInfo["difficulty"] == "easy":
-            taskDescription += f"Thankfully, you know the planet's caracteristics are exactly the same as {scoringInfo['planet']}."
+            taskDescription += f"Thankfully, you know the planet's characteristics, such as its mass and radius, are exactly the same as {scoringInfo['planet']}."
 
         taskDescription += "Good thing, you brought with you your faithful rocketry book!\n"
         taskDescription += "Some helpful notes: \n"
