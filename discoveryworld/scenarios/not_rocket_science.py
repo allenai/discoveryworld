@@ -228,7 +228,7 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
 
     worldHeight = (world.sizeY-1) / 1000  # (km)
     diffAngle = (360 * worldHeight) / (2*planetRadius*np.pi)  # (degrees)
-    startAngle = (world.rng.random() - 0.5) * diffAngle * 15  # (degrees)
+    startAngle = world.rng.randint(2, 5) + (world.rng.random() - 0.5) * diffAngle * 15  # (degrees)
     print(f"DiffAngle: {diffAngle} {startAngle}")
 
     scoringInfo["planetRadius"] = planetRadius
