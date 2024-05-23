@@ -61,10 +61,12 @@ DiscoveryWorld contains a number of scenarios, which are shown on a menu when yo
 Tutorial
 Archaeology Dig -- Normal and Challenge
 Combinatorial Chemistry -- Normal and Challenge (note that Challenge may take a while)
-Plant Nutrients -- Normal
-Reactor Lab -- Normal
+Plant Nutrients -- Normal and Challenge
+Proteomics -- Normal and Challenge
+Reactor Lab -- Normal and Challenge
 Lost in Translation -- Normal and Challenge
-Space Sick -- Normal
+Space Sick -- Normal and Challenge
+It's (not) Rocket Science -- Normal (*Challenge* is not yet ready, and should not be played)
 ```
 
 Scenarios not on this list are not yet complete, and should not be played.
@@ -88,6 +90,8 @@ Making these discoveries will require methodologically exploring different hypot
 ### 2.6 User Notebook
 
 Please keep a notebook (in a text editor of your choice, as long as it's saved in something we can easily open -- e.g. `.txt`, `.pdf`, `.doc`) where you write down your notes/work in solving each scenario.
+
+**Please treat writing this notebook as a mini (and very brief) lab report.  We would like to know what data you collected, what hypothesis/hypotheses you tested, what solution you came up with, why you think it's correct, and what model(s) or analyses (mathematical or otherwise) you used to arrive at that solution.**
 
 At the start of your notes for a given scenario, please write down the scenario name, difficulty, and variation.  For example:
 ```
