@@ -232,7 +232,7 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     print(f"DiffAngle: {diffAngle} {startAngle}")
 
     scoringInfo["planetRadius"] = planetRadius
-    scoringInfo["criticalHypotheses"].append(f"Planet radius is {planetRadius} grid cells.")
+    scoringInfo["criticalHypotheses"].append(f"Planet radius is {planetRadius} km.")
 
     # Planet mass
     GRAVITATIONAL_CONSTANT = 6.67430e-11  # (N m^2 / kg^2)
@@ -467,7 +467,9 @@ class NotRocketScienceTask(Task):
         taskDescription += "  2. You can assume air resistance is neglible.\n"
         taskDescription += "  3. Pay attention to the units in the formulas.\n"
         taskDescription += "  4. The formulas are simplifications and may not be 100% accurate.\n"
-        taskDescription += "  5. Keep as much decimal places in your calculations."
+        taskDescription += "  5. Keep as much decimal places in your calculations.\n"
+        if (scoringInfo["difficulty"] != "easy"):
+            taskDescription += "  6. There are two observation posts to the north and south, that you may find useful.\n"
 
         #taskDescription += "\nWhile you brought your faithful rocketry book, it was designed for Earth. "
         #taskDescription += "You might need to adjust some values for Planet X."
