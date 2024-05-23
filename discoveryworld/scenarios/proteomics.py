@@ -431,10 +431,6 @@ def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
         world.addAgent(userAgent)
 
 
-    # Should tick the environment 10 times, to make sure the pilot seeds grow and are ready for the user to view.
-    for i in range(0, 10):
-        world.tick()
-
 
     # Keep track of starting plants that have grown
     scoringInfo["startingPlants"] = []
