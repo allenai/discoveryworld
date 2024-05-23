@@ -61,10 +61,12 @@ DiscoveryWorld contains a number of scenarios, which are shown on a menu when yo
 Tutorial
 Archaeology Dig -- Normal and Challenge
 Combinatorial Chemistry -- Normal and Challenge (note that Challenge may take a while)
-Plant Nutrients -- Normal
-Reactor Lab -- Normal
+Plant Nutrients -- Normal and Challenge
+Proteomics -- Normal and Challenge
+Reactor Lab -- Normal and Challenge
 Lost in Translation -- Normal and Challenge
-Space Sick -- Normal
+Space Sick -- Normal and Challenge
+It's (not) Rocket Science -- Normal (*Challenge* will be ready shortly)
 ```
 
 Scenarios not on this list are not yet complete, and should not be played.
