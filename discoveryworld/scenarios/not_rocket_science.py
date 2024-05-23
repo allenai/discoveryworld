@@ -440,7 +440,7 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
 
     assert abs(approxOrbitSpeed - orbitSpeed) < 1, f"Approximation error for OrbitSpeed: {abs(approxOrbitSpeed - orbitSpeed)}"
     assert orbitSpeed >= 0, f"OrbitSpeed is {orbitSpeed}"
-    assert orbitSpeed <= 10000, f"OrbitSpeed is {orbitSpeed}"
+    assert orbitSpeed <= 25000, f"OrbitSpeed is {orbitSpeed}"
 
     # Return scoring info
     return scoringInfo
@@ -545,8 +545,8 @@ class LaunchTerminal(NPCDevice):
         # Make sure the orbital speed is within bounds
         if (self.attributes['orbitSpeed'] < 0):
             self.attributes['orbitSpeed'] = 0
-        elif (self.attributes['orbitSpeed'] > 10000):
-            self.attributes['orbitSpeed'] = 10000
+        elif (self.attributes['orbitSpeed'] > 25000):
+            self.attributes['orbitSpeed'] = 25000
 
     def confirmLaunch(self):
         self.addState("launchConfirmed")
@@ -564,7 +564,7 @@ class LaunchTerminal(NPCDevice):
 def mkDialogLaunchTerminal(launchTerminal):
     tree = DialogTree(launchTerminal)
 
-    rootNode = DialogNode("rootNode", "-= Launch Terminal - Main menu =-\n\nOrbital velocity currently set to {orbitSpeed}.", statesToAdd = [], statesToRemove = [])
+    rootNode = DialogNode("rootNode", "-= Launch Terminal - Main menu =-\n\nOrbital velocity currently set to {orbitSpeed} m/s.", statesToAdd = [], statesToRemove = [])
     rootNode.addDialogOption("Change target orbital velocity.", "setOrbitVelocityNode")
     rootNode.addDialogOption("Start countdown!", "startCountdownNode")
     rootNode.addDialogOption("Exit", "endNode")
@@ -579,15 +579,15 @@ def mkDialogLaunchTerminal(launchTerminal):
     setOrbitVelocityNode = DialogNode("setOrbitVelocityNode", "-= Launch Terminal - Setting Orbital Velocity =-\n\nOrbital velocity currently set to {orbitSpeed} m/s.\n(Must be between 0 and 10,000 m/s).", statesToAdd = [], statesToRemove = [])
 
     # Increase target velocity
-    setOrbitVelocityNode.addDialogOption("Increase target velocity by 1000 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": 1000}, minMaxRange={"orbitSpeed": {"min": 0, "max": 10000}}, callback=launchTerminal.checkOrbitSpeed)
-    setOrbitVelocityNode.addDialogOption("Increase target velocity by 100 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": 100}, minMaxRange={"orbitSpeed": {"min": 0, "max": 10000}}, callback=launchTerminal.checkOrbitSpeed)
-    setOrbitVelocityNode.addDialogOption("Increase target velocity by 10 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": 10}, minMaxRange={"orbitSpeed": {"min": 0, "max": 10000}}, callback=launchTerminal.checkOrbitSpeed)
-    setOrbitVelocityNode.addDialogOption("Increase target velocity by 1 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": 1}, minMaxRange={"orbitSpeed": {"min": 0, "max": 10000}}, callback=launchTerminal.checkOrbitSpeed)
+    setOrbitVelocityNode.addDialogOption("Increase target velocity by 1000 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": 1000}, minMaxRange={"orbitSpeed": {"min": 0, "max": 25000}}, callback=launchTerminal.checkOrbitSpeed)
+    setOrbitVelocityNode.addDialogOption("Increase target velocity by 100 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": 100}, minMaxRange={"orbitSpeed": {"min": 0, "max": 25000}}, callback=launchTerminal.checkOrbitSpeed)
+    setOrbitVelocityNode.addDialogOption("Increase target velocity by 10 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": 10}, minMaxRange={"orbitSpeed": {"min": 0, "max": 25000}}, callback=launchTerminal.checkOrbitSpeed)
+    setOrbitVelocityNode.addDialogOption("Increase target velocity by 1 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": 1}, minMaxRange={"orbitSpeed": {"min": 0, "max": 25000}}, callback=launchTerminal.checkOrbitSpeed)
     # Decrease target velocity
-    setOrbitVelocityNode.addDialogOption("Decrease target velocity by 1000 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": -1000}, minMaxRange={"orbitSpeed": {"min": 0, "max": 10000}}, callback=launchTerminal.checkOrbitSpeed)
-    setOrbitVelocityNode.addDialogOption("Decrease target velocity by 100 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": -100}, minMaxRange={"orbitSpeed": {"min": 0, "max": 10000}}, callback=launchTerminal.checkOrbitSpeed)
-    setOrbitVelocityNode.addDialogOption("Decrease target velocity by 10 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": -10}, minMaxRange={"orbitSpeed": {"min": 0, "max": 10000}}, callback=launchTerminal.checkOrbitSpeed)
-    setOrbitVelocityNode.addDialogOption("Decrease target velocity by 1 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": -1}, minMaxRange={"orbitSpeed": {"min": 0, "max": 10000}}, callback=launchTerminal.checkOrbitSpeed)
+    setOrbitVelocityNode.addDialogOption("Decrease target velocity by 1000 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": -1000}, minMaxRange={"orbitSpeed": {"min": 0, "max": 25000}}, callback=launchTerminal.checkOrbitSpeed)
+    setOrbitVelocityNode.addDialogOption("Decrease target velocity by 100 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": -100}, minMaxRange={"orbitSpeed": {"min": 0, "max": 25000}}, callback=launchTerminal.checkOrbitSpeed)
+    setOrbitVelocityNode.addDialogOption("Decrease target velocity by 10 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": -10}, minMaxRange={"orbitSpeed": {"min": 0, "max": 25000}}, callback=launchTerminal.checkOrbitSpeed)
+    setOrbitVelocityNode.addDialogOption("Decrease target velocity by 1 m/s", "setOrbitVelocityNode", floatVariablesToModify={"orbitSpeed": -1}, minMaxRange={"orbitSpeed": {"min": 0, "max": 25000}}, callback=launchTerminal.checkOrbitSpeed)
 
     setOrbitVelocityNode.addDialogOption("[Back]", "rootNode")
     tree.addNode(setOrbitVelocityNode)
