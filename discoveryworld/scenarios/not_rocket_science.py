@@ -389,8 +389,17 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     # TODO
     world.addTeleportLocation("control room", 11, 23)
     world.addTeleportLocation("rocket", 16, 3)
-    world.addTeleportLocation("northest", 3, 0)  # TODO: make sure there's not cactus here
-    world.addTeleportLocation("southest", 3, 31)  # TODO: make sure there's not cactus here
+    world.addTeleportLocation("northern observation post", 6, 1)  # TODO: make sure there's not cactus here
+    world.addTeleportLocation("southern observation post", 6, 31)  # TODO: make sure there's not cactus here
+
+    # Add signs at observation locations
+    signNorth = world.createObject("Sign")
+    signNorth.setText("This sign is exactly 30 meters north of the southern sign.")
+    world.addObject(5, 1, Layer.OBJECTS, signNorth)
+    signSouth = world.createObject("Sign")
+    signSouth.setText("This sign is exactly 30 meters south of the northern sign.")
+    world.addObject(5, 31, Layer.OBJECTS, signSouth)
+
 
     # Compute expected approximations for the scenario made the players.
     worldHeight = ((world.sizeY-1) - 0) #/ 1000  # (km)
@@ -447,10 +456,10 @@ class NotRocketScienceTask(Task):
 
         if scoringInfo["difficulty"] == "challenge":
             taskDescription += "Upon arriving at the launch site, you realized the rocket hasn't been fueled yet. "
-            taskDescription += "You will need to figure what type of propellant to use and how much to put in the rocket."
+            taskDescription += "You will need to figure what type of propellant to use and how much to put in the rocket. "
 
         if scoringInfo["difficulty"] == "easy":
-            taskDescription += f"Thankfully, you know the planet's characteristics, such as its mass and radius, are exactly the same as {scoringInfo['planet']}."
+            taskDescription += f"Thankfully, you know the planet's characteristics, such as its mass and radius, are exactly the same as {scoringInfo['planet']}. "
 
         taskDescription += "Good thing, you brought with you your faithful rocketry book!\n"
         taskDescription += "Some helpful notes: \n"

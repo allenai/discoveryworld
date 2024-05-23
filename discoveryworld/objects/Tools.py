@@ -347,9 +347,10 @@ class SpeedSquare(Object):
         objects = self.world.getObjectsAt(*self.getWorldLocation())
         for obj in objects:
             if "lightAngle" in obj.attributes:
-                useDescriptionStr = f"The rays coming from Planet X's star are {obj.attributes['lightAngle']} degrees from the ground at the current location.\n"
+                fixedLightAngle = obj.attributes["lightAngle"] / 1000       # Fix for the meters-to-kilometers issue
+                useDescriptionStr = f"The rays coming from Planet X's star are {fixedLightAngle} degrees from the ground at the current location.\n"
 
-                if obj.attributes["lightAngle"] >= 2:
+                if fixedLightAngle >= 2:
                     useDescriptionStr = useDescriptionStr.replace("degree", "degrees")
 
                 return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)
