@@ -229,7 +229,7 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     worldHeight = (world.sizeY-1) / 1000  # (km)
     diffAngle = (360 * worldHeight) / (2*planetRadius*np.pi)  # (degrees)
     startAngle = world.rng.randint(2, 5) + (world.rng.random() - 0.5) * diffAngle * 15  # (degrees)
-    print(f"DiffAngle: {diffAngle} {startAngle}")
+    ##print(f"DiffAngle: {diffAngle} {startAngle}")
 
     scoringInfo["planetRadius"] = planetRadius
     scoringInfo["criticalHypotheses"].append(f"Planet radius is {planetRadius} km.")
@@ -413,10 +413,10 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
 
     #print(sandTileAt00.attributes["lightAngle"] , sandTileAt0N.attributes["lightAngle"] )
     #print(f"{diffAngle} vs. {approxDiffLightAngle}")
-    print(f"Approximation error for DiffAngle: {abs(approxDiffLightAngle - diffAngle)}")
+    ##print(f"Approximation error for DiffAngle: {abs(approxDiffLightAngle - diffAngle)}")
 
-    print(f"{planetRadius} vs. {approxPlanetRadius}")
-    print(f"Approximation error for PlanetRadius: {abs(approxPlanetRadius - planetRadius)}")
+    ##print(f"{planetRadius} vs. {approxPlanetRadius}")
+    ##print(f"Approximation error for PlanetRadius: {abs(approxPlanetRadius - planetRadius)}")
 
     # 1-meter pendulum period
     nbTicks = 50
@@ -430,13 +430,13 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     g = 4 * np.pi ** 2 * pendulumLength / pendulumPeriod ** 2
     approxG = 4 * np.pi ** 2 * pendulumLength / approxPendulumPeriod ** 2
 
-    print(f"Approximation error for PendulumPeriod: {abs(approxPendulumPeriod - pendulumPeriod)}")
-    print(f"Approximation error for g with pendulum: {abs(approxG - g)}")
-    print(f"Approximation error for g: {abs(approxG - planetGravity)}")
+    ##print(f"Approximation error for PendulumPeriod: {abs(approxPendulumPeriod - pendulumPeriod)}")
+    ##print(f"Approximation error for g with pendulum: {abs(approxG - g)}")
+    ##print(f"Approximation error for g: {abs(approxG - planetGravity)}")
 
     approxOrbitSpeed = np.sqrt((approxG * (approxPlanetRadius*1e3)**2) / ((approxPlanetRadius + orbitHeight)*1e3))  # m/s
-    print(f"Approximation error for OrbitSpeed: {abs(approxOrbitSpeed - orbitSpeed)}")
-    print(f"{orbitSpeed} vs. {approxOrbitSpeed}")
+    ##print(f"Approximation error for OrbitSpeed: {abs(approxOrbitSpeed - orbitSpeed)}")
+    ##print(f"{orbitSpeed} vs. {approxOrbitSpeed}")
 
     assert abs(approxOrbitSpeed - orbitSpeed) < 1, f"Approximation error for OrbitSpeed: {abs(approxOrbitSpeed - orbitSpeed)}"
     assert orbitSpeed >= 0, f"OrbitSpeed is {orbitSpeed}"

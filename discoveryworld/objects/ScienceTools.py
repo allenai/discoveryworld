@@ -796,7 +796,7 @@ class GlowingRockDetector(Object):
                 # def getObjectsAt(self, x, y, respectContainerStatus=False, includeParts=False, excludeObjectsOnAgents=False, respectObscuringLowerLayers=False, includeContents=True):
                 objs = self.world.getObjectsAt(x, y, respectContainerStatus=False, includeParts=False, excludeObjectsOnAgents=False, respectObscuringLowerLayers=False, includeContents=True)
                 for obj in objs:
-                    print("Checking object: " + obj.name + " (" + obj.type + ")  isPoisonous: " + str(obj.attributes['isPoisonous']) )
+                    ##print("Checking object: " + obj.name + " (" + obj.type + ")  isPoisonous: " + str(obj.attributes['isPoisonous']) )
                     if (obj.type == "mushroom") and (obj.attributes['isPoisonous'] == True):
                         detected = True
                         #print("\t DETECTED!")
