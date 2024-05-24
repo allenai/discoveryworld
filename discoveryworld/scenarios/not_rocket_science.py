@@ -441,6 +441,11 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     launchTerminal.targetFuelType = scoringInfo["fuelType"]
     launchTerminal.targetFuelAmount = scoringInfo["fuelAmount"]
 
+    if difficulty != "challenge":
+        # Preset the fuel type and amount.
+        launchTerminal.attributes["fuel"] = scoringInfo["fuelType"]
+        launchTerminal.attributes["fuelAmount"] = int(scoringInfo["fuelAmount"])
+
     # Paths
     mkPathX(9, 25, 6, world, type="SandPath")
     mkPathX(18, 25, 13, world, type="SandPath")
@@ -597,7 +602,7 @@ class NotRocketScienceTask(Task):
         taskDescription = "You are at the new Launch Site on Planet X. "
         taskDescription += f"To better monitor the weather patterns, you were tasked to send a new probe on orbit at {orbitHeight} kilometers from the ground. "
         taskDescription += "You were told to simply punch in the target orbital speed needed for such an altitude in the launch terminal and the system will take care of the rest. "
-        taskDescription += "There is only one rocket, and this is a very important mission, so we better get it right the first time! "
+        taskDescription += "There is only one single-stage rocket, and this is a very important mission, so we better get it right the first time! "
 
         if scoringInfo["difficulty"] == "challenge":
             taskDescription += "Upon arriving at the launch site, you realized the rocket hasn't been fueled yet. "
