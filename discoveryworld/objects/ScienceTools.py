@@ -840,12 +840,35 @@ class Rocket(Object):
     def __init__(self, world, part=None, isFiring=False):
         assert part is not None, "Rocket must have a part"
         super().__init__(world, "rocket", "rocket", defaultSpriteName=f"launchSite_rocket_{part}")
+        self.part = part
         self.attributes['isMovable'] = False
         self.attributes['isPassable'] = (part not in ("bottom", "bottom_fire"))
-        self.isFiring = isFiring
+        self.attributes["isFiring"] = isFiring
 
         # Material
         self.attributes["manualMaterialNames"] = ["Metal"]
+
+    def setFiring(self, isFiring:bool):
+        self.attributes["isFiring"] = isFiring
+        self.needsSpriteNameUpdate = True
+
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        # Check to see if the sprite name needs to be updated
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # Check if the rock is luminous
+        if self.attributes["isFiring"]:
+            self.curSpriteName = f"launchSite_rocket_{self.part}_fire"
+            self.name = "rocket (firing)"
+        else:
+            self.curSpriteName = f"launchSite_rocket_{self.part}"
+            self.name = "rocket (idle)"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
 
 
 class LaunchMonitor(Object):
@@ -864,7 +887,7 @@ class FuelTank(Object):
     def __init__(self, world, variant=None, part=None):
         assert part is not None, "FuelTank must have a part"
         assert variant is not None, "FuelTank must have a variant"
-        super().__init__(world, "tank", "tank", defaultSpriteName=f"launchSite_fuel_tank_{variant}_{part}")
+        super().__init__(world, "tank", "tank {variant}", defaultSpriteName=f"launchSite_fuel_tank_{variant}_{part}")
 
         self.attributes["isPassable"] = (part != "b")
         self.attributes["manualMaterialNames"] = ["Metal"]
@@ -876,3 +899,23 @@ class RocketryBook(Object):
 
         self.attributes["isMovable"] = True
         self.attributes["isReadable"] = True
+
+
+class LoadCell(Object):
+    def __init__(self, world, part=None):
+        assert part is not None, "LoadCell must have a part"
+        super().__init__(world, "load cell", "load cell", defaultSpriteName=f"launchSite_load_cell_{part}")
+
+        self.attributes["isPassable"] = ("b" not in part)
+        self.attributes["manualMaterialNames"] = ["Stone"]
+
+class LoadCellWall(Object):
+    def __init__(self, world, part=None, variant="", isPassable=None):
+        assert part is not None, "LoadCellWall must have a part"
+        super().__init__(world, "load cell wall", "load cell wall", defaultSpriteName=f"launchSite_{variant}wall_{part}")
+
+        self.attributes["isPassable"] = isPassable
+        if isPassable is None:
+            self.attributes["isPassable"] = ("b" not in part)
+
+        self.attributes["manualMaterialNames"] = ["Stone"]

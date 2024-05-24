@@ -315,6 +315,8 @@ class ObjectMaker:
             "SpeedSquare": SpeedSquare,
             "Pendulum": Pendulum,
             "RocketryBook": RocketryBook,
+            "LoadCell": LoadCell,
+            "LoadCellWall": LoadCellWall,
 
             # Simplified Scientific Instruments
             "SimplifiedMicroscope": [SimplifiedScientificInstrument, "microscope"],

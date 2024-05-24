@@ -510,7 +510,7 @@ class Path(Object):
 
 class Sign(Object):
     # Constructor
-    def __init__(self, world, variant=None):
+    def __init__(self, world, variant=None, text="This is a sign."):
         self.variant = variant
         defaultSpriteName = "village1_sign_writing"
         if self.variant:
@@ -525,7 +525,7 @@ class Sign(Object):
         self.attributes["manualMaterialNames"] = ["Wood"]
 
         self.attributes['isReadable'] = True                       # Can it be read?
-        self.attributes["document"] = "This is a sign."
+        self.attributes["document"] = text
 
     def tick(self):
         # TODO: Invalidate sprite name if this or neighbouring walls change
@@ -840,6 +840,7 @@ class Sand(Object):
 
         self.attributes["isMovable"] = False                       # Can it be moved?
         # self.attributes["manualMaterialNames"] = ["PlantMatterGeneric"]
+
 class SandPath(Object):
     # Constructor
     def __init__(self, world):
@@ -930,4 +931,5 @@ class LaunchPad(Object):
         super().__init__(world, "launch pad", "launch pad", defaultSpriteName=defaultSpriteName)
 
         self.attributes["isMovable"] = False                       # Can it be moved?
-        # self.attributes["manualMaterialNames"] = ["PlantMatterGeneric"]
+        self.attributes["obscuresObjectsBelow"] = True
+        self.attributes["manualMaterialNames"] = ["Concrete"]

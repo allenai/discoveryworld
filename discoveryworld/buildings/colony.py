@@ -580,8 +580,3 @@ def mkSchool(x, y, world):
                 world.addObject(x+j, y+i, Layer.FURNITURE, obj)
 
     return computer, resetDisk, measuringTape, flagpole, schoolBounds
-
-
-def mkRocket(world, x, y):
-    world.addObject(x, y, Layer.OBJECTS, world.createObject("Rocket", part="bottom"))
-    world.addObject(x, y-1, Layer.AIR, world.createObject("Rocket", part="top"))

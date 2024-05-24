@@ -85,6 +85,7 @@ class SpriteLibrary:
             spriteHeightInTiles = sprite["size"][1]
             # Sprite tint color
             spriteColor = sprite.get("color", None)
+            spriteAngle = sprite.get("angle", 0)
 
             # Get the sprite from the spritesheet
             #spriteRect = pygame.Rect(spriteX * tileSize[0], spriteY * tileSize[1], tileSize[0], tileSize[1])
@@ -115,6 +116,8 @@ class SpriteLibrary:
                 colorImage.blit(spriteImage, (0,0), special_flags=pygame.BLEND_RGBA_MULT)
                 spriteImage = colorImage
 
+            if spriteAngle:
+                spriteImage = pygame.transform.rotate(spriteImage, spriteAngle)
 
             # Debug: Print the color at pixel 0,0 within the sprite
             #print("Color at 1,1: " + str(spriteImage.get_at((1,1))))
