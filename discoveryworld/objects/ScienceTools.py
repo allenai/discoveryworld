@@ -840,12 +840,35 @@ class Rocket(Object):
     def __init__(self, world, part=None, isFiring=False):
         assert part is not None, "Rocket must have a part"
         super().__init__(world, "rocket", "rocket", defaultSpriteName=f"launchSite_rocket_{part}")
+        self.part = part
         self.attributes['isMovable'] = False
         self.attributes['isPassable'] = (part not in ("bottom", "bottom_fire"))
-        self.isFiring = isFiring
+        self.attributes["isFiring"] = isFiring
 
         # Material
         self.attributes["manualMaterialNames"] = ["Metal"]
+
+    def setFiring(self, isFiring:bool):
+        self.attributes["isFiring"] = isFiring
+        self.needsSpriteNameUpdate = True
+
+    # Updates the current sprite name based on the current state of the object
+    def inferSpriteName(self, force:bool=False):
+        # Check to see if the sprite name needs to be updated
+        if (not self.needsSpriteNameUpdate and not force):
+            # No need to update the sprite name
+            return
+
+        # Check if the rock is luminous
+        if self.attributes["isFiring"]:
+            self.curSpriteName = f"launchSite_rocket_{self.part}_fire"
+            self.name = "rocket (firing)"
+        else:
+            self.curSpriteName = f"launchSite_rocket_{self.part}"
+            self.name = "rocket (idle)"
+
+        # This will be the next last sprite name (when we flip the backbuffer)
+        self.tempLastSpriteName = self.curSpriteName
 
 
 class LaunchMonitor(Object):
@@ -896,46 +919,3 @@ class LoadCellWall(Object):
             self.attributes["isPassable"] = ("b" not in part)
 
         self.attributes["manualMaterialNames"] = ["Stone"]
-
-
-class LoadCellInterface(Object):
-    def __init__(self, world):
-        super().__init__(world, "load cell", "load cell", defaultSpriteName=f"launchSite_load_cell_window")
-
-        self.attributes["isPassable"] = False
-        self.attributes["manualMaterialNames"] = ["Glass"]
-
-        self.fuels = {}
-        self.rocketDryMass = 0
-        self.rocketTanksVolume = 0
-
-        self.attributes["fuel"] = "Empty"
-        self.attributes["thrust"] = 0
-        self.attributes["duration"] = 0
-        self.attributes["weight"] = 0
-
-        self.nbTicksSinceActivation = 0
-
-    def update(self):
-        fuel = self.attributes["fuel"]
-        if fuel == "Empty":
-            self.attributes["weight"] = self.rocketDryMass
-        else:
-            fuelMass = self.fuels[fuel]["density"] * self.rocketTanksVolume
-            self.attributes["weight"] = self.attributes["dryMass"] + fuelMass
-
-    def fire(self):
-        self.attributes["duration"] = 0
-
-    def tick(self):
-        super().tick()
-        if "testInprogress" in self.attributes['states']:
-            self.attributes["duration"] += 1
-
-            # Burn fuel.
-            fuel = self.attributes["fuel"]
-            self.attributes["thrust"] = self.fuels[fuel]["thrust"]
-            self.attributes["weight"] -= self.fuels[fuel]["massFlowRate"]
-            if self.attributes["weight"] <= 0:
-                self.attributes["weight"] = 0
-                self.removeState("testInprogress")

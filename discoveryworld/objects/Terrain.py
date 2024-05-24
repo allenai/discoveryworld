@@ -840,6 +840,7 @@ class Sand(Object):
 
         self.attributes["isMovable"] = False                       # Can it be moved?
         # self.attributes["manualMaterialNames"] = ["PlantMatterGeneric"]
+
 class SandPath(Object):
     # Constructor
     def __init__(self, world):
@@ -930,4 +931,5 @@ class LaunchPad(Object):
         super().__init__(world, "launch pad", "launch pad", defaultSpriteName=defaultSpriteName)
 
         self.attributes["isMovable"] = False                       # Can it be moved?
-        # self.attributes["manualMaterialNames"] = ["PlantMatterGeneric"]
+        self.attributes["obscuresObjectsBelow"] = True
+        self.attributes["manualMaterialNames"] = ["Concrete"]
