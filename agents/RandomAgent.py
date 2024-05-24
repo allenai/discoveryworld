@@ -249,10 +249,19 @@ def runRandomAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSteps:int
         filenameOut = "output_random_agent." + logFileSuffix + ".mp4"
         api.createAgentVideo(agentIdx=0, filenameOut=filenameOut)
 
+    completed = 0
+    if (finalScorecard[0]["completed"] == True):
+        completed = 1
+    completedSuccessfully = 0
+    if (finalScorecard[0]["completedSuccessfully"] == True):
+        completedSuccessfully = 1
+
     out = {
         "agentName": "RandomAgent",
         "finalNormalizedScore": finalNormalizedScore,
-        "stepsPerSecond": stepsPerSecond
+        "completed": completed,
+        "completedSuccessfully": completedSuccessfully,
+        "stepsPerSecond": stepsPerSecond,
     }
     return out
 
@@ -288,13 +297,19 @@ if __name__ == "__main__":
     # Check for mode
     stepsPerSecond = []
     if (args.runall == True):
+        import datetime
+        now = datetime.datetime.now()
+        dateStr = now.strftime("%Y-%m-%d_%H-%M-%S")
+
         # Run all scenarios
         scores = {}
+        completed = {}
+        completedSuccessfully = {}
         for scenarioName in SCENARIO_NAMES:
             # Get the valid difficulty settings and random seeds for this scenario
             validDifficulties = SCENARIO_INFOS[scenarioName]["difficulty"]
             validSeeds = SCENARIO_INFOS[scenarioName]["variations"]
-            validSeeds = [int(x) for x in validSeeds]
+            validSeeds = [int(x)-1 for x in validSeeds]     # -1 to convert from 1-indexed to 0-indexed
 
             for difficulty in validDifficulties:
                 for seed in validSeeds:
@@ -302,12 +317,18 @@ if __name__ == "__main__":
                     result = runRandomAgent(scenarioName=scenarioName, difficultyStr=difficulty, seed=seed, numSteps=args.numSteps, exportVideo=False, threadId = args.threadId, debug=False)
                     finalScore = result["finalNormalizedScore"]
                     stepsPerSecond.append(result["stepsPerSecond"])
-
+                    completed1 = result["completed"]
+                    completedSuccessfully1 = result["completedSuccessfully"]
 
                     scoreKey = scenarioName + "-" + difficulty
                     if (scoreKey not in scores):
                         scores[scoreKey] = []
+                        completed[scoreKey] = []
+                        completedSuccessfully[scoreKey] = []
+
                     scores[scoreKey].append(finalScore)
+                    completed[scoreKey].append(completed1)
+                    completedSuccessfully[scoreKey].append(completedSuccessfully1)
 
 
             # Calculate average scores
@@ -322,13 +343,39 @@ if __name__ == "__main__":
                 scoresAvg[key + "-avg"] = averageScore
                 scoresAvg[key + "-raw"] = scoreList
 
+            # Completed average scores
+            completedAvg = {}
+            for key in completed:
+                completedList = completed[key]
+                completedList = [x for x in completedList if x != None]
+                completedAvg[key + "-avg"] = sum(completedList) / len(completedList)
+                completedAvg[key + "-raw"] = completedList
+
+            # Completed Successfully average scores
+            completedSuccessfullyAvg = {}
+            for key in completedSuccessfully:
+                completedSuccessfullyList = completedSuccessfully[key]
+                completedSuccessfullyList = [x for x in completedSuccessfullyList if x != None]
+                completedSuccessfullyAvg[key + "-avg"] = sum(completedSuccessfullyList) / len(completedSuccessfullyList)
+                completedSuccessfullyAvg[key + "-raw"] = completedSuccessfullyList
+
             print("Final scores: ")
             packed = {
+                "numSteps": args.numSteps,
                 "scores_raw": scores,
                 "scores_avg": scoresAvg,
-                "numSteps": args.numSteps,
+                "completed_raw": completed,
+                "completed_avg": completedAvg,
+                "completedSuccessfully_raw": completedSuccessfully,
+                "completedSuccessfully_avg": completedSuccessfullyAvg,
             }
             print(json.dumps(packed, indent=4, sort_keys=True))
+
+            # Save to file with a verbose filename
+            # Add date/time
+            filenameOut = "output_random_agent-allscenarios-numSteps" + str(args.numSteps) + "-thread" + str(args.threadId) + "." + dateStr + ".json"
+            with open(filenameOut, "w") as f:
+                json.dump(packed, f, indent=4, sort_keys=True)
 
 
 
