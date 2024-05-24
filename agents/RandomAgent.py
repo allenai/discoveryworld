@@ -19,42 +19,42 @@ LIMITED_ACTIONS = False
 #   Helper functions
 #
 
-def getVisibleObjectByUUID(uuid, observation):
-    # First, collect all objects
-    visibleObjectsByUUID = {}
-    for obj in observation["ui"]["inventoryObjects"]:
-        visibleObjectsByUUID[obj["uuid"]] = obj
-    for obj in observation["ui"]["accessibleEnvironmentObjects"]:
-        visibleObjectsByUUID[obj["uuid"]] = obj
+# def getVisibleObjectByUUID(uuid, observation):
+#     # First, collect all objects
+#     visibleObjectsByUUID = {}
+#     for obj in observation["ui"]["inventoryObjects"]:
+#         visibleObjectsByUUID[obj["uuid"]] = obj
+#     for obj in observation["ui"]["accessibleEnvironmentObjects"]:
+#         visibleObjectsByUUID[obj["uuid"]] = obj
 
-    # # Also include 'nearbyObjects'
-    # for direction in observation["ui"]["nearbyObjects"]["objects"]:
-    #     for obj in direction:
-    #         visibleObjectsByUUID[obj["uuid"]] = obj
+#     # # Also include 'nearbyObjects'
+#     # for direction in observation["ui"]["nearbyObjects"]["objects"]:
+#     #     for obj in direction:
+#     #         visibleObjectsByUUID[obj["uuid"]] = obj
 
-    # Check if the UUID is in the list
-    if uuid in visibleObjectsByUUID:
-        return visibleObjectsByUUID[uuid]
-    else:
-        return None
+#     # Check if the UUID is in the list
+#     if uuid in visibleObjectsByUUID:
+#         return visibleObjectsByUUID[uuid]
+#     else:
+#         return None
 
-# A short, single-line string, of just the immediately interactable objects
-def mkShortInteractableObjectList(observation):
-    objStrs = []
-    for obj in observation["ui"]["inventoryObjects"]:
-        name = obj["name"]
-        uuid = obj["uuid"]
-        strOut = "{\"name\": \"" + name + "\", \"uuid\": " + str(uuid) + "}"
-        objStrs.append(strOut)
+# # A short, single-line string, of just the immediately interactable objects
+# def mkShortInteractableObjectList(observation):
+#     objStrs = []
+#     for obj in observation["ui"]["inventoryObjects"]:
+#         name = obj["name"]
+#         uuid = obj["uuid"]
+#         strOut = "{\"name\": \"" + name + "\", \"uuid\": " + str(uuid) + "}"
+#         objStrs.append(strOut)
 
-    for obj in observation["ui"]["accessibleEnvironmentObjects"]:
-        name = obj["name"]
-        uuid = obj["uuid"]
-        strOut = "{\"name\": \"" + name + "\", \"uuid\": " + str(uuid) + "}"
-        objStrs.append(strOut)
+#     for obj in observation["ui"]["accessibleEnvironmentObjects"]:
+#         name = obj["name"]
+#         uuid = obj["uuid"]
+#         strOut = "{\"name\": \"" + name + "\", \"uuid\": " + str(uuid) + "}"
+#         objStrs.append(strOut)
 
-    jsonOut = "[" + ", ".join(objStrs) + "]"
-    return jsonOut
+#     jsonOut = "[" + ", ".join(objStrs) + "]"
+#     return jsonOut
 
 
 
@@ -146,28 +146,94 @@ def randomAgent(api, numSteps:int = 10, seed:int = None, debug:bool = False):
             # The 'args' field of a given key represents what arguments must be populated (with objects)
             possibleActions = api.listKnownActions(limited=LIMITED_ACTIONS)
 
-            # Pick a random action from the list of keys
+# def getActionDescriptions(limited:bool = False):
+#     actionDescriptions = {
+#         #ActionType.MOVE_FORWARD.name:   {"args": [], "desc": "move forward 1 step (in whatever direction the agent is facing)"},
+#         #ActionType.MOVE_BACKWARD.name:  {"args": [], "desc": "move backward 1 step (backwards from whatever direction the agent is facing)"},
+#         #ActionType.ROTATE_CCW.name:     {"args": [], "desc": "move counter-clockwise 90 degrees"},
+#         #ActionType.ROTATE_CW.name:      {"args": [], "desc": "move clockwise 90 degrees"},
+#         ActionType.PICKUP.name:         {"args": ["arg1"], "desc": "pick up an object (arg1)"},
+#         ActionType.DROP.name:           {"args": ["arg1"], "desc": "drop an object (arg1)"},
+#         ActionType.PUT.name:            {"args": ["arg1", "arg2"], "desc": "put an object (arg1) in/on another object (arg2), or give an object (arg1) to another agent (arg2)"},
+#         ActionType.OPEN.name:           {"args": ["arg1"], "desc": "open an object (arg1)"},
+#         ActionType.CLOSE.name:          {"args": ["arg1"], "desc": "close an object (arg1)"},
+#         ActionType.ACTIVATE.name:       {"args": ["arg1"], "desc": "activate an object (arg1)"},
+#         ActionType.DEACTIVATE.name:     {"args": ["arg1"], "desc": "deactivate an object (arg1)"},
+#         ActionType.TALK.name:           {"args": ["arg1"], "desc": "talk to another agent (arg1)"},
+#         ActionType.EAT.name:            {"args": ["arg1"], "desc": "eat an object (arg1)"},
+#         ActionType.READ.name:           {"args": ["arg1"], "desc": "read an object (arg1)"},
+#         ActionType.USE.name:            {"args": ["arg1", "arg2"], "desc": "use an object (arg1), e.g. a thermometer, on another object (arg2), e.g. water."},
+
+#         ActionType.MOVE_DIRECTION.name:     {"args": ["arg1"], "desc": "move in a specific direction (arg1), which is one of 'north', 'east', 'south', or 'west'."},
+#         ActionType.ROTATE_DIRECTION.name:   {"args": ["arg1"], "desc": "rotate to face a specific direction (arg1), which is one of 'north', 'east', 'south', or 'west'."},
+#         ActionType.TELEPORT_TO_LOCATION.name:   {"args": ["arg1"], "desc": "teleport to a specific location (arg1), by name. A list of valid teleport locations is provided elsewhere."},
+#         ActionType.TELEPORT_TO_OBJECT.name:     {"args": ["arg1"], "desc": "teleport beside a specific object (arg1). 'arg1' should be the UUID of the object to teleport to."},
+
+#         ActionType.DISCOVERY_FEED_GET_UPDATES.name:     {"args": [], "desc": "read the latest status updates on discovery feed"},
+#         #ActionType.DISCOVERY_FEED_GET_ARTICLES.name:    {"args": [], "desc": "read the latest scientific articles on discovery feed"},
+#         ActionType.DISCOVERY_FEED_GET_POST_BY_ID.name:  {"args": ["arg1"], "desc": "read a specific post on discovery feed (arg1). 'arg1' should be the integer ID of the post."},
+#         #ActionType.DISCOVERY_FEED_CREATE_UPDATE.name:   {"args": ["arg1"], "desc": "create a status update on discovery feed (arg1)"},
+#         #ActionType.DISCOVERY_FEED_CREATE_ARTICLE.name:  {"args": ["arg1"], "desc": "create a scientific article on discovery feed (arg1)"}
+#     }
+
+            # Randomly pick an action to take from the list of actions
             actionName = r.choice(list(possibleActions.keys()))
+
             # Check what arguments are required for this action
             actionArgs = possibleActions[actionName]["args"]
 
+            # Assemble the action JSON
             actionJSONOut = {
                 "action": actionName,
                 "arg1": None,
                 "arg2": None
             }
+
+            # Pick random objects for the arguments
             for arg in actionArgs:
                 # Pick a random object from the list of accessible objects
                 obj = r.choice(accessibleObjects)
                 # Set the argument
                 actionJSONOut[arg] = obj["uuid"]
 
+            ## Handle special case actions that take arguments **other than object UUIDs**
+            ## Note that being in a dialog is handled as a special case (above).
+            if (actionName == "MOVE_DIRECTION"):
+                # Pick a random direction
+                direction = r.choice(["north", "east", "south", "west"])
+                actionJSONOut["arg1"] = direction
+            elif (actionName == "ROTATE_DIRECTION"):
+                # Pick a random direction
+                direction = r.choice(["north", "east", "south", "west"])
+                actionJSONOut["arg1"] = direction
+            elif (actionName == "TELEPORT_TO_LOCATION"):
+                # Pick a random location
+                #location = r.choice(["start", "end", "middle"])
+                teleportLocations = api.listTeleportLocationsDict()
+                teleportLocations = list(teleportLocations.keys())
+                print("Teleport Locations:")
+                print(str(teleportLocations))
+                print(type(teleportLocations))
+
+                # Pick a random location
+                location = r.choice(teleportLocations)
+                actionJSONOut["arg1"] = location
+            elif (actionName == "DISCOVERY_FEED_GET_POST_BY_ID"):
+                # Pick a random post ID -- the random agent, unable to read observations, will not do anything with this information anyway.
+                postID = r.randint(1, 100)
+                actionJSONOut["arg1"] = postID
+            else:
+                # No special handling -- the random object arguments chosen above should work.
+                pass
+
             # Show the action that we've assembled
             print("Random action: " + json.dumps(actionJSONOut))
 
             # Perform the action
-            actionSuccess = api.performAgentAction(agentIdx=0, actionJSON=actionJSONOut)
-            print("actionSuccess: " + str(actionSuccess))
+            result = api.performAgentAction(agentIdx=0, actionJSON=actionJSONOut)
+            print("Result: " + str(result))
+            if ("success" in result):
+                print("ActionSuccess: " + str(result["success"]))
 
         # Perform the world tick
         api.tick()
@@ -181,37 +247,37 @@ def randomAgent(api, numSteps:int = 10, seed:int = None, debug:bool = False):
     print("Average steps per second: " + str(numSteps / deltaTime) + " steps per second.")
 
 
-#
-#   API test agent
-#
-def testAgent(api):
-    # Perform the first step
-    response = api.getAgentObservation(agentIdx=0)
+# #
+# #   API test agent
+# #
+# def testAgent(api):
+#     # Perform the first step
+#     response = api.getAgentObservation(agentIdx=0)
 
-    # print the response (pretty)
-    print(json.dumps(response, indent=4, sort_keys=True))
+#     # print the response (pretty)
+#     print(json.dumps(response, indent=4, sort_keys=True))
 
 
-    # Try an action
-    actionJSON = {
-        "action": "MOVE_FORWARD",
-        "arg1": "agent",
-        "arg2": "north"
-    }
+#     # Try an action
+#     actionJSON = {
+#         "action": "MOVE_FORWARD",
+#         "arg1": "agent",
+#         "arg2": "north"
+#     }
 
-    print("")
-    print("Known actions: " + str(api.listKnownActions(limited=LIMITED_ACTIONS)))
-    print("")
-    print("Additional action information: " + api.additionalActionDescriptionString())
-    print("")
-    print("Attempting action: " + json.dumps(actionJSON))
-    print("")
-    actionSuccess = api.performAgentAction(agentIdx=0, actionJSON=actionJSON)
+#     print("")
+#     print("Known actions: " + str(api.listKnownActions(limited=LIMITED_ACTIONS)))
+#     print("")
+#     print("Additional action information: " + api.additionalActionDescriptionString())
+#     print("")
+#     print("Attempting action: " + json.dumps(actionJSON))
+#     print("")
+#     actionSuccess = api.performAgentAction(agentIdx=0, actionJSON=actionJSON)
 
-    # Take another observation, and print it
-    print("\n")
-    response = api.getAgentObservation(agentIdx=0)
-    print(json.dumps(response, indent=4, sort_keys=True))
+#     # Take another observation, and print it
+#     print("\n")
+#     response = api.getAgentObservation(agentIdx=0)
+#     print(json.dumps(response, indent=4, sort_keys=True))
 
 
 
