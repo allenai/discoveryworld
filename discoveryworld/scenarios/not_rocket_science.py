@@ -7,7 +7,6 @@ from discoveryworld.Agent import NPC, Agent, NPCDevice
 from discoveryworld.DialogTree import DialogMaker, DialogNode, DialogTree
 from discoveryworld.Layer import Layer
 from discoveryworld.TaskScorer import ScorecardElement, Task
-from discoveryworld.buildings.colony import mkRocket
 
 from discoveryworld.buildings.terrain import mkPathX, mkPathY, mkSandFill, mkSignVillage
 
@@ -147,9 +146,11 @@ def mkControlRoom(world, x, y):
 
 def mkThrustTestingGround(world, x, y):
     layout = [
-        "sABC   ",
-        "#######T",
+        "sABC   T",
+        "########",
     ]
+
+    loadCell = world.createObject("LoadCellInterface")
 
     for j, row in enumerate(layout):
         for i, char in enumerate(row):
@@ -164,7 +165,51 @@ def mkThrustTestingGround(world, x, y):
                 world.addObject(x+i, y+j, Layer.OBJECTS, sign)
 
             elif char == "T":
-                pass # TODO
+                world.addObject(x+i-2, y+j-3, Layer.AIR, world.createObject("LoadCellWall", part="l"))
+                world.addObject(x+i-1, y+j-3, Layer.AIR, world.createObject("LoadCellWall", part="c"))
+                world.addObject(x+i  , y+j-3, Layer.AIR, world.createObject("LoadCellWall", part="r"))
+
+                world.addObject(x+i-2, y+j-3, Layer.AIR, world.createObject("LoadCellWall", part="0,5", variant="top"))
+                world.addObject(x+i-1, y+j-3, Layer.AIR, world.createObject("LoadCellWall", part="1,5", variant="top"))
+                world.addObject(x+i-0, y+j-3, Layer.AIR, world.createObject("LoadCellWall", part="2,5", variant="top"))
+                world.addObject(x+i-2, y+j-2, Layer.AIR, world.createObject("LoadCellWall", part="0,6", variant="top", isPassable=False))
+                world.addObject(x+i-0, y+j-2, Layer.AIR, world.createObject("LoadCellWall", part="2,6", variant="top", isPassable=False))
+
+                world.addObject(x+i-2, y+j-2, Layer.FURNITURE, world.createObject("LoadCellWall", part="bl", isPassable=False))
+                world.addObject(x+i-1, y+j-2, Layer.FURNITURE, world.createObject("LoadCellWall", part="b", isPassable=False))
+                world.addObject(x+i  , y+j-2, Layer.FURNITURE, world.createObject("LoadCellWall", part="br", isPassable=False))
+
+                world.addObject(x+i-2, y+j-0, Layer.FURNITURE, world.createObject("LoadCellWall", part="bl", isPassable=False))
+                world.addObject(x+i  , y+j-0, Layer.FURNITURE, world.createObject("LoadCellWall", part="br", isPassable=False))
+
+                world.addObject(x+i-2, y+j-2, Layer.WORLD, world.createObject("LaunchPad", variant="cc"))
+                world.addObject(x+i-0, y+j-2, Layer.WORLD, world.createObject("LaunchPad", variant="cc"))
+                world.addObject(x+i-1, y+j-2, Layer.WORLD, world.createObject("LaunchPad", variant="cc"))
+                world.addObject(x+i-2, y+j-1, Layer.FURNITURE, world.createObject("LaunchPad", variant="cc"))
+                world.addObject(x+i-1, y+j-1, Layer.FURNITURE, world.createObject("LaunchPad", variant="cc"))
+                world.addObject(x+i-0, y+j-1, Layer.FURNITURE, world.createObject("LaunchPad", variant="cc"))
+
+                world.addObject(x+i-1, y+j-3, Layer.AIR, world.createObject("Rocket", part="flip_fire"))
+                world.addObject(x+i-1, y+j-2, Layer.FURNITURE, world.createObject("Rocket", part="flip_bottom_fire"))
+                world.addObject(x+i-1, y+j-1, Layer.FURNITURE, world.createObject("Rocket", part="flip_top_fire"))
+
+                world.addObject(x+i-2, y+j-1, Layer.AIR, world.createObject("LoadCell", part="tl"))
+                world.addObject(x+i-1, y+j-1, Layer.AIR, world.createObject("LoadCell", part="t"))
+                world.addObject(x+i, y+j-1, Layer.AIR, world.createObject("LoadCell", part="tr"))
+                world.addObject(x+i-2, y+j, Layer.FURNITURE, world.createObject("LoadCell", part="bl"))
+                world.addObject(x+i-1, y+j, Layer.FURNITURE, world.createObject("LoadCell", part="b"))
+                world.addObject(x+i-1, y+j, Layer.FURNITURE, loadCell)
+                world.addObject(x+i, y+j, Layer.FURNITURE, world.createObject("LoadCell", part="br"))
+
+                world.addObject(x+i-2, y+j-1, Layer.AIR, world.createObject("LoadCellWall", part="0,7", variant="top", isPassable=False))
+                world.addObject(x+i-0, y+j-1, Layer.AIR, world.createObject("LoadCellWall", part="2,7", variant="top", isPassable=False))
+
+    return loadCell
+
+
+def mkRocket(world, x, y):
+    world.addObject(x, y, Layer.OBJECTS, world.createObject("Rocket", part="bottom"))
+    world.addObject(x, y-1, Layer.AIR, world.createObject("Rocket", part="top"))
 
 
 def mkLaunchPad(world, x, y, width, height):
@@ -271,6 +316,64 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     scoringInfo["orbitSpeed"] = orbitSpeed
     scoringInfo["criticalHypotheses"].append(f"Target orbit speed is {scoringInfo['orbitSpeed']} m/s.")
 
+    # Rocket mass
+    MIN_ROCKET_MASS = 1e3  # kg
+    MAX_ROCKET_MASS = 1e4  # kg
+    rocketMass = MIN_ROCKET_MASS + world.rng.random() * (MAX_ROCKET_MASS - MIN_ROCKET_MASS)  # (kg)
+    rocketTanksVolume = 100000  # L
+
+    fuels = [
+        # Adequate
+        {
+            "density": 2.8,
+            "massFlowRate": world.rng.randint(100, 500),  # kg/s
+            "thrust": world.rng.randint(500, 1500) * 1e3,  # N
+        },
+        # Not enough thrust
+        {
+            "density": 2.2,
+            "massFlowRate": world.rng.randint(100, 500),  # kg/s
+            "thrust": world.rng.randint(500, 1500) * 1e2,  # N
+        },
+        # Not enough dense
+        {
+            "density": 0.08,
+            "massFlowRate": world.rng.randint(100, 500),  # kg/s
+            "thrust": world.rng.randint(500, 1500) * 1e3,  # N
+        },
+    ]
+
+    # Because we assume a fix engine, thrust and mass flow rate will be determined by the fuel type.
+    fuelTypes = ["A", "B", "C"]
+    world.rng.shuffle(fuelTypes)
+    scoringInfo["fuelType"] = fuelTypes[0]
+    scoringInfo["criticalHypotheses"].append(f"The current fuel type is {fuelTypes[0]}.")
+
+    fuelDensity = fuels[0]["density"]  # kg/L
+    scoringInfo["criticalHypotheses"].append(f"Fuel {fuelTypes[0]}'s density is {massFlowRate} kg/L.")
+    massFlowRate = fuels[0]["massFlowRate"]  # kg/s
+    scoringInfo["criticalHypotheses"].append(f"The mass flow rate for fuel {fuelTypes[0]} is {massFlowRate} kg/s.")
+
+    thrust = fuels[0]["thrust"]  # N
+    scoringInfo["criticalHypotheses"].append(f"The thrust generated by fuel {fuelTypes[0]} is {thrust} N.")
+    specificImpulse = thrust / (massFlowRate * g)  # s
+    scoringInfo["criticalHypotheses"].append(f"The specific impulse with fuel {fuelTypes[0]} is {specificImpulse} s.")
+    effectiveExhaustVelocity = specificImpulse * g  # m/s
+    scoringInfo["criticalHypotheses"].append(f"The effective exhaust velocity with fuel {fuelTypes[0]} is {effectiveExhaustVelocity} m/s.")
+
+    # Calculate the fuel needed to reach target orbit
+    deltaV = scoringInfo["orbitSpeed"]  # m/s
+    rocketWithFuelMass = rocketMass * np.exp(deltaV / effectiveExhaustVelocity)  # kg
+    fuelMassNeeded = rocketWithFuelMass - rocketMass  # kg
+    scoringInfo["criticalHypotheses"].append(f"The dry mass of the rocket is is {rocketMass} kg.")
+    scoringInfo["criticalHypotheses"].append(f"The wet mass of the rocket with fuel {fuelTypes[0]} is {fuelMassNeeded} kg.")
+    scoringInfo["criticalHypotheses"].append(f"The total mass of the rocket at launch with fuel {fuelTypes[0]} is {rocketWithFuelMass} kg.")
+    fuelAmount = fuelMassNeeded / fuelDensity  # L
+    scoringInfo["fuelAmount"] = fuelAmount
+
+    scoringInfo["criticalHypotheses"].append(f"The rocket's tanks have a volume of {rocketTanksVolume} L.")
+    scoringInfo["criticalHypotheses"].append(f"The amount of fuel {fuelTypes[0]} needed is {fuelAmount} L.")
+
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 3
     if (numUserAgents > MAX_NUM_AGENTS):
@@ -295,7 +398,11 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     scoringInfo["launchTerminal"] = launchTerminal
 
     # Load cell test ground
-    mkThrustTestingGround(world, 22, 24)
+    loadCell = mkThrustTestingGround(world, 22, 24)
+    loadCell.fuels = {fuelType: fuel for fuelType, fuel in zip(fuelTypes, fuels)}
+    loadCell.rocketDryMass = rocketMass
+    loadCell.attributes["weight"] = rocketMass
+    loadCell.rocketTanksVolume = rocketTanksVolume
 
     # Paths
     mkPathX(9, 25, 6, world, type="SandPath")
@@ -365,6 +472,7 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
 
     # Add dialog to objects.
     mkDialogLaunchTerminal(launchTerminal)
+    mkDialogLoadCellInterface(loadCell)
 
     # Add some number of user agents
     for userAgentIdx in range(0, numUserAgents):
@@ -381,7 +489,8 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
         #userAgent.addObject(world.createObject("RocketryBook"))
         # Add the agent to a specfic location
         # world.addObject(16+userAgentIdx, 3, Layer.AGENT, userAgent)    # Near rocket
-        world.addObject(11+userAgentIdx, 23, Layer.AGENT, userAgent)   # In control room
+        # world.addObject(11+userAgentIdx, 23, Layer.AGENT, userAgent)   # In control room
+        world.addObject(23+userAgentIdx, 25, Layer.AGENT, userAgent)   # In control room
         # Register the agent with the World so we can keep track of it
         world.addAgent(userAgent)
 
@@ -391,6 +500,7 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     world.addTeleportLocation("rocket", 16, 3)
     world.addTeleportLocation("northern observation post", 6, 1)  # TODO: make sure there's not cactus here
     world.addTeleportLocation("southern observation post", 6, 31)  # TODO: make sure there's not cactus here
+    world.addTeleportLocation("thrust test site", 23, 25)
 
     # Add signs at observation locations
     signNorth = world.createObject("Sign")
@@ -601,3 +711,35 @@ def mkDialogLaunchTerminal(launchTerminal):
 
     # Store dialog tree in agent
     launchTerminal.setDialogTree(tree)
+
+
+def mkDialogLoadCellInterface(loadCell):
+    tree = DialogTree(loadCell)
+
+    rootNode = DialogNode("rootNode", "-= Load Cell Interface - Main menu =-\n\nSelected fuel: {fuel}\nCurrent weight: {weight}\nGenerated thrust: {thrust}\nDuration: {duration}", statesToAdd = [], statesToRemove = [])
+    rootNode.addDialogOption("Refuel.", "setFuelNode", antiStates=["testInProgress"])
+    rootNode.addDialogOption("Fire!", "startFiringNode", antiStates=["testInProgress"], callback=loadCell.fire)
+    rootNode.addDialogOption("Wait for fire test to finish", "endNode", requiresStates=["testInProgress"])
+    rootNode.addDialogOption("Exit", "endNode", antiStates=["testInProgress"])
+    tree.addNode(rootNode)
+    tree.setRoot(rootNode.name)
+
+    startCountdownNode = DialogNode("startFiringNode", "-= Load Cell Interface - Test rocket fired =-", statesToAdd = ["testInProgress"], statesToRemove = [])
+    startCountdownNode.addDialogOption("Test in progress...", "endNode")
+    # startCountdownNode.addDialogOption("Cancel", "rootNode")
+    tree.addNode(startCountdownNode)
+
+    setFuelNode = DialogNode("setFuelNode", "-= Load Cell Interface - Refueling =-\n\nCurrent loaded fuel: {fuel}", statesToAdd = [], statesToRemove = [])
+    setFuelNode.addDialogOption("Flush fuel from test rocket's tanks", "setFuelNode", floatVariablesToModify={"fuel": "empty"}, callback=loadCell.update)
+    setFuelNode.addDialogOption("Fill test rocket's tanks with fuel A", "setFuelNode", floatVariablesToModify={"fuel": "A"}, callback=loadCell.update)
+    setFuelNode.addDialogOption("Fill test rocket's tanks with fuel B", "setFuelNode", floatVariablesToModify={"fuel": "B"}, callback=loadCell.update)
+    setFuelNode.addDialogOption("Fill test rocket's tanks with fuel C", "setFuelNode", floatVariablesToModify={"fuel": "C"}, callback=loadCell.update)
+    setFuelNode.addDialogOption("[Back]", "rootNode")
+    tree.addNode(setFuelNode)
+
+    # OK node
+    endNodeOK = DialogNode("endNode", "Exiting Load Cell Interface.", statesToAdd = [], statesToRemove = [])
+    tree.addNode(endNodeOK)
+
+    # Store dialog tree in agent
+    loadCell.setDialogTree(tree)

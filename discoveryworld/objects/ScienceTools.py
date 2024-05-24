@@ -864,7 +864,7 @@ class FuelTank(Object):
     def __init__(self, world, variant=None, part=None):
         assert part is not None, "FuelTank must have a part"
         assert variant is not None, "FuelTank must have a variant"
-        super().__init__(world, "tank", "tank", defaultSpriteName=f"launchSite_fuel_tank_{variant}_{part}")
+        super().__init__(world, "tank", "tank {variant}", defaultSpriteName=f"launchSite_fuel_tank_{variant}_{part}")
 
         self.attributes["isPassable"] = (part != "b")
         self.attributes["manualMaterialNames"] = ["Metal"]
@@ -876,3 +876,66 @@ class RocketryBook(Object):
 
         self.attributes["isMovable"] = True
         self.attributes["isReadable"] = True
+
+
+class LoadCell(Object):
+    def __init__(self, world, part=None):
+        assert part is not None, "LoadCell must have a part"
+        super().__init__(world, "load cell", "load cell", defaultSpriteName=f"launchSite_load_cell_{part}")
+
+        self.attributes["isPassable"] = ("b" not in part)
+        self.attributes["manualMaterialNames"] = ["Stone"]
+
+class LoadCellWall(Object):
+    def __init__(self, world, part=None, variant="", isPassable=None):
+        assert part is not None, "LoadCellWall must have a part"
+        super().__init__(world, "load cell wall", "load cell wall", defaultSpriteName=f"launchSite_{variant}wall_{part}")
+
+        self.attributes["isPassable"] = isPassable
+        if isPassable is None:
+            self.attributes["isPassable"] = ("b" not in part)
+
+        self.attributes["manualMaterialNames"] = ["Stone"]
+
+
+class LoadCellInterface(Object):
+    def __init__(self, world):
+        super().__init__(world, "load cell", "load cell", defaultSpriteName=f"launchSite_load_cell_window")
+
+        self.attributes["isPassable"] = False
+        self.attributes["manualMaterialNames"] = ["Glass"]
+
+        self.fuels = {}
+        self.rocketDryMass = 0
+        self.rocketTanksVolume = 0
+
+        self.attributes["fuel"] = "Empty"
+        self.attributes["thrust"] = 0
+        self.attributes["duration"] = 0
+        self.attributes["weight"] = 0
+
+        self.nbTicksSinceActivation = 0
+
+    def update(self):
+        fuel = self.attributes["fuel"]
+        if fuel == "Empty":
+            self.attributes["weight"] = self.rocketDryMass
+        else:
+            fuelMass = self.fuels[fuel]["density"] * self.rocketTanksVolume
+            self.attributes["weight"] = self.attributes["dryMass"] + fuelMass
+
+    def fire(self):
+        self.attributes["duration"] = 0
+
+    def tick(self):
+        super().tick()
+        if "testInprogress" in self.attributes['states']:
+            self.attributes["duration"] += 1
+
+            # Burn fuel.
+            fuel = self.attributes["fuel"]
+            self.attributes["thrust"] = self.fuels[fuel]["thrust"]
+            self.attributes["weight"] -= self.fuels[fuel]["massFlowRate"]
+            if self.attributes["weight"] <= 0:
+                self.attributes["weight"] = 0
+                self.removeState("testInprogress")
