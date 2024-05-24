@@ -552,6 +552,26 @@ def main(args):
                     print("Waiting (taking no action this turn)...")
                     doNextTurn = True
 
+                if (keys[pygame.K_F10]):
+                    # Save a full-screen screenshot of the game
+                    # Filename should be screenshot.<taskname>.<seed>.<timestamp>.png
+                    screenshotFilename = "screenshot." + args.scenario.replace(" ", "_") + ".seed" + str(args.seed) + "." + time.strftime("%Y%m%d_%H%M%S") + ".png"
+                    # Re-render the world, including the entire world
+                    # def renderViewport(self, window, worldStartX, worldStartY, sizeTilesX, sizeTilesY, offsetX, offsetY, scale=1.0, includeGrid=False):
+                    #world.renderViewport(window, 0, 0, world.width, world.height, 0, 0, scale=scale, includeGrid=displayGrid)
+                    # Make a faux window that's the size of the entire world
+                    fauxWindow = pygame.Surface((world.sizeX * 32, world.sizeY * 32))
+                    # Render the world to the faux window
+                    world.renderViewport(fauxWindow, 0, 0, world.sizeX, world.sizeY, 0, 0, scale=scale, includeGrid=displayGrid)
+                    # Save the screenshot
+                    pygame.image.save(fauxWindow, screenshotFilename)
+                    print("Screenshot saved to: " + screenshotFilename)
+                    # Close the faux window
+                    del fauxWindow
+                    # Sleep for 0.5 seconds to prevent accidental double-press
+                    time.sleep(0.5)
+
+
                 # F5 to continue playing
                 elif (keys[pygame.K_F5]) and (taskCompletedMessageShown == True):
                     print("Extended play enabled.")

@@ -380,21 +380,38 @@ if __name__ == "__main__":
             for difficulty in validDifficulties:
                 for seed in validSeeds:
                     print("Running scenario: " + scenarioName + " with difficulty " + difficulty)
-                    result = runRandomAgent(scenarioName=scenarioName, difficultyStr=difficulty, seed=seed, numSteps=args.numSteps, exportVideo=False, threadId = args.threadId, debug=False)
-                    finalScore = result["finalNormalizedScore"]
-                    stepsPerSecond.append(result["stepsPerSecond"])
-                    completed1 = result["completed"]
-                    completedSuccessfully1 = result["completedSuccessfully"]
 
-                    scoreKey = scenarioName + "-" + difficulty
-                    if (scoreKey not in scores):
-                        scores[scoreKey] = []
-                        completed[scoreKey] = []
-                        completedSuccessfully[scoreKey] = []
+                    # The random agent has a habbit of finding difficult-to-find bugs.  If it crashes, just restart.
+                    attempts = 0
+                    MAX_ATTEMPTS = 10
+                    done = False
+                    while (done == False) and (attempts < MAX_ATTEMPTS):
+                        try:
+                            result = runRandomAgent(scenarioName=scenarioName, difficultyStr=difficulty, seed=seed, numSteps=args.numSteps, exportVideo=False, threadId = args.threadId, debug=False)
+                            done = True
 
-                    scores[scoreKey].append(finalScore)
-                    completed[scoreKey].append(completed1)
-                    completedSuccessfully[scoreKey].append(completedSuccessfully1)
+                            finalScore = result["finalNormalizedScore"]
+                            stepsPerSecond.append(result["stepsPerSecond"])
+                            completed1 = result["completed"]
+                            completedSuccessfully1 = result["completedSuccessfully"]
+
+                            scoreKey = scenarioName + "-" + difficulty
+                            if (scoreKey not in scores):
+                                scores[scoreKey] = []
+                                completed[scoreKey] = []
+                                completedSuccessfully[scoreKey] = []
+
+                            scores[scoreKey].append(finalScore)
+                            completed[scoreKey].append(completed1)
+                            completedSuccessfully[scoreKey].append(completedSuccessfully1)
+
+                        # Handle keyboard exception, or killing the process
+                        except KeyboardInterrupt:
+                            print("Keyboard interrupt.")
+                            exit(1)
+                        except:
+                            print("Error: Random agent crashed.  Restarting.")
+                            attempts += 1
 
 
             # Calculate average scores

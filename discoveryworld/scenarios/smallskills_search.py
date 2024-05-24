@@ -233,6 +233,9 @@ def makeScenarioSearchTest(world, numUserAgents=1):
         objTypes = [obj.type for obj in objs]
         if ("wall" in objTypes) or ("door" in objTypes):
             continue
+        # Remove "grass" or "floor" from the list of objects
+        objTypes = [objType for objType in objTypes if objType != "grass"]
+        objTypes = [objType for objType in objTypes if objType != "floor"]
         # If there's more than one object, do not place the flag here
         if (len(objTypes) > 1):
             continue
