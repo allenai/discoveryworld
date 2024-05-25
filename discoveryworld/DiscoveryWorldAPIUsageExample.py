@@ -1345,7 +1345,7 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
 
     # Create a video from the random agent
     if (exportVideo == True):
-        filenameOut = "output_random_agent." + logFileSuffix + ".mp4"
+        filenameOut = "output_hypothesizer_agent." + logFileSuffix + ".mp4"
         api.createAgentVideo(agentIdx=0, filenameOut=filenameOut)
 
     out = {
