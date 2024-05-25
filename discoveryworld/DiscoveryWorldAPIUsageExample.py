@@ -1,10 +1,11 @@
 # DiscoveryWorldAPIUsageExample.py
 
 
+import os
 from discoveryworld.DiscoveryWorldAPI import DiscoveryWorldAPI
 from discoveryworld.ScenarioMaker import ScenarioMaker, SCENARIOS, SCENARIO_NAMES, SCENARIO_INFOS, SCENARIO_DIFFICULTY_OPTIONS, getInternalScenarioName
 
-from openai import OpenAI
+import openai
 
 import traceback
 
@@ -26,7 +27,8 @@ LIMITED_ACTIONS = False
 #OPENAI_MODEL_TO_USE = "gpt-4-vision-preview"
 #OPENAI_MODEL_TO_USE = "gpt-4-turbo-2024-04-09"
 #OPENAI_MODEL_TO_USE = "gpt-3.5-turbo-0125"
-OPENAI_MODEL_TO_USE = "gpt-4o-2024-05-13"
+# OPENAI_MODEL_TO_USE = "gpt-4o-2024-05-13"
+OPENAI_MODEL_TO_USE = "gpt-4o"
 
 # Keep track of tokens sent/received
 TOTAL_TOKENS_SENT = 0
@@ -53,6 +55,10 @@ modelCostsPerToken = {
         "receive": 1.5 / 1000000.0
     },
     "gpt-4o-2024-05-13": {
+        "send": 5.0 / 1000000.0,
+        "receive": 15.0 / 1000000.0
+    },
+    "gpt-4o": {
         "send": 5.0 / 1000000.0,
         "receive": 15.0 / 1000000.0
     }
@@ -222,12 +228,12 @@ def OpenAIGetCompletion(client, promptStr:str, promptImages:list, model=OPENAI_M
             # Wait a bit before trying again
             print("Waiting 5 seconds before trying again.")
             time.sleep(5)
-            
+
     # If we get here, we've exceeded the number of errors
     print("ERROR: Exceeded the number of OPEN_AI errors allowed (5 errors within 100 requests).  Exiting.")
     exit(1)
 
-    
+
 
 def OpenAIGetCompletionHelper(client, promptStr:str, promptImages:list, model=OPENAI_MODEL_TO_USE, prevImage=None, temperature=0.0, maxTokens=800, jsonResponse:bool=False):
     content = []
@@ -526,12 +532,13 @@ def GPT4BaselineOneStep(api, client, lastActionHistory, lastObservation, include
 # For testing the API
 def GPT4VBaselineAgent(api, numSteps:int = 10, includeImages=True):
     # Get the OpenAI key (stored in a file called "openai_key.txt")
-    key = ""
-    with open("openai_key.txt", "r") as file:
-        key = file.read().strip()
+    key = None
+    if os.path.exists("openai_key.txt"):
+        with open("openai_key.txt", "r") as file:
+            key = file.read().strip()
 
     # Create the OpenAI client
-    client = OpenAI(api_key=key)
+    client = openai.AzureOpenAI(api_key=key) if openai.api_type == "azure" else openai.OpenAI(api_key=key)
 
     # Initial Memory
     lastAction = {
@@ -978,13 +985,13 @@ def consolidateKnowledgeStep(client, scientificKnowledge, stepIdx):
     promptStr += limitStr
 
     # Current knowledge base
-    promptStr += "\n"    
+    promptStr += "\n"
     promptStr += "Here is the existing knowledge base:\n"
     promptStr += "```json\n"
     promptStr += json.dumps(scientificKnowledge, indent=4, sort_keys=True)
     promptStr += "```\n"
     promptStr += "\n"
-    
+
     promptStr += limitStr + "\n"
 
     promptStr += "Please write down your new, SIGNIFICANTLY consolidated knowledge base below. Remember, if something isn't important and your knowledge base is full, you can discard it if you need to meet the knowledge base limit.  Please write it in the JSON form expected above. You can write a short amount of prose before if that's helpful for your thought process, and only the last item in code blocks (```) will be parsed as JSON.\n"
@@ -994,7 +1001,7 @@ def consolidateKnowledgeStep(client, scientificKnowledge, stepIdx):
     print("\tTokens before consoloation: " + str(numTokensKB))
     response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=[], model=OPENAI_MODEL_TO_USE, prevImage=None, temperature=0.1, maxTokens=3000)
     print(response)
-    
+
 
     # Extract the JSON from the response
     print("EXTRACTING MESSAGE")
@@ -1008,14 +1015,14 @@ def consolidateKnowledgeStep(client, scientificKnowledge, stepIdx):
         #return scientificKnowledge # Deep copy
         packed = {
             "stepIdx": stepIdx,
-            "error": "Failed to parse response -- knowledge not consolidated.", 
+            "error": "Failed to parse response -- knowledge not consolidated.",
             "entries_before": numEntries,
             "tokens_before": numTokensKB,
             "initial_knowledge": copy.deepcopy(scientificKnowledge),
             "response": copy.deepcopy(responseStrKnowledge),
         }
         CONSOLATATE_TRACKING.append(packed)
-                
+
         return copy.deepcopy(scientificKnowledge)
 
 
@@ -1047,7 +1054,7 @@ def consolidateKnowledgeStep(client, scientificKnowledge, stepIdx):
     #return scientificKnowledge # deep copy
     packed = {
         "stepIdx": stepIdx,
-        "error": "Unknown error when condoladating knowledge.", 
+        "error": "Unknown error when condoladating knowledge.",
         "entries_before": numEntries,
         "tokens_before": numTokensKB,
         "initial_knowledge": copy.deepcopy(scientificKnowledge),
@@ -1083,12 +1090,13 @@ def mkInitialHypotheses():
 # For testing the API
 def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", includeImages=True):
     # Get the OpenAI key (stored in a file called "openai_key.txt")
-    key = ""
-    with open("openai_key.txt", "r") as file:
-        key = file.read().strip()
+    key = None
+    if os.path.exists("openai_key.txt"):
+        with open("openai_key.txt", "r") as file:
+            key = file.read().strip()
 
     # Create the OpenAI client
-    client = OpenAI(api_key=key)
+    client = openai.AzureOpenAI(api_key=key) if openai.api_type == "azure" else openai.OpenAI(api_key=key)
 
     # Initial Memory
     lastAction = {
@@ -1439,7 +1447,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Play DiscoveryWorld using Hypothesizer Agent.")
     parser.add_argument('--scenario', choices=SCENARIO_NAMES, default=None)
-    parser.add_argument('--difficulty', choices=SCENARIO_DIFFICULTY_OPTIONS, default=None)
+    parser.add_argument('--difficulty', choices=SCENARIO_DIFFICULTY_OPTIONS.values(), default=None)
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--numSteps', type=int, default=100)
     ##parser.add_argument('--runall', action='store_true', help='Run all scenarios with random agent')      ## Disabled -- would be extremely expensive and time consuming to do this
@@ -1559,6 +1567,6 @@ if __name__ == "__main__":
     print("Cost per token received: $" + str(COST_PER_TOKEN_RECEIVED))
     print("Total cost of sent tokens: $" + str(TOTAL_COST_SENT))
     print("Total cost of received tokens: $" + str(TOTAL_COST_RECEIVED))
-    
+
     if (totalCost > MAXIMUM_COST_DOLLARS):
         print("Cost limit exceeded.  Early exit.")
