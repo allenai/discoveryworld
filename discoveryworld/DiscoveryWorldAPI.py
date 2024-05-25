@@ -33,7 +33,7 @@ class DiscoveryWorldAPI:
         #self.viewportSizeX = 7
         #self.viewportSizeY = 7
         #self.renderScale = 2.0
-        
+
         # Step 2: Define the viewport size (in tiles)
         self.viewportSizeX = 24
         self.viewportSizeY = 16
@@ -377,7 +377,7 @@ class DiscoveryWorldAPI:
             #"height": 800,
             #"height": 750,
             #"width": 800,
-            "height": 1024 + 300, 
+            "height": 1024 + 300,
             "width": 24*32*2,
             "fps": 60,
             "name": "DiscoveryWorld"
@@ -404,4 +404,4 @@ class DiscoveryWorldAPI:
         #filenameOut = "output_agent" + str(agentIdx) + ".mp4"
         # ./ffmpeg -y -framerate 2 -i video/frames-thread1/ui_agent_0_frame_%d.png -c:v libx264 -profile:v high -crf 20 -pix_fmt yuv420p temp.mp4
         # ./ffmpeg -y -framerate 2 -i video/frames-thread7210287/ui_agent_0_frame_%d.png -c:v libx264 -profile:v high -crf 20 -pix_fmt yuv420p temp.mp4
-        subprocess.call(["./ffmpeg", "-y", "-framerate", "2", "-i", filenameInPrefix, "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", filenameOut])
+        subprocess.call(["ffmpeg", "-y", "-framerate", "2", "-i", filenameInPrefix, "-c:v", "libx264", "-profile:v", "high", "-crf", "20", "-pix_fmt", "yuv420p", filenameOut])
