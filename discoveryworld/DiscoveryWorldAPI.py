@@ -201,7 +201,7 @@ class DiscoveryWorldAPI:
         response["vision"]["base64_with_grid"] = encodedImageWithGrid
 
         # Also dump this 'with grid' version to a debug file, called "current_viewport.png"
-        pygame.image.save(visionSurface, "current_viewport.png")
+        pygame.image.save(visionSurface, self.FRAME_DIR + "/ui_agent_" + str(agentIdx) + "_current_viewport.png")
 
         # JSON rendering
         uiJSON = ui.renderJSON()
