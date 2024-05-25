@@ -1437,11 +1437,6 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
 if __name__ == "__main__":
     print("Initializing Hypothesizer Agent... ")
 
-    # Randomly generate a thread ID, in case one isn't specified
-    # Random seed based on the current time
-    rThread = random.Random()
-    rThread.seed(int(time.time()))
-    randomThreadId = rThread.randint(1, 10000000)
 
     # Parse command line arguments
     import argparse
@@ -1452,18 +1447,34 @@ if __name__ == "__main__":
     parser.add_argument('--numSteps', type=int, default=100)
     ##parser.add_argument('--runall', action='store_true', help='Run all scenarios with random agent')      ## Disabled -- would be extremely expensive and time consuming to do this
     parser.add_argument('--video', action='store_true', help='Export video of agent actions')
-    parser.add_argument('--threadId', type=int, default=randomThreadId)
+    parser.add_argument('--threadId', type=int, default=None)
     parser.add_argument('--maxCostDollars', type=float, default=0.0, help='Maximum cost in dollars to run the agent (default: 0.0)')
     OPENAI_MODEL_TO_USE = "gpt-4o-2024-05-13"
     #OPENAI_MODEL_TO_USE = "gpt-4-turbo-2024-04-09"
     #OPENAI_MODEL_TO_USE = "gpt-3.5-turbo-0125"
     parser.add_argument("--model", default=OPENAI_MODEL_TO_USE, help="OpenAI model to use (default: " + OPENAI_MODEL_TO_USE + ")")
 
-
     # Disable images
     parser.add_argument('--noimages', action='store_true', help='Do not include images in the prompt')
 
     args = parser.parse_args()
+
+    if args.threadId is None:
+        # Randomly generate a thread ID, in case one isn't specified
+        # # Random seed based on the current time
+        # rThread = random.Random()
+        # rThread.seed(int(time.time()))
+        # randomThreadId = rThread.randint(1, 10000000)
+        # args.threadId = randomThreadId
+
+        # Generate Thread ID based on using a 4 digit number.  ABCD.  A is some number depending on easy/med/hard.  B is the seed.  CD is a number unique to the scenario.
+        # ABCD
+        # A: 1 = easy, 2 = medium, 3 = challenge
+        diff2ID = { "Easy": 1, "Normal": 2, "Challenge": 3, "Test": 4 }
+        # B: seed
+        # CD: scenario number
+        assert len(SCENARIO_NAMES) < 100, "ERROR: Too many scenarios.  Cannot generate unique thread ID."
+        args.threadId = (diff2ID[args.difficulty] * 1000) + (args.seed * 100) + SCENARIO_NAMES.index(args.scenario)
 
     # Cost limit
     MAXIMUM_COST_DOLLARS = args.maxCostDollars
