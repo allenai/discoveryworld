@@ -406,9 +406,7 @@
                 "topwall_2,6":   { "baseTile": [2, 6],  "size": [1, 1] },
                 "topwall_0,7":   { "baseTile": [0, 7],  "size": [1, 1] },
                 "topwall_1,7":   { "baseTile": [1, 7],  "size": [1, 1] },
-                "topwall_2,7":   { "baseTile": [2, 7],  "size": [1, 1] },
-
-                "load_cell_window":    { "baseTile": [15, 11],  "size": [1, 1] }
+                "topwall_2,7":   { "baseTile": [2, 7],  "size": [1, 1] }
 
             },
         "composites":
@@ -513,7 +511,8 @@
                 "pendulum_top":      { "baseTile": [7, 5],  "size": [1, 1] },
                 "pendulum_bottom":   { "baseTile": [7, 6],  "size": [1, 1] },
 
-                "rocketry_book":     { "baseTile": [2, 4],  "size": [1, 1] },
+                "rocketry_book":        { "baseTile": [2, 4],  "size": [1, 1] },
+                "load_cell_interface":  { "baseTile": [1, 4],  "size": [1, 1] },
 
                 "mushroom_white":  { "baseTile": [4, 1],  "size": [1, 1], "color": "white" },
                 "mushroom_red":    { "baseTile": [4, 1],  "size": [1, 1], "color": "red" },

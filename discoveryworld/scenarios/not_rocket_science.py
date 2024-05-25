@@ -206,7 +206,6 @@ def mkThrustTestingGround(world, x, y):
                 world.addObject(x+i-1, y+j-1, Layer.AIR, world.createObject("LoadCell", part="t"))
                 world.addObject(x+i, y+j-1, Layer.AIR, world.createObject("LoadCell", part="tr"))
                 world.addObject(x+i-2, y+j, Layer.FURNITURE, world.createObject("LoadCell", part="bl"))
-                world.addObject(x+i-1, y+j, Layer.FURNITURE, world.createObject("LoadCell", part="b"))
                 world.addObject(x+i-1, y+j, Layer.FURNITURE, loadCell)
                 world.addObject(x+i, y+j, Layer.FURNITURE, world.createObject("LoadCell", part="br"))
 
@@ -606,7 +605,7 @@ class NotRocketScienceTask(Task):
 
         if scoringInfo["difficulty"] == "challenge":
             taskDescription += "Upon arriving at the launch site, you realized the rocket hasn't been fueled yet. "
-            taskDescription += "You will need to figure what type of propellant to use and how much to put in the rocket. "
+            taskDescription += "You will need to figure which one of the three types of propellant to use and how much to put in the rocket. "
 
         if scoringInfo["difficulty"] == "easy":
             taskDescription += f"Thankfully, you know the planet's characteristics, such as its mass and radius, are exactly the same as {scoringInfo['planet']}. "
@@ -833,7 +832,7 @@ def mkDialogLaunchTerminal(launchTerminal):
 
 class LoadCellInterface(NPCDevice):
     def __init__(self, world):
-        Agent.__init__(self, world, "load cell", "load cell", defaultSpriteName=f"launchSite_load_cell_window")
+        Agent.__init__(self, world, "load cell interface", "load cell interface", defaultSpriteName=f"instruments2_load_cell_interface")
 
         self.spriteCharacterPrefix = ""         # Disable the character prefix for this object (just use the default sprite)
 
@@ -855,7 +854,7 @@ class LoadCellInterface(NPCDevice):
 
     def inferSpriteName(self, force:bool=False):
         # This will be the next last sprite name (when we flip the backbuffer)
-        self.curSpriteName = "launchSite_load_cell_window"
+        self.curSpriteName = "instruments2_load_cell_interface"
         self.tempLastSpriteName = self.curSpriteName
 
     def flush(self):
