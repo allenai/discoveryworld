@@ -1353,6 +1353,48 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
         "finalNormalizedScore": finalNormalizedScore,
         "stepsPerSecond": stepsPerSecond
     }
+
+
+    # Save log file
+    verboseLogDirectory = "logs/hypothesizer-" + logFileSuffix
+    logInfo = {
+        "scenarioName": scenarioName,
+        "difficulty": difficultyStr,
+        "seed": seed,
+        "numSteps": numSteps,
+        "includeImages": includeImages,
+        "exportVideo": exportVideo,
+        "threadId": threadId,
+        "dateStarted": time.strftime("%Y-%m-%d %H:%M:%S"),
+        # Make a verbose filename for the log
+        "verboseLogDirectory": verboseLogDirectory,
+        "verboseLogFilename": verboseLogDirectory + "/" + "out-hypothesizer-world" + logFileSuffix + ".json",
+    }
+    # Try to make the 'logs' directory, if it doesn't exist
+    try:
+        os.makedirs("logs")
+    except FileExistsError:
+        pass
+    # Try to make the full directory
+    try:
+        os.makedirs(verboseLogDirectory)
+    except FileExistsError:
+        pass
+
+    print("Saving world history...")
+    try:
+        api.world.exportWorldHistoryJSON(logInfo, logInfo["verboseLogFilename"], None, None, None)
+    # Keyboard/ctrl-c interrupt
+    except KeyboardInterrupt:
+        print("Keyboard interrupt detected.  Exiting.")
+        exit(1)
+    # Kill signal
+    except SystemExit:
+        print("System exit detected.  Exiting.")
+        exit(1)
+    except Exception as e:
+        print("Error saving world history: " + str(e))
+
     return out
 
 
