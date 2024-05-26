@@ -1466,7 +1466,7 @@ class Agent(Object):
             self.setInDialogWith(agentToTalkTo)
             agentToTalkTo.setInDialogWith(self)
             result = DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
-            self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=None, result=result)
+            self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=dialogStrToSay, result=result)
             return result
 
         else:
@@ -1499,7 +1499,7 @@ class Agent(Object):
                 self.setInDialogWith(agentToTalkTo)
                 agentToTalkTo.setInDialogWith(self)
                 result = DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
-                self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=None, result=result)
+                self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=dialogStrToSay, result=result)
                 return result
 
     #
