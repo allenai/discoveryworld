@@ -1322,7 +1322,11 @@ class Agent(Object):
         # Take the action
         self.actionRotateAgentFacingDirection(nextMovement)
 
-        return ActionSuccess(True, "I am rotating towards facing the requested direction (" + directionToFace + ").")
+        # Generate result
+        result = ActionSuccess(True, "I am rotating towards facing the requested direction (" + directionToFace + ").")
+        actionType = ActionType.ROTATE_CW if nextMovement == +1 else ActionType.ROTATE_CCW
+        self.actionHistory.add(actionType=actionType, arg1=directionToFace, arg2=None, result=result)
+        return result
 
     # Convert x/y deltas (e.g. (0, -1 ) to a direction (e.g. "north", "east")
     def convertXYDeltasToDirection(self, deltaX, deltaY):
@@ -1406,38 +1410,54 @@ class Agent(Object):
             self.attributes['inDialogWith'].dialogTree.endDialog()
         self.setNotInDialog()
 
+
+        # Example format of returning a result and storing it in history
+        #result = ActionSuccess(True, outStr, importance=MessageImportance.HIGH)
+        # Add to action history
+        #self.actionHistory.add(actionType=ActionType.DISCOVERY_FEED_CREATE_ARTICLE, arg1=post, arg2=None, result=result)
+
     # If 'dialogStrToSay' is None, then it will stop the dialog with 'agentToTalkTo'
     def actionDialog(self, agentToTalkTo, dialogStrToSay=None):
         # Check if dialogable
         if ('isDialogable' in agentToTalkTo.attributes) and (agentToTalkTo.attributes["isDialogable"] == False):
-            return ActionSuccess(False, "You can't talk to that (" + agentToTalkTo.name + ").")
+            result = ActionSuccess(False, "You can't talk to that (" + agentToTalkTo.name + ").")
+            self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=None, result=result)
+            return result
 
         # Check if the other agent is busy, and we're not already talking to it
         if (agentToTalkTo.isBusyAutopilot()) and (agentToTalkTo.dialogTree.getAgentTalkingTo() != self):
-            return ActionSuccess(False, "That agent (" + agentToTalkTo.name + ") is busy, try again later.")
+            result = ActionSuccess(False, "That agent (" + agentToTalkTo.name + ") is busy, try again later.")
+            self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=None, result=result)
+            return result
 
         # Make sure the agent to talk to has a dialog tree
         if (agentToTalkTo.dialogTree == None):
-            return ActionSuccess(False, "That agent (" + agentToTalkTo.name + ") has no dialog tree set.")
+            result = ActionSuccess(False, "That agent (" + agentToTalkTo.name + ") has no dialog tree set.")
+            self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=None, result=result)
+            return result
 
         # Otherwise, start the dialog
 
         # First, check if we're currently talking to that agent/in the middle of a dialog
         if (agentToTalkTo.dialogTree.getAgentTalkingTo() == self):
-            # Check if te action is to stop the dialog
+            # Check if the action is to stop the dialog
             if (dialogStrToSay == None):
                 # Stop the dialog
                 agentToTalkTo.dialogTree.endDialog()
                 self.setNotInDialog()
 
-                return ActionSuccess(True, "Finished talking to " + str(agentToTalkTo.name) + ".")
+                result = ActionSuccess(True, "Finished talking to " + str(agentToTalkTo.name) + ".")
+                self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=None, result=result)
+                return result
 
             # We're currently in the middle of a dialog -- send the dialogStrToSay.
             success = agentToTalkTo.dialogTree.say(thingToSay=dialogStrToSay, agentEngaging=self)
             if (success == False):
                 agentToTalkTo.dialogTree.endDialog()
                 self.setNotInDialog()
-                return ActionSuccess(False, "Something went wrong in the dialog -- the response was unexpected.")
+                result = ActionSuccess(False, "Something went wrong in the dialog -- the response was unexpected.")
+                self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=dialogStrToSay, result=result)
+                return result
 
             # Get the NPC's response, and our possible next dialog options
             npcResponse, nextDialogOptions = agentToTalkTo.dialogTree.getCurrentDialog()
@@ -1445,21 +1465,28 @@ class Agent(Object):
             # Return the NPC's response
             self.setInDialogWith(agentToTalkTo)
             agentToTalkTo.setInDialogWith(self)
-            return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
+            result = DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
+            self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=None, result=result)
+            return result
 
         else:
             # We're not currently talking to the agent.  Try to initiate conversation.
             if (agentToTalkTo.dialogTree.isBusy() == True):
                 # The NPC is busy talking to another agent
                 self.setNotInDialog()
-                return ActionSuccess(False, "That agent (" + agentToTalkTo.name + ") is busy talking to (" + str(agentToTalkTo.dialogTree.getAgentTalkingTo().name) + ").")
+                result = ActionSuccess(False, "That agent (" + agentToTalkTo.name + ") is busy talking to (" + str(agentToTalkTo.dialogTree.getAgentTalkingTo().name) + ").")
+                self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=None, result=result)
+                return result
+
             else:
                 # Check if te action is to stop the dialog
                 if (dialogStrToSay == None):
                     # Stop the dialog
                     agentToTalkTo.dialogTree.endDialog()
                     self.setNotInDialog()
-                    return ActionSuccess(True, "Finished talking to " + str(agentToTalkTo.name) + ".")
+                    result = ActionSuccess(True, "Finished talking to " + str(agentToTalkTo.name) + ".")
+                    self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=None, result=result)
+                    return result
 
                 # The agent is not busy, initiate conversation
                 agentToTalkTo.enteringDialogWith(self)
@@ -1471,7 +1498,9 @@ class Agent(Object):
                 # Return the NPC's response
                 self.setInDialogWith(agentToTalkTo)
                 agentToTalkTo.setInDialogWith(self)
-                return DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
+                result = DialogSuccess(True, "We are talking.  You said: " + str(dialogStrToSay) + "\n\n" + str(agentToTalkTo.name) + " said: " + str(npcResponse), nextDialogOptions)
+                self.actionHistory.add(actionType=ActionType.TALK, arg1=agentToTalkTo, arg2=None, result=result)
+                return result
 
     #
     # Sprite

@@ -112,6 +112,7 @@ class ActionHistory:
             'arg2': arg2,
             'arg2UUID': arg2UUID,
             'success': result.success,
+            'message': result.message,
             'step': self.world.getStepCounter(),
             'result': result
         }
@@ -217,6 +218,7 @@ class ActionHistory:
                 'arg1': None,
                 'arg2': None,
                 'success': action['success'],
+                'message': action['message'],
                 'step': action['step']
                 #'result': not saved here
             }
@@ -264,6 +266,7 @@ class ActionHistory:
                 'arg1': None,
                 'arg2': None,
                 'success': action['success'],
+                'message': action['message'],
                 'step': action['step']
                 #'result': not saved here
             }

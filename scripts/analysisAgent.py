@@ -22,7 +22,7 @@ def getPerformance(filenameIn:str):
             if (scoreCard["completed"] == True):
                 # Break on the first step when the task is marked completed
                 break
-        
+
     print(scoreCard)
     if (scoreCard == None):
         print("No scorecard found")
@@ -41,7 +41,7 @@ def getPerformance(filenameIn:str):
             completed = 1
         else:
             completed = 0
-        
+
         if (completedSuccessfully == True):
             completedSuccessfully = 1
         else:
@@ -121,11 +121,97 @@ def getPerformance(filenameIn:str):
         }
 
         return packed
-    
+
     except:
         print("Error: unable to extract metadata from filename (" + filenameIn + ")")
         return None
-    
+
+
+# Calculate the average performance -- essentially the mean of the scores across all seeds for each task/difficulty/model
+def calculateAveragePerformance(allPerformance):
+    outAvg = []
+    # Grouping must have same: taskName, difficulty, model, images
+    # First make a `groupID` for each record
+    for performance in allPerformance:
+        performance["groupID"] = str(performance["taskName"]) + "-" + str(performance["difficulty"]) + "-" + str(performance["model"]) + str(performance["images"]) + "-"
+
+    def mkBlankPerformance():
+        packed = {
+            "taskName": None,
+            "difficulty": None,
+            "model": None,
+            "images": None,
+            "groupID": None,
+            "numSamples": 0,
+            "timestamps": [],
+            "seeds": [],
+            "threads": [],
+            "filenames": [],
+            "scores": {
+                "scoreNormalized": 0,
+                "scoreRaw": 0,
+                "scoreMax": 0,
+                "completed": 0,
+                "completedSuccessfully": 0,
+                "lastStepIdx": 0,
+                "totalCost": 0,
+                "totalSteps": 0,
+                "totalTokensReceived": 0,
+                "totalTokensSent": 0,
+            }
+        }
+        return packed
+
+    # Now, sum up the scores for each group
+    groupScores = {}
+    for performance in allPerformance:
+        groupID = performance["groupID"]
+        if (groupID not in groupScores):
+            groupScores[groupID] = mkBlankPerformance()
+            groupScores[groupID]["taskName"] = performance["taskName"]
+            groupScores[groupID]["difficulty"] = performance["difficulty"]
+            groupScores[groupID]["model"] = performance["model"]
+            groupScores[groupID]["images"] = performance["images"]
+            groupScores[groupID]["groupID"] = groupID
+
+        groupScores[groupID]["timestamps"].append(performance["timestamp"])
+        groupScores[groupID]["seeds"].append(performance["seed"])
+        groupScores[groupID]["threads"].append(performance["thread"])
+        groupScores[groupID]["filenames"].append(performance["filename"])
+
+        # Sort threads, seeds
+        groupScores[groupID]["threads"] = sorted(list(set(groupScores[groupID]["threads"])))
+        groupScores[groupID]["seeds"] = sorted(list(set(groupScores[groupID]["seeds"])))
+
+        # Add the scores to the group
+        for key in groupScores[groupID]["scores"]:
+            groupScores[groupID]["scores"][key] += performance[key]
+
+        groupScores[groupID]["numSamples"] += 1
+
+
+    # Now, calculate the average
+    for groupID in groupScores:
+        for key in groupScores[groupID]["scores"]:
+            if (groupScores[groupID]["numSamples"] > 0):
+                groupScores[groupID]["scores"][key] = groupScores[groupID]["scores"][key] / groupScores[groupID]["numSamples"]
+
+        # Move the keys from "scores" to the top level
+        for key in groupScores[groupID]["scores"]:
+            groupScores[groupID]["avg_"+key] = groupScores[groupID]["scores"][key]
+        del groupScores[groupID]["scores"]
+
+        # Also keep non-average copies of the following keys: totalCost, totalSteps, totalTokensReceived, totalTokensSent
+        groupScores[groupID]["totalCost"] = groupScores[groupID]["avg_totalCost"] * groupScores[groupID]["numSamples"]
+        groupScores[groupID]["totalSteps"] = groupScores[groupID]["avg_totalSteps"] * groupScores[groupID]["numSamples"]
+        groupScores[groupID]["totalTokensReceived"] = groupScores[groupID]["avg_totalTokensReceived"] * groupScores[groupID]["numSamples"]
+        groupScores[groupID]["totalTokensSent"] = groupScores[groupID]["avg_totalTokensSent"] * groupScores[groupID]["numSamples"]
+
+
+        outAvg.append(groupScores[groupID])
+
+    # Return
+    return outAvg
 
 
 #
@@ -135,7 +221,10 @@ if __name__ == "__main__":
 
     #dataPath = "."   # Current directory
     #dataPath = "output-hypothesizer-8unit/"
-    dataPath = "output-hypothesizer-gpt4o-9discovery/"
+    #dataPath = "output-hypothesizer-gpt4o-9discovery/"
+
+    #dataPath = "paper-results/output-may24-hypothesizer-unittest/"       # Unit test results for paper
+    dataPath = "paper-results/output-may24-hypothesizer-discovery-easy/" # Discovery task (difficulty: easy) results for paper
 
     # Step 1: Find a list of files that start with "output_allhistory" that end with ".json"
     filterPrefix = "output_allhistory"
@@ -154,6 +243,8 @@ if __name__ == "__main__":
             allPerformance.append(performance)
         print("")
 
+    # Calculate average performance
+    averagePerformance = calculateAveragePerformance(allPerformance)
 
     # Sort by taskName, then by difficulty, then model, then images, then by seed, then date
     allPerformance.sort(key=lambda x: str(x["taskName"]) + str(x["difficulty"]) + str(x["model"]) + str(x["images"]) + str(x["seed"]) + str(x["timestamp"]))
@@ -183,4 +274,24 @@ if __name__ == "__main__":
             print("row: " + str(row))
             f.write("\t".join(row) + "\n")
 
-    
+    print("\n")
+    print("Wrote " + str(len(allPerformance)) + " records to " + filenameOut)
+
+    # Now write the averages
+    averagePerformance.sort(key=lambda x: str(x["taskName"]) + str(x["difficulty"]) + str(x["model"]) + str(x["images"]))
+    filenameOut = dataPath + "/performanceSummary.average.json"
+    print("Writing " + filenameOut + "...")
+    with open(filenameOut, "w") as f:
+        f.write(json.dumps(averagePerformance, indent=4))
+
+    # Step 4: Export as TSV
+    filenameOut = dataPath + "/performanceSummary.average.tsv"
+    print("Writing " + filenameOut + "...")
+    with open(filenameOut, "w") as f:
+        # Write the header
+        header = ["taskName", "difficulty", "images", "model", "seeds", "numSamples", "avg_scoreNormalized", "avg_scoreRaw", "avg_scoreMax", "avg_completed", "avg_completedSuccessfully", "avg_lastStepIdx", "avg_totalCost", "avg_totalSteps", "avg_totalTokensReceived", "avg_totalTokensSent", "totalCost", "totalSteps", "totalTokensReceived", "totalTokensSent", "threads", "timestamps", "filenames"]
+        f.write("\t".join(header) + "\n")
+        # Write the data
+        for performance in averagePerformance:
+            row = [str(performance[key]) for key in header]
+            f.write("\t".join(row) + "\n")
