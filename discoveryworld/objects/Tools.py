@@ -1,4 +1,5 @@
 import numpy as np
+from termcolor import colored
 from discoveryworld.ActionSuccess import ActionSuccess, MessageImportance
 from discoveryworld.objects.Object import Object
 from discoveryworld.objects.Terrain import Sand
@@ -339,6 +340,7 @@ class SpeedSquare(Object):
     def __init__(self, world):
         super().__init__(world, "speed square", "speed square", defaultSpriteName="instruments2_speed_square")
         self.attributes['isUsable'] = True
+        self.collectedMeasurements = set()
 
         # Material
         self.attributes["manualMaterialNames"] = ["Metal"]
@@ -347,10 +349,10 @@ class SpeedSquare(Object):
         objects = self.world.getObjectsAt(*self.getWorldLocation())
         for obj in objects:
             if "lightAngle" in obj.attributes:
-                fixedLightAngle = obj.attributes["lightAngle"] / 1000       # Fix for the meters-to-kilometers issue
-                useDescriptionStr = f"The rays coming from Planet X's star are {fixedLightAngle} degrees from the ground at the current location.\n"
+                self.collectedMeasurements.add(obj.attributes["lightAngle"])
+                useDescriptionStr = f"The rays coming from Planet X's star are {obj.attributes['lightAngle']} millidegree from the ground at the current location.\n"
 
-                if fixedLightAngle >= 2:
+                if obj.attributes['lightAngle'] >= 2:
                     useDescriptionStr = useDescriptionStr.replace("degree", "degrees")
 
                 return ActionSuccess(True, useDescriptionStr, importance=MessageImportance.HIGH)

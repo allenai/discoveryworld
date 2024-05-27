@@ -879,6 +879,7 @@ class LaunchMonitor(Object):
         # Material
         self.attributes["manualMaterialNames"] = ["Metal"]
 
+        self.attributes['isPassable'] = False
         self.attributes['isReadable'] = True                       # Can it be read?
         self.attributes["document"] = "A lot of data is displayed on the monitor; none useful for you."
 
