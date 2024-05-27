@@ -37,7 +37,7 @@ def makeScenarioPickAndGiveTest(world, numUserAgents=1):
     tableLocations.extend([(17, 13), (19, 13)])                         # Front walls
 
     # Shuffle the table locations
-    random.shuffle(tableLocations)
+    world.rng.shuffle(tableLocations)
 
 
     # Random task object names
@@ -47,7 +47,7 @@ def makeScenarioPickAndGiveTest(world, numUserAgents=1):
         taskObjects.append(world.createObject(taskObjectName))
 
     # Shuffle the task objects
-    random.shuffle(taskObjects)
+    world.rng.shuffle(taskObjects)
 
     # Make 5 tables along the wall
     for i in range(0, 5):
@@ -64,14 +64,14 @@ def makeScenarioPickAndGiveTest(world, numUserAgents=1):
     NPCs = []
     agentNames = ["Gail", "Harry", "Yugo"]
 
-    random.shuffle(agentNames)
+    world.rng.shuffle(agentNames)
     scoringInfo["distractorAgents"] = []
     agentLocations = [(17, 11), (18, 11), (19, 11)]
     agentLocations.extend([(17, 12), (18, 12), (19, 12)])
     # Also add any locations that weren't used for tables
     agentLocations.extend(tableLocations[5:])
     # Shuffle
-    random.shuffle(agentLocations)
+    world.rng.shuffle(agentLocations)
     for i in range(0, 3):
         npc = NPCGiveTest(world, agentNames[i])
         #world.addObject(17, 11, Layer.AGENT, npc)
@@ -157,7 +157,7 @@ class NPCGiveTest(NPC):
         # Default sprite name
         randomSpritePrefixes = ["character32_", "character15_", "character16_", "character17_", "character35_", "character9_"]
         #self.spriteCharacterPrefix = random.choice(randomSpritePrefixes)
-        randomPrefix = random.choice(randomSpritePrefixes)
+        randomPrefix = world.rng.choice(randomSpritePrefixes)
         self.defaultSpriteName = randomPrefix + "agent_facing_east"
         print(f"NPCGiveTest: {self.defaultSpriteName}")
 
