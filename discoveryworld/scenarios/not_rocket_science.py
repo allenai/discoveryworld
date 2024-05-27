@@ -416,11 +416,7 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     if (difficulty == "challenge"):
         scoringInfo["criticalQuestions"].append(f"Does it clearly eliminate fuel type {fuelTypes[1]} as it wouldn't generate enough thrust to liftoff the rocket (i.e., its thrust to weight ratio is lower or equal to 1 g)?")
         scoringInfo["criticalQuestions"].append(f"Does it clearly eliminate fuel type {fuelTypes[2]} as its density is to low and would require more fuel than what the rocket can hold?")
-<<<<<<< HEAD
         scoringInfo["criticalQuestions"].append(f"Does it clearly state what fuel type to use {scoringInfo['fuelType']} (between {','.join(sorted(fuelTypes))})?")
-=======
-        scoringInfo["criticalQuestions"].append(f"Does it clearly state what fuel type to use {scoringInfo['fuelType']} (between {','.join(fuelTypes)})?")
->>>>>>> 8576fda (Add critical questions to not_rocket_science)
         scoringInfo["criticalQuestions"].append(f"Does it clearly state the amount needed of fuel type {scoringInfo['fuelType']} is approximately {int(scoringInfo['fuelAmount'])} liters? (plus or minus 2 liters)")
 
     # Set a limit for the number of user agents
@@ -918,7 +914,8 @@ class LoadCellInterface(NPCDevice):
         self.weight = 0
         self.thrustMeasured = set()
 
-        self.attributes["fuel"] = "Empty"
+        self.addState("fuelEmpty")
+        self.attributes["fuel"] = "None"
         self.attributes["thrust"] = 0
         self.attributes["duration"] = 0
         self.attributes["weight"] = 0
@@ -931,7 +928,7 @@ class LoadCellInterface(NPCDevice):
         self.tempLastSpriteName = self.curSpriteName
 
     def flush(self):
-        self.attributes["fuel"] = "Empty"
+        self.attributes["fuel"] = "None"
         self.update()
 
     def selectA(self):
@@ -949,17 +946,26 @@ class LoadCellInterface(NPCDevice):
     def update(self):
         fuel = self.attributes["fuel"]
         self.weight = self.rocketDryMass
-        if fuel != "Empty":
+        if fuel != "None":
             fuelMass = self.fuels[fuel]["density"] * self.rocketTanksVolume
             self.weight += fuelMass
+            self.removeState("fuelEmpty")
 
         self.attributes["weight"] = np.round(self.weight, 1)
+        self.attributes["duration"] = 0
+        self.attributes["thrust"] = 0
 
     def fire(self):
         self.attributes["duration"] = 0
         self.attributes["thrust"] = 0
         self.rocket[0].setFiring(True)
         self.rocket[1].setFiring(True)
+
+    def abort(self):
+        self.removeState("testInProgress")
+        self.addState("testCompleted")
+        self.rocket[0].setFiring(False)
+        self.rocket[1].setFiring(False)
 
     def tick(self):
         super().tick()
@@ -975,6 +981,8 @@ class LoadCellInterface(NPCDevice):
             if self.weight <= self.rocketDryMass:
                 self.weight = self.rocketDryMass
                 self.removeState("testInProgress")
+                self.addState("testCompleted")
+                self.addState("fuelEmpty")
                 self.rocket[0].setFiring(False)
                 self.rocket[1].setFiring(False)
 
@@ -987,12 +995,24 @@ def mkDialogLoadCellInterface(loadCell):
     infos = "\n\nSelected fuel: {fuel}\nCurrent weight: {weight} kg\nGenerated thrust: {thrust} kN\nDuration: {duration} ticks"
 
     rootNode = DialogNode("rootNode", f"-= Load Cell Interface - Main menu =-{infos}", statesToAdd=["interactedWith"])
-    rootNode.addDialogOption("Refuel", "setFuelNode", antiStates=["testInProgress"])
-    rootNode.addDialogOption("Fire!", "startFiringNode", antiStates=["testInProgress"], callback=loadCell.fire)
-    rootNode.addDialogOption("Wait for test to finish", "rootNode", requiresStates=["testInProgress"])
-    rootNode.addDialogOption("Exit", "endNode", antiStates=["testInProgress"])
+    rootNode.addDialogOption("Refuel", "setFuelNode", antiStates=["testInProgress", "testCompleted", "fuelEmpty"])
+    rootNode.addDialogOption("Refuel (currently empty)", "setFuelNode", antiStates=["testInProgress", "testCompleted"], requiresStates=["fuelEmpty"])
+    rootNode.addDialogOption("Fire!", "startFiringNode", antiStates=["testInProgress", "testCompleted", "fuelEmpty"], callback=loadCell.fire)
+    rootNode.addDialogOption("Refresh", "rootNode", requiresStates=["testInProgress"])
+    rootNode.addDialogOption("Refresh", "testCompletedNode", requiresStates=["testCompleted"])
+    rootNode.addDialogOption("Abort!", "testAbortedNode", requiresStates=["testInProgress"], callback=loadCell.abort)
+    rootNode.addDialogOption("Exit", "endNode")
     tree.addNode(rootNode)
     tree.setRoot(rootNode.name)
+
+    testCompletedNode = DialogNode("testCompletedNode", f"-= Load Cell Interface - Test completed =-{infos}", statesToRemove=["testCompleted"])
+    testCompletedNode.addDialogOption("[Back]", "rootNode")
+    tree.addNode(testCompletedNode)
+
+    testAbortedNode = DialogNode("testAbortedNode", f"-= Load Cell Interface - Test aborted =-{infos}", statesToRemove=["testCompleted"])
+    testAbortedNode.addDialogOption("[Back]", "rootNode")
+    tree.addNode(testAbortedNode)
+
 
     startCountdownNode = DialogNode("startFiringNode", f"-= Load Cell Interface - Test rocket fired =-{infos}", statesToAdd = ["testInProgress"])
     startCountdownNode.addDialogOption("Test in progress...", "rootNode")
@@ -1000,9 +1020,9 @@ def mkDialogLoadCellInterface(loadCell):
 
     setFuelNode = DialogNode("setFuelNode", f"-= Load Cell Interface - Refueling =-{infos}")
     setFuelNode.addDialogOption("Flush fuel from test rocket's tanks", "setFuelNode", callback=loadCell.flush)
-    setFuelNode.addDialogOption(f"Fill rocket with {loadCell.rocketTanksVolume}L of fuel A", "setFuelNode", callback=loadCell.selectA)
-    setFuelNode.addDialogOption(f"Fill rocket with {loadCell.rocketTanksVolume}L of fuel B", "setFuelNode", callback=loadCell.selectB)
-    setFuelNode.addDialogOption(f"Fill rocket with {loadCell.rocketTanksVolume}L of fuel C", "setFuelNode", callback=loadCell.selectC)
+    setFuelNode.addDialogOption(f"Fill rocket with {loadCell.rocketTanksVolume}L of fuel A", "rootNode", callback=loadCell.selectA)
+    setFuelNode.addDialogOption(f"Fill rocket with {loadCell.rocketTanksVolume}L of fuel B", "rootNode", callback=loadCell.selectB)
+    setFuelNode.addDialogOption(f"Fill rocket with {loadCell.rocketTanksVolume}L of fuel C", "rootNode", callback=loadCell.selectC)
     setFuelNode.addDialogOption("[Back]", "rootNode")
     tree.addNode(setFuelNode)
 

@@ -325,8 +325,6 @@ def main(args):
     ui = UserInterface(window, world.spriteLibrary, showScoreToUser=args.showScoreToUser)
 
     # Create a new random number generator (for deterministic behavior) with a specific seed
-    #r = random.Random()
-
     scenarioMaker = ScenarioMaker(world, seed=args.seed)
     smSuccess, smErrorStr = scenarioMaker.setupScenario(args.scenario)
     if (not smSuccess):
@@ -494,28 +492,11 @@ def main(args):
                     if (success.importance == MessageImportance.HIGH):
                         ui.addTextMessageToQueue(success.message)
 
-                # elif keys[pygame.K_PAGEUP]:
-                #     ui.addTextMessageToQueue(ui.getDiscoveryFeedUpdates(ui.currentDiscoveryFeedPostIdx-1).message)
-                #     ui.closeModal()
-                #     time.sleep(0.2)
-                # elif keys[pygame.K_PAGEDOWN]:
-                #     ui.addTextMessageToQueue(ui.getDiscoveryFeedUpdates(ui.currentDiscoveryFeedPostIdx+1).message)
-                #     ui.closeModal()
-                #     time.sleep(0.2)
-
             else:
                 # General modal: Pressing SPACE or RETURN will close the modal
                 if (keys[pygame.K_SPACE] or keys[pygame.K_RETURN] or keys[pygame.K_ESCAPE]):
                     ui.closeModal()
                     doNextTurn = True
-                # elif keys[pygame.K_PAGEUP]:
-                #     ui.addTextMessageToQueue(ui.getDiscoveryFeedUpdates(ui.currentDiscoveryFeedPostIdx-1).message)
-                #     ui.closeModal()
-                #     time.sleep(0.2)
-                # elif keys[pygame.K_PAGEDOWN]:
-                #     ui.addTextMessageToQueue(ui.getDiscoveryFeedUpdates(ui.currentDiscoveryFeedPostIdx+1).message)
-                #     ui.closeModal()
-                #     time.sleep(0.2)
 
         else:
             # Parse any action keys
@@ -697,6 +678,10 @@ def main(args):
             else:
                 print("Step: " + str(frames))
 
+            # Print action
+            if (success != None):
+                print("Feedback: " + success.message)
+
             if args.debug:
                 # Print current memory usage
                 curSize = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
@@ -726,38 +711,7 @@ def main(args):
             ## filenameWorldHistoryOut = "sandbox/worldHistory.pickle"
             ## world.exportWorldHistory(filenameWorldHistoryOut)
 
-            # Test out the knowledge scorer
-            print("--------------------")
-
-            knowledgeScorer = currentAgent.knowledgeScorer
-            # Create a measurement
-            #         jsonStr = """
-            # {
-            #     "object": {"objectUUID": 1234, "scope":[{"propertyName":"color", "propertyOperator":"equals", "propertyValue":"red"}, {"propertyName":"size", "propertyOperator":"less_than", "propertyValue":5}]},
-            #     "property": {"propertyName":"color", "propertyOperator":"equals", "propertyValue":"blue"}
-            # }
-            #     """
-            jsonStr = """
-                {
-                    "object": {"objectType": "mushroom", "scope":[]},
-                    "property": {"propertyName":"color", "propertyOperator":"equals", "propertyValue":"red"}
-                }
-            """
-
-            # Convert to a dictionary
-            dictIn = json.loads(jsonStr)
-            # Create a Measurement
-            #measurement = Measurement(dictIn, step=world.step-1)
-            #print(measurement.errors)
-            #print(measurement)
-            # Score the measurement
-            #score = knowledgeScorer.evaluateMeasurement(measurement)
-            #print("Score: " + str(score))
-            #print("Score justification: " + str(measurement.scoreJustification))
-
             print("############################################################################################\n")
-            #time.sleep(0.25)
-
 
             if (autoRunCycles > 0):
                 autoRunCycles -= 1
@@ -766,8 +720,6 @@ def main(args):
 
 
         # Render the world
-        #world.render(window, cameraX=0, cameraY=0)
-
         # Render a viewport centered on the agent
         # def renderViewport(self, window, worldStartX, worldStartY, sizeTilesX, sizeTilesY, offsetX, offsetY):
         # Step 1: Get the agent's location
