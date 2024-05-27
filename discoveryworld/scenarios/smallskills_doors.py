@@ -39,22 +39,22 @@ def makeScenarioDoorsTest(world, numUserAgents=1):
     doorLocations = []
 
     # Make a grid of walls (x)
-    yOffset1 = random.randint(3, 4)
+    yOffset1 = world.rng.randint(3, 4)
     for i in range(1, width-1):
         world.addObject(startX + i, startY + yOffset1, Layer.BUILDING, world.createObject("Wall"))
 
     # Make a grid of walls (x)
-    yOffset2 = random.randint(6, 7)
+    yOffset2 = world.rng.randint(6, 7)
     for i in range(1, width-1):
         world.addObject(startX + i, startY + yOffset2, Layer.BUILDING, world.createObject("Wall"))
 
     # Make a grid of walls (x)
-    yOffset3 = random.randint(9, 10)
+    yOffset3 = world.rng.randint(9, 10)
     for i in range(1, width-1):
         world.addObject(startX + i, startY + yOffset3, Layer.BUILDING, world.createObject("Wall"))
 
     # Make a grid of walls (y)
-    xOffset1 = random.randint(3, 5)
+    xOffset1 = world.rng.randint(3, 5)
     for i in range(yOffset1, yOffset3):
         # First, check that there's no existing wall in this location
         x = startX + xOffset1
@@ -65,12 +65,12 @@ def makeScenarioDoorsTest(world, numUserAgents=1):
             world.addObject(x, y, Layer.BUILDING, world.createObject("Wall"))
 
     # Doors for first column: Must be at y=yOffset1, y=yOffset2, y=yOffset3, and x=2 to xOffset1-1
-    doorLocations.append((startX + random.randint(1, xOffset1-1), startY + yOffset1))
-    doorLocations.append((startX + random.randint(1, xOffset1-1), startY + yOffset2))
-    doorLocations.append((startX + random.randint(1, xOffset1-1), startY + yOffset3))
+    doorLocations.append((startX + world.rng.randint(1, xOffset1-1), startY + yOffset1))
+    doorLocations.append((startX + world.rng.randint(1, xOffset1-1), startY + yOffset2))
+    doorLocations.append((startX + world.rng.randint(1, xOffset1-1), startY + yOffset3))
 
     # Make a grid of walls (y)
-    xOffset2 = random.randint(8, 9)
+    xOffset2 = world.rng.randint(8, 9)
     for i in range(1, yOffset2):
         # First, check that there's no existing wall in this location
         x = startX + xOffset2
@@ -81,12 +81,12 @@ def makeScenarioDoorsTest(world, numUserAgents=1):
             world.addObject(x, y, Layer.BUILDING, world.createObject("Wall"))
 
     # Doors for the second column
-    doorLocations.append((startX + random.randint(xOffset1+1, xOffset2-1), startY + yOffset1))
-    doorLocations.append((startX + random.randint(xOffset1+1, xOffset2-1), startY + yOffset2))
+    doorLocations.append((startX + world.rng.randint(xOffset1+1, xOffset2-1), startY + yOffset1))
+    doorLocations.append((startX + world.rng.randint(xOffset1+1, xOffset2-1), startY + yOffset2))
 
     # Doors for the third column
-    doorLocations.append((startX + random.randint(xOffset2+1, width-2), startY + yOffset1))
-    doorLocations.append((startX + random.randint(xOffset2+1, width-2), startY + yOffset2))
+    doorLocations.append((startX + world.rng.randint(xOffset2+1, width-2), startY + yOffset1))
+    doorLocations.append((startX + world.rng.randint(xOffset2+1, width-2), startY + yOffset2))
 
 
     # Add doors
