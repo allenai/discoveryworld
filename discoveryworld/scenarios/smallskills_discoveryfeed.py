@@ -37,7 +37,7 @@ def makeScenarioDiscoveryFeedTest(world, numUserAgents=1):
     tableLocations.extend([(17, 13), (19, 13)])                         # Front walls
 
     # Shuffle the table locations
-    random.shuffle(tableLocations)
+    world.rng.shuffle(tableLocations)
 
 
     # Random task object names
@@ -47,7 +47,7 @@ def makeScenarioDiscoveryFeedTest(world, numUserAgents=1):
         taskObjects.append(world.createObject(taskObjectName))
 
     # Shuffle the task objects
-    random.shuffle(taskObjects)
+    world.rng.shuffle(taskObjects)
 
     # Destination containers
     destinationContainerNames = ["Pot", "Jar"]
@@ -56,7 +56,7 @@ def makeScenarioDiscoveryFeedTest(world, numUserAgents=1):
         destinationContainers.append(world.createObject(destinationContainerName))
 
     # Shuffle the destination containers
-    random.shuffle(destinationContainers)
+    world.rng.shuffle(destinationContainers)
 
     # Make 6 tables along the wall
     distractorObjects = []
@@ -136,7 +136,7 @@ def makeScenarioDiscoveryFeedTest(world, numUserAgents=1):
     # Agent names
     discoveryFeedNames = ["Hari", "Bayta", "Salvor", "Arkady", "Hober", "Wanda", "Gaal", "Dors"]
     # Shuffle
-    random.shuffle(discoveryFeedNames)
+    world.rng.shuffle(discoveryFeedNames)
     # Correct post
     correctPost = {"name": discoveryFeedNames[0], "post": "Please pick up the " + scoringInfo["objectToMove"].name + " and place it in the " + scoringInfo["destinationContainer"].name + "."}
     scoringInfo["correctPostName"] = discoveryFeedNames[0]
@@ -146,7 +146,7 @@ def makeScenarioDiscoveryFeedTest(world, numUserAgents=1):
         distractorPosts.append({"name": discoveryFeedNames[nameIdx+1], "post": "Please pick up the " + distractor.name + " and place it in the " + destinationContainers[0].name + "."})
     # Add posts to the discovery feed
     allPosts = [correctPost] + distractorPosts
-    random.shuffle(allPosts)
+    world.rng.shuffle(allPosts)
     for post in allPosts:
         world.discoveryFeed.addUpdatePost(0, post["name"], post["post"], signals=[])
 

@@ -46,7 +46,7 @@ def makeScenarioDialogTest(world, numUserAgents=1):
     npc = NPCDialogTest(world, "Sally")
     world.addObject(17, 11, Layer.AGENT, npc)
     world.addAgent(npc)
-    mkDialogDialogTestNPC(npc)
+    mkDialogDialogTestNPC(npc, world.rng)
     scoringInfo["agentToTalkTo"] = npc
 
     # Paths
