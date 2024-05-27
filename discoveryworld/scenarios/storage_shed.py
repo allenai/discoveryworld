@@ -58,6 +58,7 @@ def mkRandomChemicalCombination(rng, numChemicals:int=3, minChemicals:int=2, min
 def makeScenarioStorageShed(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     DOOR_KEY_ID = 123
 
     # Set a limit for the number of user agents
@@ -104,6 +105,7 @@ def makeScenarioStorageShed(world, numUserAgents=1):
             mixtureStrElems[i] = mixtureStrElems[i] + ", "
     scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of " + "".join(mixtureStrElems) + ", then the rust will be removed.")
     #scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of 1 part Chemical A and 2 parts Chemical C, then the rust will be removed.")
+    scoringInfo["criticalQuestions"].append("Does it clearly state the rust remover compound is a mixture of exactly these compounds in exactly these proportions: `" + "".join(mixtureStrElems) + "`?")
 
     # Paths
     mkPathX(17, 15, 15, world)       # Town square to farm
@@ -173,6 +175,7 @@ def makeScenarioStorageShed(world, numUserAgents=1):
 def makeScenarioStorageShedChallenge(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     DOOR_KEY_ID = 123
 
     # Set a limit for the number of user agents
@@ -219,6 +222,7 @@ def makeScenarioStorageShedChallenge(world, numUserAgents=1):
             mixtureStrElems[i] = mixtureStrElems[i] + ", "
     scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of " + "".join(mixtureStrElems) + ", then the rust will be removed.")
     #scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of 1 part Chemical A and 2 parts Chemical C, then the rust will be removed.")
+    scoringInfo["criticalQuestions"].append("Does it clearly state the rust remover compound is a mixture of exactly these compounds in exactly these proportions: `" + "".join(mixtureStrElems) + "`?")
 
     # Paths
     mkPathX(17, 15, 15, world)       # Town square to farm
@@ -291,6 +295,7 @@ def makeScenarioStorageShedChallenge(world, numUserAgents=1):
 def makeScenarioStorageShedEasyDistilled(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     DOOR_KEY_ID = 123
 
     # Set a limit for the number of user agents
@@ -337,6 +342,7 @@ def makeScenarioStorageShedEasyDistilled(world, numUserAgents=1):
     solutionKey = list(chemicalSolutionDict.keys())[0]
     scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of pure " + str(solutionKey) + ", then the rust will be removed.")
     #scoringInfo["criticalHypotheses"].append("If the key is placed in a mixture of 1 part Chemical A and 2 parts Chemical C, then the rust will be removed.")
+    scoringInfo["criticalQuestions"].append("Does it clearly state the rust remover compound is this compound: `" + str(solutionKey) + "`?")
 
     # Paths
     mkPathX(17, 15, 15, world)       # Town square to farm

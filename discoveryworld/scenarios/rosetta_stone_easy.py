@@ -258,6 +258,7 @@ class RosettaStoneTaskEasy(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)

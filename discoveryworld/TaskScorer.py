@@ -149,6 +149,7 @@ class Task():
         self.completedSuccessfully = False      # Did the task complete successfully?
         self.scoreCard = []                     # List of the subtasks in this task's scorecard
         self.criticalHypotheses = []            # List of critical hypotheses for this task
+        self.criticalQuestions = []
 
 
     # Task setup: Add any necessary objects to the world to perform the task.
@@ -189,6 +190,9 @@ class Task():
         outStr += "\nCritical Hypotheses:"
         for hypothesis in self.criticalHypotheses:
             outStr += "\n - " + hypothesis
+        outStr += "\nCritical Questions:"
+        for question in self.criticalQuestions:
+            outStr += "\n - " + question
 
 
         return outStr
@@ -206,6 +210,7 @@ class Task():
         outDict["completedSuccessfully"] = self.completedSuccessfully
         outDict["scoreCard"] = self.getScorecard()
         outDict["criticalHypotheses"] = self.criticalHypotheses
+        outDict["criticalQuestions"] = self.criticalQuestions
 
         return outDict
 
@@ -302,6 +307,7 @@ class SpaceSickTaskNormal(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)
@@ -501,6 +507,7 @@ class SpaceSickTaskChallenge(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)
@@ -720,6 +727,7 @@ class RustedKeyTaskNormal(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)
@@ -910,6 +918,7 @@ class RustedKeyTaskChallenge(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)
@@ -1096,6 +1105,7 @@ class RustedKeyTaskEasy(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)
@@ -1241,6 +1251,7 @@ class ArchaeologyDigEasy(Task):
 
         # Critical Hypotheses
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)
@@ -1374,6 +1385,7 @@ class ArchaeologyDigNormal(Task):
 
         # Critical Hypotheses
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)
@@ -1546,6 +1558,7 @@ class ArchaeologyDigGenericRadioisotopes(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Scoring Info passed from the scenario
         # scoringInfo["seedArtifacts"] = []
@@ -1732,6 +1745,7 @@ class SoilNutrientTaskNormal(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
         self.testSoilTiles = scoringInfo["testSoilTiles"]
         # Scoring Info passed from the scenario
         # scoringInfo["startingPlants"] = []
@@ -1979,6 +1993,7 @@ class SoilNutrientTaskEasy(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
 
     # Task setup: Add any necessary objects to the world to perform the task.
@@ -2108,6 +2123,7 @@ class SoilNutrientTaskChallenge(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
         self.testSoilTiles = scoringInfo["testSoilTiles"]
         # Scoring Info passed from the scenario
         # scoringInfo["startingPlants"] = []
@@ -2316,6 +2332,7 @@ class ReactorTaskNormal(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)
@@ -2498,6 +2515,7 @@ class ReactorTaskEasy(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)
@@ -2675,6 +2693,7 @@ class ReactorTaskChallenge(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)
@@ -2861,6 +2880,7 @@ class RosettaStoneTask(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)
@@ -3005,6 +3025,7 @@ class TutorialTask(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
         # Update max score based on the scorecard elements.
         self.maxScore = sum(element.maxScore for element in self.scoreCard)
@@ -3105,6 +3126,7 @@ class ProteomicsTask(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
 
     # Task setup: Add any necessary objects to the world to perform the task.
@@ -3233,6 +3255,7 @@ class ProteomicsTaskEasy(Task):
 
         # Add hypotheses from scoringInfo
         self.criticalHypotheses = scoringInfo["criticalHypotheses"]
+        self.criticalQuestions = scoringInfo["criticalQuestions"]
 
 
     # Task setup: Add any necessary objects to the world to perform the task.

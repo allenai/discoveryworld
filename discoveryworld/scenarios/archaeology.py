@@ -16,6 +16,7 @@ from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mk
 def makeScenarioArchaeologicalDig(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     numDigSites = 3
 
     # Set a limit for the number of user agents
@@ -62,6 +63,8 @@ def makeScenarioArchaeologicalDig(world, numUserAgents=1):
     #scoringInfo["criticalHypotheses"] = ["TODO: Add critical hypotheses here"]
 
     scoringInfo["criticalHypotheses"].append("The artifact at Dig Site #" + str(goldDigSiteIdx) + " is the oldest, with an age of " + str(oldestArtifactAge) + " years. The ages of the other artifacts (in years) are: " + ", ".join([str(age) for age in otherArtifactAges]) + ".")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the artifact at Dig Site #" + str(goldDigSiteIdx) + " is the oldest, because it's age is " + str(oldestArtifactAge) + " years?")
+    scoringInfo["criticalQuestions"].append("Does it clearly state the ages of the other younger artifacts (in years), which are: `" + ", ".join([str(age) for age in otherArtifactAges]) + "`?")
 
 
     # Add a table at the start of the dig site
@@ -193,6 +196,7 @@ def makeScenarioArchaeologicalDig(world, numUserAgents=1):
 def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 5
@@ -320,6 +324,10 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
     # TODO: Critical hypotheses
     scoringInfo["criticalHypotheses"] = ["The lower a value an artifact has on Radioisotope Channel " + str(realChannel) + ", the older it is."]
 
+    scoringInfo["criticalQuestions"].append("Does it clearly make the realization (or assumption) that the known artifacts are from the `stone age`, `bronze age`, and `iron age`, or otherwise assume that the stone artifact is the oldest, the bronze artifact is the middle, and the iron artifact is the youngest?")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that with radioisotope dating, artifacts that are younger should have higher radioisotope values, and/or older artifacts should have lower values?")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that Radioisotope Channel " + str(realChannel) + " shows a pattern where the (1) stone artifact has the lowest value, (2) bronze artifact has a medium value, and (3) iron artifact has the highest value, making it likely useful for radioisotope dating?")
+
     # Now the 3 unknown artifacts
     unknownArtifacts = []
     unknownArtifactAges = [oldArtifactAge, mediumArtifactAge, youngArtifactAge]
@@ -364,6 +372,8 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
 
     scoringInfo["criticalHypotheses"].append("The artifact at Dig Site #" + str(goldDigSiteIdx) + " is the oldest, with an age of " + str(oldArtifactAge) + " years. The ages of the other artifacts (in years) are: " + str(mediumArtifactAge) + ", " + str(youngArtifactAge) + ".")
 
+    #scoringInfo["criticalQuestions"].append("Does it clearly state that the artifact  Radioisotope Channel " + str(realChannel) + " value of the artifact at Dig Site #" + str(goldDigSiteIdx) + " is the lowest of the unknown artifacts, signifying that it is the oldest unknown artifact?")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the artifact at Dig Site #" + str(goldDigSiteIdx) + " has the lowest Radioisotope Channel " + str(realChannel) + " value, signifying that it is the oldest of the 3 unknown artifacts?")
 
     # Add a table at the start of the dig site
     instrumentTable = world.createObject("Table")
@@ -488,6 +498,7 @@ def makeScenarioArchaeologicalDigGenericRadioisotope(world, numUserAgents=1):
 def makeScenarioArchaeologicalDigEasyDistilled(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     numDigSites = 3
 
     # Set a limit for the number of user agents
@@ -545,6 +556,8 @@ def makeScenarioArchaeologicalDigEasyDistilled(world, numUserAgents=1):
     #scoringInfo["criticalHypotheses"] = ["TODO: Add critical hypotheses here"]
 
     scoringInfo["criticalHypotheses"].append("The artifact with an age of " + str(oldestArtifactAge) + " years is the oldest. The ages of the other artifacts (in years) are: " + ", ".join([str(age) for age in otherArtifactAges]) + ".")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the artifact with age " + str(oldestArtifactAge) + " years is the oldest?")
+    scoringInfo["criticalQuestions"].append("Does it clearly state the ages of the other younger artifacts (in years), which are: `" + ", ".join([str(age) for age in otherArtifactAges]) + "`?")
 
 
 
