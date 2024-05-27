@@ -34,7 +34,7 @@ def makeScenarioMovingAgentsTest(world, numUserAgents=1):
     numBuildings = 3
 
     randomBuildingLocations = [(12, 5), (19, 5), (12, 12), (19, 12), (12, 20), (19, 20)]
-    random.shuffle(randomBuildingLocations)
+    world.rng.shuffle(randomBuildingLocations)
     # Buildings
     for i in range(0, numBuildings):
         mkBuildingOneRoom(world, x=randomBuildingLocations[i][0], y=randomBuildingLocations[i][1], width=4, height=4, signText="House " + str(i), includeDoor=True, doorKeyID = 0)
@@ -55,7 +55,7 @@ def makeScenarioMovingAgentsTest(world, numUserAgents=1):
     scoringInfo["agentsToTalkTo"] = []
     randomAgentLocations = randomBuildingLocations[numBuildings:]
     randomCharacterNames = ["James", "Spock", "Deanna", "Kathryn", "Benjamin", "Michael"]
-    random.shuffle(randomCharacterNames)
+    world.rng.shuffle(randomCharacterNames)
     for i in range(0, 3):
         location = randomAgentLocations[i]
 
@@ -90,30 +90,30 @@ def makeScenarioMovingAgentsTest(world, numUserAgents=1):
 
 
     # Left side, beside houses
-    mkTallTree(10+random.randint(0, 1), 10+random.randint(0, 1), world)
-    mkTallTree(10+random.randint(0, 1), 4+random.randint(0, 1), world)
-    mkTallTree(10+random.randint(0, 1), 22+random.randint(0, 1), world)
+    mkTallTree(10+world.rng.randint(0, 1), 10+world.rng.randint(0, 1), world)
+    mkTallTree(10+world.rng.randint(0, 1), 4+world.rng.randint(0, 1), world)
+    mkTallTree(10+world.rng.randint(0, 1), 22+world.rng.randint(0, 1), world)
     # Right side, beside houses
-    mkTallTree(23+random.randint(0, 1), 10+random.randint(0, 1), world)
-    mkTallTree(23+random.randint(0, 1), 4+random.randint(0, 1), world)
-    mkTallTree(23+random.randint(0, 1), 22+random.randint(0, 1), world)
-    
+    mkTallTree(23+world.rng.randint(0, 1), 10+world.rng.randint(0, 1), world)
+    mkTallTree(23+world.rng.randint(0, 1), 4+world.rng.randint(0, 1), world)
+    mkTallTree(23+world.rng.randint(0, 1), 22+world.rng.randint(0, 1), world)
+
     # Top near fence opening
-    mkTallTree(13+random.randint(0, 1), 3, world)
-    mkTallTree(19+random.randint(0, 1), 3, world)
+    mkTallTree(13+world.rng.randint(0, 1), 3, world)
+    mkTallTree(19+world.rng.randint(0, 1), 3, world)
 
     # Bottom near fence opening
-    mkTallTree(13+random.randint(0, 1), 29+random.randint(0, 1), world)
-    mkTallTree(19+random.randint(0, 1), 29+random.randint(0, 1), world)
-    
-    # Scattered trees outside the fence
-    mkTallTree(2+random.randint(0, 2), 2+random.randint(0, 2), world)
-    mkTallTree(2+random.randint(0, 2), 12+random.randint(0, 2), world)
-    mkTallTree(2+random.randint(0, 2), 22+random.randint(0, 2), world)
+    mkTallTree(13+world.rng.randint(0, 1), 29+world.rng.randint(0, 1), world)
+    mkTallTree(19+world.rng.randint(0, 1), 29+world.rng.randint(0, 1), world)
 
-    mkTallTree(28+random.randint(0, 2), 2+random.randint(0, 2), world)
-    mkTallTree(28+random.randint(0, 2), 12+random.randint(0, 2), world)
-    mkTallTree(28+random.randint(0, 2), 22+random.randint(0, 2), world)
+    # Scattered trees outside the fence
+    mkTallTree(2+world.rng.randint(0, 2), 2+world.rng.randint(0, 2), world)
+    mkTallTree(2+world.rng.randint(0, 2), 12+world.rng.randint(0, 2), world)
+    mkTallTree(2+world.rng.randint(0, 2), 22+world.rng.randint(0, 2), world)
+
+    mkTallTree(28+world.rng.randint(0, 2), 2+world.rng.randint(0, 2), world)
+    mkTallTree(28+world.rng.randint(0, 2), 12+world.rng.randint(0, 2), world)
+    mkTallTree(28+world.rng.randint(0, 2), 22+world.rng.randint(0, 2), world)
 
     #mkTallTree(21, 8, world)
     #mkTallTree(17, 6, world)
@@ -184,7 +184,7 @@ class NPCMovingAgentTest(NPC):
         #self.spriteCharacterPrefix = "character32_"
         # Randomly pick a sprite
         spriteChoices = ["character32_", "character17_", "character16_", "character35_", "character9_"]
-        self.spriteCharacterPrefix = random.choice(spriteChoices)
+        self.spriteCharacterPrefix = world.rng.choice(spriteChoices)
 
         # Default attributes
         self.attributes["isMovable"] = False                       # Elder cannot be picked.
@@ -263,7 +263,7 @@ class NPCMovingAgentTest(NPC):
 def mkDialogGoHomeAgentNPC(agent, idx):
     tree = DialogTree(agent)
 
-    # Dialog has 1 stage. 
+    # Dialog has 1 stage.
     # The agent let's the NPC know that it's about to rain and they might want to go inside.
     # The NPC responds with a thank you.
 
@@ -319,7 +319,7 @@ class SmallSkillsMovingAgentsTask(Task):
             return  # Do not update the score if the task is already marked as completed
 
         # Check if the agent has talked to the other person
-        if not self.scorecardTalk.completed:            
+        if not self.scorecardTalk.completed:
             completedStates = set()
             for i in range(0, 3):
                 for agent in self.scoringInfo["agentsToTalkTo"]:
@@ -335,7 +335,7 @@ class SmallSkillsMovingAgentsTask(Task):
                 self.scorecardTalk.updateScore(3, True, associatedUUIDs=[], associatedNotes=f"Agent has talked to all other characters.")
             else:
                 self.scorecardTalk.updateScore(len(completedStates), False, associatedUUIDs=[], associatedNotes=f"Agent has not talked to all other characters.")
-                
+
         # Update score
         self.score = sum(element.score for element in self.scoreCard)
 
