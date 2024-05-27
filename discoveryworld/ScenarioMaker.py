@@ -99,43 +99,43 @@ SCENARIO_INFOS = {
     },
     "Small Skills: Dialog Test": {
         "difficulty": ["Normal"],
-        "variations": ["1"],
+        "variations": ["1", "2", "3", "4", "5"],
     },
     "Small Skills: Pick and Place Test": {
         "difficulty": ["Normal"],
-        "variations": ["1"],
+        "variations": ["1", "2", "3", "4", "5"],
     },
     "Small Skills: Pick and Give Test": {
         "difficulty": ["Normal"],
-        "variations": ["1"],
+        "variations": ["1", "2", "3", "4", "5"],
     },
     "Small Skills: Instrument Measurement Test": {
         "difficulty": ["Normal"],
-        "variations": ["1"],
+        "variations": ["1", "2", "3", "4", "5"],
     },
     "Small Skills: Doors Test": {
         "difficulty": ["Normal"],
-        "variations": ["1"],
+        "variations": ["1", "2", "3", "4", "5"],
     },
     "Small Skills: Doors with Keys Test": {
         "difficulty": ["Normal"],
-        "variations": ["1"],
+        "variations": ["1", "2", "3", "4", "5"],
     },
     "Small Skills: Navigation in a House Test": {
         "difficulty": ["Normal"],
-        "variations": ["1"],
+        "variations": ["1", "2", "3", "4", "5"],
     },
     "Small Skills: Search Test": {
         "difficulty": ["Normal"],
-        "variations": ["1"],
+        "variations": ["1", "2", "3", "4", "5"],
     },
     "Small Skills: Discovery Feed Test": {
         "difficulty": ["Normal"],
-        "variations": ["1"],
+        "variations": ["1", "2", "3", "4", "5"],
     },
     "Small Skills: Moving Agents Test": {
         "difficulty": ["Normal"],
-        "variations": ["1"],
+        "variations": ["1", "2", "3", "4", "5"],
     },
     # "TODO 1": {
     #     "difficulty": ["Easy", "Challenge"],
