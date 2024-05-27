@@ -17,6 +17,7 @@ from discoveryworld.ActionSuccess import ActionSuccess, MessageImportance
 def makeScenarioSpaceSickEasy(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     DOOR_KEY_ID = 123
 
     # Set a limit for the number of user agents
@@ -71,6 +72,8 @@ def makeScenarioSpaceSickEasy(world, numUserAgents=1):
     currentPathogen = possiblePathogens[world.randomSeed%5]
 
     scoringInfo["criticalHypotheses"].append("One of the food items is contaminated with `" + currentPathogen + "`, which can be measured with the " + scoringInfo["criticalInstrument"].name + ".")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that one of the food items is contaminated with a pathogen (`" + currentPathogen + "`)?")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the pathogen can be measured/detected with the " + scoringInfo["criticalInstrument"].name + "?")
 
     # Random task object names
     taskObjects = []

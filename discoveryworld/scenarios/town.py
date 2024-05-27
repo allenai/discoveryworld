@@ -12,6 +12,7 @@ from discoveryworld.buildings.terrain import mkFenceX, mkFenceY, mkGrassFill, mk
 def makeScenarioTown(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
 
     scoringInfo["criticalHypotheses"].append("The mushrooms that make people ill have mold on them. The mold is directly observable with the microscope, or indirectly observable by elevated spectrometer readings, particularly with a value of 1.0 on Channel 5 of the spectrometer.")
     criticalMushroom = {
@@ -23,6 +24,10 @@ def makeScenarioTown(world, numUserAgents=1):
     }
     criticialMushroomColor = criticalMushroom[(world.randomSeed % 5)]
     scoringInfo["criticalHypotheses"].append("The mushrooms that make people ill have the following color(s): " + criticialMushroomColor + ".")
+
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the mushrooms that make people ill have mold on them?")
+    scoringInfo["criticalQuestions"].append("Does it clearly state either that (1) the mold can be directly observed with the microscope, AND/OR (2) that the mold can be indirectly observed by elevated spectrometer readings, particularly with a value of 1.0 on Channel 5 of the spectrometer?")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the mushrooms that make people ill have the following color(s): `" + criticialMushroomColor + "`?")
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 5
@@ -204,6 +209,8 @@ def makeScenarioTownChallenge(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
     scoringInfo["criticalHypotheses"].append("While it's unclear exactly why the mushrooms are making people ill, the glowing rock from the cave becomes luminous when it is near a harmful mushroom, providing a mechanism of detecting them.  Further, while some properties, such as color, appear to be suggestive of harmful mushrooms, they are only probabilistic, while the glowing rock is the only definitive indicator.")
+    scoringInfo["criticalQuestions"] = []
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the glowing rock can be used as an instrument to detect harmful mushrooms, by becoming luminous when it is near a harmful mushroom?")
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 5

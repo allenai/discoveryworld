@@ -14,6 +14,7 @@ from discoveryworld.TaskScorer import Task, ScorecardElement
 def makeScenarioRosettaStoneEasy(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     DOOR_KEY_ID = 123
 
     # Set a limit for the number of user agents
@@ -106,6 +107,9 @@ def makeScenarioRosettaStoneEasy(world, numUserAgents=1):
 
     # Critical hypothesis
     scoringInfo["criticalHypotheses"].append("The person (" + agentName + ") is using a word in another language (" + scoringInfo["objectToMove"].attributes["translation"] + ") to refer to the `" + scoringInfo["objectToMove"].name + "`")
+
+    scoringInfo["criticalQuestions"].append("Does it clearly state the word `" + scoringInfo["objectToMove"].attributes["translation"] + "` refers to the `" + scoringInfo["objectToMove"].name + "`?")
+
 
     # Paths
     mkPathX(17, 14, 15, world)       # Town square to farm

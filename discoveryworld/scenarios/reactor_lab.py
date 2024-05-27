@@ -260,11 +260,14 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
         scoringInfo['criticalInstrument'] = instrumentSpectrometer
 
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     # Add the critical hypotheses
     #scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading.")
     functionStr = "That is, the resonance frequency = (" + str(randomSlope) + " * " + scoringInfo['criticalInstrument'].name + " reading) + " + str(randomOffset) + "."
     scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading, with a slope of " + str(randomSlope) + " and an offset of " + str(randomOffset) + ". " + functionStr)
 
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the resonance frequency of the crystals is dependent upon the " + scoringInfo['criticalInstrument'].name + " reading?")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the relationship is linear, with the crystal resonance frequency = (" + str(randomSlope) + " * " + scoringInfo['criticalInstrument'].name + " reading) + " + str(randomOffset) + " (i.e. a slope of " + str(randomSlope) + " and an offset of " + str(randomOffset) + ")?")
 
     # Generate the quantum crystals
     for i in range(0, 4):
@@ -341,6 +344,7 @@ def mkReactorLab(x, y, world, rng, randomSeed, scoringInfo):
 def makeScenarioReactorLab(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 3
@@ -509,10 +513,14 @@ def mkReactorLabEasy(x, y, world, rng, randomSeed, scoringInfo):
 
 
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     # Add the critical hypotheses
     #scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading.")
     functionStr = "That is, the resonance frequency = (" + str(randomSlope) + " * " + scoringInfo['criticalInstrument'].name + " reading) + " + str(randomOffset) + "."
     scoringInfo["criticalHypotheses"].append("The resonance frequency of the quantum crystal is a linear function of the " + scoringInfo['criticalInstrument'].name + " reading, with a slope of " + str(randomSlope) + " and an offset of " + str(randomOffset) + ". " + functionStr)
+
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the resonance frequency of the crystals is dependent upon the " + scoringInfo['criticalInstrument'].name + " reading?")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the relationship is linear, with the crystal resonance frequency = (" + str(randomSlope) + " * " + scoringInfo['criticalInstrument'].name + " reading) "  + " (i.e. a slope of " + str(randomSlope) + ", and no offset)?")
 
 
     # Generate the quantum crystals
@@ -584,6 +592,7 @@ def mkReactorLabEasy(x, y, world, rng, randomSeed, scoringInfo):
 def makeScenarioReactorLabEasy(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 3
@@ -766,12 +775,16 @@ def mkReactorLabChallenge(x, y, world, rng, randomSeed, scoringInfo):
 
     # Critical hypothesis
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     # Add the critical hypotheses
     functionStr = "That is, the resonance frequency = " + str(randomA) + " * (" + scoringInfo['criticalInstrument'].name + " reading)^2 + " + str(randomB) + " * " + scoringInfo['criticalInstrument'].name + " reading + " + str(randomC) + "."
     criticalHypothesis = "The resonance frequency of the quantum crystal is a quadtratic function of the " + scoringInfo['criticalInstrument'].name + " reading, "
     criticalHypothesis += "of the form `y = a*x^2 + b*x + c`, where `a` is " + str(randomA) + ", `b` is " + str(randomB) + ", and `c` is " + str(randomC) + ". "
     criticalHypothesis += functionStr
     scoringInfo["criticalHypotheses"].append(criticalHypothesis)
+
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the resonance frequency of the crystals is dependent upon the " + scoringInfo['criticalInstrument'].name + " reading?")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the relationship is quadratic, with the crystal resonance frequency = (" + str(randomA) + " * " + scoringInfo['criticalInstrument'].name + " reading)^2 + (" + str(randomB) + " * " + scoringInfo['criticalInstrument'].name + " reading) + " + str(randomC) + " (i.e. `y = a*x^2 + b*x + c`, with `a` = " + str(randomA) + ", `b` = " + str(randomB) + ", and `c` = " + str(randomC) + ")?")
 
 
     # Shuffle
@@ -838,6 +851,7 @@ def mkReactorLabChallenge(x, y, world, rng, randomSeed, scoringInfo):
 def makeScenarioReactorLabChallenge(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 3

@@ -319,6 +319,7 @@ def makeSeedRule(randomSeed, rng, numPositiveExamples=10, numNegativeExamples=20
 def makeScenarioPlantGrowingChallenge(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     numPlantSites = 3
 
     # Make the seed rule for this scenario, and the positive and negative examples
@@ -374,6 +375,7 @@ def makeScenarioPlantGrowingChallenge(world, numUserAgents=1):
 
     # Add hypothesis
     scoringInfo["criticalHypotheses"].append(seedRule["ruleDescription"])
+    scoringInfo["criticalQuestions"].append("Does it clearly state something equivalent to the following rule: `" + seedRule["ruleDescription"] + "`?")
 
     # Negative
     for i in range(0, 9):

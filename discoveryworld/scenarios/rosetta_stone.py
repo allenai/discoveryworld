@@ -361,6 +361,7 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
 
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
 
     rosetta = ROSETTA_GIBBERISH
     if os.environ.get("FRENCH", False):
@@ -392,16 +393,20 @@ def makeScenarioRosettaStone(world, numUserAgents=1, difficulty="easy"):
     if scoringInfo["learningColor"]:
         scoringInfo["color"] = rng.choice(COLORS)
         scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['color']}]' means '{scoringInfo['color']}'", rosetta))
+        scoringInfo["criticalQuestions"].append("Does it clearly state that: " + translate(f"The word '[{scoringInfo['color']}]' means '{scoringInfo['color']}'", rosetta) + "?")
 
     scoringInfo["count"] = 1
     if scoringInfo["learningCount"]:
         scoringInfo["count"] = rng.choice(COUNTS)
         scoringInfo["countWord"] = COUNT_WORDS[scoringInfo["count"]]
         scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['countWord']}]' means '{scoringInfo['countWord']}'", rosetta))
+        scoringInfo["criticalQuestions"].append("Does it clearly state that: " + translate(f"The word '[{scoringInfo['countWord']}]' means '{scoringInfo['countWord']}'", rosetta) + "?")
 
     scoringInfo["item"] = ITEMS[world.randomSeed % len(ITEMS)]
     scoringInfo["criticalHypotheses"].append(translate(f"The word '[Bring me]' means 'bring me'", rosetta))
     scoringInfo["criticalHypotheses"].append(translate(f"The word '[{scoringInfo['item']}]' means '{scoringInfo['item']}'", rosetta))
+    scoringInfo["criticalQuestions"].append("Does it clearly state that: " + translate(f"The word '[Bring me]' means something like 'bring me'", rosetta) + "?")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that: " + translate(f"The word '[{scoringInfo['item']}]' means '{scoringInfo['item']}'", rosetta) + "?")
 
     if scoringInfo["learningCount"] and scoringInfo["learningColor"]:
         taskInstruction = f"[Bring me] [{scoringInfo['countWord']}] [{scoringInfo['color']}] [{scoringInfo['item']}]!"

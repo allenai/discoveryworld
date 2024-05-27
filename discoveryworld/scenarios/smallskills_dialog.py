@@ -14,6 +14,7 @@ from discoveryworld.TaskScorer import Task, ScorecardElement
 def makeScenarioDialogTest(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     DOOR_KEY_ID = 123
 
     # Set a limit for the number of user agents

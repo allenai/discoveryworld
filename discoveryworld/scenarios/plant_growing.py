@@ -30,6 +30,7 @@ def mapSeedToObjectName(nutrientName, nutrientValue):
 def makeScenarioPlantGrowing(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     numPlantSites = 3
 
     # Randomly choose what value is helpful for growing plants
@@ -82,6 +83,7 @@ def makeScenarioPlantGrowing(world, numUserAgents=1):
     # Add hypothesis
     hypothesisStr = "If a seed is placed in soil with a '" + whichNutrientPositive + "' nutrient level of '" + str(possibleValuesStrLUT[whichValuePositive]) + "', then it will successfully grow into a plant."
     scoringInfo["criticalHypotheses"].append(hypothesisStr)
+    scoringInfo["criticalQuestions"].append("Does it clearly state that if a seed is placed in soil with the `" + whichNutrientPositive + "` nutrient level of `" + str(possibleValuesStrLUT[whichValuePositive]) + "`, then it will grow?")
 
     # Negative (next 3)
     for i in range(3, 6):
@@ -217,6 +219,7 @@ def makeScenarioPlantGrowing(world, numUserAgents=1):
 def makeScenarioPlantGrowingEasy(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
     numPlantSites = 1
 
     # Randomly choose what value is helpful for growing plants
@@ -296,6 +299,7 @@ def makeScenarioPlantGrowingEasy(world, numUserAgents=1):
     # Add hypothesis
     hypothesisStr = "If a seed is placed in soil with the '" + positiveNutrient + "' nutrient present, then it will successfully grow into a plant."
     scoringInfo["criticalHypotheses"].append(hypothesisStr)
+    scoringInfo["criticalQuestions"].append("Does it clearly state that if a seed is placed in soil with the `" + positiveNutrient + "` nutrient present, then it will grow?")
 
     # Negative (next 4)
     for i in range(2, 6):

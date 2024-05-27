@@ -263,6 +263,7 @@ def mkLaunchPad(world, x, y, width, height):
 def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
 
     scoringInfo["difficulty"] = difficulty
 

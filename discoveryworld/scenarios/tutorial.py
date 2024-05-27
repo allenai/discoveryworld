@@ -156,9 +156,9 @@ def mkTutorialHouse(x, y, world):
 
 
 def makeScenarioTutorial(world, numUserAgents=1, difficulty="easy"):
-
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
 
     # Make the Rosetta Stone scenario
     rng = world.rng

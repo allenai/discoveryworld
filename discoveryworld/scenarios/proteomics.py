@@ -158,6 +158,7 @@ def plot_data3D(inliers, outliers):
 def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
 
     # The index of the correct animal for this scenario
     answerAnimalIdx = world.randomSeed % 5
@@ -166,6 +167,7 @@ def makeScenarioProteomics(world, numUserAgents=1, challengeVersion:bool=False):
     answerAnimalName = animalNames[answerAnimalIdx]
 
     scoringInfo["criticalHypotheses"].append("When performing a clustering analysis, the " + answerAnimalName + " has proteomics values that appear to be outliers compared to the other animals, whose proteomics values all cluster together.")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the " + answerAnimalName + " has proteomics values that appear to be outliers compared to the other animals, whose proteomics values all cluster together?")
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 5
@@ -686,6 +688,7 @@ class StatueAnimal5(StatueAnimal):
 def makeScenarioProteomicsEasyDistilled(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
 
     # NORMAL/CHALLENGE VERSION
     # The index of the correct animal for this scenario
@@ -698,8 +701,8 @@ def makeScenarioProteomicsEasyDistilled(world, numUserAgents=1):
     easyValidAnimalIndices = [answerAnimalIdx, (answerAnimalIdx+1)%5, (answerAnimalIdx-1)%5]
 
 
-
     scoringInfo["criticalHypotheses"].append("When performing a clustering analysis, the " + answerAnimalName + " has proteomics values that appear to be outliers compared to the other animals, whose proteomics values all cluster together.")
+    scoringInfo["criticalQuestions"].append("Does it clearly state that the " + answerAnimalName + " has proteomics values that appear to be outliers compared to the other animals, whose proteomics values all cluster together?")
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 1

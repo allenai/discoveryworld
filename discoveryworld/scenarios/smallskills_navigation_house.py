@@ -124,6 +124,7 @@ def mkRoomScienceLab(world, startX, startY):
 def makeScenarioNavigationHouseTest(world, numUserAgents=1):
     scoringInfo = {}
     scoringInfo["criticalHypotheses"] = []
+    scoringInfo["criticalQuestions"] = []
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 1
