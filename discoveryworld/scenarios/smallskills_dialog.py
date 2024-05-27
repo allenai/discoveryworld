@@ -145,7 +145,7 @@ class NPCDialogTest(NPC):
         # No external states for this agent to interpret -- just waits for dialog
 
 
-def mkDialogDialogTestNPC(agent):
+def mkDialogDialogTestNPC(agent, rng):
     tree = DialogTree(agent)
 
     # Dialog will have 3 stages, each with 8 options.
@@ -157,10 +157,10 @@ def mkDialogDialogTestNPC(agent):
 
     # First stage (root node)
     optionsStage1 = ["banana", "orange", "grape", "pear", "apple", "kiwi", "peach", "lime"]
-    correctOptionStage1 = random.choice(optionsStage1)
+    correctOptionStage1 = rng.choice(optionsStage1)
     rootNode = DialogNode("rootNode", f"I'd like you to select the option that says `" + correctOptionStage1 + "`.", statesToAdd=["stage1"])
     # Shuffle the options
-    random.shuffle(optionsStage1)
+    rng.shuffle(optionsStage1)
     for option in optionsStage1:
         rootNode.addDialogOption(option, "endNodeFailure" if option != correctOptionStage1 else "stage2Node")
     rootNode.addDialogOption("Exit", "endDialog")
@@ -169,10 +169,10 @@ def mkDialogDialogTestNPC(agent):
 
     # Second stage
     optionsStage2 = ["bus", "truck", "bike", "motorcycle", "car", "scooter", "van", "train"]
-    correctOptionStage2 = random.choice(optionsStage2)
+    correctOptionStage2 = rng.choice(optionsStage2)
     stage2Node = DialogNode("stage2Node", f"Great! Now, select the option that says `" + correctOptionStage2 + "`.", statesToAdd=["stage2"])
     # Shuffle the options
-    random.shuffle(optionsStage2)
+    rng.shuffle(optionsStage2)
     for option in optionsStage2:
         stage2Node.addDialogOption(option, "endNodeFailure" if option != correctOptionStage2 else "stage3Node")
     stage2Node.addDialogOption("Exit", "endDialog")
@@ -180,10 +180,10 @@ def mkDialogDialogTestNPC(agent):
 
     # Third stage
     optionsStage3 = ["bush", "flower", "tree", "grass", "shrub", "weed", "fern", "moss"]
-    correctOptionStage3 = random.choice(optionsStage3)
+    correctOptionStage3 = rng.choice(optionsStage3)
     stage3Node = DialogNode("stage3Node", f"Great! Now, select the option that says `" + correctOptionStage3 + "`.", statesToAdd=["stage3"])
     # Shuffle the options
-    random.shuffle(optionsStage3)
+    rng.shuffle(optionsStage3)
     for option in optionsStage3:
         stage3Node.addDialogOption(option, "endNodeFailure" if option != correctOptionStage3 else "endNodeSuccess")
     stage3Node.addDialogOption("Exit", "endDialog")
