@@ -161,7 +161,10 @@ class KnowledgeScorer:
                 promptStr += "\n"
                 promptStr += "Agent's Knowledge:\n"
                 promptStr += "```\n"
-                promptStr += knowledgeToEvaluateStr + "\n"
+                if (type(knowledgeToEvaluateStr) == str):
+                    promptStr += knowledgeToEvaluateStr + "\n"
+                else:
+                    promptStr += json.dumps(knowledgeToEvaluateStr, indent=4) + "\n"
                 promptStr += "```\n"
                 promptStr += "\n"
                 promptStr += "Critical Question:\n"
@@ -210,6 +213,9 @@ class KnowledgeScorer:
                 task["evaluation_totalscore"] = totalScore / len(task["criticalQuestions"])
             else:
                 task["evaluation_totalscore"] = 0
+
+            # Include the reference knowledge
+            task["knowledge_to_evaluate"] = knowledgeToEvaluateStr
 
         # Return
         return tasks

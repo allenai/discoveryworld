@@ -1,5 +1,6 @@
 # # Analysis.py
 
+import traceback
 import json
 import os
 
@@ -11,6 +12,7 @@ def getPerformance(filenameIn:str):
 
     # Go through each record, and find either (1) the first one where the task is completed, or (2) if none are completed, the last one
     scoreCard = None
+    agentKnowledge = None
     lastStepIdx = 0
     for idx, stepRecord in enumerate(data):
         #print("Step: " + str(idx))
@@ -19,6 +21,11 @@ def getPerformance(filenameIn:str):
             # All tasks have only a single scorecard, but it's stored as a list -- so just take the first one
             scoreCard = scoreCard[0]
             lastStepIdx = idx
+
+            # Also check for agent knowledge
+            if ("currentScientificKnowledge" in stepRecord):
+                agentKnowledge = stepRecord["currentScientificKnowledge"]
+
             if (scoreCard["completed"] == True):
                 # Break on the first step when the task is marked completed
                 break
@@ -98,6 +105,23 @@ def getPerformance(filenameIn:str):
             print("No cost analysis file found: " + costFilename)
 
 
+        # Try to run the knowledge scorer
+        knowledgeEvaluation = None
+        if (agentKnowledge != None):
+            from knowledgeScorer import KnowledgeScorer
+            knowledgeScorer = KnowledgeScorer()
+            # Example: evaluation = knowledgeScorer.evaluateKnowledge(scenarioName = "Space Sick", difficultyStr = "Easy", seed = 0, knowledgeToEvaluateStr=knowledgeToEvaluate)
+            print("TaskName: " + taskName)
+            print("Difficulty: " + difficulty)
+            print("Seed: " + str(seed))
+            print("Agent knowledge: ")
+            print(json.dumps(agentKnowledge, indent=4))
+            knowledgeEvaluation = knowledgeScorer.evaluateKnowledge(scenarioName = taskName, difficultyStr = difficulty, seed = seed, knowledgeToEvaluateStr=agentKnowledge)
+            print("Knowledge evaluation: " + str(knowledgeEvaluation))
+
+        else:
+            print("No agent knowledge found")
+
         # Return
         packed = {
             "taskName": taskName,
@@ -117,13 +141,18 @@ def getPerformance(filenameIn:str):
             "totalCost": totalCost,
             "totalSteps": totalSteps,
             "totalTokensReceived": totalTokensReceived,
-            "totalTokensSent": totalTokensSent
+            "totalTokensSent": totalTokensSent,
+            "knowledgeEvaluation": knowledgeEvaluation
         }
 
         return packed
 
-    except:
-        print("Error: unable to extract metadata from filename (" + filenameIn + ")")
+    #except:
+    #except Exception as e:
+    except Exception as e:
+        # traceback
+        print("Error processing filename (" + filenameIn + ")")
+        traceback.print_exc()
         return None
 
 
@@ -224,9 +253,9 @@ if __name__ == "__main__":
     #dataPath = "output-hypothesizer-gpt4o-9discovery/"
 
     #dataPath = "paper-results/output-may26-hypothesizer-unittest/"       # Unit test results for paper
-    #dataPath = "paper-results/output-may27-hypothesizer-discovery-easy/" # Discovery task (difficulty: easy) results for paper
+    dataPath = "paper-results/output-may27-hypothesizer-discovery-easy/" # Discovery task (difficulty: easy) results for paper
     #dataPath = "paper-results/output-may27-hypothesizer-discovery-challenge/" # Discovery task (difficulty: challenge) results for paper
-    dataPath = "paper-results/from-marc/discoveryworld-results/" # From Marc, difficulty: normal
+    #dataPath = "paper-results/from-marc/discoveryworld-results/" # From Marc, difficulty: normal
 
     # Step 1: Find a list of files that start with "output_allhistory" that end with ".json"
     filterPrefix = "output_allhistory"
@@ -240,10 +269,14 @@ if __name__ == "__main__":
         print("File " + str(idx+1) + " of " + str(len(jsonFiles)))
         print("Processing file: " + filename)
         performance = getPerformance(dataPath + "/" + filename)
+        print("PERFORMANCE: ")
         print(performance)
         if (performance != None):
             allPerformance.append(performance)
         print("")
+        print("##################################################")
+        #print("DEBUG: EXITING!")
+        #exit(1)
 
     # Calculate average performance
     averagePerformance = calculateAveragePerformance(allPerformance)
