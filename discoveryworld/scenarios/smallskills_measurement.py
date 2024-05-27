@@ -43,9 +43,9 @@ def makeScenarioInstrumentMeasurementTest(world, numUserAgents=1):
         measurementDevicesDict[deviceName] = device
         measurementDevices.append(device)
 
-    random.shuffle(measurementDevices)
+    world.rng.shuffle(measurementDevices)
     tableLocations = [(16, 10), (17, 10), (18, 10), (19, 10), (20, 10)]
-    random.shuffle(tableLocations)
+    world.rng.shuffle(tableLocations)
     for i in range(0, 5):
         objectTable = world.createObject("Table")
         world.addObject(tableLocations[i][0], tableLocations[i][1], Layer.OBJECTS, objectTable)
@@ -57,9 +57,9 @@ def makeScenarioInstrumentMeasurementTest(world, numUserAgents=1):
     # Random task object names
     taskObjectNames = ["Mushroom", "Seed", "Shovel", "Dirt", "Key", "FertilizerBag", "rock_glowing"]
     taskObjects = [world.createObject(taskObjectName) for taskObjectName in taskObjectNames]
-    random.shuffle(taskObjects)
+    world.rng.shuffle(taskObjects)
     tableLocations = [(16, 13), (17, 13), (19, 13), (20, 13)]
-    random.shuffle(tableLocations)
+    world.rng.shuffle(tableLocations)
 
     microscopeDescriptions = ["scratched", "rough", "smooth", "bumpy"]
     for i in range(0, 4):
@@ -74,13 +74,13 @@ def makeScenarioInstrumentMeasurementTest(world, numUserAgents=1):
 
         # Randomize the material properties of the task objects
         randomMaterial = {}
-        taskObjects[i].attributes["density"] = round(random.uniform(1, 10.0), 1)
-        randomMaterial["ph"] = round(random.uniform(1, 10.0), 1)
-        taskObjects[i].attributes["temperatureC"] = round(random.uniform(1, 10.0), 1)
+        taskObjects[i].attributes["density"] = round(world.rng.uniform(1, 10.0), 1)
+        randomMaterial["ph"] = round(world.rng.uniform(1, 10.0), 1)
+        taskObjects[i].attributes["temperatureC"] = round(world.rng.uniform(1, 10.0), 1)
         randomMaterial["spectrum"] = []
         for j in range(0, 5):
-            randomMaterial["spectrum"].append(round(random.uniform(1, 10.0), 1))
-        randomMicroscopeDesc = random.choice(microscopeDescriptions)
+            randomMaterial["spectrum"].append(round(world.rng.uniform(1, 10.0), 1))
+        randomMicroscopeDesc = world.rng.choice(microscopeDescriptions)
         randomMaterial["microscopeDesc"] = "a " + str(randomMicroscopeDesc) + " surface"
         microscopeDescriptions.remove(randomMicroscopeDesc)
 
@@ -114,7 +114,7 @@ def makeScenarioInstrumentMeasurementTest(world, numUserAgents=1):
 
 
     # Randomly pick a target property
-    randomProperty = random.choice(["density", "ph", "temperatureC", "spectrum", "microscopeDesc"])
+    randomProperty = world.rng.choice(["density", "ph", "temperatureC", "spectrum", "microscopeDesc"])
     propertyToMeasureStr = ""
     targetValue = None
     if (randomProperty == "density"):
