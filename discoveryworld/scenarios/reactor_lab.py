@@ -786,7 +786,6 @@ def mkReactorLabChallenge(x, y, world, rng, randomSeed, scoringInfo):
     scoringInfo["criticalQuestions"].append("Does it clearly state that the resonance frequency of the crystals is dependent upon the " + scoringInfo['criticalInstrument'].name + " reading?")
     scoringInfo["criticalQuestions"].append("Does it clearly state that the relationship is quadratic, with the crystal resonance frequency = (" + str(randomA) + " * " + scoringInfo['criticalInstrument'].name + " reading)^2 + (" + str(randomB) + " * " + scoringInfo['criticalInstrument'].name + " reading) + " + str(randomC) + " (i.e. `y = a*x^2 + b*x + c`, with `a` = " + str(randomA) + ", `b` = " + str(randomB) + ", and `c` = " + str(randomC) + ")?")
 
-
     # Shuffle
     rng.shuffle(quantumCrystals)
     # Give the crystals a number

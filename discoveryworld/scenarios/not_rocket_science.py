@@ -287,6 +287,7 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
 
     scoringInfo["planetRadius"] = planetRadius
     scoringInfo["criticalHypotheses"].append(f"Planet radius is {planetRadius} km.")
+    scoringInfo["criticalQuestions"].append("Does it clearly state the planet's radius is approximately " + str(planetRadius) + " km?")
 
     # Planet mass
     GRAVITATIONAL_CONSTANT = 6.67430e-11  # (N m^2 / kg^2)
@@ -303,6 +304,7 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     planetGravity = GRAVITATIONAL_CONSTANT * planetMass / (planetRadius * 1000) ** 2  # (m/s^2)
     scoringInfo["planetGravity"] = planetGravity
     scoringInfo["criticalHypotheses"].append(f"Planet gravity is {planetGravity} m/s^2.")
+    scoringInfo["criticalQuestions"].append("Does it clearly state the planet's gravity is approximately " + str(round(planetGravity, 2)) + " m/s^2?")
 
     # 1-meter pendulum period
     pendulumLength = 1  # (m)
@@ -310,7 +312,9 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     scoringInfo["criticalHypotheses"].append(f"The pendulum's length is {pendulumLength}m.")
     pendulumPeriod = 2 * np.pi * np.sqrt(pendulumLength / planetGravity)  # (s)
     scoringInfo["pendulumPeriod"] = pendulumPeriod
-    scoringInfo["criticalHypotheses"].append(f"The pendulum's period is {pendulumPeriod} ticks.")
+    scoringInfo["criticalHypotheses"].append(f"The pendulum's period is {pendulumPeriod} seconds.")
+    if (difficulty != "easy"):
+        scoringInfo["criticalQuestions"].append("Does it clearly state the pendulum's period is approximately " + str(round(pendulumPeriod, 2)) + " seconds?")
 
     # Target orbit height
     orbitHeight = world.rng.randint(100, 10000)  # (km)
@@ -324,6 +328,7 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     orbitSpeed = np.sqrt(GRAVITATIONAL_CONSTANT * planetMass / ((planetRadius + scoringInfo["orbitHeight"])*1000))  # m/s
     scoringInfo["orbitSpeed"] = orbitSpeed
     scoringInfo["criticalHypotheses"].append(f"Target orbit speed is {scoringInfo['orbitSpeed']} m/s.")
+    scoringInfo["criticalQuestions"].append("Does it clearly state the target orbit speed to reach an orbital height of " + str(scoringInfo['orbitHeight']) + " km is approximately " + str(round(orbitSpeed, 1)) + " m/s? (plus or minus 3 m/s)")
 
     # Rocket mass
     MIN_ROCKET_MASS = 1e3  # kg
@@ -407,6 +412,10 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
 
     assert thrustWeightRatio > 1, f"The thrust-to-weight ratio is too low, the rocket won't liftoff {thrustWeightRatio}g."
     assert fuelAmount <= rocketTanksVolume, f"The amount of fuel needed doesn't fit in the tanks. {fuelAmount} vs. {rocketTanksVolume}"
+
+    if (difficulty == "challenge"):
+        scoringInfo["criticalQuestions"].append("TODO: Add critical questions for Challenge")
+
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 3
