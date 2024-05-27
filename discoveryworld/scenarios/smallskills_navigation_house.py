@@ -19,9 +19,9 @@ def mkRoomKitchen(world, startX, startY, numDevices=4):
         devices.append(device)
         if (deviceName == "Table"):
             # Randomly add an object to the table
-            if (random.randint(0, 1) == 0):
+            if (world.rng.randint(0, 1) == 0):
                 device.addObject(world.createObject("Mushroom"))
-    random.shuffle(devices)
+    world.rng.shuffle(devices)
 
     # Add to the top
     count = 0
@@ -51,19 +51,19 @@ def mkRoomKitchen(world, startX, startY, numDevices=4):
     randomObjects.append(world.createObject("ColoredFlower", "red"))
     randomObjects.append(world.createObject("ColoredFlower", "blue"))
     if (world.rng.randint(0, 5) != 0):
-        mainTable.addObject(random.choice(randomObjects))
+        mainTable.addObject(world.rng.choice(randomObjects))
 
 
 def mkRoomBedroom(world, startX, startY):
     objectNamesToAdd = ["Bed", "TableBedside"]
     objectsToAdd = [world.createObject(objectName) for objectName in objectNamesToAdd]
-    random.shuffle(objectsToAdd)
+    world.rng.shuffle(objectsToAdd)
     count = 0
     for obj in objectsToAdd:
         world.addObject(startX + 1 + count, startY, Layer.OBJECTS, obj)
         if (obj.name == "table"):
             # Randomly add an object to the table
-            if (random.randint(0, 5) != 0):
+            if (world.rng.randint(0, 5) != 0):
                 randomObjects = []
                 randomObjects.append(world.createObject("Mushroom"))
                 randomObjects.append(world.createObject("FlowerPot"))
@@ -72,7 +72,7 @@ def mkRoomBedroom(world, startX, startY):
                 randomObjects.append(world.createObject("Key"))
                 randomObjects.append(world.createObject("ColoredFlower", "red"))
                 randomObjects.append(world.createObject("ColoredFlower", "blue"))
-                obj.addObject(random.choice(randomObjects))
+                obj.addObject(world.rng.choice(randomObjects))
 
         count += 1
 
@@ -88,7 +88,7 @@ def mkRoomScienceLab(world, startX, startY):
     for deviceName in deviceNames:
         device = world.createObject(deviceName)
         devices.append(device)
-    random.shuffle(devices)
+    world.rng.shuffle(devices)
 
     # Add to the top
     count = 0
@@ -118,7 +118,7 @@ def mkRoomScienceLab(world, startX, startY):
     randomObjects.append(world.createObject("ColoredFlower", "red"))
     randomObjects.append(world.createObject("ColoredFlower", "blue"))
     if (world.rng.randint(0, 5) != 0):
-        mainTable.addObject(random.choice(randomObjects))
+        mainTable.addObject(world.rng.choice(randomObjects))
 
 # Test whether an agent can successfully complete a scenario that just involves traversing a dialog tree
 def makeScenarioNavigationHouseTest(world, numUserAgents=1):
@@ -153,7 +153,7 @@ def makeScenarioNavigationHouseTest(world, numUserAgents=1):
     roomStartLocations.append((startX, startY+9))
     roomStartLocations.append((startX+8, startY+9))
 
-    random.shuffle(roomStartLocations)
+    world.rng.shuffle(roomStartLocations)
 
     # Add a kitchen
     numKitchenDevices = 4
@@ -174,20 +174,20 @@ def makeScenarioNavigationHouseTest(world, numUserAgents=1):
     locations["empty room"] = {"x": roomStartLocations[3][0], "y": roomStartLocations[3][1], "width": 5, "height": 5}
 
     # Add a small farmers field out back
-    fieldLocationX = startX + random.randint(0, width-2)
-    fieldLocationY = startY - random.randint(5, 7)
+    fieldLocationX = startX + world.rng.randint(0, width-2)
+    fieldLocationY = startY - world.rng.randint(5, 7)
     for i in range(0, 3):
         for j in range(0, 3):
             # Add soil tile
             world.addObject(fieldLocationX + i, fieldLocationY + j, Layer.WORLD, world.createObject("SoilTile"))
-            if (random.randint(0, 2) == 0):
+            if (world.rng.randint(0, 2) == 0):
                 world.addObject(fieldLocationX + i, fieldLocationY + j, Layer.OBJECTS, world.createObject("PlantGeneric"))
     locations["soil plot"] = {"x": fieldLocationX, "y": fieldLocationY, "width": 3, "height": 3}
 
     scoringInfo["locations"] = locations
 
     # Pick a random task location
-    taskLocation = random.choice(list(locations.keys()))
+    taskLocation = world.rng.choice(list(locations.keys()))
     scoringInfo["taskLocation"] = taskLocation
     # Store the valid rectangle for the task location
     taskLocationRect = locations[taskLocation]
