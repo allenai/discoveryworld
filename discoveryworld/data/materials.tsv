@@ -21,3 +21,5 @@ SubstanceA	substance a			A substance with no remarkable visual properties	clear	
 SubstanceB	substance b			A substance with no remarkable visual properties	clear	0.2, 0.2, 0.3, 0.3, 0.3	4	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0
 SubstanceC	substance c			A substance with no remarkable visual properties	clear	0.3, 0.2, 0.3, 0.3, 0.3	5	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0
 SubstanceD	substance d			A substance with no remarkable visual properties	clear	0.4, 0.2, 0.3, 0.3, 0.3	6	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0
+Concrete	concrete			The porus material presents some craze cracks and blisters but looks sturdy	grey	0.1, 0.3, 0.3, 0.1, 0.1	8	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0
+Stone	stone			The irregular patterns of closely compacted materials associated with stone	grey	0.1, 0.3, 0.3, 0.1, 0.1	8	0	FALSE	FALSE	FALSE	TRUE	FALSE	0	10000	10000	FALSE	0	0	0	0	0
