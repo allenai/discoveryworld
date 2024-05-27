@@ -37,7 +37,7 @@ def makeScenarioPickAndPlaceTest(world, numUserAgents=1):
     tableLocations.extend([(17, 13), (19, 13)])                         # Front walls
 
     # Shuffle the table locations
-    random.shuffle(tableLocations)
+    world.rng.shuffle(tableLocations)
 
 
     # Random task object names
@@ -47,7 +47,7 @@ def makeScenarioPickAndPlaceTest(world, numUserAgents=1):
         taskObjects.append(world.createObject(taskObjectName))
 
     # Shuffle the task objects
-    random.shuffle(taskObjects)
+    world.rng.shuffle(taskObjects)
 
     # Destination containers
     destinationContainerNames = ["Pot", "Jar"]
@@ -56,7 +56,7 @@ def makeScenarioPickAndPlaceTest(world, numUserAgents=1):
         destinationContainers.append(world.createObject(destinationContainerName))
 
     # Shuffle the destination containers
-    random.shuffle(destinationContainers)
+    world.rng.shuffle(destinationContainers)
 
     # Make 6 tables along the wall
     for i in range(0, 6):
