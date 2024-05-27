@@ -31,31 +31,31 @@ def makeScenarioDoorsKeysTest(world, numUserAgents=1):
     # Buildings
     startX = 15
     startY = 9
-    width = random.randint(5, 7)
+    width = world.rng.randint(5, 7)
     height = 14
     mkBuildingOneRoom(world, x=startX, y=startY, width=width, height=height, signText="Key Puzzle", includeDoor=True, doorKeyID = 0)
 
     doorLocations = []
 
     # Make a grid of walls (x)
-    yOffset1 = random.randint(3, 4)
+    yOffset1 = world.rng.randint(3, 4)
     for i in range(1, width-1):
         world.addObject(startX + i, startY + yOffset1, Layer.BUILDING, world.createObject("Wall"))
 
     # Make a grid of walls (x)
-    yOffset2 = random.randint(6, 7)
+    yOffset2 = world.rng.randint(6, 7)
     for i in range(1, width-1):
         world.addObject(startX + i, startY + yOffset2, Layer.BUILDING, world.createObject("Wall"))
 
     # Make a grid of walls (x)
-    yOffset3 = random.randint(9, 10)
+    yOffset3 = world.rng.randint(9, 10)
     for i in range(1, width-1):
         world.addObject(startX + i, startY + yOffset3, Layer.BUILDING, world.createObject("Wall"))
 
     # Doors for first column: Must be at y=yOffset1, y=yOffset2, y=yOffset3, and x=2 to xOffset1-1
-    doorLocations.append((startX + random.randint(1, width-2), startY + yOffset1))
-    doorLocations.append((startX + random.randint(1, width-2), startY + yOffset2))
-    doorLocations.append((startX + random.randint(1, width-2), startY + yOffset3))
+    doorLocations.append((startX + world.rng.randint(1, width-2), startY + yOffset1))
+    doorLocations.append((startX + world.rng.randint(1, width-2), startY + yOffset2))
+    doorLocations.append((startX + world.rng.randint(1, width-2), startY + yOffset3))
 
 
     # Add doors
@@ -77,7 +77,7 @@ def makeScenarioDoorsKeysTest(world, numUserAgents=1):
         # Make a key
         key = world.createObject("Key", isRusted=False)
         key.setKeyID(doorKeyID)
-        randX = startX + random.randint(1, width-2)
+        randX = startX + world.rng.randint(1, width-2)
         world.addObject(randX, doorLocation[1]+1, Layer.OBJECTS, key)
         scoringInfo["keys"].append(key)
         doorKeyID += 1
