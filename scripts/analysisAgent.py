@@ -122,6 +122,19 @@ def getPerformance(filenameIn:str):
         else:
             print("No agent knowledge found")
 
+        knowledgeEvaluationScoreNormalized = None
+        knowledgeEvaluationError = 0
+        if (knowledgeEvaluation != None):
+            knowledgeEvaluationScoreNormalized = knowledgeEvaluation[0]["evaluation_totalscore"]
+
+        if (knowledgeEvaluationScoreNormalized == None):
+            print("ERROR: No knowledge evaluation score found!")
+            knowledgeEvaluationScoreNormalized = 0
+            knowledgeEvaluationError = 1
+            import time
+            time.sleep(3)
+
+
         # Return
         packed = {
             "taskName": taskName,
@@ -142,7 +155,9 @@ def getPerformance(filenameIn:str):
             "totalSteps": totalSteps,
             "totalTokensReceived": totalTokensReceived,
             "totalTokensSent": totalTokensSent,
-            "knowledgeEvaluation": knowledgeEvaluation
+            "knowledgeEvaluationScoreNormalized": knowledgeEvaluationScoreNormalized,
+            "knowledgeEvaluationError": knowledgeEvaluationError,
+            "knowledgeEvaluation": knowledgeEvaluation,
         }
 
         return packed
@@ -187,6 +202,8 @@ def calculateAveragePerformance(allPerformance):
                 "totalSteps": 0,
                 "totalTokensReceived": 0,
                 "totalTokensSent": 0,
+                "knowledgeEvaluationScoreNormalized": 0,
+                "knowledgeEvaluationError": 0,
             }
         }
         return packed
@@ -214,6 +231,7 @@ def calculateAveragePerformance(allPerformance):
 
         # Add the scores to the group
         for key in groupScores[groupID]["scores"]:
+            print("key: " + str(key))
             groupScores[groupID]["scores"][key] += performance[key]
 
         groupScores[groupID]["numSamples"] += 1
@@ -253,9 +271,11 @@ if __name__ == "__main__":
     #dataPath = "output-hypothesizer-gpt4o-9discovery/"
 
     #dataPath = "paper-results/output-may26-hypothesizer-unittest/"       # Unit test results for paper
-    dataPath = "paper-results/output-may27-hypothesizer-discovery-easy/" # Discovery task (difficulty: easy) results for paper
+    #dataPath = "paper-results/output-may27-hypothesizer-discovery-easy/" # Discovery task (difficulty: easy) results for paper
     #dataPath = "paper-results/output-may27-hypothesizer-discovery-challenge/" # Discovery task (difficulty: challenge) results for paper
     #dataPath = "paper-results/from-marc/discoveryworld-results/" # From Marc, difficulty: normal
+
+    dataPath = "paper-results/output-may27-hypothesizer-discovery-easy-tinkeringsubset/" # Discovery task (difficulty: easy) results for paper
 
     # Step 1: Find a list of files that start with "output_allhistory" that end with ".json"
     filterPrefix = "output_allhistory"
@@ -295,7 +315,7 @@ if __name__ == "__main__":
     print("Writing " + filenameOut + "...")
     with open(filenameOut, "w") as f:
         # Write the header
-        header = ["taskName", "difficulty", "seed", "images", "model", "thread", "timestamp", "scoreNormalized", "scoreRaw", "scoreMax", "completed", "completedSuccessfully", "lastStepIdx", "filename", "totalCost", "totalSteps", "totalTokensReceived", "totalTokensSent"]
+        header = ["taskName", "difficulty", "seed", "images", "model", "thread", "timestamp", "scoreNormalized", "scoreRaw", "scoreMax", "completed", "completedSuccessfully", "lastStepIdx", "knowledgeEvaluationScoreNormalized", "knowledgeEvaluationError", "filename", "totalCost", "totalSteps", "totalTokensReceived", "totalTokensSent"]
         f.write("\t".join(header) + "\n")
         # Write the data
         for performance in allPerformance:
@@ -324,7 +344,7 @@ if __name__ == "__main__":
     print("Writing " + filenameOut + "...")
     with open(filenameOut, "w") as f:
         # Write the header
-        header = ["taskName", "difficulty", "images", "model", "seeds", "numSamples", "avg_scoreNormalized", "avg_scoreRaw", "avg_scoreMax", "avg_completed", "avg_completedSuccessfully", "avg_lastStepIdx", "avg_totalCost", "avg_totalSteps", "avg_totalTokensReceived", "avg_totalTokensSent", "totalCost", "totalSteps", "totalTokensReceived", "totalTokensSent", "threads", "timestamps", "filenames"]
+        header = ["taskName", "difficulty", "images", "model", "seeds", "numSamples", "avg_scoreNormalized", "avg_scoreRaw", "avg_scoreMax", "avg_completed", "avg_completedSuccessfully", "avg_lastStepIdx", "avg_knowledgeEvaluationScoreNormalized", "avg_knowledgeEvaluationError", "avg_totalCost", "avg_totalSteps", "avg_totalTokensReceived", "avg_totalTokensSent", "totalCost", "totalSteps", "totalTokensReceived", "totalTokensSent", "threads", "timestamps", "filenames"]
         f.write("\t".join(header) + "\n")
         # Write the data
         for performance in averagePerformance:
