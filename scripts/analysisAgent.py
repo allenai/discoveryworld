@@ -271,11 +271,11 @@ if __name__ == "__main__":
     #dataPath = "output-hypothesizer-gpt4o-9discovery/"
 
     #dataPath = "paper-results/output-may26-hypothesizer-unittest/"       # Unit test results for paper
-    #dataPath = "paper-results/output-may27-hypothesizer-discovery-easy/" # Discovery task (difficulty: easy) results for paper
+    dataPath = "paper-results/output-may27-hypothesizer-discovery-easy/" # Discovery task (difficulty: easy) results for paper
     #dataPath = "paper-results/output-may27-hypothesizer-discovery-challenge/" # Discovery task (difficulty: challenge) results for paper
     #dataPath = "paper-results/from-marc/discoveryworld-results/" # From Marc, difficulty: normal
 
-    dataPath = "paper-results/output-may27-hypothesizer-discovery-easy-tinkeringsubset/" # Discovery task (difficulty: easy) results for paper
+    #dataPath = "paper-results/output-may27-hypothesizer-discovery-easy-tinkeringsubset/" # Discovery task (difficulty: easy) results for paper
 
     # Step 1: Find a list of files that start with "output_allhistory" that end with ".json"
     filterPrefix = "output_allhistory"
