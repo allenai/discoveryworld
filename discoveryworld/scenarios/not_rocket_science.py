@@ -414,8 +414,10 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
     assert fuelAmount <= rocketTanksVolume, f"The amount of fuel needed doesn't fit in the tanks. {fuelAmount} vs. {rocketTanksVolume}"
 
     if (difficulty == "challenge"):
-        scoringInfo["criticalQuestions"].append("TODO: Add critical questions for Challenge")
-
+        scoringInfo["criticalQuestions"].append(f"Does it clearly eliminate fuel type {fuelTypes[1]} as it wouldn't generate enough thrust to liftoff the rocket (i.e., its thrust to weight ratio is lower or equal to 1 g)?")
+        scoringInfo["criticalQuestions"].append(f"Does it clearly eliminate fuel type {fuelTypes[2]} as its density is to low and would require more fuel than what the rocket can hold?")
+        scoringInfo["criticalQuestions"].append(f"Does it clearly state what fuel type to use {scoringInfo['fuelType']} (between {','.join(sorted(fuelTypes))})?")
+        scoringInfo["criticalQuestions"].append(f"Does it clearly state the amount needed of fuel type {scoringInfo['fuelType']} is approximately {int(scoringInfo['fuelAmount'])} liters? (plus or minus 2 liters)")
 
     # Set a limit for the number of user agents
     MAX_NUM_AGENTS = 3
