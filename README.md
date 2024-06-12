@@ -25,9 +25,11 @@ https://github.com/allenai/discoveryworld/tree/main/agents
 
 API documentation is provided below in `Section 3`.
 
-### 1.4. I want to examine the raw data from the agent runs or human runs described in the paper.
+### 1.4. I want to examine the raw data from the agent runs or human runs described in the paper, or see videos of agents playing DiscoveryWorld.
 Links to full data releases, including instructions for downloading, as well as their format and other datacard information, is provided in `/data`:
 https://github.com/allenai/discoveryworld/tree/main/data
+
+A direct link to a limited archive containing only videos of the baseline agents playing DiscoveryWorld is [available here](https://drive.google.com/file/d/1I34EMVRUIIOppQFX3RueG4Nl75n8_zlJ/view?usp=drive_link).
 
 ### 1.5. I want to view the instructions provided to the human scientists when they played DiscoveryWorld
 Please find the instructions provided to the human scientists in `README-USERSTUDY.md`. 
