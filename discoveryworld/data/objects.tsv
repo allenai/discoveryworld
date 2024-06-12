@@ -1,0 +1,68 @@
+ReferenceName	ObjectName	ObjectType	BaseClass	defaultSpriteName	parts_list	contents_list	materials_list	color_str	size_str	isMovable_bool	isPassable_BOOL	isPoisonous_bool	isEdible_bool	isLiving_bool	temperatureC_float
+mushroom1	mushroom	mushroom	Mushroom		spacemold1		PlantMatterWhite	red		TRUE	TRUE	FALSE	TRUE	TRUE	21
+mushroom2	mushroom	mushroom	Mushroom				PlantMatterGreen	green		TRUE	TRUE	FALSE	TRUE	TRUE	22
+mushroom3	mushroom	mushroom	Mushroom				PlantMatterWhite	yellow		TRUE	TRUE	FALSE	TRUE	TRUE	23
+mushroom4	mushroom	mushroom	Mushroom				PlantMatterWhite	pink		TRUE	TRUE	FALSE	TRUE	TRUE	24
+spacemold1	mold	mold	Mold	placeholder_1			MoldRed	red	microscopic	TRUE	TRUE	TRUE	TRUE	TRUE	25
+mushroom1b	mushroom	mushroom	Mushroom				PlantMatterWhite	red		TRUE	TRUE	FALSE	TRUE	TRUE	21
+mushroom2b	mushroom	mushroom	Mushroom		spacemold1		PlantMatterGreen	green		TRUE	TRUE	FALSE	TRUE	TRUE	22
+mushroom3b	mushroom	mushroom	Mushroom				PlantMatterWhite	yellow		TRUE	TRUE	FALSE	TRUE	TRUE	23
+mushroom4b	mushroom	mushroom	Mushroom				PlantMatterWhite	pink		TRUE	TRUE	FALSE	TRUE	TRUE	24
+mushroom1c	mushroom	mushroom	Mushroom				PlantMatterWhite	red		TRUE	TRUE	FALSE	TRUE	TRUE	21
+mushroom2c	mushroom	mushroom	Mushroom				PlantMatterGreen	green		TRUE	TRUE	FALSE	TRUE	TRUE	22
+mushroom3c	mushroom	mushroom	Mushroom		spacemold1		PlantMatterWhite	yellow		TRUE	TRUE	FALSE	TRUE	TRUE	23
+mushroom4c	mushroom	mushroom	Mushroom				PlantMatterWhite	pink		TRUE	TRUE	FALSE	TRUE	TRUE	24
+mushroom1d	mushroom	mushroom	Mushroom				PlantMatterWhite	red		TRUE	TRUE	FALSE	TRUE	TRUE	21
+mushroom2d	mushroom	mushroom	Mushroom				PlantMatterGreen	green		TRUE	TRUE	FALSE	TRUE	TRUE	22
+mushroom3d	mushroom	mushroom	Mushroom				PlantMatterWhite	yellow		TRUE	TRUE	FALSE	TRUE	TRUE	23
+mushroom4d	mushroom	mushroom	Mushroom		spacemold1		PlantMatterWhite	pink		TRUE	TRUE	FALSE	TRUE	TRUE	24
+mushroom1e	mushroom	mushroom	Mushroom		spacemold1		PlantMatterWhite	red		TRUE	TRUE	FALSE	TRUE	TRUE	21
+mushroom2e	mushroom	mushroom	Mushroom				PlantMatterGreen	green		TRUE	TRUE	FALSE	TRUE	TRUE	22
+mushroom3e	mushroom	mushroom	Mushroom				PlantMatterWhite	yellow		TRUE	TRUE	FALSE	TRUE	TRUE	23
+mushroom4e	mushroom	mushroom	Mushroom		spacemold1		PlantMatterWhite	pink		TRUE	TRUE	FALSE	TRUE	TRUE	24
+radioactivechecksource	radioactive source	radioactive source	Object	instruments_radioactive_symbol			heavyradioactive	black		TRUE	TRUE	FALSE	FALSE	FALSE	50
+rock_sm	rock (small)	rock	Object	cave1_rock_small			rock	grey		TRUE	TRUE	FALSE	FALSE	FALSE	10
+rock_med	rock (medium)	rock	Object	cave1_rock_medium			rock	grey		TRUE	TRUE	FALSE	FALSE	FALSE	10
+rock_lg	rock (large)	rock	Object	cave1_rock_large			rock	grey		FALSE	FALSE	FALSE	FALSE	FALSE	10
+rock_glowing	rock (glowing)	rock	Object	cave1_rock_glowing			rock	grey		TRUE	TRUE	FALSE	FALSE	FALSE	10
+															
+# Base Class															
+			Object												
+# Building Materials															
+			Wall												
+			Floor												
+			Door												
+			Sign												
+			SignVillage												
+															
+# Outside Ground															
+			Grass												
+			Path												
+			SoilTile												
+															
+# Furniture															
+			Table												
+			TableBedside												
+			Chair												
+			Bed												
+															
+															
+# Appliances															
+			Stove												
+			Sink												
+			Fridge												
+															
+# Instruments															
+			Microscope												
+															
+															
+# Plants															
+			PlantGeneric												
+			Mushroom												
+															
+															
+# Other															
+			Statue												
+			Fence												
+			Pot												
+			FlowerPot												
