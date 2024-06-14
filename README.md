@@ -2,8 +2,6 @@
 
 ![discoveryworld](doc/discoveryworld-logo.png)
 
-![discoveryworld](doc/tiled-hypothesizer-videos.gif)
-
 ## Example Agent Video
 Below is a short 60 second clip of one of the baseline agents *(Hypothesizer)* attempting a task (Proteomics, Normal Difficulty, Seed 0):
 
@@ -13,6 +11,8 @@ Below is a short 60 second clip of one of the baseline agents *(Hypothesizer)* a
 
 ### 1.1. I want to read about DiscoveryWorld
 Please find details of DiscoveryWorld in this preprint: https://arxiv.org/abs/2406.06769
+
+A short summary is also available on the [project website](https://allenai.github.io/discoveryworld/).
 
 ### 1.2. I want to play DiscoveryWorld using the graphical user interface intended for humans
 Installing and running DiscoveryWorld is easy, and generally takes just a few minutes.  To run as a human, please follow the installation instructions in `Section 2` below.
@@ -31,9 +31,12 @@ https://github.com/allenai/discoveryworld/tree/main/data
 
 A direct link to a limited archive containing only videos of the baseline agents playing DiscoveryWorld is [available here](https://drive.google.com/file/d/1I34EMVRUIIOppQFX3RueG4Nl75n8_zlJ/view?usp=drive_link).
 
-### 1.5. I want to view the instructions provided to the human scientists when they played DiscoveryWorld
+### 1.5. I want to view the instructions provided to the human scientists when they played DiscoveryWorld.
 Please find the instructions provided to the human scientists in `README-USERSTUDY.md`. 
 
+### 1.6. I want to see a human scientist playthrough of a DiscoveryWorld task.
+
+Please find a narrated human playthrough of one of the shortest tasks, Proteomics (on Normal difficulty), [available on Youtube](https://www.youtube.com/watch?v=hKWd-pwF0_E).
 
 ## 2. Installation and Running
 
