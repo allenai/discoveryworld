@@ -3,7 +3,7 @@
 ![discoveryworld](doc/discoveryworld-logo.png)
 
 ## Example Agent Video
-Below is a short 60 second clip of one of the baseline agents *(Hypothesizer)* attempting a task (Proteomics, Normal Difficulty, Seed 0):
+Below is a short 60 second clip of one of the baseline agents *(Hypothesizer)* attempting a task (Proteomics, Normal Difficulty, Seed 0).  For comparison, a narrated walkthrough of a human playing this same scenario is available on [Youtube](https://www.youtube.com/watch?v=hKWd-pwF0_E).
 
 ![discoveryworld-video](doc/output_hypothesizer_agent.Proteomics-Normal-s0-imagesTrue-modelgpt-4o-thread2007.20240525-142057-first60sec.gif)
 
