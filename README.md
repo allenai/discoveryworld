@@ -19,7 +19,7 @@ Installing and running DiscoveryWorld is easy, and generally takes just a few mi
 
 *NOTE: The paper contains spoilers for the DiscoveryWorld tasks.  If you'd like to complete them as the human scientist participants did, without prior knowledge, we would recommend trying the tasks before reading the paper in detail.*
 
-### 1.3. I want to make my own DiscoveryWorld agent, or examine the baseline agents. 
+### 1.3. I want to make my own DiscoveryWorld agent, or examine the baseline agents.
 The baseline agents are provided in `/agents`, with a special README intended to help you get started quickly, and callout helpful portions of the code that you might be interested in viewing or reusing:
 https://github.com/allenai/discoveryworld/tree/main/agents
 
@@ -32,7 +32,7 @@ https://github.com/allenai/discoveryworld/tree/main/data
 A direct link to a limited archive containing only videos of the baseline agents playing DiscoveryWorld is [available here](https://drive.google.com/file/d/1I34EMVRUIIOppQFX3RueG4Nl75n8_zlJ/view?usp=drive_link).
 
 ### 1.5. I want to view the instructions provided to the human scientists when they played DiscoveryWorld.
-Please find the instructions provided to the human scientists in `README-USERSTUDY.md`. 
+Please find the instructions provided to the human scientists in `README-USERSTUDY.md`.
 
 ### 1.6. I want to see a human scientist playthrough of a DiscoveryWorld task.
 
@@ -68,7 +68,7 @@ The graphical interface can be run with the following command from the `discover
 python scripts/userstudy.py
 ```
 
-You should see a menu that allows you to select a given scenario theme, difficulty, and parametric seed, followed by the user interface: 
+You should see a menu that allows you to select a given scenario theme, difficulty, and parametric seed, followed by the user interface:
 
 ![discoveryworld](doc/screenshot.png)
 
@@ -110,15 +110,15 @@ The API is intended to closely resemble the `OpenAI Gym` API used by many virtua
 3. Have the agent provide it's current `Action` (i.e. what it chooses to do, like `eat apple`) at the current timestep
 4. Continually repeat steps 3+4 until some exit condition is met, like completing the task, or reaching a maximum number of steps.
 
-The API is described first through minimal agent examples, then through documentation for specific functions. 
+The API is described first through minimal agent examples, then through documentation for specific functions.
 
 ### 3.2. Minimal Example (Random Agent)
 
-The *Random Baseline Agent*, which randomly selects an action to take at each time step in the environment, is provided as a minimal end-to-end example in the `/agents` folder. 
+The *Random Baseline Agent*, which randomly selects an action to take at each time step in the environment, is provided as a minimal end-to-end example in the `/agents` folder.
 
-### 3.3. Initializing the API and instantiating a specific world. 
+### 3.3. Initializing the API and instantiating a specific world.
 
-Initializing a scenario is performed using the `loadScenario()` function: 
+Initializing a scenario is performed using the `loadScenario()` function:
 
 ```
     api = DiscoveryWorldAPI(threadID=1)
@@ -128,18 +128,18 @@ Initializing a scenario is performed using the `loadScenario()` function:
         return None
 ```
 
-Note that while DiscoveryWorld was designed to support multiple user agents in a given scenario, this feature is currently untested, and as such `numUserAgents` is set to 1 above. 
+Note that while DiscoveryWorld was designed to support multiple user agents in a given scenario, this feature is currently untested, and as such `numUserAgents` is set to 1 above.
 
 #### 3.3.1 Scenarios (Task Themes)
 
-A list of recognized task themes can be found here: 
+A list of recognized task themes can be found here:
 ```
 from discoveryworld.ScenarioMaker import SCENARIO_NAMES
 ```
 
-#### 3.3.2 Difficulties 
+#### 3.3.2 Difficulties
 
-A list of recognized difficulties is nominally `Easy`, `Normal`, and `Challenge`, though these can be imported programmatically here: 
+A list of recognized difficulties is nominally `Easy`, `Normal`, and `Challenge`, though these can be imported programmatically here:
 ```
 from discoveryworld.ScenarioMaker import SCENARIO_DIFFICULTY_OPTIONS
 ```
@@ -150,13 +150,13 @@ The seed is nominally a value between 0 and 4 (i.e. `0, 1, 2, 3, 4`).  Other hig
 
 #### 3.3.4 Thread ID and Uniqueness
 
-It's important that each concurrently running DiscoveryWorld be given it's own unique `threadID` during initialization. 
+It's important that each concurrently running DiscoveryWorld be given it's own unique `threadID` during initialization.
 
-Internally, the `threadID` is used to create unique output directories for storing the frames of each run.  If you don't wish to have the frames from one run overwritten by another, then your **threadID should be unique across all runs**. 
+Internally, the `threadID` is used to create unique output directories for storing the frames of each run.  If you don't wish to have the frames from one run overwritten by another, then your **threadID should be unique across all runs**.
 
 ### 3.4. Observation
 
-Observations are provided from the `getAgentObservation()` function, for example: 
+Observations are provided from the `getAgentObservation()` function, for example:
 ```
 observation = api.getAgentObservation(agentIdx=0)
 ```
@@ -180,13 +180,13 @@ For models that can make use of visual information, two images are provided unde
 
 In addition, an `errors` key is provided in the dictionary, which is empty in normal operation.  If errors are encountered, this may provide helpful additional information.
 
-An example observation return can be found here, for the Dialog unit test: 
+An example observation return can be found here, for the Dialog unit test:
 https://github.com/allenai/discoveryworld/blob/main/doc/example-observation.json
 
 
 ### 3.5. Actions
 
-Actions are performed with the `performAgentAction()` function, which is similar to the `step()` function in the OpenAI Gym API. 
+Actions are performed with the `performAgentAction()` function, which is similar to the `step()` function in the OpenAI Gym API.
 ```
 # Assemble an action packet
 actionName = "USE"
@@ -210,7 +210,7 @@ result = api.performAgentAction(agentIdx=0, actionJSON=actionCommand)
 
 #### 3.5.1. What actions are available?
 
-A list of available actions (and, what arguments they expect) is provided through the `listKnownActions()` function.  These actions are specifically formatted such that they can be provided directly in the prompt to LLMs that can read JSON, such as GPT4: 
+A list of available actions (and, what arguments they expect) is provided through the `listKnownActions()` function.  These actions are specifically formatted such that they can be provided directly in the prompt to LLMs that can read JSON, such as GPT4:
 ```
 actionDescriptions = {
     ActionType.PICKUP.name:         {"args": ["arg1"], "desc": "pick up an object (arg1)"},
@@ -236,9 +236,9 @@ actionDescriptions = {
 ```
 
 
-### 3.6. Scoring and Scorecards. 
+### 3.6. Scoring and Scorecards.
 
-The scorecard provides detailed information about scoring an agent's current performance on a task, and can be accessed using: 
+The scorecard provides detailed information about scoring an agent's current performance on a task, and can be accessed using:
 ```
 scorecard = api.getTaskScorecard()
 ```
@@ -248,19 +248,19 @@ A scorecard contains the following keys:
 - `taskDescription`: The plain-text description of the task
 - `completed`: Has the task been completed (regardless of whether it was successful or not)
 - `completedSuccessfully`: Has the task been completed successfully? **Used to score task completion**
-- `scoreNormalized`: The normalized (0-1) partial progress core.  **Used to score procedural progress**.  Non-normalized scores are also available for internal use (`score` and `maxScore`). 
+- `scoreNormalized`: The normalized (0-1) partial progress core.  **Used to score procedural progress**.  Non-normalized scores are also available for internal use (`score` and `maxScore`).
 - `scoreCard`: A list of specific subgoals included in the partial progress score, and whether each has been met.
 - `criticalQuestions`: A set of binary (yes/no) questions to answer with respect to any notes or other knowledge an agent has accumulated. **Used to score discovery knowledge** (and not applicable for unit tests).
 
 - An additional key, `criticalHypotheses`, exists in the scorecard.  This contains potentially important descriptive knowledge, but was not included in the paper for space.  You may still find it useful in your work.
 
-An example observation return can be found here, for the Dialog unit test: 
+An example observation return can be found here, for the Dialog unit test:
 https://github.com/allenai/discoveryworld/blob/main/doc/example-scorecard.json
 
 
 ### 3.7. Environment `tick()` function (important)
 
-Unlike the OpenAI Gym API, which updates the environment after each call to `step()`, the DiscoveryWorld environment must be manually updated by calling `tick()` after the agent has submitted it's actions using `performAgentAction()`. 
+Unlike the OpenAI Gym API, which updates the environment after each call to `step()`, the DiscoveryWorld environment must be manually updated by calling `tick()` after the agent has submitted it's actions using `performAgentAction()`.
 
 ```
 # Perform the world tick
@@ -277,7 +277,7 @@ Notes:
 - For long runs, the log files may take some time to export
 - To prevent single large files, the world history files are split into multiple parts, each containing only 100 steps of world history.  To assemble the full history, you must re-assemble each in turn.  The filenames provide a `partXofY` suffix for indexing.
 
-Example code: 
+Example code:
 ```
     # Example suffix
     logfileSuffix = "any-information-you-prefer-in-your-filename"
@@ -327,9 +327,9 @@ Example code:
 
 ### 3.9.  Minimal pseudocode LLM agent example
 
-The following is a minimal, nearly complete example agent (with an unimplemented function, `submitLLMPrompt()`, which nominally would call some LLM, that returns a JSON response). 
+The following is a minimal, nearly complete example agent (with an unimplemented function, `submitLLMPrompt()`, which nominally would call some LLM, that returns a JSON response).
 
-Additional complete examples are provided in the `/agents` folder. 
+Additional complete examples are provided in the `/agents` folder.
 
 ```
 from discoveryworld.DiscoveryWorldAPI import DiscoveryWorldAPI
@@ -465,10 +465,10 @@ if __name__ == "__main__":
 
 
 ## 4. Citation
-If you use this work, please reference the following citation: 
+If you use this work, please reference the following citation:
 ```
 @misc{jansen2024discoveryworld,
-      title={DISCOVERYWORLD: A Virtual Environment for Developing and Evaluating Automated Scientific Discovery Agents}, 
+      title={DISCOVERYWORLD: A Virtual Environment for Developing and Evaluating Automated Scientific Discovery Agents},
       author={Peter Jansen and Marc-Alexandre Côté and Tushar Khot and Erin Bransom and Bhavana Dalvi Mishra and Bodhisattwa Prasad Majumder and Oyvind Tafjord and Peter Clark},
       year={2024},
       eprint={2406.06769},
@@ -491,12 +491,12 @@ If you release a derivative work of DiscoveryWorld, please support the artist by
 
 ## 7. License
 
-DiscoveryWorld is released under an Apache 2.0 License.  The text of that license is included in this repository. 
+DiscoveryWorld is released under an Apache 2.0 License.  The text of that license is included in this repository.
 
-The Apache 2.0 license applies only to the DiscoveryWorld code, but does not apply to the [CuteRPG art assets by PixyMoon](https://pixymoon.itch.io/cute-rpg-world), whose license (for example) does permit both modification and personal or commercial use, but prohibits being resold. 
+The Apache 2.0 license applies only to the DiscoveryWorld code, but does not apply to the [CuteRPG art assets by PixyMoon](https://pixymoon.itch.io/cute-rpg-world), whose license (for example) does permit both modification and personal or commercial use, but prohibits being resold.
 
-## 6. Contact
+## 8. Contact
 
-For any questions, please contact Peter Jansen (`peterj@allenai.org`).  For issues, bugs, or feature requests, please submit a Github Issue. 
+For any questions, please contact Peter Jansen (`peterj@allenai.org`).  For issues, bugs, or feature requests, please submit a Github Issue.
 
 
