@@ -122,8 +122,11 @@ class DiscoveryWorldReactController(BaseReactController):
         else:
             action_json = self.extract_json_output(last_child)
             try:
-                formatted_json = json.loads(action_json)
-                current_history.append(Action(action_str=last_child.output, action_json=formatted_json))
+                if action_json:
+                    formatted_json = json.loads(action_json)
+                    current_history.append(Action(action_str=last_child.output, action_json=formatted_json))
+                else:
+                    current_history.append(Action(action_str=last_child.output, action_json={}))
             except json.JSONDecodeError:
                 raise ValueError("Failed to decode JSON from action output: {}".format(last_child.output))
 

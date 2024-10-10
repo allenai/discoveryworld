@@ -111,7 +111,10 @@ class DiscoveryWorldEnvironmentModel(BaseModel):
                 "DiscoveryWorldEnvironmentModel called without any open node!!")
         env = SingletonEnvironment().env
         # execute the input against the DiscoveryWorld environment
-        action_json = json.loads(current_node.input_str)
+        if current_node.input_str:
+            action_json = json.loads(current_node.input_str)
+        else:
+            action_json = {}
         output = env.performAgentAction(agentIdx=0, actionJSON=action_json)
         if self.output_dir is not None:
             output_tracking_info(output_dir=self.output_dir, state=state, action=action_json,

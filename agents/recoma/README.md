@@ -5,7 +5,7 @@
 1. Install the Recoma library
 
 ```shell
-pip install git+https://github.com/allenai/recoma.git@b262ab5476841551c5d6874e8ddecef78c71a072
+pip install recoma==0.0.4
 ```
 
 2. Set the OPENAI_API_KEY env variable
@@ -190,3 +190,17 @@ for t in "Archaeology Dating" "Plant Nutrients" "Space Sick" "Combinatorial Chem
 ```
 
 
+### Running o1
+
+To run on o1-mini, you can run the following script. Make corresponding changes for the other datasets
+```shell
+export DIFF=Normal
+export TASK="Small Skills"
+export MAX_ENV_CALLS=10
+export SEED=123 # Used for GPT
+export MODEL=o1-mini-2024-09-12
+export OUTPUT_DIR=output_dir/react/${DIFF}_${MAX_ENV_CALLS}env_${MODEL}_s${SEED}/${TASK// /_}
+python agents/recoma/run_recoma.py \
+    --output_dir ${OUTPUT_DIR} \
+    --config agents/recoma/configs/react_o1.jsonnet
+```
