@@ -8,6 +8,7 @@ from discoveryworld.ScenarioMaker import ScenarioMaker, SCENARIOS, SCENARIO_NAME
 import openai
 
 import traceback
+import backoff
 
 import json
 import time
@@ -15,6 +16,8 @@ import random
 import copy
 import signal
 import sys
+from collections import defaultdict
+import re
 
 # Tiktoken
 import tiktoken
@@ -69,6 +72,9 @@ MAXIMUM_COST_DOLLARS = 0.0
 
 # consolidation step tracking
 CONSOLATATE_TRACKING = []
+
+# augmented knowledge tracking
+AUGMENTED_TRACKING = []
 
 
 # There are some try/catch blocks in Hypothesizer to catch exceptions.
@@ -323,11 +329,12 @@ def extractJSONfromGPT4Response(strIn):
 #
 #   GPT-4 Vision "Hypothesizer" agent
 #
-
+@backoff.on_exception(backoff.expo, Exception, max_time=60)
 def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, currentScientificKnowledge, includeImages=True):
     agentIdx = 0
     # Perform the first step
     observation = api.getAgentObservation(agentIdx=agentIdx)
+    ogKnowledge = copy.deepcopy(currentScientificKnowledge)
 
     # Get a copy of the observation JSON without the images in it (that we can give directly to GPT-4 in the prompt)
     # Deep copy the observation dictionary
@@ -343,6 +350,7 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
     # print the response (pretty)
     print(json.dumps(observationNoVision, indent=4, sort_keys=True))
 
+    print("+++++++STARTING PROMPTING")
     # Query OpenAI with the observation
     #promptStr = "Please describe in detail what you see in this image."
     promptStr0 = "You are playing a video game about making scientific discoveries.  The game is in the style of a 2D top-down RPG (you are the agent with green hair in the center of the image), and as input you get both an image, as well as information from the user interface (provided in the JSON below) that describes your location, inventory, objects in front of you, the result of your last action, and the task that you're assigned to complete.\n"
@@ -443,8 +451,10 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
 
     # Extract the JSON from the response
     print("EXCTRACTING MESSAGE")
+    print("+++++MAIN RESPONSE ", response)
     responseStr = response.choices[0].message.content
     print("SUCCESS1")
+    print("+++++RESPONSE STR ", responseStr)
     responseJSON = extractJSONfromGPT4Response(responseStr)
     print("SUCCESS2")
 
@@ -625,6 +635,7 @@ def GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, cur
         "responseStr": responseStr,
         "knowledgePromptStr": knowledgePromptStr,
         "responseStrKnowledge": responseStrKnowledge,
+        "originalKnowledge": ogKnowledge,
         "currentScientificKnowledge": copy.deepcopy(currentScientificKnowledge),
         "oracle_scorecard": api.getTaskScorecard()
     }
@@ -637,9 +648,94 @@ def countTokens(strIn):
     num_tokens = len(encoding.encode(strIn))
     return num_tokens
 
+def generateHypothesesWithExistingKnowledgeBase(client, taskDescription, scientificKnowledge, stepIdx):
+    promptStr = ""
+    promptStr += "You are an agent playing a game about automated scientific discovery.\n"
+    promptStr += "In this game, you are given a task to complete, and you can complete this task by taking actions in the environment.\n"
+    promptStr += "While playing the game, you are also explicitly keeping track of your scientific knowledge (shown below), both to help you, but also to help others understand your process.\n"
+    promptStr += "This knowledge will take two forms: measurements, or hypotheses.\n"
+    promptStr += "Measurements are observations that you've made about the world.\n"
+    promptStr += "Hypotheses are statements that you believe to be true, and that you'd like to test. These should be formulated as IF statements. These should have a `status` (i.e. pending, confirmed, rejected) and an ideally succinct `supporting evidence` supporting that status.\n\n"
+    promptStr += "Here is the task description:\n"
+    promptStr += taskDescription
+    promptStr += "\n\n"
+    promptStr += "Here is your current knowledge base:\n"
+    promptStr += json.dumps(scientificKnowledge, indent=4, sort_keys=True)
+    promptStr += "\n\n"
+    promptStr += "Generate no more than than 2 new and relevant hypotheses based on this knowledge, for the given task, or modify the status of an existing hypotheses, provided there is supporting evidence. If you cannot come up with a new hypotheses, just return the existing knowledge base. Do not increase the step number, and keep it at " + str(stepIdx) + ".\n"
+    promptStr += "The output should be in JSON, and should have a single top-level key (`scientific_knowledge`), which is an array of measurements and/or hypotheses.\n"
+
+    print("Augmentation Step:")
+    response = OpenAIGetCompletion(client, promptStr=promptStr, promptImages=[], model=OPENAI_MODEL_TO_USE, prevImage=None, temperature=0.1, maxTokens=3000)
+    print(response)
+
+    # Extract the JSON from the response
+    print("EXTRACTING MESSAGE")
+    responseStrKnowledge = response.choices[0].message.content
+    print("SUCCESS1")
+    responseJSONKnowledge = extractJSONfromGPT4Response(responseStrKnowledge)
+    print("SUCCESS2")
+
+    retKnowledge = copy.deepcopy(scientificKnowledge)
+    packedOut = {
+        "promptStr": promptStr,
+        "responseStr": responseStrKnowledge,
+        "originalKnowledge": retKnowledge,
+        "augmentedScientificKnowledge": retKnowledge,
+        "augmented": "false"
+    }
+
+    if (responseJSONKnowledge == None):
+        # Failed for some reason -- return original knowledge base
+
+        packed = {
+            "stepIdx": stepIdx,
+            "error": "Failed to parse response -- knowledge not augmented.",
+            "initial_knowledge": retKnowledge,
+            "response": copy.deepcopy(responseStrKnowledge),
+        }
+        AUGMENTED_TRACKING.append(packed)
+
+        return packedOut
+
+    if (responseJSONKnowledge != None) and ("scientific_knowledge" in responseJSONKnowledge):
+        # Check that it's a list
+        if (isinstance(responseJSONKnowledge["scientific_knowledge"], list)):
+            # Check that it's not empty
+            newKnowledge = responseJSONKnowledge["scientific_knowledge"]
+            if (len(newKnowledge) > 0):
+
+                packed = {
+                    "stepIdx": stepIdx,
+                    "initial_knowledge": copy.deepcopy(scientificKnowledge),
+                    "new_knowledge": copy.deepcopy(newKnowledge),
+                }
+                AUGMENTED_TRACKING.append(packed)
+
+                print("+++++AUGMENTED:")
+                print(json.dumps({"scientific_knowledge": newKnowledge}, indent=4, sort_keys=True))
+
+                packedOut['augmentedScientificKnowledge'] = {"scientific_knowledge": newKnowledge}
+                packedOut['augmented'] = "true"
+
+                return packedOut
+
+    # Otherwise, return the old one
+    packed = {
+        "stepIdx": stepIdx,
+        "error": "Unknown error when augmenting knowledge.",
+        "initial_knowledge": copy.deepcopy(scientificKnowledge),
+        "response": copy.deepcopy(responseStrKnowledge),
+    }
+    AUGMENTED_TRACKING.append(packed)
+    return packedOut
+
+
+
+
 # This function runs periodically (i.e. every 10 in-game steps), and asks the agent to consolidate their knowledge
 # so that it's more compact, and doesn't take up as much space in the prompt.
-def consolidateKnowledgeStep(client, scientificKnowledge, stepIdx):
+def consolidateKnowledgeStep(client, scientificKnowledge, critical_hypotheses, task_description, stepIdx):
     global CONSOLATATE_TRACKING
     KNOWLEDGEBASE_MAX_SIZE_ENTRIES = 40
     KNOWLEDGEBASE_MAX_SIZE_TOKENS = 2000
@@ -708,9 +804,22 @@ def consolidateKnowledgeStep(client, scientificKnowledge, stepIdx):
     responseJSONKnowledge = extractJSONfromGPT4Response(responseStrKnowledge)
     print("SUCCESS2")
 
+    hypo_to_add = [
+        {
+            "hypothesis": critical_hypotheses[0],
+            "status": "confirmed",
+            "step": stepIdx,
+            "supporting evidence": "based on task description"
+        }
+    ]
+
     if (responseJSONKnowledge == None):
         # Failed for some reason -- return original knowledge base
         #return scientificKnowledge # Deep copy
+
+        # print("++++++GETTING ORACLE'S HELP")
+        # scientificKnowledge.extend(hypo_to_add)
+
         packed = {
             "stepIdx": stepIdx,
             "error": "Failed to parse response -- knowledge not consolidated.",
@@ -735,6 +844,9 @@ def consolidateKnowledgeStep(client, scientificKnowledge, stepIdx):
                 numEntriesAfter = len(newKnowledge)
                 numTokensKBAfer = countTokens(json.dumps(newKnowledge, indent=4, sort_keys=True))
 
+                # print("++++++GETTING ORACLE'S HELP")
+                # newKnowledge.extend(hypo_to_add)
+
                 packed = {
                     "stepIdx": stepIdx,
                     "entries_before": numEntries,
@@ -750,6 +862,9 @@ def consolidateKnowledgeStep(client, scientificKnowledge, stepIdx):
 
     # Otherwise, return the old one
     #return scientificKnowledge # deep copy
+    # print("++++++GETTING ORACLE'S HELP")
+    # newKnowledge.extend(hypo_to_add)
+
     packed = {
         "stepIdx": stepIdx,
         "error": "Unknown error when condoladating knowledge.",
@@ -760,8 +875,6 @@ def consolidateKnowledgeStep(client, scientificKnowledge, stepIdx):
     }
     CONSOLATATE_TRACKING.append(packed)
     return copy.deepcopy(scientificKnowledge)
-
-
 
 def mkExampleHypotheses():
     out = {
@@ -781,6 +894,93 @@ def mkInitialHypotheses():
 
     return out
 
+def extract_uuids(text):
+    return re.findall(r'uuid:\s*(\d+)', text)
+
+def checkAndPerformRewind(scientificKnowledge):
+    entries = scientificKnowledge['scientific_knowledge']
+
+    # Thresholds for each check
+    CONSECUTIVE_ERROR_THRESHOLD = 3  # Number of consecutive error messages to trigger rewind
+    REPETITIVE_ACTION_THRESHOLD = 3  # Number of identical actions to trigger rewind
+    UUID_REPETITION_THRESHOLD = 3    # Number of times interacting with the same UUID to trigger rewind
+
+    consecutive_error_count = 0
+    prev_step = 1
+
+    need_rewind = False
+    rewind_step = None
+    reason = ""
+    steps_to_consider = max(CONSECUTIVE_ERROR_THRESHOLD, REPETITIVE_ACTION_THRESHOLD, UUID_REPETITION_THRESHOLD)
+
+    recent_entries = entries[-steps_to_consider:]
+
+    # Initialize lists and counters
+    error_entries = []
+    action_entries = []
+    uuid_entries = []
+    uuid_counts = {}
+
+    for i, entry in enumerate(recent_entries):
+        step = entry.get('step', prev_step)
+        measurement = entry.get('measurement', "")
+        hypothesis = entry.get('hypothesis', "")
+        status = entry.get('status', "")
+        text = measurement or hypothesis or ''
+
+        # Check for error messages
+        if measurement and 'error' in measurement.lower():
+            error_entries.append((step, measurement))
+        else:
+            error_entries = []  # Reset if not an error message
+
+         # Check for repetitive actions
+        action_text = measurement or hypothesis
+        if action_text:
+            action_entries.append((step, action_text))
+        
+        # Check for repeated UUID interactions
+        uuids = extract_uuids(text)
+        if uuids:
+            uuid_entries.append((step, uuids))
+            for uuid in uuids:
+                uuid_counts[uuid] = uuid_counts.get(uuid, 0) + 1
+
+        prev_step = step
+
+    # Check for consecutive error messages
+    if len(error_entries) >= CONSECUTIVE_ERROR_THRESHOLD:
+        need_rewind = True
+        rewind_step = error_entries[-CONSECUTIVE_ERROR_THRESHOLD][0] - 1
+        reason = f"{CONSECUTIVE_ERROR_THRESHOLD} consecutive error messages"
+        
+    # Check for repetitive actions
+    elif len(action_entries) >= REPETITIVE_ACTION_THRESHOLD:
+        last_actions = [action for step, action in action_entries[-REPETITIVE_ACTION_THRESHOLD:]]
+        if len(set(last_actions)) == 1:
+            need_rewind = True
+            rewind_step = action_entries[-REPETITIVE_ACTION_THRESHOLD][0] - 1
+            reason = f"{REPETITIVE_ACTION_THRESHOLD} repetitive actions"
+
+    # Check for repeated interactions with the same UUID
+    else:
+        for uuid, count in uuid_counts.items():
+            if count >= UUID_REPETITION_THRESHOLD:
+                need_rewind = True
+                # Find the earliest step where this UUID was interacted with in recent entries
+                uuid_steps = [step for step, uuids in uuid_entries if uuid in uuids]
+                earliest_uuid_step = min(uuid_steps)
+                rewind_step = earliest_uuid_step - 1
+                reason = f"Repeated interactions with object UUID {uuid}"
+                break
+
+    # Truncate the knowledge base to the rewind step, if needed
+    if need_rewind:
+        truncated_entries = [entry for entry in entries if entry.get('step', 0) <= rewind_step]
+        scientificKnowledge['scientific_knowledge'] = truncated_entries
+
+    return need_rewind, rewind_step, reason, scientificKnowledge
+
 
 # This is the main entry point for the Hypothesizer Agent
 def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", includeImages=True):
@@ -791,6 +991,9 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
             key = file.read().strip()
 
     # Create the OpenAI client
+    print("+++++API ", openai.api_type)
+    print("++++KEY", key)
+    # client = openai.AzureOpenAI(api_key=key) if openai.api_type == "azure" else openai.OpenAI(api_key=key, base_url="https://cmu.litellm.ai")
     client = openai.AzureOpenAI(api_key=key) if openai.api_type == "azure" else openai.OpenAI(api_key=key)
 
     # Initial Memory
@@ -825,6 +1028,7 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
             print("Step " + str(i) + " of " + str(numSteps))
             print("-----------------------------------------------------------")
             print("")
+
             #lastAction, lastObservation, promptStr, responseStr
             outHypothesizer = GPT4HypothesizerOneStep(api, client, lastActionHistory, lastObservation, currentScientificKnowledge, includeImages=includeImages)
             # Unpack
@@ -857,14 +1061,33 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
                 "oracle_scorecard": api.getTaskScorecard()
             }
             observationHistory.append(packed)
+            criticalHypotheses = api.getTaskScorecard()[0]['criticalHypotheses']
+            taskDescription = api.getTaskScorecard()[0]['taskDescription']
+            print("+++++CRITICAL HYPOTHESES ", criticalHypotheses)
 
             # Every 10 steps, consolidate the knowledge
             if (i % 10 == 0) and (i > 0):
                 print("consolidating Scientific Knowledge:")
-                currentScientificKnowledge = consolidateKnowledgeStep(client, currentScientificKnowledge, stepIdx=i)
+                currentScientificKnowledge = consolidateKnowledgeStep(client, currentScientificKnowledge, criticalHypotheses, taskDescription, stepIdx=i)
 
                 # Add to history
                 allHistory.append({"consolidated_scientific_knowledge": currentScientificKnowledge})
+
+                # Performing rewind
+                need_rewind, rewind_step, rewind_reason, currentScientificKnowledge = checkAndPerformRewind(currentScientificKnowledge)
+                allHistory.append({
+                    "rewound_scientific_knowledge": currentScientificKnowledge,
+                    "needs_rewind": need_rewind,
+                    "rewind_step": rewind_step,
+                    "rewind_reason": rewind_reason
+                    })
+
+                print("Augmenting scientific knowledge:")
+                augmentedOutput = generateHypothesesWithExistingKnowledgeBase(client, taskDescription, currentScientificKnowledge, stepIdx = i)
+                currentScientificKnowledge = augmentedOutput['augmentedScientificKnowledge']
+
+                # # Add to history
+                allHistory.append(augmentedOutput)
 
 
             # Print estimated tokens/costs
@@ -909,13 +1132,14 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
 
 
             # Save to JSON
-            with open("output_observationHistory" + logFileSuffix + ".json", "w") as file:
+            with open("obsHistory/output_observationHistory" + logFileSuffix + ".json", "w") as file:
+            # with open("random.json", "w") as file:
                 json.dump(observationHistory, file, indent=4, sort_keys=True)
-            with open("output_allhistory" + logFileSuffix + ".json", "w") as file:
+            with open("allHistory/output_allhistory" + logFileSuffix + ".json", "w") as file:
                 json.dump(allHistory, file, indent=4, sort_keys=True)
-            with open("output_costAnalysis" + logFileSuffix + ".json", "w") as file:
+            with open("costAnalysis/output_costAnalysis" + logFileSuffix + ".json", "w") as file:
                 json.dump(costAnalysis, file, indent=4, sort_keys=True)
-            with open("output_consolidatedKnowledge" + logFileSuffix + ".json", "w") as file:
+            with open("consKnow/output_consolidatedKnowledge" + logFileSuffix + ".json", "w") as file:
                 json.dump(CONSOLATATE_TRACKING, file, indent=4, sort_keys=False)
 
             # Check if the task has been completed
@@ -982,7 +1206,8 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
 
     startTime = time.time()
     # Hypothesizer
-    logFileSuffix = "." + scenarioName + "-" + difficultyStr + "-s" + str(seed) + "-images" + str(includeImages) + "-model" + OPENAI_MODEL_TO_USE + "-thread" + str(api.THREAD_ID)
+    # logFileSuffix = "." + scenarioName + "-" + difficultyStr + "-s" + str(seed) + "-images" + str(includeImages) + "-model" + OPENAI_MODEL_TO_USE + "-thread" + str(api.THREAD_ID)
+    logFileSuffix = "." + scenarioName + "-" + difficultyStr + "-s" + str(seed) + "-images" + str(includeImages)
     # Add date and time stamp
     import datetime
     logFileSuffix += "." + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
