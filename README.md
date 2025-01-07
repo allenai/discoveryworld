@@ -1,4 +1,5 @@
 # DiscoveryWorld: A Virtual Environment for Developing and Evaluating Automated Scientific Discovery Agents
+NeurIPS Datasets and Benchmarks 2024 (Spotlight)
 
 ![discoveryworld](doc/discoveryworld-logo.png)
 
@@ -10,7 +11,7 @@ Below is a short 60 second clip of one of the baseline agents *(Hypothesizer)* a
 ## 1. Quick Start
 
 ### 1.1. I want to read about DiscoveryWorld
-Please find details of DiscoveryWorld in this preprint: https://arxiv.org/abs/2406.06769
+The DiscoveryWorld paper (NeurIPS 2024, Spotlight) is available here: [https://openreview.net/forum?id=cDYqckEt6d](https://openreview.net/forum?id=cDYqckEt6d)
 
 A short summary is also available on the [project website](https://allenai.github.io/discoveryworld/).
 
@@ -467,13 +468,13 @@ if __name__ == "__main__":
 ## 4. Citation
 If you use this work, please reference the following citation:
 ```
-@misc{jansen2024discoveryworld,
-      title={DISCOVERYWORLD: A Virtual Environment for Developing and Evaluating Automated Scientific Discovery Agents},
-      author={Peter Jansen and Marc-Alexandre Côté and Tushar Khot and Erin Bransom and Bhavana Dalvi Mishra and Bodhisattwa Prasad Majumder and Oyvind Tafjord and Peter Clark},
-      year={2024},
-      eprint={2406.06769},
-      archivePrefix={arXiv},
-      primaryClass={cs.AI}
+@inproceedings{
+    jansen2024discoveryworld,
+    title={DiscoveryWorld: A Virtual Environment for Developing and Evaluating Automated Scientific Discovery Agents},
+    author={Peter Jansen and Marc-Alexandre C{\^o}t{\'e} and Tushar Khot and Erin Bransom and Bhavana Dalvi Mishra and Bodhisattwa Prasad Majumder and Oyvind Tafjord and Peter Clark},
+    booktitle={The Thirty-eight Conference on Neural Information Processing Systems Datasets and Benchmarks Track},
+    year={2024},
+    url={https://openreview.net/forum?id=cDYqckEt6d}
 }
 ```
 
