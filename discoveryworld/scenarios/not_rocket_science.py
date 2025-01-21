@@ -567,8 +567,8 @@ def makeScenarioNotRocketScience(world, numUserAgents=1, difficulty="easy"):
         scoringInfo["speedSquare"].append(speedSquare)
 
         # Add the agent to a specfic location
-        # world.addObject(16+userAgentIdx, 3, Layer.AGENT, userAgent)    # Near rocket
-        world.addObject(11+userAgentIdx, 23, Layer.AGENT, userAgent)   # In control room
+        world.addObject(16+userAgentIdx, 3, Layer.AGENT, userAgent)    # Near rocket
+        # world.addObject(11+userAgentIdx, 23, Layer.AGENT, userAgent)   # In control room
         # world.addObject(23+userAgentIdx, 25, Layer.AGENT, userAgent)   # Near load cell
         # Register the agent with the World so we can keep track of it
         world.addAgent(userAgent)

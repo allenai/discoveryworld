@@ -17,4 +17,10 @@ setup(
     long_description_content_type="text/markdown",
     install_requires=open('requirements.txt').readlines(),
     python_requires='>=3.8',
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: MacOS :: MacOS X",
+    ]
 )
